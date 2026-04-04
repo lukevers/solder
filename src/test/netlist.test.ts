@@ -2,7 +2,7 @@
 import { describe, it, expectTypeOf, expect } from 'vitest'
 import type { ComponentNode, CircuitState } from '../lib/types'
 import type { Edge } from '@xyflow/react'
-import { buildPortGroups } from '../lib/netlist'
+import { buildPortGroups, compileNetlist } from '../lib/netlist'
 
 describe('types', () => {
   it('ComponentNode discriminated union compiles', () => {
@@ -64,8 +64,6 @@ describe('buildPortGroups', () => {
     expect(groups.has('r1|b')).toBe(true)
   })
 })
-
-import { compileNetlist } from '../lib/netlist'
 
 describe('compileNetlist', () => {
   const SAMPLE_RATE = 44100

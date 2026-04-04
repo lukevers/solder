@@ -26,8 +26,9 @@ function buildAdjacency(edges: Edge[]): Map<Port, Set<Port>> {
   const adj = new Map<Port, Set<Port>>()
   const add = (p: Port) => { if (!adj.has(p)) adj.set(p, new Set()) }
   for (const e of edges) {
-    const src: Port = `${e.source}|${e.sourceHandle ?? ''}`
-    const tgt: Port = `${e.target}|${e.targetHandle ?? ''}`
+    if (!e.sourceHandle || !e.targetHandle) continue
+    const src: Port = `${e.source}|${e.sourceHandle}`
+    const tgt: Port = `${e.target}|${e.targetHandle}`
     add(src); add(tgt)
     adj.get(src)!.add(tgt)
     adj.get(tgt)!.add(src)
@@ -98,17 +99,17 @@ export function buildPortGroups(
 
 /** Format ohms as SPICE: 10000 → "10k", 1000000 → "1Meg", etc. */
 function formatResistance(ohms: number): string {
-  if (ohms >= 1e6) return `${ohms / 1e6}Meg`
-  if (ohms >= 1e3) return `${ohms / 1e3}k`
+  if (ohms >= 1e6) return `${parseFloat((ohms / 1e6).toPrecision(10))}Meg`
+  if (ohms >= 1e3) return `${parseFloat((ohms / 1e3).toPrecision(10))}k`
   return `${ohms}`
 }
 
 /** Format farads as SPICE: 47e-9 → "47n", 100e-12 → "100p", etc. */
 function formatCapacitance(farads: number): string {
-  if (farads >= 1e-3) return `${farads * 1e3}m`
-  if (farads >= 1e-6) return `${farads * 1e6}u`
-  if (farads >= 1e-9) return `${farads * 1e9}n`
-  return `${farads * 1e12}p`
+  if (farads >= 1e-3) return `${parseFloat((farads * 1e3).toPrecision(10))}m`
+  if (farads >= 1e-6) return `${parseFloat((farads * 1e6).toPrecision(10))}u`
+  if (farads >= 1e-9) return `${parseFloat((farads * 1e9).toPrecision(10))}n`
+  return `${parseFloat((farads * 1e12).toPrecision(10))}p`
 }
 
 /**
@@ -145,12 +146,12 @@ export function compileNetlist(
 
   const lines: string[] = ['* solder — auto-generated netlist']
 
-  // Op-amp model includes
-  const hasOpamp = nodes.some((n) => n.type === 'opamp')
-  if (hasOpamp) {
-    lines.push('.include TL072.lib')
-    lines.push('.include LM741.lib')
-  }
+  // Op-amp model includes — only include models actually present in the circuit
+  const usedModels = new Set(
+    nodes.filter((n) => n.type === 'opamp').map((n) => n.data.model)
+  )
+  if (usedModels.has('TL072')) lines.push('.include TL072.lib')
+  if (usedModels.has('LM741')) lines.push('.include LM741.lib')
 
   // Find input and output nodes
   const inputNode = nodes.find((n) => n.type === 'input')
