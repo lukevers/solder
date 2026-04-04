@@ -1,10 +1,7 @@
 // src/lib/types.ts
-import type { Edge } from '@xyflow/react'
+import type { Edge, XYPosition } from '@xyflow/react'
 
-export interface XYPosition {
-  x: number
-  y: number
-}
+export type { XYPosition }
 
 export type ResistorData = { label: string; ohms: number }
 export type CapacitorData = { label: string; farads: number }
