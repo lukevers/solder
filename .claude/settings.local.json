@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/lukevers/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.6/skills/brainstorming/scripts/start-server.sh --project-dir /Users/lukevers/code/solder)",
+      "Bash(npm create:*)",
+      "Bash(printf 'y\\\\n')",
+      "Bash(npx create-vite@latest . --template react-ts 2)",
+      "Bash(1:*)",
+      "Bash(npx create-vite@latest --help)",
+      "Bash(npx create-vite@latest . --template react-ts --no-interactive)",
+      "Read(//private/tmp/**)",
+      "Bash(rm -rf vite-scaffold-temp)",
+      "Bash(npx create-vite@latest vite-scaffold-temp --template react-ts --no-interactive)",
+      "Bash(cp:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(./node_modules/.bin/tailwindcss init:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const pkg = require\\(''./package.json''\\); console.log\\(''react:'', pkg.dependencies.react\\); console.log\\(''vitest:'', pkg.devDependencies.vitest\\); console.log\\(''tailwind:'', pkg.devDependencies.tailwindcss\\)\")"
+    ]
+  }
+}

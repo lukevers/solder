@@ -1,0 +1,174 @@
+<h2>App Layout</h2>
+<p class="subtitle">Overall UI structure — does this feel right?</p>
+
+<div class="mockup" style="margin-top:12px">
+  <div class="mockup-header">solder — guitar pedal circuit simulator</div>
+  <div class="mockup-body" style="padding:0;background:#0d1117;height:520px;display:flex;flex-direction:column;font-family:ui-monospace,monospace;font-size:11px">
+
+    <!-- Top toolbar -->
+    <div style="background:#161b22;border-bottom:1px solid #30363d;padding:6px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <span style="color:#58a6ff;font-weight:bold;font-size:13px">⚡ solder</span>
+      <div style="width:1px;height:18px;background:#30363d"></div>
+      <!-- Component palette buttons -->
+      <button style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:10px">R resistor</button>
+      <button style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:10px">C capacitor</button>
+      <button style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:10px">U op-amp</button>
+      <button style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:10px">V+ power</button>
+      <button style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:10px">GND ground</button>
+      <button style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:10px">IN input</button>
+      <button style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:10px">OUT output</button>
+      <div style="flex:1"></div>
+      <button style="background:#238636;border:1px solid #2ea043;color:#fff;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:bold">▶ Simulate</button>
+    </div>
+
+    <!-- Main area: schematic + right panel -->
+    <div style="flex:1;display:flex;overflow:hidden">
+
+      <!-- Schematic canvas -->
+      <div style="flex:1;position:relative;background:#0d1117;overflow:hidden">
+        <!-- Grid dots -->
+        <svg width="100%" height="100%" style="position:absolute;top:0;left:0;opacity:0.15">
+          <defs>
+            <pattern id="grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="10" cy="10" r="0.8" fill="#58a6ff"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)"/>
+        </svg>
+
+        <!-- Sample schematic: simple RC + op-amp -->
+        <svg style="position:absolute;top:40px;left:60px" width="480" height="260" viewBox="0 0 480 260">
+          <!-- Input node -->
+          <rect x="0" y="100" width="50" height="28" rx="4" fill="#1f2937" stroke="#58a6ff" stroke-width="1.5"/>
+          <text x="25" y="118" fill="#58a6ff" font-size="9" text-anchor="middle" font-family="monospace">IN</text>
+          <!-- wire from IN to R -->
+          <line x1="50" y1="114" x2="80" y2="114" stroke="#58a6ff" stroke-width="1.5"/>
+
+          <!-- Resistor -->
+          <rect x="80" y="100" width="70" height="28" rx="4" fill="#1f2937" stroke="#e6edf3" stroke-width="1.5"/>
+          <text x="115" y="112" fill="#e6edf3" font-size="9" text-anchor="middle" font-family="monospace">≈≈≈ R1</text>
+          <text x="115" y="122" fill="#7ee787" font-size="8" text-anchor="middle" font-family="monospace">10 kΩ</text>
+          <!-- wire from R to node -->
+          <line x1="150" y1="114" x2="190" y2="114" stroke="#58a6ff" stroke-width="1.5"/>
+
+          <!-- junction dot -->
+          <circle cx="190" cy="114" r="3" fill="#58a6ff"/>
+
+          <!-- Capacitor (to ground) -->
+          <line x1="190" y1="114" x2="190" y2="155" stroke="#58a6ff" stroke-width="1.5"/>
+          <rect x="165" y="155" width="50" height="28" rx="4" fill="#1f2937" stroke="#e6edf3" stroke-width="1.5"/>
+          <text x="190" y="167" fill="#e6edf3" font-size="9" text-anchor="middle" font-family="monospace">⊣⊢ C1</text>
+          <text x="190" y="177" fill="#7ee787" font-size="8" text-anchor="middle" font-family="monospace">47 nF</text>
+          <!-- ground -->
+          <line x1="190" y1="183" x2="190" y2="200" stroke="#8b949e" stroke-width="1.5"/>
+          <line x1="178" y1="200" x2="202" y2="200" stroke="#8b949e" stroke-width="2"/>
+          <line x1="182" y1="205" x2="198" y2="205" stroke="#8b949e" stroke-width="1.5"/>
+          <line x1="186" y1="210" x2="194" y2="210" stroke="#8b949e" stroke-width="1"/>
+
+          <!-- wire from junction to op-amp -->
+          <line x1="190" y1="114" x2="240" y2="114" stroke="#58a6ff" stroke-width="1.5"/>
+
+          <!-- Op-amp -->
+          <rect x="240" y="85" width="80" height="58" rx="4" fill="#1f2937" stroke="#f97316" stroke-width="1.5"/>
+          <text x="280" y="107" fill="#f97316" font-size="9" text-anchor="middle" font-family="monospace">▷ U1</text>
+          <text x="280" y="118" fill="#e6edf3" font-size="8" text-anchor="middle" font-family="monospace">TL072</text>
+          <text x="280" y="130" fill="#6b7280" font-size="7" text-anchor="middle" font-family="monospace">gain: ×10</text>
+          <!-- wire from op-amp out -->
+          <line x1="320" y1="114" x2="370" y2="114" stroke="#f97316" stroke-width="1.5"/>
+
+          <!-- Output node -->
+          <rect x="370" y="100" width="50" height="28" rx="4" fill="#1f2937" stroke="#7ee787" stroke-width="1.5"/>
+          <text x="395" y="118" fill="#7ee787" font-size="9" text-anchor="middle" font-family="monospace">OUT</text>
+
+          <!-- Selected component indicator -->
+          <rect x="79" y="99" width="72" height="30" rx="5" fill="none" stroke="#58a6ff" stroke-width="2" stroke-dasharray="4,2" opacity="0.8"/>
+          <text x="115" y="95" fill="#58a6ff" font-size="8" text-anchor="middle" font-family="monospace">selected</text>
+        </svg>
+
+        <!-- Canvas label -->
+        <div style="position:absolute;bottom:8px;left:8px;color:#30363d;font-size:9px">drag to pan · scroll to zoom · click component to edit</div>
+      </div>
+
+      <!-- Right panel -->
+      <div style="width:200px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column;flex-shrink:0">
+
+        <!-- Component inspector -->
+        <div style="padding:10px;border-bottom:1px solid #30363d">
+          <div style="color:#8b949e;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Inspector · R1</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div>
+              <div style="color:#6b7280;font-size:9px;margin-bottom:2px">Resistance</div>
+              <div style="display:flex;gap:4px;align-items:center">
+                <input style="flex:1;background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:3px 6px;border-radius:3px;font-size:10px;font-family:monospace" value="10" readonly/>
+                <select style="background:#0d1117;border:1px solid #30363d;color:#8b949e;padding:3px;border-radius:3px;font-size:10px">
+                  <option>kΩ</option>
+                  <option>Ω</option>
+                  <option>MΩ</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <div style="color:#6b7280;font-size:9px;margin-bottom:2px">Label</div>
+              <input style="width:100%;background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:3px 6px;border-radius:3px;font-size:10px;font-family:monospace;box-sizing:border-box" value="R1" readonly/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Waveform display -->
+        <div style="padding:10px;border-bottom:1px solid #30363d">
+          <div style="color:#8b949e;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Waveform</div>
+          <svg width="175" height="50" viewBox="0 0 175 50">
+            <rect width="175" height="50" rx="3" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+            <!-- input wave (blue) -->
+            <polyline points="0,25 8,10 16,25 24,40 32,25 40,10 48,25 56,40 64,25 72,10 80,25 88,40 96,25 104,10 112,25 120,40 128,25 136,10 144,25 152,40 160,25 168,10 175,25" fill="none" stroke="#58a6ff" stroke-width="1" opacity="0.5"/>
+            <!-- output wave (green, amplified + slightly clipped) -->
+            <polyline points="0,25 8,5 16,25 24,45 32,25 40,5 48,25 56,45 64,25 72,5 80,25 88,45 96,25 104,5 112,25 120,45 128,25 136,5 144,25 152,45 160,25 168,5 175,25" fill="none" stroke="#7ee787" stroke-width="1.5"/>
+            <text x="4" y="48" fill="#6b7280" font-size="7">in</text>
+            <text x="155" y="48" fill="#7ee787" font-size="7">out</text>
+          </svg>
+        </div>
+
+        <!-- Audio controls -->
+        <div style="padding:10px">
+          <div style="color:#8b949e;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Audio</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div>
+              <div style="color:#6b7280;font-size:9px;margin-bottom:3px">Input Source</div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <label style="display:flex;align-items:center;gap:5px;color:#c9d1d9;font-size:10px;cursor:pointer">
+                  <input type="radio" name="src" checked style="accent-color:#58a6ff"/> Sample: clean guitar
+                </label>
+                <label style="display:flex;align-items:center;gap:5px;color:#c9d1d9;font-size:10px;cursor:pointer">
+                  <input type="radio" name="src" style="accent-color:#58a6ff"/> Sample: bass
+                </label>
+                <label style="display:flex;align-items:center;gap:5px;color:#c9d1d9;font-size:10px;cursor:pointer">
+                  <input type="radio" name="src" style="accent-color:#58a6ff"/> 🎙 Live input
+                </label>
+              </div>
+            </div>
+            <div>
+              <div style="color:#6b7280;font-size:9px;margin-bottom:3px">Volume</div>
+              <input type="range" style="width:100%;accent-color:#7ee787" value="70" readonly/>
+            </div>
+            <button style="background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:4px;border-radius:4px;font-size:10px;cursor:pointer">⏹ Stop</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom status bar -->
+    <div style="background:#161b22;border-top:1px solid #30363d;padding:3px 12px;display:flex;gap:16px;font-size:9px;color:#6b7280;flex-shrink:0">
+      <span style="color:#7ee787">● simulation ready</span>
+      <span>latency: ~180ms</span>
+      <span>sample rate: 44100 Hz</span>
+      <span>components: 4</span>
+      <span>nodes: 3</span>
+      <div style="flex:1"></div>
+      <span>ngspice 42 · WASM</span>
+    </div>
+
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:12px">Does this layout feel right? Anything to change?</p>

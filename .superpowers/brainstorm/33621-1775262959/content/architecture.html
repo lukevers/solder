@@ -1,0 +1,143 @@
+<h2>System Architecture</h2>
+<p class="subtitle">5 subsystems, data flows left → right</p>
+
+<div style="overflow-x:auto;padding:8px 0">
+<svg viewBox="0 0 780 340" style="width:100%;max-width:780px;font-family:ui-monospace,monospace" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- ── SUBSYSTEM BOXES ── -->
+
+  <!-- 1. Schematic Editor -->
+  <rect x="10" y="20" width="140" height="200" rx="8" fill="#1f2937" stroke="#3b82f6" stroke-width="2"/>
+  <text x="80" y="42" fill="#3b82f6" font-size="11" font-weight="bold" text-anchor="middle">Schematic Editor</text>
+  <line x1="20" y1="48" x2="140" y2="48" stroke="#3b82f6" stroke-width="1" opacity="0.4"/>
+  <text x="80" y="68" fill="#9ca3af" font-size="9" text-anchor="middle">react-flow canvas</text>
+  <text x="80" y="82" fill="#9ca3af" font-size="9" text-anchor="middle">custom node types:</text>
+  <!-- R node -->
+  <rect x="25" y="90" width="35" height="18" rx="3" fill="#374151" stroke="#6b7280" stroke-width="1"/>
+  <text x="42" y="103" fill="#e5e7eb" font-size="9" text-anchor="middle">R  ≈≈≈</text>
+  <!-- C node -->
+  <rect x="65" y="90" width="35" height="18" rx="3" fill="#374151" stroke="#6b7280" stroke-width="1"/>
+  <text x="82" y="103" fill="#e5e7eb" font-size="9" text-anchor="middle">C  ⊣⊢</text>
+  <!-- Op-amp node -->
+  <rect x="105" y="90" width="35" height="18" rx="3" fill="#374151" stroke="#6b7280" stroke-width="1"/>
+  <text x="122" y="103" fill="#e5e7eb" font-size="9" text-anchor="middle">U  ▷</text>
+  <text x="80" y="128" fill="#9ca3af" font-size="9" text-anchor="middle">wire drawing</text>
+  <text x="80" y="142" fill="#9ca3af" font-size="9" text-anchor="middle">snap-to-grid</text>
+  <text x="80" y="156" fill="#9ca3af" font-size="9" text-anchor="middle">component values</text>
+  <text x="80" y="170" fill="#9ca3af" font-size="9" text-anchor="middle">(click to edit)</text>
+  <text x="80" y="190" fill="#6b7280" font-size="8" text-anchor="middle">Graph State →</text>
+  <text x="80" y="203" fill="#6b7280" font-size="8" text-anchor="middle">JSON nodes+edges</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="152" y1="120" x2="178" y2="120" stroke="#4b5563" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 2. Netlist Compiler -->
+  <rect x="180" y="60" width="130" height="120" rx="8" fill="#1f2937" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="245" y="82" fill="#8b5cf6" font-size="11" font-weight="bold" text-anchor="middle">Netlist Compiler</text>
+  <line x1="190" y1="88" x2="300" y2="88" stroke="#8b5cf6" stroke-width="1" opacity="0.4"/>
+  <text x="245" y="108" fill="#9ca3af" font-size="9" text-anchor="middle">graph → SPICE</text>
+  <text x="245" y="122" fill="#9ca3af" font-size="9" text-anchor="middle">netlist (.cir)</text>
+  <text x="245" y="142" fill="#6b7280" font-size="8" text-anchor="middle">R1 1 2 10k</text>
+  <text x="245" y="154" fill="#6b7280" font-size="8" text-anchor="middle">C1 2 0 47n</text>
+  <text x="245" y="166" fill="#6b7280" font-size="8" text-anchor="middle">X1 2 3 0 TL072</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="312" y1="120" x2="338" y2="120" stroke="#4b5563" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 3. Simulation Engine -->
+  <rect x="340" y="40" width="140" height="160" rx="8" fill="#1f2937" stroke="#f59e0b" stroke-width="2"/>
+  <text x="410" y="62" fill="#f59e0b" font-size="11" font-weight="bold" text-anchor="middle">Simulation Engine</text>
+  <line x1="350" y1="68" x2="470" y2="68" stroke="#f59e0b" stroke-width="1" opacity="0.4"/>
+  <text x="410" y="88" fill="#9ca3af" font-size="9" text-anchor="middle">ngspice WASM</text>
+  <text x="410" y="104" fill="#9ca3af" font-size="9" text-anchor="middle">Worker thread</text>
+  <text x="410" y="122" fill="#6b7280" font-size="8" text-anchor="middle">input buffer</text>
+  <text x="410" y="134" fill="#6b7280" font-size="8" text-anchor="middle">2048 samples</text>
+  <!-- buffer visual -->
+  <rect x="360" y="140" width="100" height="12" rx="2" fill="#374151" stroke="#6b7280" stroke-width="1"/>
+  <rect x="360" y="140" width="65" height="12" rx="2" fill="#f59e0b" opacity="0.5"/>
+  <text x="410" y="167" fill="#6b7280" font-size="8" text-anchor="middle">transient analysis</text>
+  <text x="410" y="179" fill="#6b7280" font-size="8" text-anchor="middle">→ output waveform</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="482" y1="120" x2="508" y2="120" stroke="#4b5563" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 4. Audio Pipeline -->
+  <rect x="510" y="60" width="130" height="120" rx="8" fill="#1f2937" stroke="#10b981" stroke-width="2"/>
+  <text x="575" y="82" fill="#10b981" font-size="11" font-weight="bold" text-anchor="middle">Audio Pipeline</text>
+  <line x1="520" y1="88" x2="630" y2="88" stroke="#10b981" stroke-width="1" opacity="0.4"/>
+  <text x="575" y="106" fill="#9ca3af" font-size="9" text-anchor="middle">Web Audio API</text>
+  <text x="575" y="120" fill="#9ca3af" font-size="9" text-anchor="middle">AudioContext</text>
+  <text x="575" y="136" fill="#6b7280" font-size="8" text-anchor="middle">samples / mic input</text>
+  <text x="575" y="150" fill="#6b7280" font-size="8" text-anchor="middle">buffer queue</text>
+  <text x="575" y="164" fill="#6b7280" font-size="8" text-anchor="middle">playback scheduling</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="642" y1="120" x2="668" y2="120" stroke="#4b5563" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 5. UI Shell -->
+  <rect x="670" y="20" width="100" height="200" rx="8" fill="#1f2937" stroke="#ec4899" stroke-width="2"/>
+  <text x="720" y="42" fill="#ec4899" font-size="11" font-weight="bold" text-anchor="middle">UI Shell</text>
+  <line x1="680" y1="48" x2="760" y2="48" stroke="#ec4899" stroke-width="1" opacity="0.4"/>
+  <text x="720" y="68" fill="#9ca3af" font-size="9" text-anchor="middle">toolbar</text>
+  <text x="720" y="84" fill="#9ca3af" font-size="9" text-anchor="middle">component palette</text>
+  <text x="720" y="100" fill="#9ca3af" font-size="9" text-anchor="middle">audio controls</text>
+  <text x="720" y="116" fill="#9ca3af" font-size="9" text-anchor="middle">waveform display</text>
+  <text x="720" y="132" fill="#9ca3af" font-size="9" text-anchor="middle">sample selector</text>
+  <text x="720" y="148" fill="#9ca3af" font-size="9" text-anchor="middle">live input toggle</text>
+  <text x="720" y="170" fill="#6b7280" font-size="8" text-anchor="middle">React + Vite</text>
+  <text x="720" y="183" fill="#6b7280" font-size="8" text-anchor="middle">TypeScript</text>
+  <text x="720" y="196" fill="#6b7280" font-size="8" text-anchor="middle">Tailwind CSS</text>
+
+  <!-- ── BOTTOM: DATA FLOW ── -->
+  <rect x="10" y="250" width="760" height="80" rx="8" fill="#111827" stroke="#374151" stroke-width="1"/>
+  <text x="390" y="270" fill="#6b7280" font-size="10" font-weight="bold" text-anchor="middle">DATA FLOW</text>
+
+  <!-- Flow line -->
+  <line x1="60" y1="295" x2="720" y2="295" stroke="#374151" stroke-width="1.5"/>
+
+  <circle cx="60" cy="295" r="5" fill="#3b82f6"/>
+  <text x="60" y="316" fill="#3b82f6" font-size="8" text-anchor="middle">Audio In</text>
+  <text x="60" y="326" fill="#6b7280" font-size="7" text-anchor="middle">Float32Array</text>
+
+  <line x1="65" y1="295" x2="195" y2="295" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <circle cx="200" cy="295" r="5" fill="#8b5cf6"/>
+  <text x="200" y="316" fill="#8b5cf6" font-size="8" text-anchor="middle">Netlist</text>
+  <text x="200" y="326" fill="#6b7280" font-size="7" text-anchor="middle">.cir string</text>
+
+  <line x1="205" y1="295" x2="375" y2="295" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrow-purple)"/>
+  <circle cx="380" cy="295" r="5" fill="#f59e0b"/>
+  <text x="380" y="316" fill="#f59e0b" font-size="8" text-anchor="middle">Simulate</text>
+  <text x="380" y="326" fill="#6b7280" font-size="7" text-anchor="middle">ngspice WASM</text>
+
+  <line x1="385" y1="295" x2="555" y2="295" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+  <circle cx="560" cy="295" r="5" fill="#10b981"/>
+  <text x="560" y="316" fill="#10b981" font-size="8" text-anchor="middle">Audio Out</text>
+  <text x="560" y="326" fill="#6b7280" font-size="7" text-anchor="middle">Float32Array</text>
+
+  <line x1="565" y1="295" x2="715" y2="295" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <circle cx="720" cy="295" r="5" fill="#ec4899"/>
+  <text x="720" y="316" fill="#ec4899" font-size="8" text-anchor="middle">Playback</text>
+  <text x="720" y="326" fill="#6b7280" font-size="7" text-anchor="middle">Web Audio</text>
+
+  <!-- ── ARROW MARKERS ── -->
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4b5563"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#8b5cf6"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#10b981"/>
+    </marker>
+  </defs>
+</svg>
+</div>
+
+<p class="subtitle" style="margin-top:8px">Does this architecture look right? Reply in terminal.</p>
