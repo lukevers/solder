@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useStore } from '../store'
 
-// Reset store between tests by replacing state wholesale (true = replace, not merge)
+// Merge-reset data fields between tests — actions remain intact since we don't replace
 beforeEach(() => {
   useStore.setState({
     nodes: [],
@@ -14,7 +14,7 @@ beforeEach(() => {
     audioSource: { type: 'sample', name: 'guitar' },
     volume: 0.7,
     playing: false,
-  }, true)
+  })
 })
 
 describe('circuitSlice', () => {

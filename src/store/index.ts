@@ -69,31 +69,3 @@ export const useStore = create<StoreState>()((set) => ({
   setPlaying: (playing) => set({ playing }),
 }))
 
-// Patch setState so that a full replacement (replace=true) always re-attaches actions.
-// This is needed because tests use setState({...dataOnly...}, true) which would otherwise
-// wipe all action functions from the store.
-const originalSetState = useStore.setState.bind(useStore)
-useStore.setState = ((partial: unknown, replace?: boolean) => {
-  if (replace) {
-    const actions = {
-      addNode: (node: ComponentNode) => useStore.setState((s) => ({ nodes: [...s.nodes, node] })),
-      setNodes: (nodes: ComponentNode[]) => useStore.setState({ nodes }),
-      setEdges: (edges: Edge[]) => useStore.setState({ edges }),
-      selectNode: (selectedNodeId: string | null) => useStore.setState({ selectedNodeId }),
-      updateNodeData: (id: string, data: ComponentNode['data']) =>
-        useStore.setState((s) => ({
-          nodes: s.nodes.map((n) => (n.id === id ? { ...n, data } as ComponentNode : n)),
-        })),
-      setSimulationStatus: (simulationStatus: SimulationStatus) => useStore.setState({ simulationStatus }),
-      setOutputBuffer: (outputBuffer: Float32Array) => useStore.setState({ outputBuffer }),
-      setSimulationError: (simulationError: string) => useStore.setState({ simulationError }),
-      setAudioSource: (audioSource: AudioSource) => useStore.setState({ audioSource }),
-      setVolume: (volume: number) => useStore.setState({ volume }),
-      setPlaying: (playing: boolean) => useStore.setState({ playing }),
-    }
-    // Merge actions back into the replacement state
-    originalSetState({ ...(partial as object), ...actions }, true)
-  } else {
-    originalSetState(partial as Parameters<typeof originalSetState>[0], replace)
-  }
-}) as typeof useStore.setState
