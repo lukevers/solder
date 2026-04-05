@@ -10,7 +10,7 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
   return (
     <div
       onClick={() => selectNode(id)}
-      className={`relative flex items-center justify-center cursor-pointer`}
+      className="relative flex items-center justify-center cursor-pointer"
       style={{ width: 80, height: 36 }}
     >
       <Handle type="target" position={Position.Left}  id="a" style={{ background: '#4b5563' }} />
