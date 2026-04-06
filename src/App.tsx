@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { Toolbar }         from './components/Toolbar'
 import { SchematicCanvas } from './components/SchematicCanvas'
 import { Inspector }       from './components/Inspector'
@@ -34,6 +34,7 @@ export default function App() {
   const pipelineRef = useRef<AudioPipeline | null>(null)
   // Keep a ref to the latest input buffer so Simulate can use it
   const inputBufRef = useRef<Float32Array>(new Float32Array(2048))
+  const [inputSnapshot, setInputSnapshot] = useState<Float32Array | null>(null)
 
   // Initialize worker
   useEffect(() => {
@@ -51,6 +52,10 @@ export default function App() {
         setSimulationStatus('error')
         setSimulationError(msg.message)
       }
+    }
+    workerRef.current.onerror = (e: ErrorEvent) => {
+      setSimulationStatus('error')
+      setSimulationError(e.message ?? 'Worker crashed')
     }
     return () => { workerRef.current?.terminate() }
   }, [setSimulationStatus, setOutputBuffer, setSimulationError])
@@ -93,14 +98,15 @@ export default function App() {
   const handleSimulate = useCallback(() => {
     if (!workerRef.current) return
     try {
-      const netlist = compileNetlist(nodes, edges, inputBufRef.current, 44100)
+      const buf = inputBufRef.current
+      setInputSnapshot(new Float32Array(buf))  // copy before transfer
+      inputBufRef.current = new Float32Array(2048)   // replace FIRST
+      const netlist = compileNetlist(nodes, edges, buf, 44100)
       setSimulationStatus('running')
       workerRef.current.postMessage(
-        { type: 'simulate', netlist, inputBuffer: inputBufRef.current },
-        [inputBufRef.current.buffer]
+        { type: 'simulate', netlist, inputBuffer: buf },
+        [buf.buffer]
       )
-      // Replace with a fresh buffer so we don't lose the next chunk
-      inputBufRef.current = new Float32Array(2048)
     } catch (err) {
       setSimulationStatus('error')
       setSimulationError(err instanceof Error ? err.message : String(err))
@@ -120,7 +126,7 @@ export default function App() {
           <div className="p-3">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Waveform</div>
             <WaveformDisplay
-              inputBuffer={inputBufRef.current}
+              inputBuffer={inputSnapshot}
               outputBuffer={outputBuffer}
             />
           </div>
