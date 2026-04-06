@@ -16,8 +16,13 @@ export function WaveformDisplay({ inputBuffer, outputBuffer, height = 60 }: Prop
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const w = canvas.width
-    const h = canvas.height
+    const dpr = window.devicePixelRatio ?? 1
+    const layoutWidth = canvas.getBoundingClientRect().width || canvas.offsetWidth
+    const w = layoutWidth
+    const h = height
+    canvas.width = layoutWidth * dpr
+    canvas.height = height * dpr
+    ctx.scale(dpr, dpr)
     ctx.clearRect(0, 0, w, h)
     ctx.fillStyle = '#0d1117'
     ctx.fillRect(0, 0, w, h)
