@@ -11,6 +11,8 @@ export class AudioPipeline {
   private sampleBuffers = new Map<string, AudioBuffer>()
   private sampleOffset = 0
   private stream: MediaStream | null = null
+  private mediaSource: MediaStreamAudioSourceNode | null = null
+  private silentGain: GainNode | null = null
   private scriptNode: ScriptProcessorNode | null = null
   private onInputBuffer: OnInputBuffer | null = null
   private outputQueue: Float32Array[] = []
@@ -31,6 +33,7 @@ export class AudioPipeline {
     if (!this.ctx) throw new Error('Pipeline not initialized')
     if (this.sampleBuffers.has(name)) return
     const res = await fetch(`/samples/${name}.wav`)
+    if (!res.ok) throw new Error(`Failed to load sample "${name}": HTTP ${res.status}`)
     const arrayBuf = await res.arrayBuffer()
     const audioBuf = await this.ctx.decodeAudioData(arrayBuf)
     this.sampleBuffers.set(name, audioBuf)
@@ -62,6 +65,7 @@ export class AudioPipeline {
     }
     // Connect to destination silently (script processor needs to be in graph)
     const silentGain = this.ctx.createGain()
+    this.silentGain = silentGain
     silentGain.gain.value = 0
     this.scriptNode.connect(silentGain)
     silentGain.connect(this.ctx.destination)
@@ -72,7 +76,7 @@ export class AudioPipeline {
     if (!this.ctx) throw new Error('Pipeline not initialized')
     this.onInputBuffer = onInputBuffer
     this.stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    const source = this.ctx.createMediaStreamSource(this.stream)
+    this.mediaSource = this.ctx.createMediaStreamSource(this.stream)
     this.scriptNode = this.ctx.createScriptProcessor(BUFFER_SIZE, 1, 1)
     this.scriptNode.onaudioprocess = (e) => {
       if (!this.onInputBuffer) return
@@ -80,8 +84,9 @@ export class AudioPipeline {
       chunk.set(e.inputBuffer.getChannelData(0))
       this.onInputBuffer(chunk)
     }
-    source.connect(this.scriptNode)
+    this.mediaSource.connect(this.scriptNode)
     const silentGain = this.ctx.createGain()
+    this.silentGain = silentGain
     silentGain.gain.value = 0
     this.scriptNode.connect(silentGain)
     silentGain.connect(this.ctx.destination)
@@ -90,7 +95,7 @@ export class AudioPipeline {
   /** Queue a processed output buffer for playback. */
   scheduleOutput(outputBuffer: Float32Array): void {
     if (!this.ctx || !this.gainNode) return
-    const audioBuffer = this.ctx.createBuffer(1, outputBuffer.length, SAMPLE_RATE)
+    const audioBuffer = this.ctx.createBuffer(1, outputBuffer.length, this.ctx.sampleRate)
     audioBuffer.copyToChannel(outputBuffer, 0)
     const source = this.ctx.createBufferSource()
     source.buffer = audioBuffer
@@ -98,7 +103,7 @@ export class AudioPipeline {
 
     const now = this.ctx.currentTime
     // Schedule ahead by one buffer to allow for simulation latency
-    const bufferDuration = BUFFER_SIZE / SAMPLE_RATE
+    const bufferDuration = BUFFER_SIZE / this.ctx.sampleRate
     if (this.nextPlayTime < now + bufferDuration) {
       this.nextPlayTime = now + bufferDuration
     }
@@ -109,6 +114,10 @@ export class AudioPipeline {
   stop(): void {
     this.scriptNode?.disconnect()
     this.scriptNode = null
+    this.mediaSource?.disconnect()
+    this.mediaSource = null
+    this.silentGain?.disconnect()
+    this.silentGain = null
     this.stream?.getTracks().forEach((t) => t.stop())
     this.stream = null
     this.onInputBuffer = null
