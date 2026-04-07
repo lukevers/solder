@@ -31,11 +31,39 @@ export default function App() {
     setPlaying:           s.setPlaying,
   })))
 
-  const workerRef   = useRef<Worker | null>(null)
-  const pipelineRef = useRef<AudioPipeline | null>(null)
-  // Keep a ref to the latest input buffer so Simulate can use it
-  const inputBufRef = useRef<Float32Array>(new Float32Array(2048))
+  const workerRef    = useRef<Worker | null>(null)
+  const pipelineRef  = useRef<AudioPipeline | null>(null)
+  const inputBufRef  = useRef<Float32Array>(new Float32Array(2048))
   const [inputSnapshot, setInputSnapshot] = useState<Float32Array | null>(null)
+
+  // Refs so audio callbacks can read current circuit without stale closures
+  const nodesRef  = useRef(nodes)
+  const edgesRef  = useRef(edges)
+  const playingRef = useRef(playing)
+  // Prevents flooding the worker — only one simulation in flight at a time
+  const simInFlightRef = useRef(false)
+
+  useEffect(() => { nodesRef.current = nodes },   [nodes])
+  useEffect(() => { edgesRef.current = edges },   [edges])
+  useEffect(() => { playingRef.current = playing }, [playing])
+
+  // Send one buffer to the worker; called both manually and from the capture loop
+  const postToWorker = useCallback((buf: Float32Array) => {
+    if (!workerRef.current || simInFlightRef.current) return
+    try {
+      const netlist = compileNetlist(nodesRef.current, edgesRef.current, buf, 44100)
+      simInFlightRef.current = true
+      setSimulationStatus('running')
+      workerRef.current.postMessage(
+        { type: 'simulate', netlist, inputBuffer: buf },
+        [buf.buffer]
+      )
+    } catch (err) {
+      simInFlightRef.current = false
+      setSimulationStatus('error')
+      setSimulationError(err instanceof Error ? err.message : String(err))
+    }
+  }, [setSimulationStatus, setSimulationError])
 
   // Initialize worker
   useEffect(() => {
@@ -45,21 +73,30 @@ export default function App() {
     )
     workerRef.current.onmessage = (e: MessageEvent<SimulateResponse>) => {
       const msg = e.data
+      simInFlightRef.current = false
       if (msg.type === 'result') {
         setSimulationStatus('idle')
         setOutputBuffer(msg.outputBuffer)
         pipelineRef.current?.scheduleOutput(msg.outputBuffer)
+        // Auto-queue the next buffer if still playing
+        if (playingRef.current) {
+          const next = inputBufRef.current
+          inputBufRef.current = new Float32Array(2048)
+          setInputSnapshot(new Float32Array(next))
+          postToWorker(next)
+        }
       } else {
         setSimulationStatus('error')
         setSimulationError(msg.message)
       }
     }
     workerRef.current.onerror = (e: ErrorEvent) => {
+      simInFlightRef.current = false
       setSimulationStatus('error')
       setSimulationError(e.message ?? 'Worker crashed')
     }
     return () => { workerRef.current?.terminate() }
-  }, [setSimulationStatus, setOutputBuffer, setSimulationError])
+  }, [setSimulationStatus, setOutputBuffer, setSimulationError, postToWorker])
 
   // Initialize audio pipeline
   useEffect(() => {
@@ -81,6 +118,7 @@ export default function App() {
     if (!pipeline) return
 
     pipeline.stop()
+    simInFlightRef.current = false
     if (!playing) return
 
     function onInputBuffer(buf: Float32Array) {
@@ -102,23 +140,13 @@ export default function App() {
     }
   }, [playing, audioSource, setSimulationError, setSimulationStatus, setPlaying])
 
+  // Manual simulate: kick off the loop (or send a one-shot if not playing)
   const handleSimulate = useCallback(() => {
-    if (!workerRef.current) return
-    try {
-      const buf = inputBufRef.current
-      setInputSnapshot(new Float32Array(buf))  // copy before transfer
-      inputBufRef.current = new Float32Array(2048)   // replace FIRST
-      const netlist = compileNetlist(nodes, edges, buf, 44100)
-      setSimulationStatus('running')
-      workerRef.current.postMessage(
-        { type: 'simulate', netlist, inputBuffer: buf },
-        [buf.buffer]
-      )
-    } catch (err) {
-      setSimulationStatus('error')
-      setSimulationError(err instanceof Error ? err.message : String(err))
-    }
-  }, [nodes, edges, setSimulationStatus, setSimulationError])
+    const buf = inputBufRef.current
+    inputBufRef.current = new Float32Array(2048)
+    setInputSnapshot(new Float32Array(buf))
+    postToWorker(buf)
+  }, [postToWorker])
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
