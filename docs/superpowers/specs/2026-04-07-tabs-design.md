@@ -144,13 +144,24 @@ const initialState = {
 ### Logo row layout
 
 ```
-[ ⚡ solder ] [ | ] [ 📁 Examples ] [ | ] [ Circuit 1 ✕ ] [ Circuit 2 ✕ ] [ + ]  →  (fills remaining width)
+[ ⚡ solder ] [ | ] [ Circuit 1 ✕ ] [ Circuit 2 ✕ ] [ + ]  →  (fills remaining width)
 ```
 
-- Logo and Examples button are pinned left with a vertical divider after them.
+- Logo is pinned left with a vertical divider after it.
 - Tab strip grows to fill remaining width using `flex-1`.
 - Tabs overflow horizontally if there are many (no wrapping).
 - The ＋ button sits immediately after the last tab.
+
+### Palette row layout
+
+```
+[ 📁 Examples ] [ | ] [ IN ] [ OUT ] [ V+ ] [ GND ] [ R ] [ C ] [ POT ] [ D ] [ U ]  →  [ ▶ Simulate ]
+```
+
+- Examples button is left-aligned in the palette row.
+- A vertical divider separates Examples from the component palette buttons.
+- Simulate button remains right-aligned.
+- Examples loads its circuit into the **active tab** (replaces that tab's nodes/edges), consistent with the previous single-tab behaviour.
 
 ### Tab component (inline in Toolbar)
 
