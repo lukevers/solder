@@ -16,6 +16,7 @@ type StoreState = {
 	setEdges: (edges: Edge[]) => void;
 	selectNode: (id: string | null) => void;
 	updateNodeData: (id: string, data: ComponentNode['data']) => void;
+	loadCircuit: (nodes: ComponentNode[], edges: Edge[]) => void;
 
 	// simulation slice
 	simulationStatus: SimulationStatus;
@@ -81,6 +82,7 @@ export const useStore = create<StoreState>()((set) => ({
 				n.id === id ? ({ ...n, data } as ComponentNode) : n,
 			),
 		})),
+	loadCircuit: (nodes, edges) => set({ nodes, edges, selectedNodeId: null }),
 
 	// simulation
 	setSimulationStatus: (simulationStatus) => set({ simulationStatus }),

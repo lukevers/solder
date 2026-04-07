@@ -11,6 +11,8 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], string[]> = {
 	ground: ['gnd'],
 	audiin: ['out'],
 	audiout: ['in'],
+	diode: ['a', 'k'],
+	pot: ['ccw', 'wiper', 'cw'],
 };
 
 /** Port identifier: "${nodeId}|${handleId}" */
@@ -156,6 +158,17 @@ export function compileNetlist(
 	if (usedModels.has('TL072')) lines.push('.include TL072.lib');
 	if (usedModels.has('LM741')) lines.push('.include LM741.lib');
 
+	// Diode model statements — inline for standard models
+	const usedDiodeModels = new Set(
+		nodes.filter((n) => n.type === 'diode').map((n) => n.data.model),
+	);
+	if (usedDiodeModels.has('1N914'))
+		lines.push('.model 1N914 D(Is=2.52n Rs=.568 N=1.752 Cjo=4p M=.4 tt=20n)');
+	if (usedDiodeModels.has('1N4001'))
+		lines.push(
+			'.model 1N4001 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u)',
+		);
+
 	// Find input and output nodes
 	const inputNode = nodes.find((n) => n.type === 'audiin');
 	const outputNode = nodes.find((n) => n.type === 'audiout');
@@ -195,6 +208,22 @@ export function compileNetlist(
 		} else if (node.type === 'power') {
 			const pos = getNode(node.id, 'pos');
 			lines.push(`V${node.data.label} ${pos} 0 DC ${node.data.volts}`);
+		} else if (node.type === 'diode') {
+			const na = getNode(node.id, 'a');
+			const nk = getNode(node.id, 'k');
+			lines.push(`${node.data.label} ${na} ${nk} ${node.data.model}`);
+		} else if (node.type === 'pot') {
+			const nCcw = getNode(node.id, 'ccw');
+			const nWiper = getNode(node.id, 'wiper');
+			const nCw = getNode(node.id, 'cw');
+			const rLow = Math.max(node.data.ohms * (1 - node.data.position), 1);
+			const rHigh = Math.max(node.data.ohms * node.data.position, 1);
+			lines.push(
+				`${node.data.label}a ${nCcw} ${nWiper} ${formatResistance(rLow)}`,
+			);
+			lines.push(
+				`${node.data.label}b ${nWiper} ${nCw} ${formatResistance(rHigh)}`,
+			);
 		}
 		// ground, input, output nodes: no SPICE line needed
 	}

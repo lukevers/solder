@@ -1,7 +1,7 @@
 // src/components/Inspector.tsx
 
 import { useShallow } from 'zustand/react/shallow';
-import type { ComponentNode } from '../lib/types';
+import type { ComponentNode, DiodeData, PotData } from '../lib/types';
 import { useStore } from '../store';
 
 function Field({
@@ -161,6 +161,104 @@ function PowerInspector({
 	);
 }
 
+function DiodeInspector({
+	node,
+}: {
+	node: Extract<ComponentNode, { type: 'diode' }>;
+}) {
+	const updateNodeData = useStore((s) => s.updateNodeData);
+	const { label, model } = node.data;
+
+	return (
+		<>
+			<Field label="Label">
+				<input
+					className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+					value={label}
+					onChange={(e) =>
+						updateNodeData(node.id, { label: e.target.value, model })
+					}
+				/>
+			</Field>
+			<Field label="Model">
+				<select
+					className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+					value={model}
+					onChange={(e) =>
+						updateNodeData(node.id, {
+							label,
+							model: e.target.value as DiodeData['model'],
+						})
+					}
+				>
+					<option value="1N914">1N914</option>
+					<option value="1N4001">1N4001</option>
+				</select>
+			</Field>
+		</>
+	);
+}
+
+function PotInspector({
+	node,
+}: {
+	node: Extract<ComponentNode, { type: 'pot' }>;
+}) {
+	const updateNodeData = useStore((s) => s.updateNodeData);
+	const { label, ohms, position } = node.data;
+	const pct = Math.round(position * 100);
+
+	return (
+		<>
+			<Field label="Label">
+				<input
+					className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+					value={label}
+					onChange={(e) =>
+						updateNodeData(node.id, {
+							label: e.target.value,
+							ohms,
+							position,
+						} as PotData)
+					}
+				/>
+			</Field>
+			<Field label="Resistance (Ω)">
+				<input
+					type="number"
+					className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+					value={ohms}
+					min={1}
+					onChange={(e) =>
+						updateNodeData(node.id, {
+							label,
+							ohms: Number(e.target.value),
+							position,
+						} as PotData)
+					}
+				/>
+			</Field>
+			<Field label={`Position — ${pct}%`}>
+				<input
+					type="range"
+					className="w-full accent-purple-400"
+					min={0}
+					max={1}
+					step={0.01}
+					value={position}
+					onChange={(e) =>
+						updateNodeData(node.id, {
+							label,
+							ohms,
+							position: Number(e.target.value),
+						} as PotData)
+					}
+				/>
+			</Field>
+		</>
+	);
+}
+
 export function Inspector() {
 	const { nodes, selectedNodeId } = useStore(
 		useShallow((s) => ({
@@ -188,6 +286,8 @@ export function Inspector() {
 			{selected.type === 'capacitor' && <CapacitorInspector node={selected} />}
 			{selected.type === 'opamp' && <OpAmpInspector node={selected} />}
 			{selected.type === 'power' && <PowerInspector node={selected} />}
+			{selected.type === 'diode' && <DiodeInspector node={selected} />}
+			{selected.type === 'pot' && <PotInspector node={selected} />}
 		</div>
 	);
 }

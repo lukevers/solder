@@ -6,6 +6,7 @@ import {
 	applyNodeChanges,
 	Background,
 	BackgroundVariant,
+	ConnectionMode,
 	Controls,
 	type OnConnect,
 	type OnEdgesChange,
@@ -70,6 +71,7 @@ export function SchematicCanvas() {
 	return (
 		<div className="flex-1 bg-gray-950">
 			<ReactFlow
+				connectionMode={ConnectionMode.Loose}
 				nodes={nodes}
 				edges={signalEdges}
 				nodeTypes={nodeTypes}

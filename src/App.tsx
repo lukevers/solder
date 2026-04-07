@@ -3,7 +3,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { AudioPipeline } from './audio/pipeline';
 import { AudioControls } from './components/AudioControls';
+import { ExamplesPanel } from './components/ExamplesPanel';
 import { Inspector } from './components/Inspector';
+import { PedalPanel } from './components/PedalPanel';
 import { SchematicCanvas } from './components/SchematicCanvas';
 import { StatusBar } from './components/StatusBar';
 import { Toolbar } from './components/Toolbar';
@@ -38,6 +40,8 @@ export default function App() {
 			setPlaying: s.setPlaying,
 		})),
 	);
+
+	const [showExamples, setShowExamples] = useState(false);
 
 	const workerRef = useRef<Worker | null>(null);
 	const pipelineRef = useRef<AudioPipeline | null>(null);
@@ -190,12 +194,18 @@ export default function App() {
 
 	return (
 		<div className="flex flex-col h-screen overflow-hidden">
-			<Toolbar onSimulate={handleSimulate} />
+			<Toolbar
+				onSimulate={handleSimulate}
+				onToggleExamples={() => setShowExamples((v) => !v)}
+				showExamples={showExamples}
+			/>
 
 			<div className="flex flex-1 overflow-hidden">
+				{showExamples && <ExamplesPanel />}
 				<SchematicCanvas />
 
 				<div className="w-52 bg-gray-900 border-l border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
+					<PedalPanel />
 					<Inspector />
 					<div className="border-t border-gray-800" />
 					<div className="p-3">
