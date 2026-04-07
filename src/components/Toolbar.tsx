@@ -26,24 +26,6 @@ const PALETTE: Array<{
 		unique: true,
 	},
 	{
-		label: 'R',
-		tooltip: 'Resistor',
-		type: 'resistor',
-		defaultData: { label: 'R1', ohms: 10000 },
-	},
-	{
-		label: 'C',
-		tooltip: 'Capacitor',
-		type: 'capacitor',
-		defaultData: { label: 'C1', farads: 47e-9 },
-	},
-	{
-		label: 'U',
-		tooltip: 'Op-Amp',
-		type: 'opamp',
-		defaultData: { label: 'U1', model: 'TL072' },
-	},
-	{
 		label: 'V+',
 		tooltip: 'Power Supply',
 		type: 'power',
@@ -56,16 +38,34 @@ const PALETTE: Array<{
 		defaultData: { label: 'GND' },
 	},
 	{
-		label: 'D',
-		tooltip: 'Diode',
-		type: 'diode',
-		defaultData: { label: 'D1', model: '1N914' },
+		label: 'C',
+		tooltip: 'Capacitor',
+		type: 'capacitor',
+		defaultData: { label: 'C1', farads: 47e-9 },
+	},
+	{
+		label: 'R',
+		tooltip: 'Resistor',
+		type: 'resistor',
+		defaultData: { label: 'R1', ohms: 10000 },
 	},
 	{
 		label: 'POT',
 		tooltip: 'Potentiometer',
 		type: 'pot',
 		defaultData: { label: 'VR1', ohms: 100000, position: 0.5 },
+	},
+	{
+		label: 'D',
+		tooltip: 'Diode',
+		type: 'diode',
+		defaultData: { label: 'D1', model: '1N914' },
+	},
+	{
+		label: 'U',
+		tooltip: 'Op-Amp',
+		type: 'opamp',
+		defaultData: { label: 'U1', model: 'TL072' },
 	},
 ];
 
