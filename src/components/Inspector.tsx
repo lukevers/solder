@@ -1,8 +1,14 @@
 // src/components/Inspector.tsx
 
+import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { ComponentNode, DiodeData, PotData } from '../lib/types';
 import { useStore } from '../store';
+import {
+  CAP_MULTIPLIERS,
+  detectCapUnit,
+  type CapUnit,
+} from '../lib/units';
 
 function Field({
   label,
@@ -55,6 +61,8 @@ function ResistorInspector({
   );
 }
 
+const CAP_UNITS: CapUnit[] = ['pF', 'nF', 'µF', 'mF'];
+
 function CapacitorInspector({
   node,
 }: {
@@ -62,6 +70,9 @@ function CapacitorInspector({
 }) {
   const updateNodeData = useStore((s) => s.updateNodeData);
   const { label, farads } = node.data;
+  const [unit, setUnit] = useState<CapUnit>(() => detectCapUnit(farads));
+
+  const displayValue = +(farads * CAP_MULTIPLIERS[unit]).toPrecision(6);
 
   return (
     <>
@@ -74,17 +85,36 @@ function CapacitorInspector({
           }
         />
       </Field>
-      <Field label="Capacitance (F)">
-        <input
-          type="number"
-          step="1e-9"
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
-          value={farads}
-          min={1e-12}
-          onChange={(e) =>
-            updateNodeData(node.id, { label, farads: Number(e.target.value) })
-          }
-        />
+      <Field label="Capacitance">
+        <div className="flex rounded border border-gray-700 overflow-hidden">
+          <input
+            type="number"
+            className="flex-1 min-w-0 bg-gray-950 text-gray-200 px-2 py-1 text-xs font-mono focus:outline-none"
+            value={displayValue}
+            min={0}
+            onChange={(e) =>
+              updateNodeData(node.id, {
+                label,
+                farads: Number(e.target.value) / CAP_MULTIPLIERS[unit],
+              })
+            }
+          />
+          {CAP_UNITS.map((u) => (
+            <button
+              key={u}
+              type="button"
+              onClick={() => setUnit(u)}
+              className={[
+                'px-2 py-1 text-xs font-mono border-l border-gray-700',
+                u === unit
+                  ? 'bg-blue-950 text-blue-300'
+                  : 'bg-gray-950 text-gray-500 hover:text-gray-300',
+              ].join(' ')}
+            >
+              {u}
+            </button>
+          ))}
+        </div>
       </Field>
     </>
   );
