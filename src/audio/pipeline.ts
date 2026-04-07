@@ -115,6 +115,7 @@ export class AudioPipeline {
   }
 
   stop(): void {
+    void this.ctx?.suspend()
     this.scriptNode?.disconnect()
     this.scriptNode = null
     this.mediaSource?.disconnect()

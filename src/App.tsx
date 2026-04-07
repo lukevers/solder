@@ -31,23 +31,21 @@ export default function App() {
     setPlaying:           s.setPlaying,
   })))
 
-  const workerRef    = useRef<Worker | null>(null)
-  const pipelineRef  = useRef<AudioPipeline | null>(null)
-  const inputBufRef  = useRef<Float32Array>(new Float32Array(2048))
+  const workerRef   = useRef<Worker | null>(null)
+  const pipelineRef = useRef<AudioPipeline | null>(null)
+  const inputBufRef = useRef<Float32Array>(new Float32Array(2048))
   const [inputSnapshot, setInputSnapshot] = useState<Float32Array | null>(null)
 
   // Refs so audio callbacks can read current circuit without stale closures
-  const nodesRef  = useRef(nodes)
-  const edgesRef  = useRef(edges)
-  const playingRef = useRef(playing)
-  // Prevents flooding the worker — only one simulation in flight at a time
+  const nodesRef = useRef(nodes)
+  const edgesRef = useRef(edges)
+  // One simulation in flight at a time — prevents flooding the worker
   const simInFlightRef = useRef(false)
 
-  useEffect(() => { nodesRef.current = nodes },   [nodes])
-  useEffect(() => { edgesRef.current = edges },   [edges])
-  useEffect(() => { playingRef.current = playing }, [playing])
+  useEffect(() => { nodesRef.current = nodes }, [nodes])
+  useEffect(() => { edgesRef.current = edges }, [edges])
 
-  // Send one buffer to the worker; called both manually and from the capture loop
+  // Send one buffer to the worker
   const postToWorker = useCallback((buf: Float32Array) => {
     if (!workerRef.current || simInFlightRef.current) return
     try {
@@ -78,13 +76,6 @@ export default function App() {
         setSimulationStatus('idle')
         setOutputBuffer(msg.outputBuffer)
         pipelineRef.current?.scheduleOutput(msg.outputBuffer)
-        // Auto-queue the next buffer if still playing
-        if (playingRef.current) {
-          const next = inputBufRef.current
-          inputBufRef.current = new Float32Array(2048)
-          setInputSnapshot(new Float32Array(next))
-          postToWorker(next)
-        }
       } else {
         setSimulationStatus('error')
         setSimulationError(msg.message)
@@ -96,7 +87,7 @@ export default function App() {
       setSimulationError(e.message ?? 'Worker crashed')
     }
     return () => { workerRef.current?.terminate() }
-  }, [setSimulationStatus, setOutputBuffer, setSimulationError, postToWorker])
+  }, [setSimulationStatus, setOutputBuffer, setSimulationError])
 
   // Initialize audio pipeline
   useEffect(() => {
@@ -121,8 +112,14 @@ export default function App() {
     simInFlightRef.current = false
     if (!playing) return
 
+    // Called at ~46ms intervals by the ScriptProcessorNode.
+    // Triggers one simulation per chunk — rate-limited by the onaudioprocess clock.
     function onInputBuffer(buf: Float32Array) {
       inputBufRef.current = buf
+      const simBuf = buf
+      inputBufRef.current = new Float32Array(2048)
+      setInputSnapshot(new Float32Array(simBuf))
+      postToWorker(simBuf)
     }
 
     function onError(err: unknown) {
@@ -138,9 +135,9 @@ export default function App() {
     } else {
       pipeline.startLiveCapture(onInputBuffer).catch(onError)
     }
-  }, [playing, audioSource, setSimulationError, setSimulationStatus, setPlaying])
+  }, [playing, audioSource, postToWorker, setSimulationError, setSimulationStatus, setPlaying])
 
-  // Manual simulate: kick off the loop (or send a one-shot if not playing)
+  // Manual simulate: kick off a one-shot (useful when not playing)
   const handleSimulate = useCallback(() => {
     const buf = inputBufRef.current
     inputBufRef.current = new Float32Array(2048)
