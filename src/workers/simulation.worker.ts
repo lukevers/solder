@@ -12,32 +12,32 @@ import type { SimulateRequest, SimulateResponse } from '../lib/types';
  *   3. Return V(out) as a Float32Array
  */
 function runSimulation(
-	netlist: string,
-	inputBuffer: Float32Array,
+  netlist: string,
+  inputBuffer: Float32Array,
 ): Float32Array {
-	// TODO: replace with ngspice WASM call
-	// The netlist already has PWL data injected by compileNetlist().
-	// ngspice should return a voltage array for V(out_node).
-	console.log(
-		'[worker] stub — running passthrough. Netlist length:',
-		netlist.length,
-	);
-	return new Float32Array(inputBuffer);
+  // TODO: replace with ngspice WASM call
+  // The netlist already has PWL data injected by compileNetlist().
+  // ngspice should return a voltage array for V(out_node).
+  console.log(
+    '[worker] stub — running passthrough. Netlist length:',
+    netlist.length,
+  );
+  return new Float32Array(inputBuffer);
 }
 
 self.onmessage = (e: MessageEvent<SimulateRequest>) => {
-	const { type, netlist, inputBuffer } = e.data;
-	if (type !== 'simulate') return;
+  const { type, netlist, inputBuffer } = e.data;
+  if (type !== 'simulate') return;
 
-	try {
-		const outputBuffer = runSimulation(netlist, inputBuffer);
-		const response: SimulateResponse = { type: 'result', outputBuffer };
-		self.postMessage(response, [outputBuffer.buffer]);
-	} catch (err) {
-		const response: SimulateResponse = {
-			type: 'error',
-			message: err instanceof Error ? err.message : String(err),
-		};
-		self.postMessage(response);
-	}
+  try {
+    const outputBuffer = runSimulation(netlist, inputBuffer);
+    const response: SimulateResponse = { type: 'result', outputBuffer };
+    self.postMessage(response, [outputBuffer.buffer]);
+  } catch (err) {
+    const response: SimulateResponse = {
+      type: 'error',
+      message: err instanceof Error ? err.message : String(err),
+    };
+    self.postMessage(response);
+  }
 };

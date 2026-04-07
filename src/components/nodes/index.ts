@@ -11,13 +11,13 @@ import { PowerNode } from './PowerNode';
 import { ResistorNode } from './ResistorNode';
 
 export const nodeTypes = {
-	resistor: ResistorNode,
-	capacitor: CapacitorNode,
-	opamp: OpAmpNode,
-	power: PowerNode,
-	ground: GroundNode,
-	audiin: InputNode,
-	audiout: OutputNode,
-	diode: DiodeNode,
-	pot: PotNode,
+  resistor: ResistorNode,
+  capacitor: CapacitorNode,
+  opamp: OpAmpNode,
+  power: PowerNode,
+  ground: GroundNode,
+  audiin: InputNode,
+  audiout: OutputNode,
+  diode: DiodeNode,
+  pot: PotNode,
 };

@@ -32,7 +32,9 @@
       "Bash(xargs ls:*)",
       "Bash(grep -n \"input\\\\|output\" /Users/lukevers/code/solder/src/store/*.ts)",
       "Bash(pnpm test:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(pnpm biome:*)"
     ]
   }
 }

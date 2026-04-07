@@ -14,31 +14,31 @@ export type DiodeData = { label: string; model: '1N914' | '1N4001' };
 export type PotData = { label: string; ohms: number; position: number };
 
 export type ComponentNode =
-	| { id: string; type: 'resistor'; position: XYPosition; data: ResistorData }
-	| { id: string; type: 'capacitor'; position: XYPosition; data: CapacitorData }
-	| { id: string; type: 'opamp'; position: XYPosition; data: OpAmpData }
-	| { id: string; type: 'power'; position: XYPosition; data: PowerData }
-	| { id: string; type: 'ground'; position: XYPosition; data: GroundData }
-	| { id: string; type: 'audiin'; position: XYPosition; data: InputData }
-	| { id: string; type: 'audiout'; position: XYPosition; data: OutputData }
-	| { id: string; type: 'diode'; position: XYPosition; data: DiodeData }
-	| { id: string; type: 'pot'; position: XYPosition; data: PotData };
+  | { id: string; type: 'resistor'; position: XYPosition; data: ResistorData }
+  | { id: string; type: 'capacitor'; position: XYPosition; data: CapacitorData }
+  | { id: string; type: 'opamp'; position: XYPosition; data: OpAmpData }
+  | { id: string; type: 'power'; position: XYPosition; data: PowerData }
+  | { id: string; type: 'ground'; position: XYPosition; data: GroundData }
+  | { id: string; type: 'audiin'; position: XYPosition; data: InputData }
+  | { id: string; type: 'audiout'; position: XYPosition; data: OutputData }
+  | { id: string; type: 'diode'; position: XYPosition; data: DiodeData }
+  | { id: string; type: 'pot'; position: XYPosition; data: PotData };
 
 export type CircuitState = {
-	nodes: ComponentNode[];
-	edges: Edge[];
+  nodes: Array<ComponentNode>;
+  edges: Array<Edge>;
 };
 
 // Worker message types
 export type SimulateRequest = {
-	type: 'simulate';
-	netlist: string;
-	inputBuffer: Float32Array;
+  type: 'simulate';
+  netlist: string;
+  inputBuffer: Float32Array;
 };
 
 export type SimulateResponse =
-	| { type: 'result'; outputBuffer: Float32Array }
-	| { type: 'error'; message: string };
+  | { type: 'result'; outputBuffer: Float32Array }
+  | { type: 'error'; message: string };
 
 // Audio source
 export type AudioSource = { type: 'sample'; name: string } | { type: 'live' };
