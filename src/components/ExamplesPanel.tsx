@@ -1,6 +1,20 @@
 // src/components/ExamplesPanel.tsx
+
 import { EXAMPLES } from '../lib/examples/rat';
+import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
+
+const GRID = 20;
+
+function snapNodes(nodes: ComponentNode[]): ComponentNode[] {
+	return nodes.map((n) => ({
+		...n,
+		position: {
+			x: Math.round(n.position.x / GRID) * GRID,
+			y: Math.round(n.position.y / GRID) * GRID,
+		},
+	}));
+}
 
 export function ExamplesPanel() {
 	const loadCircuit = useStore((s) => s.loadCircuit);
@@ -36,7 +50,7 @@ export function ExamplesPanel() {
 						</div>
 						<button
 							type="button"
-							onClick={() => loadCircuit(ex.nodes, ex.edges)}
+							onClick={() => loadCircuit(snapNodes(ex.nodes), ex.edges)}
 							className="w-full bg-blue-900 hover:bg-blue-800 border border-blue-700 text-blue-200 text-xs px-2 py-1.5 rounded font-mono transition-colors"
 						>
 							Load circuit
