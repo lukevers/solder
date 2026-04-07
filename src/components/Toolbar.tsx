@@ -145,7 +145,8 @@ export function Toolbar({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleExport() {
-    const activeTab = tabs.find((t) => t.id === activeTabId)!;
+    const activeTab = tabs.find((t) => t.id === activeTabId);
+    if (!activeTab) return;
     const json = exportCircuit(activeTab);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);

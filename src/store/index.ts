@@ -244,16 +244,28 @@ export const useStore = create<StoreState>()(
           ),
         })),
       loadCircuit: (nodes, edges) =>
-        set((s) => ({
-          past: [
-            ...s.past.slice(-MAX_HISTORY),
-            { nodes: s.nodes, edges: s.edges },
-          ],
-          future: [],
-          nodes,
-          edges,
-          selectedNodeId: null,
-        })),
+        set((s) => {
+          const updatedTabs = s.tabs.map((t) =>
+            t.id === s.activeTabId
+              ? {
+                  ...t,
+                  nodes,
+                  edges,
+                  selectedNodeId: null,
+                  past: [],
+                  future: [],
+                }
+              : t,
+          );
+          return {
+            nodes,
+            edges,
+            selectedNodeId: null,
+            past: [],
+            future: [],
+            tabs: updatedTabs,
+          };
+        }),
 
       // history
       pushHistory: () =>
