@@ -1,5 +1,6 @@
 // src/components/Inspector.tsx
 import { useStore } from '../store'
+import { useShallow } from 'zustand/react/shallow'
 import type { ComponentNode } from '../lib/types'
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -119,10 +120,10 @@ function PowerInspector({ node }: { node: Extract<ComponentNode, { type: 'power'
 }
 
 export function Inspector() {
-  const { nodes, selectedNodeId } = useStore((s) => ({
+  const { nodes, selectedNodeId } = useStore(useShallow((s) => ({
     nodes: s.nodes,
     selectedNodeId: s.selectedNodeId,
-  }))
+  })))
 
   const selected = nodes.find((n) => n.id === selectedNodeId)
 

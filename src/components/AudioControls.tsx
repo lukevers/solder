@@ -1,17 +1,18 @@
 // src/components/AudioControls.tsx
 import { useStore } from '../store'
+import { useShallow } from 'zustand/react/shallow'
 
 const SAMPLES = ['guitar', 'bass']
 
 export function AudioControls() {
-  const { audioSource, volume, playing, setAudioSource, setVolume, setPlaying } = useStore((s) => ({
+  const { audioSource, volume, playing, setAudioSource, setVolume, setPlaying } = useStore(useShallow((s) => ({
     audioSource:    s.audioSource,
     volume:         s.volume,
     playing:        s.playing,
     setAudioSource: s.setAudioSource,
     setVolume:      s.setVolume,
     setPlaying:     s.setPlaying,
-  }))
+  })))
 
   return (
     <div className="p-3">

@@ -15,16 +15,17 @@ import {
 import '@xyflow/react/dist/style.css'
 import { nodeTypes } from './nodes'
 import { useStore } from '../store'
+import { useShallow } from 'zustand/react/shallow'
 import type { ComponentNode } from '../lib/types'
 
 export function SchematicCanvas() {
-  const { nodes, edges, setNodes, setEdges, selectNode } = useStore((s) => ({
+  const { nodes, edges, setNodes, setEdges, selectNode } = useStore(useShallow((s) => ({
     nodes: s.nodes,
     edges: s.edges,
     setNodes: s.setNodes,
     setEdges: s.setEdges,
     selectNode: s.selectNode,
-  }))
+  })))
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes(applyNodeChanges(changes, nodes) as ComponentNode[]),

@@ -1,12 +1,13 @@
 // src/components/StatusBar.tsx
 import { useStore } from '../store'
+import { useShallow } from 'zustand/react/shallow'
 
 export function StatusBar() {
-  const { nodes, simulationStatus, simulationError } = useStore((s) => ({
+  const { nodes, simulationStatus, simulationError } = useStore(useShallow((s) => ({
     nodes: s.nodes,
     simulationStatus: s.simulationStatus,
     simulationError: s.simulationError,
-  }))
+  })))
 
   const statusColor =
     simulationStatus === 'error'   ? 'text-red-400' :

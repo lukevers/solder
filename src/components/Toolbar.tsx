@@ -1,5 +1,6 @@
 // src/components/Toolbar.tsx
 import { useStore } from '../store'
+import { useShallow } from 'zustand/react/shallow'
 import type { ComponentNode } from '../lib/types'
 
 const PALETTE: Array<{
@@ -21,10 +22,10 @@ type ToolbarProps = {
 }
 
 export function Toolbar({ onSimulate }: ToolbarProps) {
-  const { addNode, simulationStatus } = useStore((s) => ({
+  const { addNode, simulationStatus } = useStore(useShallow((s) => ({
     addNode: s.addNode,
     simulationStatus: s.simulationStatus,
-  }))
+  })))
 
   function handleAdd(item: (typeof PALETTE)[number]) {
     const offset = Math.random() * 100

@@ -7,6 +7,7 @@ import { WaveformDisplay } from './components/WaveformDisplay'
 import { AudioControls }   from './components/AudioControls'
 import { StatusBar }       from './components/StatusBar'
 import { useStore }        from './store'
+import { useShallow }      from 'zustand/react/shallow'
 import { AudioPipeline }   from './audio/pipeline'
 import { compileNetlist }  from './lib/netlist'
 import type { SimulateResponse } from './lib/types'
@@ -17,7 +18,7 @@ export default function App() {
     audioSource, volume, playing,
     setSimulationStatus, setOutputBuffer, setSimulationError,
     setPlaying,
-  } = useStore((s) => ({
+  } = useStore(useShallow((s) => ({
     nodes:                s.nodes,
     edges:                s.edges,
     outputBuffer:         s.outputBuffer,
@@ -28,7 +29,7 @@ export default function App() {
     setOutputBuffer:      s.setOutputBuffer,
     setSimulationError:   s.setSimulationError,
     setPlaying:           s.setPlaying,
-  }))
+  })))
 
   const workerRef   = useRef<Worker | null>(null)
   const pipelineRef = useRef<AudioPipeline | null>(null)
