@@ -1,5 +1,6 @@
 // src/components/Toolbar.tsx
 
+import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
@@ -80,13 +81,32 @@ export function Toolbar({
   onToggleExamples,
   showExamples,
 }: ToolbarProps) {
-  const { addNode, simulationStatus, nodes } = useStore(
+  const {
+    addNode,
+    simulationStatus,
+    nodes,
+    tabs,
+    activeTabId,
+    addTab,
+    closeTab,
+    switchTab,
+    renameTab,
+  } = useStore(
     useShallow((s) => ({
       addNode: s.addNode,
       simulationStatus: s.simulationStatus,
       nodes: s.nodes,
+      tabs: s.tabs,
+      activeTabId: s.activeTabId,
+      addTab: s.addTab,
+      closeTab: s.closeTab,
+      switchTab: s.switchTab,
+      renameTab: s.renameTab,
     })),
   );
+
+  const [editingTabId, setEditingTabId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState('');
 
   const hasAudiin = nodes.some((n) => n.type === 'audiin');
   const hasAudiout = nodes.some((n) => n.type === 'audiout');
@@ -101,15 +121,94 @@ export function Toolbar({
     } as ComponentNode);
   }
 
+  function startRename(id: string, currentName: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    setEditingTabId(id);
+    setEditingName(currentName);
+  }
+
+  function commitRename(id: string) {
+    if (editingName.trim()) renameTab(id, editingName.trim());
+    setEditingTabId(null);
+  }
+
   return (
     <div className="flex flex-col flex-shrink-0 bg-gray-900 border-b border-gray-800">
-      {/* Top row: logo + examples */}
-      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-gray-800">
-        <span className="text-blue-400 font-bold text-sm mr-2">⚡ solder</span>
+      {/* Logo row: logo + tab strip */}
+      <div className="flex items-stretch h-8 border-b border-gray-800">
+        {/* Logo */}
+        <div className="flex items-center px-3 border-r border-gray-800 flex-shrink-0">
+          <span className="text-blue-400 font-bold text-sm">⚡ solder</span>
+        </div>
+
+        {/* Tab strip */}
+        <div className="flex items-stretch flex-1 overflow-x-auto">
+          {tabs.map((tab) => {
+            const isActive = tab.id === activeTabId;
+            return (
+              <div
+                key={tab.id}
+                onClick={() => switchTab(tab.id)}
+                className={`flex items-center gap-1.5 px-3 border-r border-gray-800 cursor-pointer text-xs font-sans transition-colors flex-shrink-0 ${
+                  isActive
+                    ? 'bg-gray-800 text-gray-100 border-b-2 border-blue-500 -mb-px'
+                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                }`}
+              >
+                {editingTabId === tab.id ? (
+                  <input
+                    value={editingName}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    onBlur={() => commitRename(tab.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitRename(tab.id);
+                      else if (e.key === 'Escape') setEditingTabId(null);
+                      e.stopPropagation();
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="bg-gray-700 text-gray-100 text-xs px-1 rounded w-24 outline-none border border-blue-500"
+                  />
+                ) : (
+                  <span onDoubleClick={(e) => startRename(tab.id, tab.name, e)}>
+                    {tab.name}
+                  </span>
+                )}
+                {tabs.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeTab(tab.id);
+                    }}
+                    className="text-gray-600 hover:text-gray-300 leading-none transition-colors"
+                    aria-label={`Close ${tab.name}`}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            );
+          })}
+
+          {/* New tab button */}
+          <button
+            type="button"
+            onClick={addTab}
+            className="px-3 text-gray-500 hover:text-gray-200 hover:bg-gray-800 text-sm transition-colors flex-shrink-0"
+            aria-label="New tab"
+          >
+            ＋
+          </button>
+        </div>
+      </div>
+
+      {/* Palette row: Examples + divider + components + Simulate */}
+      <div className="flex items-center gap-2 px-3 py-1.5">
+        {/* Examples button */}
         <button
           type="button"
           onClick={onToggleExamples}
-          className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded transition-colors font-sans ${
+          className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 ${
             showExamples
               ? 'bg-indigo-950 border border-indigo-700 text-indigo-300'
               : 'bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200'
@@ -130,17 +229,18 @@ export function Toolbar({
           </svg>
           Examples
         </button>
-      </div>
 
-      {/* Bottom row: component palette + simulate */}
-      <div className="flex items-center gap-2 px-3 py-1.5">
+        {/* Divider */}
+        <div className="w-px h-5 bg-gray-700 flex-shrink-0" />
+
+        {/* Component palette */}
         {PALETTE.map((item) => {
           const disabled =
             item.unique &&
             ((item.type === 'audiin' && hasAudiin) ||
               (item.type === 'audiout' && hasAudiout));
           return (
-            <div key={item.type} className="relative group">
+            <div key={item.type} className="relative group flex-shrink-0">
               <button
                 type="button"
                 onClick={() => handleAdd(item)}
@@ -156,7 +256,10 @@ export function Toolbar({
             </div>
           );
         })}
+
         <div className="flex-1" />
+
+        {/* Simulate */}
         <button
           type="button"
           onClick={onSimulate}
