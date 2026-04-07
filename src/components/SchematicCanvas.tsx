@@ -8,6 +8,7 @@ import {
 	BackgroundVariant,
 	ConnectionMode,
 	Controls,
+	type NodeDragHandler,
 	type OnConnect,
 	type OnEdgesChange,
 	type OnNodesChange,
@@ -22,15 +23,17 @@ import { edgeTypes } from './edges';
 import { nodeTypes } from './nodes';
 
 export function SchematicCanvas() {
-	const { nodes, edges, setNodes, setEdges, selectNode } = useStore(
-		useShallow((s) => ({
-			nodes: s.nodes,
-			edges: s.edges,
-			setNodes: s.setNodes,
-			setEdges: s.setEdges,
-			selectNode: s.selectNode,
-		})),
-	);
+	const { nodes, edges, setNodes, setEdges, selectNode, pushHistory } =
+		useStore(
+			useShallow((s) => ({
+				nodes: s.nodes,
+				edges: s.edges,
+				setNodes: s.setNodes,
+				setEdges: s.setEdges,
+				selectNode: s.selectNode,
+				pushHistory: s.pushHistory,
+			})),
+		);
 
 	const onNodesChange: OnNodesChange = useCallback(
 		(changes) => setNodes(applyNodeChanges(changes, nodes) as ComponentNode[]),
@@ -38,14 +41,24 @@ export function SchematicCanvas() {
 	);
 
 	const onEdgesChange: OnEdgesChange = useCallback(
-		(changes) => setEdges(applyEdgeChanges(changes, edges)),
-		[edges, setEdges],
+		(changes) => {
+			if (changes.some((c) => c.type === 'remove')) pushHistory();
+			setEdges(applyEdgeChanges(changes, edges));
+		},
+		[edges, setEdges, pushHistory],
 	);
 
 	const onConnect: OnConnect = useCallback(
-		(connection) => setEdges(addEdge(connection, edges)),
-		[edges, setEdges],
+		(connection) => {
+			pushHistory();
+			setEdges(addEdge(connection, edges));
+		},
+		[edges, setEdges, pushHistory],
 	);
+
+	const onNodeDragStart: NodeDragHandler = useCallback(() => {
+		pushHistory();
+	}, [pushHistory]);
 
 	const onPaneClick = useCallback(() => selectNode(null), [selectNode]);
 
@@ -79,6 +92,7 @@ export function SchematicCanvas() {
 				onNodesChange={onNodesChange}
 				onEdgesChange={onEdgesChange}
 				onConnect={onConnect}
+				onNodeDragStart={onNodeDragStart}
 				onPaneClick={onPaneClick}
 				snapToGrid
 				snapGrid={[20, 20]}

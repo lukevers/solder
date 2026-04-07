@@ -6,6 +6,10 @@ import type { AudioSource, ComponentNode } from '../lib/types';
 
 type SimulationStatus = 'idle' | 'running' | 'error';
 
+type Snapshot = { nodes: ComponentNode[]; edges: Edge[] };
+
+const MAX_HISTORY = 50;
+
 type StoreState = {
 	// circuit slice
 	nodes: ComponentNode[];
@@ -17,6 +21,13 @@ type StoreState = {
 	selectNode: (id: string | null) => void;
 	updateNodeData: (id: string, data: ComponentNode['data']) => void;
 	loadCircuit: (nodes: ComponentNode[], edges: Edge[]) => void;
+
+	// history slice
+	past: Snapshot[];
+	future: Snapshot[];
+	pushHistory: () => void;
+	undo: () => void;
+	redo: () => void;
 
 	// simulation slice
 	simulationStatus: SimulationStatus;
@@ -60,6 +71,8 @@ const initialState = {
 		},
 	] as Edge[],
 	selectedNodeId: null,
+	past: [] as Snapshot[],
+	future: [] as Snapshot[],
 	simulationStatus: 'idle' as SimulationStatus,
 	outputBuffer: null,
 	simulationError: null,
@@ -68,21 +81,66 @@ const initialState = {
 	playing: false,
 };
 
-export const useStore = create<StoreState>()((set) => ({
+export const useStore = create<StoreState>()((set, get) => ({
 	...initialState,
 
 	// circuit
-	addNode: (node) => set((s) => ({ nodes: [...s.nodes, node] })),
+	addNode: (node) =>
+		set((s) => ({
+			past: [...s.past.slice(-MAX_HISTORY), { nodes: s.nodes, edges: s.edges }],
+			future: [],
+			nodes: [...s.nodes, node],
+		})),
 	setNodes: (nodes) => set({ nodes }),
 	setEdges: (edges) => set({ edges }),
 	selectNode: (selectedNodeId) => set({ selectedNodeId }),
 	updateNodeData: (id, data) =>
 		set((s) => ({
+			past: [...s.past.slice(-MAX_HISTORY), { nodes: s.nodes, edges: s.edges }],
+			future: [],
 			nodes: s.nodes.map((n) =>
 				n.id === id ? ({ ...n, data } as ComponentNode) : n,
 			),
 		})),
-	loadCircuit: (nodes, edges) => set({ nodes, edges, selectedNodeId: null }),
+	loadCircuit: (nodes, edges) =>
+		set((s) => ({
+			past: [...s.past.slice(-MAX_HISTORY), { nodes: s.nodes, edges: s.edges }],
+			future: [],
+			nodes,
+			edges,
+			selectedNodeId: null,
+		})),
+
+	// history
+	pushHistory: () =>
+		set((s) => ({
+			past: [...s.past.slice(-MAX_HISTORY), { nodes: s.nodes, edges: s.edges }],
+			future: [],
+		})),
+	undo: () => {
+		const { past, nodes, edges, future } = get();
+		if (past.length === 0) return;
+		const prev = past[past.length - 1];
+		set({
+			past: past.slice(0, -1),
+			future: [{ nodes, edges }, ...future],
+			nodes: prev.nodes,
+			edges: prev.edges,
+			selectedNodeId: null,
+		});
+	},
+	redo: () => {
+		const { past, nodes, edges, future } = get();
+		if (future.length === 0) return;
+		const next = future[0];
+		set({
+			past: [...past, { nodes, edges }],
+			future: future.slice(1),
+			nodes: next.nodes,
+			edges: next.edges,
+			selectedNodeId: null,
+		});
+	},
 
 	// simulation
 	setSimulationStatus: (simulationStatus) => set({ simulationStatus }),

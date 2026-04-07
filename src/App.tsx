@@ -26,6 +26,8 @@ export default function App() {
 		setOutputBuffer,
 		setSimulationError,
 		setPlaying,
+		undo,
+		redo,
 	} = useStore(
 		useShallow((s) => ({
 			nodes: s.nodes,
@@ -38,10 +40,28 @@ export default function App() {
 			setOutputBuffer: s.setOutputBuffer,
 			setSimulationError: s.setSimulationError,
 			setPlaying: s.setPlaying,
+			undo: s.undo,
+			redo: s.redo,
 		})),
 	);
 
 	const [showExamples, setShowExamples] = useState(false);
+
+	useEffect(() => {
+		function onKeyDown(e: KeyboardEvent) {
+			const mod = e.metaKey || e.ctrlKey;
+			if (!mod) return;
+			if (e.key === 'z' && !e.shiftKey) {
+				e.preventDefault();
+				undo();
+			} else if ((e.key === 'z' && e.shiftKey) || e.key === 'y') {
+				e.preventDefault();
+				redo();
+			}
+		}
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [undo, redo]);
 
 	const workerRef = useRef<Worker | null>(null);
 	const pipelineRef = useRef<AudioPipeline | null>(null);
