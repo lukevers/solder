@@ -1,6 +1,6 @@
 // src/components/Toolbar.tsx
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
@@ -107,6 +107,11 @@ export function Toolbar({
 
   const [editingTabId, setEditingTabId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+  const renameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingTabId) renameInputRef.current?.focus();
+  }, [editingTabId]);
 
   const hasAudiin = nodes.some((n) => n.type === 'audiin');
   const hasAudiout = nodes.some((n) => n.type === 'audiout');
@@ -149,7 +154,7 @@ export function Toolbar({
               <div
                 key={tab.id}
                 onClick={() => switchTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 border-r border-gray-800 cursor-pointer text-xs font-sans transition-colors flex-shrink-0 ${
+                className={`flex items-center gap-1.5 px-3 cursor-pointer text-xs font-sans transition-colors flex-shrink-0 ${
                   isActive
                     ? 'bg-gray-800 text-gray-100 border-b-2 border-blue-500 -mb-px'
                     : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
@@ -157,6 +162,7 @@ export function Toolbar({
               >
                 {editingTabId === tab.id ? (
                   <input
+                    ref={renameInputRef}
                     value={editingName}
                     onChange={(e) => setEditingName(e.target.value)}
                     onBlur={() => commitRename(tab.id)}
