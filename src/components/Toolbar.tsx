@@ -38,16 +38,16 @@ const PALETTE: Array<{
 		defaultData: { label: 'GND' },
 	},
 	{
-		label: 'C',
-		tooltip: 'Capacitor',
-		type: 'capacitor',
-		defaultData: { label: 'C1', farads: 47e-9 },
-	},
-	{
 		label: 'R',
 		tooltip: 'Resistor',
 		type: 'resistor',
 		defaultData: { label: 'R1', ohms: 10000 },
+	},
+	{
+		label: 'C',
+		tooltip: 'Capacitor',
+		type: 'capacitor',
+		defaultData: { label: 'C1', farads: 47e-9 },
 	},
 	{
 		label: 'POT',
