@@ -15,7 +15,6 @@ import {
   ReactFlow,
 } from '@xyflow/react';
 import { useCallback, useMemo } from 'react';
-import '@xyflow/react/dist/style.css';
 import { useShallow } from 'zustand/react/shallow';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
