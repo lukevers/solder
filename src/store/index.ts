@@ -2,6 +2,7 @@
 
 import type { Edge } from '@xyflow/react';
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { AudioSource, ComponentNode } from '../lib/types';
 
 type SimulationStatus = 'idle' | 'running' | 'error';
@@ -10,7 +11,83 @@ type Snapshot = { nodes: Array<ComponentNode>; edges: Array<Edge> };
 
 const MAX_HISTORY = 50;
 
+export type Tab = {
+  id: string;
+  name: string;
+  nodes: Array<ComponentNode>;
+  edges: Array<Edge>;
+  selectedNodeId: string | null;
+  past: Array<Snapshot>;
+  future: Array<Snapshot>;
+};
+
+function defaultTab(name: string): Tab {
+  const id = crypto.randomUUID();
+  return {
+    id,
+    name,
+    nodes: [
+      {
+        id: `${id}-in`,
+        type: 'audiin',
+        position: { x: 100, y: 200 },
+        data: { label: 'IN' },
+      },
+      {
+        id: `${id}-out`,
+        type: 'audiout',
+        position: { x: 400, y: 200 },
+        data: { label: 'OUT' },
+      },
+    ] as Array<ComponentNode>,
+    edges: [
+      {
+        id: `${id}-edge`,
+        source: `${id}-in`,
+        sourceHandle: 'out',
+        target: `${id}-out`,
+        targetHandle: 'in',
+      },
+    ] as Array<Edge>,
+    selectedNodeId: null,
+    past: [],
+    future: [],
+  };
+}
+
+function nextTabName(tabs: Array<Tab>): string {
+  let max = 0;
+  for (const t of tabs) {
+    const m = t.name.match(/^Circuit (\d+)$/);
+    if (m) max = Math.max(max, Number.parseInt(m[1], 10));
+  }
+  return `Circuit ${max + 1}`;
+}
+
+function flushActive(s: StoreState): Array<Tab> {
+  return s.tabs.map((t) =>
+    t.id === s.activeTabId
+      ? {
+          ...t,
+          nodes: s.nodes,
+          edges: s.edges,
+          selectedNodeId: s.selectedNodeId,
+          past: s.past,
+          future: s.future,
+        }
+      : t,
+  );
+}
+
 type StoreState = {
+  // tab slice
+  tabs: Array<Tab>;
+  activeTabId: string;
+  addTab: () => void;
+  switchTab: (id: string) => void;
+  closeTab: (id: string) => void;
+  renameTab: (id: string, name: string) => void;
+
   // circuit slice
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
@@ -46,109 +123,198 @@ type StoreState = {
   setPlaying: (playing: boolean) => void;
 };
 
+const firstTab = defaultTab('Circuit 1');
+
 const initialState = {
-  nodes: [
-    {
-      id: 'default-in',
-      type: 'audiin',
-      position: { x: 100, y: 200 },
-      data: { label: 'IN' },
-    },
-    {
-      id: 'default-out',
-      type: 'audiout',
-      position: { x: 400, y: 200 },
-      data: { label: 'OUT' },
-    },
-  ] as Array<ComponentNode>,
-  edges: [
-    {
-      id: 'default-edge',
-      source: 'default-in',
-      sourceHandle: 'out',
-      target: 'default-out',
-      targetHandle: 'in',
-    },
-  ] as Array<Edge>,
-  selectedNodeId: null,
+  // tab slice
+  tabs: [firstTab] as Array<Tab>,
+  activeTabId: firstTab.id,
+
+  // circuit slice (seeded from first tab)
+  nodes: firstTab.nodes,
+  edges: firstTab.edges,
+  selectedNodeId: null as string | null,
   past: [] as Array<Snapshot>,
   future: [] as Array<Snapshot>,
+
+  // simulation slice
   simulationStatus: 'idle' as SimulationStatus,
-  outputBuffer: null,
-  simulationError: null,
+  outputBuffer: null as Float32Array | null,
+  simulationError: null as string | null,
+
+  // audio slice
   audioSource: { type: 'sample', name: 'guitar' } as AudioSource,
   volume: 0.7,
   playing: false,
 };
 
-export const useStore = create<StoreState>()((set, get) => ({
-  ...initialState,
+export const useStore = create<StoreState>()(
+  persist(
+    (set, get) => ({
+      ...initialState,
 
-  // circuit
-  addNode: (node) =>
-    set((s) => ({
-      past: [...s.past.slice(-MAX_HISTORY), { nodes: s.nodes, edges: s.edges }],
-      future: [],
-      nodes: [...s.nodes, node],
-    })),
-  setNodes: (nodes) => set({ nodes }),
-  setEdges: (edges) => set({ edges }),
-  selectNode: (selectedNodeId) => set({ selectedNodeId }),
-  updateNodeData: (id, data) =>
-    set((s) => ({
-      past: [...s.past.slice(-MAX_HISTORY), { nodes: s.nodes, edges: s.edges }],
-      future: [],
-      nodes: s.nodes.map((n) =>
-        n.id === id ? ({ ...n, data } as ComponentNode) : n,
-      ),
-    })),
-  loadCircuit: (nodes, edges) =>
-    set((s) => ({
-      past: [...s.past.slice(-MAX_HISTORY), { nodes: s.nodes, edges: s.edges }],
-      future: [],
-      nodes,
-      edges,
-      selectedNodeId: null,
-    })),
+      // tabs
+      addTab: () =>
+        set((s) => {
+          const flushed = flushActive(s);
+          const newTab = defaultTab(nextTabName(flushed));
+          return {
+            tabs: [...flushed, newTab],
+            activeTabId: newTab.id,
+            nodes: newTab.nodes,
+            edges: newTab.edges,
+            selectedNodeId: null,
+            past: [],
+            future: [],
+          };
+        }),
+      switchTab: (id) =>
+        set((s) => {
+          if (s.activeTabId === id) return s;
+          const flushed = flushActive(s);
+          const target = flushed.find((t) => t.id === id)!;
+          return {
+            tabs: flushed,
+            activeTabId: id,
+            nodes: target.nodes,
+            edges: target.edges,
+            selectedNodeId: target.selectedNodeId,
+            past: target.past,
+            future: target.future,
+          };
+        }),
+      closeTab: (id) =>
+        set((s) => {
+          const flushed = flushActive(s);
+          const remaining = flushed.filter((t) => t.id !== id);
+          if (remaining.length === 0) {
+            const newTab = defaultTab('Circuit 1');
+            return {
+              tabs: [newTab],
+              activeTabId: newTab.id,
+              nodes: newTab.nodes,
+              edges: newTab.edges,
+              selectedNodeId: null,
+              past: [],
+              future: [],
+            };
+          }
+          if (s.activeTabId === id) {
+            const closedIdx = flushed.findIndex((t) => t.id === id);
+            const next = remaining[Math.min(closedIdx, remaining.length - 1)];
+            return {
+              tabs: remaining,
+              activeTabId: next.id,
+              nodes: next.nodes,
+              edges: next.edges,
+              selectedNodeId: next.selectedNodeId,
+              past: next.past,
+              future: next.future,
+            };
+          }
+          return { tabs: remaining };
+        }),
+      renameTab: (id, name) =>
+        set((s) => ({
+          tabs: s.tabs.map((t) => (t.id === id ? { ...t, name } : t)),
+        })),
 
-  // history
-  pushHistory: () =>
-    set((s) => ({
-      past: [...s.past.slice(-MAX_HISTORY), { nodes: s.nodes, edges: s.edges }],
-      future: [],
-    })),
-  undo: () => {
-    const { past, nodes, edges, future } = get();
-    if (past.length === 0) return;
-    const prev = past[past.length - 1];
-    set({
-      past: past.slice(0, -1),
-      future: [{ nodes, edges }, ...future],
-      nodes: prev.nodes,
-      edges: prev.edges,
-      selectedNodeId: null,
-    });
-  },
-  redo: () => {
-    const { past, nodes, edges, future } = get();
-    if (future.length === 0) return;
-    const next = future[0];
-    set({
-      past: [...past, { nodes, edges }],
-      future: future.slice(1),
-      nodes: next.nodes,
-      edges: next.edges,
-      selectedNodeId: null,
-    });
-  },
+      // circuit
+      addNode: (node) =>
+        set((s) => ({
+          past: [
+            ...s.past.slice(-MAX_HISTORY),
+            { nodes: s.nodes, edges: s.edges },
+          ],
+          future: [],
+          nodes: [...s.nodes, node],
+        })),
+      setNodes: (nodes) => set({ nodes }),
+      setEdges: (edges) => set({ edges }),
+      selectNode: (selectedNodeId) => set({ selectedNodeId }),
+      updateNodeData: (id, data) =>
+        set((s) => ({
+          past: [
+            ...s.past.slice(-MAX_HISTORY),
+            { nodes: s.nodes, edges: s.edges },
+          ],
+          future: [],
+          nodes: s.nodes.map((n) =>
+            n.id === id ? ({ ...n, data } as ComponentNode) : n,
+          ),
+        })),
+      loadCircuit: (nodes, edges) =>
+        set((s) => ({
+          past: [
+            ...s.past.slice(-MAX_HISTORY),
+            { nodes: s.nodes, edges: s.edges },
+          ],
+          future: [],
+          nodes,
+          edges,
+          selectedNodeId: null,
+        })),
 
-  // simulation
-  setSimulationStatus: (simulationStatus) => set({ simulationStatus }),
-  setOutputBuffer: (outputBuffer) => set({ outputBuffer }),
-  setSimulationError: (simulationError) => set({ simulationError }),
+      // history
+      pushHistory: () =>
+        set((s) => ({
+          past: [
+            ...s.past.slice(-MAX_HISTORY),
+            { nodes: s.nodes, edges: s.edges },
+          ],
+          future: [],
+        })),
+      undo: () => {
+        const { past, nodes, edges, future } = get();
+        if (past.length === 0) return;
+        const prev = past[past.length - 1];
+        set({
+          past: past.slice(0, -1),
+          future: [{ nodes, edges }, ...future],
+          nodes: prev.nodes,
+          edges: prev.edges,
+          selectedNodeId: null,
+        });
+      },
+      redo: () => {
+        const { past, nodes, edges, future } = get();
+        if (future.length === 0) return;
+        const next = future[0];
+        set({
+          past: [...past, { nodes, edges }],
+          future: future.slice(1),
+          nodes: next.nodes,
+          edges: next.edges,
+          selectedNodeId: null,
+        });
+      },
 
-  // audio
-  setAudioSource: (audioSource) => set({ audioSource }),
-  setVolume: (volume) => set({ volume }),
-  setPlaying: (playing) => set({ playing }),
-}));
+      // simulation
+      setSimulationStatus: (simulationStatus) => set({ simulationStatus }),
+      setOutputBuffer: (outputBuffer) => set({ outputBuffer }),
+      setSimulationError: (simulationError) => set({ simulationError }),
+
+      // audio
+      setAudioSource: (audioSource) => set({ audioSource }),
+      setVolume: (volume) => set({ volume }),
+      setPlaying: (playing) => set({ playing }),
+    }),
+    {
+      name: 'solder-tabs',
+      partialize: (state) => ({
+        tabs: state.tabs,
+        activeTabId: state.activeTabId,
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        const active = state.tabs.find((t) => t.id === state.activeTabId);
+        if (!active) return;
+        state.nodes = active.nodes;
+        state.edges = active.edges;
+        state.selectedNodeId = active.selectedNodeId;
+        state.past = active.past;
+        state.future = active.future;
+      },
+    },
+  ),
+);
