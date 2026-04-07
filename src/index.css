@@ -25,6 +25,30 @@ body {
 	animation: edge-flow 1.2s linear infinite;
 }
 
+/* ReactFlow controls — dark theme */
+.react-flow__controls {
+	background: #111827;
+	border: 1px solid #374151;
+	border-radius: 6px;
+	box-shadow: none;
+}
+
+.react-flow__controls-button {
+	background: #111827;
+	border-bottom: 1px solid #1f2937;
+	fill: #9ca3af;
+	color: #9ca3af;
+}
+
+.react-flow__controls-button:hover {
+	background: #1f2937;
+	fill: #e5e7eb;
+}
+
+.react-flow__controls-button:last-child {
+	border-bottom: none;
+}
+
 .react-flow__node {
 	background: transparent;
 	border: none;

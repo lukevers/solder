@@ -106,9 +106,7 @@ export function SchematicCanvas() {
           lineWidth={0.5}
           color="#1f2937"
         />
-        <Controls
-          style={{ background: '#161b22', border: '1px solid #30363d' }}
-        />
+        <Controls />
       </ReactFlow>
     </div>
   );
