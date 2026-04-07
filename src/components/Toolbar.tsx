@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { exportCircuit, importCircuit } from '../lib/circuit-io';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
 
@@ -91,6 +92,8 @@ export function Toolbar({
     closeTab,
     switchTab,
     renameTab,
+    loadCircuit,
+    setSimulationError,
   } = useStore(
     useShallow((s) => ({
       addNode: s.addNode,
@@ -102,6 +105,8 @@ export function Toolbar({
       closeTab: s.closeTab,
       switchTab: s.switchTab,
       renameTab: s.renameTab,
+      loadCircuit: s.loadCircuit,
+      setSimulationError: s.setSimulationError,
     })),
   );
 
@@ -135,6 +140,43 @@ export function Toolbar({
   function commitRename(id: string) {
     if (editingName.trim()) renameTab(id, editingName.trim());
     setEditingTabId(null);
+  }
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleExport() {
+    const activeTab = tabs.find((t) => t.id === activeTabId)!;
+    const json = exportCircuit(activeTab);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const safeName =
+      activeTab.name.replace(/\s+/g, '_').replace(/[^\w\-_.]/g, '') ||
+      'circuit';
+    a.href = url;
+    a.download = `${safeName}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const {
+        name,
+        nodes: importedNodes,
+        edges: importedEdges,
+      } = importCircuit(text);
+      loadCircuit(importedNodes, importedEdges);
+      renameTab(activeTabId, name);
+    } catch (err) {
+      setSimulationError(err instanceof Error ? err.message : String(err));
+    }
   }
 
   return (
@@ -210,6 +252,14 @@ export function Toolbar({
 
       {/* Palette row: Examples + divider + components + Simulate */}
       <div className="flex items-center gap-2 px-3 py-1.5">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          onChange={handleImport}
+          style={{ display: 'none' }}
+        />
+
         {/* Examples button */}
         <button
           type="button"
@@ -234,6 +284,54 @@ export function Toolbar({
             />
           </svg>
           Examples
+        </button>
+
+        {/* Export button */}
+        <button
+          type="button"
+          onClick={handleExport}
+          className="flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
+        >
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M5 1v6M2 5l3 3 3-3M1 9h8"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          Export
+        </button>
+
+        {/* Import button */}
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
+        >
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M5 9V3M2 5l3-3 3 3M1 1h8"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          Import
         </button>
 
         {/* Divider */}
