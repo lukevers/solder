@@ -63,12 +63,25 @@ export function Toolbar({
 			<button
 				type="button"
 				onClick={onToggleExamples}
-				className={`border text-xs px-2 py-1 rounded font-mono transition-colors ${
+				className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded transition-colors font-sans ${
 					showExamples
-						? 'bg-blue-900 border-blue-700 text-blue-200'
-						: 'bg-gray-800 hover:bg-gray-700 border-gray-700 text-gray-300'
+						? 'bg-indigo-950 border border-indigo-700 text-indigo-300'
+						: 'bg-transparent border border-transparent hover:border-gray-700 text-gray-400 hover:text-gray-200'
 				}`}
 			>
+				<svg
+					width="12"
+					height="12"
+					viewBox="0 0 12 12"
+					fill="none"
+					aria-hidden="true"
+				>
+					<path
+						d="M1 3.5A1.5 1.5 0 012.5 2h2.086a1 1 0 01.707.293L6 3h3.5A1.5 1.5 0 0111 4.5v4A1.5 1.5 0 019.5 10h-7A1.5 1.5 0 011 8.5v-5z"
+						fill="currentColor"
+						fillOpacity="0.7"
+					/>
+				</svg>
 				Examples
 			</button>
 			<div className="w-px h-5 bg-gray-700" />
