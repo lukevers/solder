@@ -101,6 +101,7 @@ export function SchematicCanvas() {
 				<Background
 					variant={BackgroundVariant.Lines}
 					gap={20}
+					offset={10}
 					lineWidth={0.5}
 					color="#1f2937"
 				/>
