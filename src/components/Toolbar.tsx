@@ -9,7 +9,22 @@ const PALETTE: Array<{
 	tooltip: string;
 	type: ComponentNode['type'];
 	defaultData: ComponentNode['data'];
+	unique?: boolean;
 }> = [
+	{
+		label: 'IN',
+		tooltip: 'Audio Input',
+		type: 'audiin',
+		defaultData: { label: 'IN' },
+		unique: true,
+	},
+	{
+		label: 'OUT',
+		tooltip: 'Audio Output',
+		type: 'audiout',
+		defaultData: { label: 'OUT' },
+		unique: true,
+	},
 	{
 		label: 'R',
 		tooltip: 'Resistor',
@@ -41,18 +56,6 @@ const PALETTE: Array<{
 		defaultData: { label: 'GND' },
 	},
 	{
-		label: 'IN',
-		tooltip: 'Audio Input',
-		type: 'audiin',
-		defaultData: { label: 'IN' },
-	},
-	{
-		label: 'OUT',
-		tooltip: 'Audio Output',
-		type: 'audiout',
-		defaultData: { label: 'OUT' },
-	},
-	{
 		label: 'D',
 		tooltip: 'Diode',
 		type: 'diode',
@@ -77,12 +80,16 @@ export function Toolbar({
 	onToggleExamples,
 	showExamples,
 }: ToolbarProps) {
-	const { addNode, simulationStatus } = useStore(
+	const { addNode, simulationStatus, nodes } = useStore(
 		useShallow((s) => ({
 			addNode: s.addNode,
 			simulationStatus: s.simulationStatus,
+			nodes: s.nodes,
 		})),
 	);
+
+	const hasAudiin = nodes.some((n) => n.type === 'audiin');
+	const hasAudiout = nodes.some((n) => n.type === 'audiout');
 
 	function handleAdd(item: (typeof PALETTE)[number]) {
 		const offset = Math.random() * 100;
@@ -123,21 +130,28 @@ export function Toolbar({
 				Examples
 			</button>
 			<div className="w-px h-5 bg-gray-700" />
-			{PALETTE.map((item) => (
-				<div key={item.type} className="relative group">
-					<button
-						type="button"
-						onClick={() => handleAdd(item)}
-						className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs px-2 py-1 rounded font-mono transition-colors"
-					>
-						{item.label}
-					</button>
-					<div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
-						<div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-						{item.tooltip}
+			{PALETTE.map((item) => {
+				const disabled =
+					item.unique &&
+					((item.type === 'audiin' && hasAudiin) ||
+						(item.type === 'audiout' && hasAudiout));
+				return (
+					<div key={item.type} className="relative group">
+						<button
+							type="button"
+							onClick={() => handleAdd(item)}
+							disabled={disabled}
+							className="bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed border border-gray-700 text-gray-300 text-xs px-2 py-1 rounded font-mono transition-colors"
+						>
+							{item.label}
+						</button>
+						<div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+							<div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+							{disabled ? `${item.tooltip} already placed` : item.tooltip}
+						</div>
 					</div>
-				</div>
-			))}
+				);
+			})}
 			<div className="flex-1" />
 			<button
 				type="button"
