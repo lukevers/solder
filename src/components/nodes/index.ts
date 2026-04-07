@@ -1,18 +1,19 @@
 // src/components/nodes/index.ts
-import { ResistorNode  } from './ResistorNode'
-import { CapacitorNode } from './CapacitorNode'
-import { OpAmpNode     } from './OpAmpNode'
-import { PowerNode     } from './PowerNode'
-import { GroundNode    } from './GroundNode'
-import { InputNode     } from './InputNode'
-import { OutputNode    } from './OutputNode'
+
+import { CapacitorNode } from './CapacitorNode';
+import { GroundNode } from './GroundNode';
+import { InputNode } from './InputNode';
+import { OpAmpNode } from './OpAmpNode';
+import { OutputNode } from './OutputNode';
+import { PowerNode } from './PowerNode';
+import { ResistorNode } from './ResistorNode';
 
 export const nodeTypes = {
-  resistor:  ResistorNode,
-  capacitor: CapacitorNode,
-  opamp:     OpAmpNode,
-  power:     PowerNode,
-  ground:    GroundNode,
-  input:     InputNode,
-  output:    OutputNode,
-}
+	resistor: ResistorNode,
+	capacitor: CapacitorNode,
+	opamp: OpAmpNode,
+	power: PowerNode,
+	ground: GroundNode,
+	audiin: InputNode,
+	audiout: OutputNode,
+};

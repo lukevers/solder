@@ -16,7 +16,23 @@
       "Bash(npx tailwindcss:*)",
       "Bash(./node_modules/.bin/tailwindcss init:*)",
       "Bash(npx tsc:*)",
-      "Bash(node -e \"const pkg = require\\(''./package.json''\\); console.log\\(''react:'', pkg.dependencies.react\\); console.log\\(''vitest:'', pkg.devDependencies.vitest\\); console.log\\(''tailwind:'', pkg.devDependencies.tailwindcss\\)\")"
+      "Bash(node -e \"const pkg = require\\(''./package.json''\\); console.log\\(''react:'', pkg.dependencies.react\\); console.log\\(''vitest:'', pkg.devDependencies.vitest\\); console.log\\(''tailwind:'', pkg.devDependencies.tailwindcss\\)\")",
+      "Bash(npx vitest:*)",
+      "Bash(node -e \"const r = require\\(''@xyflow/react''\\); console.log\\(Object.keys\\(r\\).filter\\(k => k.toLowerCase\\(\\).includes\\(''position''\\) || k.toLowerCase\\(\\).includes\\(''xy''\\)\\)\\)\")",
+      "Bash(npx tsx:*)",
+      "Bash(grep -r XYPosition node_modules/@xyflow/react/dist/ --include=*.d.ts -l)",
+      "Bash(cd:* && git:*)",
+      "Bash(node -e \":*)",
+      "Bash(grep -n \"useStore\" src/components/*.tsx src/App.tsx)",
+      "Bash(npx biome:*)",
+      "Bash(ls eslint.config*)",
+      "Bash(cd:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(pnpm --version)",
+      "Bash(xargs ls:*)",
+      "Bash(grep -n \"input\\\\|output\" /Users/lukevers/code/solder/src/store/*.ts)",
+      "Bash(pnpm test:*)",
+      "Bash(python3:*)"
     ]
   }
 }
