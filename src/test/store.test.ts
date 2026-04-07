@@ -1,8 +1,9 @@
 // src/test/store.test.ts
 import { beforeEach, describe, expect, it } from 'vitest';
+import type { Tab } from '../store';
 import { useStore } from '../store';
 
-const RESET_TAB = {
+const RESET_TAB: Tab = {
   id: 'test-tab-1',
   name: 'Circuit 1',
   nodes: [],
@@ -199,5 +200,18 @@ describe('tabsSlice', () => {
     const { tabs } = useStore.getState();
     useStore.getState().renameTab(tabs[0].id, 'My Fuzz');
     expect(useStore.getState().tabs[0].name).toBe('My Fuzz');
+  });
+
+  it('switchTab with current active id is a no-op', () => {
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    const { activeTabId, nodes } = useStore.getState();
+    useStore.getState().switchTab(activeTabId);
+    expect(useStore.getState().nodes).toEqual(nodes);
+    expect(useStore.getState().activeTabId).toBe(activeTabId);
   });
 });

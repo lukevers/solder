@@ -170,7 +170,7 @@ export const useStore = create<StoreState>()(
         }),
       switchTab: (id) =>
         set((s) => {
-          if (s.activeTabId === id) return s;
+          if (s.activeTabId === id) return {};
           const flushed = flushActive(s);
           const target = flushed.find((t) => t.id === id)!;
           return {
