@@ -66,7 +66,7 @@ export function Toolbar({
 				className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded transition-colors font-sans ${
 					showExamples
 						? 'bg-indigo-950 border border-indigo-700 text-indigo-300'
-						: 'bg-transparent border border-transparent hover:border-gray-700 text-gray-400 hover:text-gray-200'
+						: 'bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200'
 				}`}
 			>
 				<svg
