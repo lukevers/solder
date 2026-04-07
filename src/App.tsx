@@ -87,14 +87,20 @@ export default function App() {
       inputBufRef.current = buf
     }
 
-    if (audioSource.type === 'sample') {
-      pipeline.loadSample(audioSource.name).then(() => {
-        pipeline.startSampleCapture(audioSource.name, onInputBuffer)
-      })
-    } else {
-      pipeline.startLiveCapture(onInputBuffer)
+    function onError(err: unknown) {
+      setSimulationError(err instanceof Error ? err.message : String(err))
+      setSimulationStatus('error')
+      setPlaying(false)
     }
-  }, [playing, audioSource])
+
+    if (audioSource.type === 'sample') {
+      pipeline.loadSample(audioSource.name)
+        .then(() => pipeline.startSampleCapture(audioSource.name, onInputBuffer))
+        .catch(onError)
+    } else {
+      pipeline.startLiveCapture(onInputBuffer).catch(onError)
+    }
+  }, [playing, audioSource, setSimulationError, setSimulationStatus, setPlaying])
 
   const handleSimulate = useCallback(() => {
     if (!workerRef.current) return

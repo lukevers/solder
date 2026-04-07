@@ -45,6 +45,7 @@ export class AudioPipeline {
    */
   startSampleCapture(name: string, onInputBuffer: OnInputBuffer): void {
     if (!this.ctx) throw new Error('Pipeline not initialized')
+    this.ctx.resume()
     const buf = this.sampleBuffers.get(name)
     if (!buf) throw new Error(`Sample "${name}" not loaded`)
 
@@ -74,6 +75,7 @@ export class AudioPipeline {
   /** Start capturing from the microphone/live input. */
   async startLiveCapture(onInputBuffer: OnInputBuffer): Promise<void> {
     if (!this.ctx) throw new Error('Pipeline not initialized')
+    await this.ctx.resume()
     this.onInputBuffer = onInputBuffer
     this.stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
     this.mediaSource = this.ctx.createMediaStreamSource(this.stream)
@@ -95,6 +97,7 @@ export class AudioPipeline {
   /** Queue a processed output buffer for playback. */
   scheduleOutput(outputBuffer: Float32Array): void {
     if (!this.ctx || !this.gainNode) return
+    this.ctx.resume()
     const audioBuffer = this.ctx.createBuffer(1, outputBuffer.length, this.ctx.sampleRate)
     audioBuffer.copyToChannel(outputBuffer, 0)
     const source = this.ctx.createBufferSource()
