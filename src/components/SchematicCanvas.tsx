@@ -80,12 +80,14 @@ export function SchematicCanvas() {
 				onEdgesChange={onEdgesChange}
 				onConnect={onConnect}
 				onPaneClick={onPaneClick}
+				snapToGrid
+				snapGrid={[20, 20]}
 				fitView
 			>
 				<Background
-					variant={BackgroundVariant.Dots}
+					variant={BackgroundVariant.Lines}
 					gap={20}
-					size={0.8}
+					lineWidth={0.5}
 					color="#1f2937"
 				/>
 				<Controls
