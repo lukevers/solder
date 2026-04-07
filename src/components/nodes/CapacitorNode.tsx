@@ -14,7 +14,7 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
 		<div
 			onClick={() => selectNode(id)}
 			className="relative flex items-center justify-center cursor-pointer"
-			style={{ width: 60, height: 44 }}
+			style={{ width: 60, height: 40 }}
 		>
 			<Handle
 				type="target"
@@ -22,12 +22,12 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
 				id="a"
 				style={{ background: '#4b5563' }}
 			/>
-			<svg width="60" height="44" viewBox="0 0 60 44">
+			<svg width="60" height="40" viewBox="0 0 60 40">
 				<line
 					x1="0"
-					y1="22"
+					y1="20"
 					x2="22"
-					y2="22"
+					y2="20"
 					stroke={selected ? '#60a5fa' : '#9ca3af'}
 					strokeWidth="1.5"
 				/>
@@ -35,7 +35,7 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
 					x1="22"
 					y1="8"
 					x2="22"
-					y2="36"
+					y2="32"
 					stroke={selected ? '#60a5fa' : '#e5e7eb'}
 					strokeWidth="2.5"
 				/>
@@ -43,21 +43,21 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
 					x1="28"
 					y1="8"
 					x2="28"
-					y2="36"
+					y2="32"
 					stroke={selected ? '#60a5fa' : '#e5e7eb'}
 					strokeWidth="2.5"
 				/>
 				<line
 					x1="28"
-					y1="22"
+					y1="20"
 					x2="60"
-					y2="22"
+					y2="20"
 					stroke={selected ? '#60a5fa' : '#9ca3af'}
 					strokeWidth="1.5"
 				/>
 				<text
 					x="25"
-					y="10"
+					y="6"
 					textAnchor="middle"
 					fill="#7ee787"
 					fontSize="8"
@@ -67,7 +67,7 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
 				</text>
 				<text
 					x="30"
-					y="42"
+					y="38"
 					textAnchor="middle"
 					fill="#6b7280"
 					fontSize="7"

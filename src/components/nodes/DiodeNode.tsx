@@ -12,7 +12,7 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
 		<div
 			onClick={() => selectNode(id)}
 			className="relative flex items-center justify-center cursor-pointer"
-			style={{ width: 60, height: 36 }}
+			style={{ width: 60, height: 40 }}
 		>
 			<Handle
 				type="target"
@@ -20,27 +20,27 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
 				id="a"
 				style={{ background: '#4b5563' }}
 			/>
-			<svg width="60" height="36" viewBox="0 0 60 36">
+			<svg width="60" height="40" viewBox="0 0 60 40">
 				<line
 					x1="0"
-					y1="18"
+					y1="20"
 					x2="16"
-					y2="18"
+					y2="20"
 					stroke={stroke}
 					strokeWidth="1.5"
 				/>
 				<polygon
-					points="16,8 16,28 36,18"
+					points="16,10 16,30 36,20"
 					fill={selected ? '#1e3a5f' : '#1f2937'}
 					stroke={stroke}
 					strokeWidth="1.5"
 				/>
-				<line x1="36" y1="8" x2="36" y2="28" stroke={stroke} strokeWidth="2" />
+				<line x1="36" y1="10" x2="36" y2="30" stroke={stroke} strokeWidth="2" />
 				<line
 					x1="36"
-					y1="18"
+					y1="20"
 					x2="60"
-					y2="18"
+					y2="20"
 					stroke={stroke}
 					strokeWidth="1.5"
 				/>
@@ -56,7 +56,7 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
 				</text>
 				<text
 					x="28"
-					y="34"
+					y="38"
 					textAnchor="middle"
 					fill="#6b7280"
 					fontSize="6"

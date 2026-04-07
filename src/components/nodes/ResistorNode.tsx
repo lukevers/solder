@@ -11,7 +11,7 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
 		<div
 			onClick={() => selectNode(id)}
 			className="relative flex items-center justify-center cursor-pointer"
-			style={{ width: 80, height: 36 }}
+			style={{ width: 80, height: 40 }}
 		>
 			<Handle
 				type="target"
@@ -19,32 +19,32 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
 				id="a"
 				style={{ background: '#4b5563' }}
 			/>
-			<svg width="80" height="36" viewBox="0 0 80 36">
+			<svg width="80" height="40" viewBox="0 0 80 40">
 				<line
 					x1="0"
-					y1="18"
+					y1="20"
 					x2="14"
-					y2="18"
+					y2="20"
 					stroke={selected ? '#60a5fa' : '#9ca3af'}
 					strokeWidth="1.5"
 				/>
 				<polyline
-					points="14,18 18,8 24,28 30,8 36,28 42,8 48,28 54,18 66,18"
+					points="14,20 18,10 24,30 30,10 36,30 42,10 48,30 54,20 66,20"
 					fill="none"
 					stroke={selected ? '#60a5fa' : '#e5e7eb'}
 					strokeWidth="1.5"
 				/>
 				<line
 					x1="66"
-					y1="18"
+					y1="20"
 					x2="80"
-					y2="18"
+					y2="20"
 					stroke={selected ? '#60a5fa' : '#9ca3af'}
 					strokeWidth="1.5"
 				/>
 				<text
 					x="40"
-					y="10"
+					y="8"
 					textAnchor="middle"
 					fill="#7ee787"
 					fontSize="8"
@@ -54,7 +54,7 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
 				</text>
 				<text
 					x="40"
-					y="34"
+					y="38"
 					textAnchor="middle"
 					fill="#6b7280"
 					fontSize="7"

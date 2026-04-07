@@ -11,11 +11,11 @@ export function PowerNode({ id, data, selected }: NodeProps) {
 		<div
 			onClick={() => selectNode(id)}
 			className="relative flex items-center justify-center cursor-pointer"
-			style={{ width: 48, height: 40 }}
+			style={{ width: 40, height: 40 }}
 		>
-			<svg width="48" height="40" viewBox="0 0 48 40">
+			<svg width="40" height="40" viewBox="0 0 40 40">
 				<circle
-					cx="24"
+					cx="20"
 					cy="20"
 					r="14"
 					fill="#1f2937"
@@ -23,7 +23,7 @@ export function PowerNode({ id, data, selected }: NodeProps) {
 					strokeWidth="1.5"
 				/>
 				<text
-					x="24"
+					x="20"
 					y="16"
 					textAnchor="middle"
 					fill="#facc15"
@@ -33,7 +33,7 @@ export function PowerNode({ id, data, selected }: NodeProps) {
 					{d.label}
 				</text>
 				<text
-					x="24"
+					x="20"
 					y="27"
 					textAnchor="middle"
 					fill="#facc15"

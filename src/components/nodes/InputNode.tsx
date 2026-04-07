@@ -11,22 +11,22 @@ export function InputNode({ id, data, selected }: NodeProps) {
 		<div
 			onClick={() => selectNode(id)}
 			className="relative flex items-center justify-center cursor-pointer"
-			style={{ width: 52, height: 32 }}
+			style={{ width: 60, height: 40 }}
 		>
-			<svg width="52" height="32" viewBox="0 0 52 32">
+			<svg width="60" height="40" viewBox="0 0 60 40">
 				<rect
 					x="2"
 					y="4"
-					width="44"
-					height="24"
+					width="56"
+					height="32"
 					rx="4"
 					fill="#1f2937"
 					stroke={selected ? '#60a5fa' : '#3b82f6'}
 					strokeWidth="1.5"
 				/>
 				<text
-					x="24"
-					y="20"
+					x="30"
+					y="24"
 					textAnchor="middle"
 					fill="#3b82f6"
 					fontSize="10"
