@@ -6,8 +6,11 @@ import type { ComponentNode, DiodeData, PotData } from '../lib/types';
 import { useStore } from '../store';
 import {
   CAP_MULTIPLIERS,
+  RES_MULTIPLIERS,
   detectCapUnit,
+  detectResUnit,
   type CapUnit,
+  type ResUnit,
 } from '../lib/units';
 
 function Field({
@@ -27,6 +30,8 @@ function Field({
   );
 }
 
+const RES_UNITS: ResUnit[] = ['Ω', 'kΩ', 'MΩ'];
+
 function ResistorInspector({
   node,
 }: {
@@ -34,6 +39,9 @@ function ResistorInspector({
 }) {
   const updateNodeData = useStore((s) => s.updateNodeData);
   const { label, ohms } = node.data;
+  const [unit, setUnit] = useState<ResUnit>(() => detectResUnit(ohms));
+
+  const displayValue = +(ohms * RES_MULTIPLIERS[unit]).toPrecision(6);
 
   return (
     <>
@@ -46,16 +54,36 @@ function ResistorInspector({
           }
         />
       </Field>
-      <Field label="Resistance (Ω)">
-        <input
-          type="number"
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
-          value={ohms}
-          min={1}
-          onChange={(e) =>
-            updateNodeData(node.id, { label, ohms: Number(e.target.value) })
-          }
-        />
+      <Field label="Resistance">
+        <div className="flex rounded border border-gray-700 overflow-hidden">
+          <input
+            type="number"
+            className="flex-1 min-w-0 bg-gray-950 text-gray-200 px-2 py-1 text-xs font-mono focus:outline-none"
+            value={displayValue}
+            min={0}
+            onChange={(e) =>
+              updateNodeData(node.id, {
+                label,
+                ohms: Number(e.target.value) / RES_MULTIPLIERS[unit],
+              })
+            }
+          />
+          {RES_UNITS.map((u) => (
+            <button
+              key={u}
+              type="button"
+              onClick={() => setUnit(u)}
+              className={[
+                'px-2 py-1 text-xs font-mono border-l border-gray-700',
+                u === unit
+                  ? 'bg-blue-950 text-blue-300'
+                  : 'bg-gray-950 text-gray-500 hover:text-gray-300',
+              ].join(' ')}
+            >
+              {u}
+            </button>
+          ))}
+        </div>
       </Field>
     </>
   );
