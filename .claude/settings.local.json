@@ -34,7 +34,9 @@
       "Bash(pnpm test:*)",
       "Bash(python3:*)",
       "Bash(pnpm tsc:*)",
-      "Bash(pnpm biome:*)"
+      "Bash(pnpm biome:*)",
+      "Bash(/Users/lukevers/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.6/scripts/start-server.sh --project-dir /Users/lukevers/code/solder)",
+      "Bash(/Users/lukevers/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh --project-dir /Users/lukevers/code/solder)"
     ]
   }
 }
