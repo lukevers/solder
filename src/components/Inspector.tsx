@@ -340,8 +340,8 @@ export function Inspector() {
       <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">
         Inspector · {selected.type}
       </div>
-      {selected.type === 'resistor' && <ResistorInspector node={selected} />}
-      {selected.type === 'capacitor' && <CapacitorInspector node={selected} />}
+      {selected.type === 'resistor' && <ResistorInspector key={selected.id} node={selected} />}
+      {selected.type === 'capacitor' && <CapacitorInspector key={selected.id} node={selected} />}
       {selected.type === 'opamp' && <OpAmpInspector node={selected} />}
       {selected.type === 'power' && <PowerInspector node={selected} />}
       {selected.type === 'diode' && <DiodeInspector node={selected} />}
