@@ -20,9 +20,11 @@ beforeEach(() => {
     nodes: [],
     edges: [],
     selectedNodeId: null,
+    selectedEdgeId: null,
     past: [],
     future: [],
     simulationStatus: 'idle',
+    simulationElapsed: null,
     outputBuffer: null,
     simulationError: null,
     audioSource: { type: 'sample', name: 'guitar' },
@@ -355,5 +357,97 @@ describe('clearOutputBuffer', () => {
     expect(useStore.getState().outputBuffer).toBeNull();
     expect(useStore.getState().simulationElapsed).toBeNull();
     expect(useStore.getState().simulationStatus).toBe('idle');
+  });
+});
+
+describe('setEdges invalidation', () => {
+  it('setEdges clears outputBuffer and resets simulationStatus', () => {
+    useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]));
+    useStore.getState().setSimulationStatus('running');
+    useStore.getState().setEdges([]);
+    expect(useStore.getState().outputBuffer).toBeNull();
+    expect(useStore.getState().simulationStatus).toBe('idle');
+  });
+});
+
+describe('undo / redo invalidation', () => {
+  it('undo clears outputBuffer', () => {
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]));
+    useStore.getState().undo();
+    expect(useStore.getState().outputBuffer).toBeNull();
+  });
+
+  it('redo clears outputBuffer', () => {
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    useStore.getState().undo();
+    useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]));
+    useStore.getState().redo();
+    expect(useStore.getState().outputBuffer).toBeNull();
+  });
+});
+
+describe('tab switching preserves state', () => {
+  it('switching tabs preserves nodes in both tabs', () => {
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    const tab1Id = useStore.getState().activeTabId;
+    const tab1NodeCount = useStore.getState().nodes.length;
+
+    useStore.getState().addTab();
+    const tab2Id = useStore.getState().activeTabId;
+    expect(tab2Id).not.toBe(tab1Id);
+    // New tab starts with default nodes (INPUT + OUTPUT)
+    expect(useStore.getState().nodes).toHaveLength(2);
+
+    // Switch back to tab 1
+    useStore.getState().switchTab(tab1Id);
+    expect(useStore.getState().nodes).toHaveLength(tab1NodeCount);
+    expect(useStore.getState().nodes.find((n) => n.id === 'r1')).toBeDefined();
+
+    // Switch to tab 2 — still has default nodes
+    useStore.getState().switchTab(tab2Id);
+    expect(useStore.getState().nodes).toHaveLength(2);
+  });
+});
+
+describe('loadCircuit', () => {
+  it('replaces nodes and edges, clears history and output', () => {
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    useStore.getState().setOutputBuffer(new Float32Array([1]));
+
+    const newNodes = [
+      {
+        id: 'c1',
+        type: 'capacitor' as const,
+        position: { x: 0, y: 0 },
+        data: { label: 'C1', farads: 1e-6 },
+      },
+    ];
+    useStore.getState().loadCircuit(newNodes, []);
+    expect(useStore.getState().nodes).toEqual(newNodes);
+    expect(useStore.getState().edges).toEqual([]);
+    expect(useStore.getState().outputBuffer).toBeNull();
+    expect(useStore.getState().past).toEqual([]);
+    expect(useStore.getState().future).toEqual([]);
   });
 });
