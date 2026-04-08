@@ -6,7 +6,7 @@ import { useStore } from '../../store';
 export function PotNode({ id, data, selected }: NodeProps) {
   const selectNode = useStore((s) => s.selectNode);
   const d = data as PotData;
-  const stroke = selected ? '#60a5fa' : '#9ca3af';
+  const stroke = selected ? '#60a5fa' : '#e5e7eb';
   const wiperColor = selected ? '#60a5fa' : '#a78bfa';
 
   // Wiper x position along the resistor body (body spans x 12–68)
