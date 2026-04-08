@@ -6,8 +6,8 @@ import { useStore } from '../../store';
 export function PotNode({ id, data, selected }: NodeProps) {
   const selectNode = useStore((s) => s.selectNode);
   const d = data as PotData;
-  const stroke = selected ? '#60a5fa' : '#f59e0b';
-  const wiperColor = selected ? '#60a5fa' : '#fcd34d';
+  const stroke = selected ? '#60a5fa' : '#9ca3af';
+  const wiperColor = selected ? '#60a5fa' : '#a78bfa';
 
   // Wiper x position along the resistor body (body spans x 12–68)
   const wiperX = 12 + 56 * d.position;
@@ -30,21 +30,21 @@ export function PotNode({ id, data, selected }: NodeProps) {
         type="target"
         position={Position.Left}
         id="ccw"
-        style={{ top: 20, background: '#f59e0b' }}
+        style={{ top: 20, background: '#4b5563' }}
       />
       {/* CW end — right at y=20 */}
       <Handle
         type="source"
         position={Position.Right}
         id="cw"
-        style={{ top: 20, background: '#f59e0b' }}
+        style={{ top: 20, background: '#4b5563' }}
       />
       {/* Wiper tap — bottom center (x=40, y=60, both multiples of 20) */}
       <Handle
         type="source"
         position={Position.Bottom}
         id="wiper"
-        style={{ left: '50%', background: '#fcd34d' }}
+        style={{ left: '50%', background: '#a78bfa' }}
       />
 
       <svg width="80" height="60" viewBox="0 0 80 60">

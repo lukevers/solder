@@ -299,7 +299,7 @@ function PotInspector({
       <Field label={`Position — ${pct}%`}>
         <input
           type="range"
-          className="w-full accent-purple-400"
+          className="w-full accent-amber-400"
           min={0}
           max={1}
           step={0.01}
