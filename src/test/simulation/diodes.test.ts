@@ -18,28 +18,28 @@ beforeAll(async () => {
   await engine.init();
 }, 15000);
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  DIODE CLIPPING — Half-wave rectifier                            │
-// │                                                                  │
-// │  Schematic:           D1 (1N914)                                 │
-// │      INPUT ───┤D1├───┬─── OUTPUT                                 │
-// │                      │                                           │
-// │                     [R1] 10kΩ                                    │
-// │                      │                                           │
-// │                     GND                                          │
-// │                                                                  │
-// │  The diode only conducts when the input is positive (minus the   │
-// │  ~0.6V forward voltage drop). Negative half-cycles are blocked.  │
-// │                                                                  │
-// │  Input:   ╭─╮   ╭─╮          Output:  ╭╮    ╭╮                   │
-// │        ───╯ ╰───╯ ╰───    →       ────╯╰────╯╰────               │
-// │           1V peak             positive half only, ~0.4V peak     │
-// │                               (1V - 0.6V diode drop)             │
-// │                                                                  │
-// │  Why it matters: the RAT distortion pedal uses 1N914 diodes for  │
-// │  hard clipping. If diode models are wrong, the distortion        │
-// │  character is completely different.                              │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  DIODE CLIPPING — Half-wave rectifier                              │
+// │                                                                    │
+// │  Schematic:           D1 (1N914)                                   │
+// │      INPUT ───┤D1├───┬─── OUTPUT                                   │
+// │                      │                                             │
+// │                     [R1] 10kΩ                                      │
+// │                      │                                             │
+// │                     GND                                            │
+// │                                                                    │
+// │  The diode only conducts when the input is positive (minus the     │
+// │  ~0.6V forward voltage drop). Negative half-cycles are blocked.    │
+// │                                                                    │
+// │  Input:   ╭─╮   ╭─╮          Output:  ╭╮    ╭╮                     │
+// │        ───╯ ╰───╯ ╰───    →       ────╯╰────╯╰────                 │
+// │           1V peak             positive half only, ~0.4V peak       │
+// │                               (1V - 0.6V diode drop)               │
+// │                                                                    │
+// │  Why it matters: the RAT distortion pedal uses 1N914 diodes for    │
+// │  hard clipping. If diode models are wrong, the distortion          │
+// │  character is completely different.                                │
+// └────────────────────────────────────────────────────────────────────┘
 describe('diode clipping (half-wave rectifier)', () => {
   it('clips negative half-cycles, passes positive with diode drop', async () => {
     const components: Array<ComponentNode> = [
@@ -170,25 +170,25 @@ describe('diode clipping (half-wave rectifier)', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  DIODE FORWARD VOLTAGE DROP                                      │
-// │                                                                  │
-// │  A silicon diode (1N914) has a forward voltage of ~0.6-0.7V at  │
-// │  typical operating currents. This validates the diode model      │
-// │  parameters (Is, N, Rs) in the .model card.                     │
-// │                                                                  │
-// │  Schematic:  1V DC ──┤D1├──┤R1 (1kΩ)├── GND                    │
-// │                            │                                     │
-// │                           Vout                                   │
-// │                                                                  │
-// │  With 1V supply and ~0.65V diode drop:                          │
-// │    I = (1V - 0.65V) / 1kΩ = 0.35 mA                            │
-// │    Vout = I × R1 = 0.35V  (voltage across R, after diode)      │
-// │                                                                  │
-// │  Why it matters: the 1N914 diode model is used in the RAT       │
-// │  distortion pedal. If the forward voltage is wrong, the          │
-// │  clipping threshold changes and the distortion sounds different. │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  DIODE FORWARD VOLTAGE DROP                                        │
+// │                                                                    │
+// │  A silicon diode (1N914) has a forward voltage of ~0.6-0.7V at     │
+// │  typical operating currents. This validates the diode model        │
+// │  parameters (Is, N, Rs) in the .model card.                        │
+// │                                                                    │
+// │  Schematic:  1V DC ──┤D1├──┤R1 (1kΩ)├── GND                        │
+// │                            │                                       │
+// │                           Vout                                     │
+// │                                                                    │
+// │  With 1V supply and ~0.65V diode drop:                             │
+// │    I = (1V - 0.65V) / 1kΩ = 0.35 mA                                │
+// │    Vout = I × R1 = 0.35V  (voltage across R, after diode)          │
+// │                                                                    │
+// │  Why it matters: the 1N914 diode model is used in the RAT          │
+// │  distortion pedal. If the forward voltage is wrong, the            │
+// │  clipping threshold changes and the distortion sounds different.   │
+// └────────────────────────────────────────────────────────────────────┘
 describe('diode forward voltage drop', () => {
   it('1N914 forward drop is between 0.45V and 0.75V', async () => {
     const components: Array<ComponentNode> = [
@@ -262,29 +262,29 @@ describe('diode forward voltage drop', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  ANTI-PARALLEL DIODE SYMMETRY                                    │
-// │                                                                  │
-// │  Two 1N914 diodes in anti-parallel (like the RAT's clipping     │
-// │  network) should clip symmetrically — positive and negative      │
-// │  peaks at the same threshold.                                    │
-// │                                                                  │
-// │  Schematic:    R1 = 1kΩ        ┌──|>|──┐                       │
-// │      INPUT ──┤R1├──┬── OUTPUT   │  D1   │                       │
-// │                    ├───────────┤       ├──── GND                │
-// │                    │           │  D2   │                        │
-// │                    └──|<|──┘                                    │
-// │                                                                  │
-// │  Input: 5V peak sine → both peaks clip to ~0.6V                 │
-// │                                                                  │
-// │  Output:   ╭──╮    ╭──╮       (flat-topped, symmetric)          │
-// │         ───╯  ╰────╯  ╰───                                      │
-// │            ~0.6V  ~-0.6V                                        │
-// │                                                                  │
-// │  Why it matters: asymmetric clipping in the RAT means one       │
-// │  diode model is wrong. This is the most common simulation       │
-// │  artifact in distortion pedals.                                  │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  ANTI-PARALLEL DIODE SYMMETRY                                      │
+// │                                                                    │
+// │  Two 1N914 diodes in anti-parallel (like the RAT's clipping        │
+// │  network) should clip symmetrically — positive and negative        │
+// │  peaks at the same threshold.                                      │
+// │                                                                    │
+// │  Schematic:    R1 = 1kΩ        ┌──|>|──┐                           │
+// │      INPUT ──┤R1├──┬── OUTPUT   │  D1   │                          │
+// │                    ├───────────┤       ├──── GND                   │
+// │                    │           │  D2   │                           │
+// │                    └──|<|──┘                                       │
+// │                                                                    │
+// │  Input: 5V peak sine → both peaks clip to ~0.6V                    │
+// │                                                                    │
+// │  Output:   ╭──╮    ╭──╮       (flat-topped, symmetric)             │
+// │         ───╯  ╰────╯  ╰───                                         │
+// │            ~0.6V  ~-0.6V                                           │
+// │                                                                    │
+// │  Why it matters: asymmetric clipping in the RAT means one          │
+// │  diode model is wrong. This is the most common simulation          │
+// │  artifact in distortion pedals.                                    │
+// └────────────────────────────────────────────────────────────────────┘
 describe('anti-parallel diode symmetry', () => {
   it('positive and negative clipping thresholds match', async () => {
     const components: Array<ComponentNode> = [

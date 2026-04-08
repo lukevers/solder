@@ -18,31 +18,31 @@ beforeAll(async () => {
   await engine.init();
 }, 15000);
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  MULTI-STAGE CIRCUIT — Input cap → Gain stage → Tone → Output  │
-// │                                                                  │
-// │  Real pedals cascade multiple stages. This verifies that the     │
-// │  netlist compiler and SPICE engine handle multi-stage circuits   │
-// │  with shared nets and multiple component types.                  │
-// │                                                                  │
-// │  Schematic:                                                      │
-// │  INPUT ─┤C1├─┤R1├─┬── R2 ── C2 ── OUTPUT                      │
-// │                    │                                             │
-// │                   ═╪═ C3                                         │
-// │                    │                                             │
-// │                   GND                                            │
-// │                                                                  │
-// │  C1 = coupling cap (high-pass, blocks DC)                       │
-// │  R1 + C3 = low-pass stage                                       │
-// │  R2 + C2 = another high-pass coupling to output                 │
-// │                                                                  │
-// │  Overall: bandpass behavior — blocks very low and very high     │
-// │  frequencies, passes the midrange.                              │
-// │                                                                  │
-// │  Why it matters: cascaded stages can cause net-merging bugs     │
-// │  where intermediate nodes get the wrong SPICE assignment. This  │
-// │  catches connectivity issues between stages.                    │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  MULTI-STAGE CIRCUIT — Input cap → Gain stage → Tone → Output      │
+// │                                                                    │
+// │  Real pedals cascade multiple stages. This verifies that the       │
+// │  netlist compiler and SPICE engine handle multi-stage circuits     │
+// │  with shared nets and multiple component types.                    │
+// │                                                                    │
+// │  Schematic:                                                        │
+// │  INPUT ─┤C1├─┤R1├─┬── R2 ── C2 ── OUTPUT                           │
+// │                    │                                               │
+// │                   ═╪═ C3                                           │
+// │                    │                                               │
+// │                   GND                                              │
+// │                                                                    │
+// │  C1 = coupling cap (high-pass, blocks DC)                          │
+// │  R1 + C3 = low-pass stage                                          │
+// │  R2 + C2 = another high-pass coupling to output                    │
+// │                                                                    │
+// │  Overall: bandpass behavior — blocks very low and very high        │
+// │  frequencies, passes the midrange.                                 │
+// │                                                                    │
+// │  Why it matters: cascaded stages can cause net-merging bugs        │
+// │  where intermediate nodes get the wrong SPICE assignment. This     │
+// │  catches connectivity issues between stages.                       │
+// └────────────────────────────────────────────────────────────────────┘
 describe('multi-stage circuit', () => {
   it('two-stage RC produces bandpass behavior', async () => {
     const components: Array<ComponentNode> = [
@@ -149,26 +149,26 @@ describe('multi-stage circuit', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  NET LABELS IN SIMULATION                                        │
-// │                                                                  │
-// │  Two label nodes with the same name should connect their nets.   │
-// │  This tests the full path: label placement → virtual adjacency   │
-// │  → netlist compilation → SPICE simulation.                       │
-// │                                                                  │
-// │  Schematic:                                                      │
-// │  INPUT ─┤R1├── [MIDPOINT]    [MIDPOINT] ──┤R2├── OUTPUT         │
-// │                                                    │             │
-// │                                                   GND            │
-// │                                                                  │
-// │  The two "MIDPOINT" labels are not wired together, but they      │
-// │  share the same net name → R1.b and R2.a are on the same node.  │
-// │  This makes a voltage divider: Vout = Vin × R2/(R1+R2)         │
-// │                                                                  │
-// │  Why it matters: net labels are the primary way users avoid      │
-// │  long wires. If label merging doesn't work in simulation,       │
-// │  circuits silently break.                                        │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  NET LABELS IN SIMULATION                                          │
+// │                                                                    │
+// │  Two label nodes with the same name should connect their nets.     │
+// │  This tests the full path: label placement → virtual adjacency     │
+// │  → netlist compilation → SPICE simulation.                         │
+// │                                                                    │
+// │  Schematic:                                                        │
+// │  INPUT ─┤R1├── [MIDPOINT]    [MIDPOINT] ──┤R2├── OUTPUT            │
+// │                                                    │               │
+// │                                                   GND              │
+// │                                                                    │
+// │  The two "MIDPOINT" labels are not wired together, but they        │
+// │  share the same net name → R1.b and R2.a are on the same node.     │
+// │  This makes a voltage divider: Vout = Vin × R2/(R1+R2)             │
+// │                                                                    │
+// │  Why it matters: net labels are the primary way users avoid        │
+// │  long wires. If label merging doesn't work in simulation,          │
+// │  circuits silently break.                                          │
+// └────────────────────────────────────────────────────────────────────┘
 describe('net labels in simulation', () => {
   it('two labels with same name connect their nets', async () => {
     const components: Array<ComponentNode> = [

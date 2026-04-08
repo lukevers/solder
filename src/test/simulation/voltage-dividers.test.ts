@@ -18,26 +18,26 @@ beforeAll(async () => {
   await engine.init();
 }, 15000);
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  VOLTAGE DIVIDER — Two equal resistors                           │
-// │                                                                  │
-// │  Schematic:           R1 = 10kΩ                                  │
-// │      INPUT ───┤R1├───┬─── OUTPUT                                 │
-// │                      │                                           │
-// │                     [R2] 10kΩ                                    │
-// │                      │                                           │
-// │                     GND                                          │
-// │                                                                  │
-// │  Vout = Vin × R2/(R1+R2) = Vin × 10k/(10k+10k) = Vin × 0.5       │
-// │                                                                  │
-// │  Input:   ╭─╮   ╭─╮          Output:  ╭╮  ╭╮                     │
-// │        ───╯ ╰───╯ ╰───    →       ────╯╰──╯╰────                 │
-// │           1V peak                     0.5V peak                  │
-// │                                                                  │
-// │  Why it matters: the voltage divider is how potentiometers work  │
-// │  (volume knob = voltage divider). Getting the ratio wrong would  │
-// │  make every pot-based control inaccurate.                        │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  VOLTAGE DIVIDER — Two equal resistors                             │
+// │                                                                    │
+// │  Schematic:           R1 = 10kΩ                                    │
+// │      INPUT ───┤R1├───┬─── OUTPUT                                   │
+// │                      │                                             │
+// │                     [R2] 10kΩ                                      │
+// │                      │                                             │
+// │                     GND                                            │
+// │                                                                    │
+// │  Vout = Vin × R2/(R1+R2) = Vin × 10k/(10k+10k) = Vin × 0.5         │
+// │                                                                    │
+// │  Input:   ╭─╮   ╭─╮          Output:  ╭╮  ╭╮                       │
+// │        ───╯ ╰───╯ ╰───    →       ────╯╰──╯╰────                   │
+// │           1V peak                     0.5V peak                    │
+// │                                                                    │
+// │  Why it matters: the voltage divider is how potentiometers work    │
+// │  (volume knob = voltage divider). Getting the ratio wrong would    │
+// │  make every pot-based control inaccurate.                          │
+// └────────────────────────────────────────────────────────────────────┘
 describe('voltage divider', () => {
   it('two equal 10k resistors halve the voltage', async () => {
     const components: Array<ComponentNode> = [
@@ -220,24 +220,24 @@ describe('voltage divider', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  VOLTAGE DIVIDER DC ACCURACY                                     │
-// │                                                                  │
-// │  The simplest possible DC test: two resistors dividing a         │
-// │  voltage. SPICE should get this exact to floating-point          │
-// │  precision. Any error here means the solver is fundamentally     │
-// │  broken.                                                         │
-// │                                                                  │
-// │  Schematic:  9V DC ──┤R1 (9kΩ)├──┬── Vout                       │
-// │                                   │                              │
-// │                                  [R2] 1kΩ                       │
-// │                                   │                              │
-// │                                  GND                             │
-// │                                                                  │
-// │  Vout = 9V × R2/(R1+R2) = 9 × 1k/(9k+1k) = 0.9V              │
-// │                                                                  │
-// │  Acceptable error: < 0.01%                                       │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  VOLTAGE DIVIDER DC ACCURACY                                       │
+// │                                                                    │
+// │  The simplest possible DC test: two resistors dividing a           │
+// │  voltage. SPICE should get this exact to floating-point            │
+// │  precision. Any error here means the solver is fundamentally       │
+// │  broken.                                                           │
+// │                                                                    │
+// │  Schematic:  9V DC ──┤R1 (9kΩ)├──┬── Vout                          │
+// │                                   │                                │
+// │                                  [R2] 1kΩ                          │
+// │                                   │                                │
+// │                                  GND                               │
+// │                                                                    │
+// │  Vout = 9V × R2/(R1+R2) = 9 × 1k/(9k+1k) = 0.9V                    │
+// │                                                                    │
+// │  Acceptable error: < 0.01%                                         │
+// └────────────────────────────────────────────────────────────────────┘
 describe('voltage divider DC accuracy', () => {
   it('9V through 9k/1k divider gives exactly 0.9V', async () => {
     const components: Array<ComponentNode> = [
@@ -307,24 +307,24 @@ describe('voltage divider DC accuracy', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  COMPONENT VALUE SENSITIVITY                                     │
-// │                                                                  │
-// │  Same topology, different resistor values → different output.    │
-// │  Verifies that component value changes actually propagate to     │
-// │  the simulation (not silently ignored or cached).                │
-// │                                                                  │
-// │  Schematic:  INPUT ──┤R1├──┬── OUTPUT                            │
-// │                            ═╪═ C1 (100nF)                        │
-// │                            GND                                   │
-// │                                                                  │
-// │  R1 = 100Ω  → fc ≈ 16 kHz  (5 kHz passes easily)                 │
-// │  R1 = 10kΩ  → fc ≈ 160 Hz  (5 kHz heavily attenuated)            │
-// │                                                                  │
-// │  Why it matters: if the netlist compiler ignores a resistor      │
-// │  value change (e.g., uses a cached netlist), both runs would     │
-// │  produce the same output. This test ensures they don't.          │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  COMPONENT VALUE SENSITIVITY                                       │
+// │                                                                    │
+// │  Same topology, different resistor values → different output.      │
+// │  Verifies that component value changes actually propagate to       │
+// │  the simulation (not silently ignored or cached).                  │
+// │                                                                    │
+// │  Schematic:  INPUT ──┤R1├──┬── OUTPUT                              │
+// │                            ═╪═ C1 (100nF)                          │
+// │                            GND                                     │
+// │                                                                    │
+// │  R1 = 100Ω  → fc ≈ 16 kHz  (5 kHz passes easily)                   │
+// │  R1 = 10kΩ  → fc ≈ 160 Hz  (5 kHz heavily attenuated)              │
+// │                                                                    │
+// │  Why it matters: if the netlist compiler ignores a resistor        │
+// │  value change (e.g., uses a cached netlist), both runs would       │
+// │  produce the same output. This test ensures they don't.            │
+// └────────────────────────────────────────────────────────────────────┘
 describe('component value sensitivity', () => {
   it('changing R in low-pass filter changes the output', async () => {
     function buildLowPass(ohms: number) {

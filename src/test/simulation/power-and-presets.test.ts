@@ -20,26 +20,26 @@ beforeAll(async () => {
   await engine.init();
 }, 15000);
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  KiCad-STYLE POWER PINS — Multiple VCC symbols share one net     │
-// │                                                                  │
-// │  Schematic:                                                      │
-// │      VCC ─┤R1├─┬─ OUTPUT       VCC ─┤R2├─ (floating)             │
-// │                │                                                 │
-// │               GND                                                │
-// │                                                                  │
-// │  Both VCC symbols are on the same net (9V DC). R2 is connected   │
-// │  to the same power rail without a wire between the two VCC       │
-// │  symbols. The netlist compiler merges them via virtual           │
-// │  adjacency.                                                      │
-// │                                                                  │
-// │  Output should see the 9V DC from VCC through R1, divided by     │
-// │  R1/(R1+Rprobe). Since Rprobe is 1000MΩ, the output is ~9V.      │
-// │                                                                  │
-// │  Why it matters: users place VCC symbols locally instead of      │
-// │  drawing long wires. If the power pin merging breaks, separate   │
-// │  VCC symbols become isolated — circuits silently fail.           │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  KiCad-STYLE POWER PINS — Multiple VCC symbols share one net       │
+// │                                                                    │
+// │  Schematic:                                                        │
+// │      VCC ─┤R1├─┬─ OUTPUT       VCC ─┤R2├─ (floating)               │
+// │                │                                                   │
+// │               GND                                                  │
+// │                                                                    │
+// │  Both VCC symbols are on the same net (9V DC). R2 is connected     │
+// │  to the same power rail without a wire between the two VCC         │
+// │  symbols. The netlist compiler merges them via virtual             │
+// │  adjacency.                                                        │
+// │                                                                    │
+// │  Output should see the 9V DC from VCC through R1, divided by       │
+// │  R1/(R1+Rprobe). Since Rprobe is 1000MΩ, the output is ~9V.        │
+// │                                                                    │
+// │  Why it matters: users place VCC symbols locally instead of        │
+// │  drawing long wires. If the power pin merging breaks, separate     │
+// │  VCC symbols become isolated — circuits silently fail.             │
+// └────────────────────────────────────────────────────────────────────┘
 describe('KiCad-style power pins', () => {
   it('two VCC symbols share the same net', async () => {
     const components: Array<ComponentNode> = [
@@ -114,24 +114,24 @@ describe('KiCad-style power pins', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  RAT EXAMPLE CIRCUIT — Full preset simulation                    │
-// │                                                                  │
-// │  Loads the actual ProCo RAT example circuit and verifies it      │
-// │  compiles and simulates without errors. This is a smoke test     │
-// │  for the full circuit with op-amp, diodes, pots, bias network,  │
-// │  and multiple power/ground symbols.                              │
-// │                                                                  │
-// │  We don't check exact output values (the RAT is a complex       │
-// │  nonlinear circuit), but we verify:                              │
-// │  1. Netlist compiles without throwing                            │
-// │  2. Simulation runs and produces output                          │
-// │  3. Output is not silent (has non-zero voltage)                  │
-// │  4. Output is not just DC (has AC content from the distortion)  │
-// │                                                                  │
-// │  Why it matters: the RAT example is what users see first. If it │
-// │  crashes or produces silence, the app is broken on first use.   │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  RAT EXAMPLE CIRCUIT — Full preset simulation                      │
+// │                                                                    │
+// │  Loads the actual ProCo RAT example circuit and verifies it        │
+// │  compiles and simulates without errors. This is a smoke test       │
+// │  for the full circuit with op-amp, diodes, pots, bias network,     │
+// │  and multiple power/ground symbols.                                │
+// │                                                                    │
+// │  We don't check exact output values (the RAT is a complex          │
+// │  nonlinear circuit), but we verify:                                │
+// │  1. Netlist compiles without throwing                              │
+// │  2. Simulation runs and produces output                            │
+// │  3. Output is not silent (has non-zero voltage)                    │
+// │  4. Output is not just DC (has AC content from the distortion)     │
+// │                                                                    │
+// │  Why it matters: the RAT example is what users see first. If it    │
+// │  crashes or produces silence, the app is broken on first use.      │
+// └────────────────────────────────────────────────────────────────────┘
 describe('RAT example circuit', () => {
   const rat = EXAMPLES[0];
 
@@ -169,45 +169,45 @@ describe('RAT example circuit', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  RC TIME CONSTANT — The Gold Standard SPICE Validation Test     │
-// │                                                                  │
-// │  A step voltage into an RC circuit has an exact analytical       │
-// │  solution. This is the single most important test for any SPICE  │
-// │  implementation because every other result depends on getting    │
-// │  basic RC charging right.                                        │
-// │                                                                  │
-// │  Schematic:       R = 10kΩ                                       │
-// │      Vin(t) ──┤R├──┬── Vout                                      │
-// │                    │                                             │
-// │                   ═╪═ C = 10nF                                   │
-// │                    │                                             │
-// │                   GND                                            │
-// │                                                                  │
-// │  tau = R × C = 10,000 × 10e-9 = 100 µs                         │
-// │                                                                  │
-// │  Analytical solution (step from 0 to 1V at t=0):                │
-// │     Vc(t) = V × (1 - e^(-t/tau))                               │
-// │                                                                  │
-// │  Key checkpoints:                                                │
-// │     t = 0.5·tau (50µs):  Vc = 1 × (1 - e^-0.5) = 0.3935       │
-// │     t = 1.0·tau (100µs): Vc = 1 × (1 - e^-1.0) = 0.6321       │
-// │     t = 2.0·tau (200µs): Vc = 1 × (1 - e^-2.0) = 0.8647       │
-// │     t = 5.0·tau (500µs): Vc = 1 × (1 - e^-5.0) = 0.9933       │
-// │                                                                  │
-// │    1V ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─                │
-// │       ╱                    ═══════════════════                    │
-// │      ╱              ══════                                       │
-// │     ╱         ═════                                              │
-// │    ╱     ════                                                    │
-// │    ╱ ═══                                                         │
-// │   ═══                                                            │
-// │  0V ──────────────────────────────────────────                   │
-// │       0     tau    2tau   3tau   4tau  5tau                      │
-// │                                                                  │
-// │  Acceptable error: < 1% at each checkpoint.                     │
-// │  Standard SPICE implementations achieve < 0.1%.                 │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  RC TIME CONSTANT — The Gold Standard SPICE Validation Test        │
+// │                                                                    │
+// │  A step voltage into an RC circuit has an exact analytical         │
+// │  solution. This is the single most important test for any SPICE    │
+// │  implementation because every other result depends on getting      │
+// │  basic RC charging right.                                          │
+// │                                                                    │
+// │  Schematic:       R = 10kΩ                                         │
+// │      Vin(t) ──┤R├──┬── Vout                                        │
+// │                    │                                               │
+// │                   ═╪═ C = 10nF                                     │
+// │                    │                                               │
+// │                   GND                                              │
+// │                                                                    │
+// │  tau = R × C = 10,000 × 10e-9 = 100 µs                             │
+// │                                                                    │
+// │  Analytical solution (step from 0 to 1V at t=0):                   │
+// │     Vc(t) = V × (1 - e^(-t/tau))                                   │
+// │                                                                    │
+// │  Key checkpoints:                                                  │
+// │     t = 0.5·tau (50µs):  Vc = 1 × (1 - e^-0.5) = 0.3935            │
+// │     t = 1.0·tau (100µs): Vc = 1 × (1 - e^-1.0) = 0.6321            │
+// │     t = 2.0·tau (200µs): Vc = 1 × (1 - e^-2.0) = 0.8647            │
+// │     t = 5.0·tau (500µs): Vc = 1 × (1 - e^-5.0) = 0.9933            │
+// │                                                                    │
+// │    1V ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─                      │
+// │       ╱                    ═══════════════════                     │
+// │      ╱              ══════                                         │
+// │     ╱         ═════                                                │
+// │    ╱     ════                                                      │
+// │    ╱ ═══                                                           │
+// │   ═══                                                              │
+// │  0V ──────────────────────────────────────────                     │
+// │       0     tau    2tau   3tau   4tau  5tau                        │
+// │                                                                    │
+// │  Acceptable error: < 1% at each checkpoint.                        │
+// │  Standard SPICE implementations achieve < 0.1%.                    │
+// └────────────────────────────────────────────────────────────────────┘
 describe('RC time constant (analytical validation)', () => {
   it('step response matches V(t) = 1 - e^(-t/RC) within 1%', async () => {
     // We can't easily do a pure step in Solder's SIN-based input,

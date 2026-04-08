@@ -17,23 +17,23 @@ beforeAll(async () => {
   await engine.init();
 }, 15000);
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  PASSTHROUGH — Direct wire from INPUT to OUTPUT                  │
-// │                                                                  │
-// │  Schematic:                                                      │
-// │      INPUT ──────────────── OUTPUT                               │
-// │                                                                  │
-// │  Input:  1V peak sine @ 1 kHz                                    │
-// │  Expect: Output ≈ Input (no components to alter the signal)      │
-// │                                                                  │
-// │  Input:   ╭─╮   ╭─╮          Output:  ╭─╮   ╭─╮                  │
-// │        ───╯ ╰───╯ ╰───    ≈        ───╯ ╰───╯ ╰───               │
-// │           1V peak                      1V peak                   │
-// │                                                                  │
-// │  Why it matters: validates the most basic signal path. If this   │
-// │  breaks, the netlist compiler or SPICE source is fundamentally   │
-// │  wrong.                                                          │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  PASSTHROUGH — Direct wire from INPUT to OUTPUT                    │
+// │                                                                    │
+// │  Schematic:                                                        │
+// │      INPUT ──────────────── OUTPUT                                 │
+// │                                                                    │
+// │  Input:  1V peak sine @ 1 kHz                                      │
+// │  Expect: Output ≈ Input (no components to alter the signal)        │
+// │                                                                    │
+// │  Input:   ╭─╮   ╭─╮          Output:  ╭─╮   ╭─╮                    │
+// │        ───╯ ╰───╯ ╰───    ≈        ───╯ ╰───╯ ╰───                 │
+// │           1V peak                      1V peak                     │
+// │                                                                    │
+// │  Why it matters: validates the most basic signal path. If this     │
+// │  breaks, the netlist compiler or SPICE source is fundamentally     │
+// │  wrong.                                                            │
+// └────────────────────────────────────────────────────────────────────┘
 describe('passthrough (wire only)', () => {
   it('output matches input for a direct wire', async () => {
     const { nodes, edges } = makeCircuit(
@@ -79,34 +79,34 @@ describe('passthrough (wire only)', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  LOW-PASS RC FILTER                                              │
-// │                                                                  │
-// │  Schematic:           R1 = 1kΩ                                   │
-// │      INPUT ───┤R1├───┬─── OUTPUT                                 │
-// │                      │                                           │
-// │                     ═╪═ C1 = 100nF                               │
-// │                      │                                           │
-// │                     GND                                          │
-// │                                                                  │
-// │  Cutoff frequency: fc = 1/(2π·R·C) = 1/(2π·1000·100e-9)          │
-// │                      ≈ 1,592 Hz                                  │
-// │                                                                  │
-// │  100 Hz input (well BELOW cutoff → passes through):              │
-// │  Input:   ╭─╮   ╭─╮          Output:  ╭─╮   ╭─╮                  │
-// │        ───╯ ╰───╯ ╰───    ≈        ───╯ ╰───╯ ╰───               │
-// │           1V peak                     ~0.99V peak                │
-// │                                                                  │
-// │  5000 Hz input (well ABOVE cutoff → attenuated):                 │
-// │  Input:   ╭╮╭╮╭╮╭╮╭╮         Output:  ~─~─~─~─~─                 │
-// │        ───╯╰╯╰╯╰╯╰╯╰──    →        ─────────────                 │
-// │           1V peak                     <0.35V peak                │
-// │                                                                  │
-// │  Why it matters: the low-pass filter is the most fundamental     │
-// │  audio circuit (tone controls, anti-aliasing). Verifies that     │
-// │  R + C + GND nodes compile correctly and that the SPICE engine   │
-// │  produces physically accurate frequency-dependent attenuation.   │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  LOW-PASS RC FILTER                                                │
+// │                                                                    │
+// │  Schematic:           R1 = 1kΩ                                     │
+// │      INPUT ───┤R1├───┬─── OUTPUT                                   │
+// │                      │                                             │
+// │                     ═╪═ C1 = 100nF                                 │
+// │                      │                                             │
+// │                     GND                                            │
+// │                                                                    │
+// │  Cutoff frequency: fc = 1/(2π·R·C) = 1/(2π·1000·100e-9)            │
+// │                      ≈ 1,592 Hz                                    │
+// │                                                                    │
+// │  100 Hz input (well BELOW cutoff → passes through):                │
+// │  Input:   ╭─╮   ╭─╮          Output:  ╭─╮   ╭─╮                    │
+// │        ───╯ ╰───╯ ╰───    ≈        ───╯ ╰───╯ ╰───                 │
+// │           1V peak                     ~0.99V peak                  │
+// │                                                                    │
+// │  5000 Hz input (well ABOVE cutoff → attenuated):                   │
+// │  Input:   ╭╮╭╮╭╮╭╮╭╮         Output:  ~─~─~─~─~─                   │
+// │        ───╯╰╯╰╯╰╯╰╯╰──    →        ─────────────                   │
+// │           1V peak                     <0.35V peak                  │
+// │                                                                    │
+// │  Why it matters: the low-pass filter is the most fundamental       │
+// │  audio circuit (tone controls, anti-aliasing). Verifies that       │
+// │  R + C + GND nodes compile correctly and that the SPICE engine     │
+// │  produces physically accurate frequency-dependent attenuation.     │
+// └────────────────────────────────────────────────────────────────────┘
 describe('low-pass RC filter', () => {
   const components: Array<ComponentNode> = [
     {
@@ -192,34 +192,34 @@ describe('low-pass RC filter', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  HIGH-PASS RC FILTER                                             │
-// │                                                                  │
-// │  Schematic:           C1 = 100nF                                 │
-// │      INPUT ───┤C1├───┬─── OUTPUT                                 │
-// │                      │                                           │
-// │                     [R1] 1kΩ                                     │
-// │                      │                                           │
-// │                     GND                                          │
-// │                                                                  │
-// │  Same components as low-pass but swapped: C is in series, R is   │
-// │  to ground. Cutoff is the same: fc ≈ 1,592 Hz.                   │
-// │                                                                  │
-// │  5000 Hz input (ABOVE cutoff → passes):                          │
-// │  Input:   ╭╮╭╮╭╮╭╮╭╮         Output:  ╭╮╭╮╭╮╭╮╭╮                 │
-// │        ───╯╰╯╰╯╰╯╰╯╰──    ≈       ───╯╰╯╰╯╰╯╰╯╰──                │
-// │           1V peak                     ~0.95V peak                │
-// │                                                                  │
-// │  100 Hz input (BELOW cutoff → attenuated):                       │
-// │  Input:   ╭─╮   ╭─╮          Output:   ~──~──~──                 │
-// │        ───╯ ╰───╯ ╰───    →         ────────────                 │
-// │           1V peak                     <0.10V peak                │
-// │                                                                  │
-// │  Why it matters: coupling capacitors in guitar pedals are high-  │
-// │  pass filters. The RAT's C1 (47nF input cap) is exactly this     │
-// │  topology. If this breaks, pedal simulations lose their bass     │
-// │  response accuracy.                                              │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  HIGH-PASS RC FILTER                                               │
+// │                                                                    │
+// │  Schematic:           C1 = 100nF                                   │
+// │      INPUT ───┤C1├───┬─── OUTPUT                                   │
+// │                      │                                             │
+// │                     [R1] 1kΩ                                       │
+// │                      │                                             │
+// │                     GND                                            │
+// │                                                                    │
+// │  Same components as low-pass but swapped: C is in series, R is     │
+// │  to ground. Cutoff is the same: fc ≈ 1,592 Hz.                     │
+// │                                                                    │
+// │  5000 Hz input (ABOVE cutoff → passes):                            │
+// │  Input:   ╭╮╭╮╭╮╭╮╭╮         Output:  ╭╮╭╮╭╮╭╮╭╮                   │
+// │        ───╯╰╯╰╯╰╯╰╯╰──    ≈       ───╯╰╯╰╯╰╯╰╯╰──                  │
+// │           1V peak                     ~0.95V peak                  │
+// │                                                                    │
+// │  100 Hz input (BELOW cutoff → attenuated):                         │
+// │  Input:   ╭─╮   ╭─╮          Output:   ~──~──~──                   │
+// │        ───╯ ╰───╯ ╰───    →         ────────────                   │
+// │           1V peak                     <0.10V peak                  │
+// │                                                                    │
+// │  Why it matters: coupling capacitors in guitar pedals are high-    │
+// │  pass filters. The RAT's C1 (47nF input cap) is exactly this       │
+// │  topology. If this breaks, pedal simulations lose their bass       │
+// │  response accuracy.                                                │
+// └────────────────────────────────────────────────────────────────────┘
 describe('high-pass RC filter', () => {
   const components: Array<ComponentNode> = [
     {
@@ -300,24 +300,24 @@ describe('high-pass RC filter', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  LOW-PASS FILTER -3dB POINT                                     │
-// │                                                                  │
-// │  At the cutoff frequency fc = 1/(2π·R·C), the gain should be    │
-// │  exactly -3.01 dB (≈ 0.7071 = 1/√2).                           │
-// │                                                                  │
-// │  This is the standard AC accuracy test used by all SPICE         │
-// │  implementations. We run a transient sim at exactly fc and       │
-// │  verify the output amplitude matches the -3dB prediction.        │
-// │                                                                  │
-// │  R = 1kΩ, C = 100nF → fc = 1/(2π × 1000 × 100e-9) = 1591.5 Hz │
-// │                                                                  │
-// │  At f = fc:                                                      │
-// │    |H(jw)| = 1/√(1 + (f/fc)²) = 1/√2 = 0.7071                 │
-// │    Phase = -arctan(f/fc) = -45°                                  │
-// │                                                                  │
-// │  Acceptable error: < 2% on amplitude (0.693 to 0.721)           │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  LOW-PASS FILTER -3dB POINT                                        │
+// │                                                                    │
+// │  At the cutoff frequency fc = 1/(2π·R·C), the gain should be       │
+// │  exactly -3.01 dB (≈ 0.7071 = 1/√2).                               │
+// │                                                                    │
+// │  This is the standard AC accuracy test used by all SPICE           │
+// │  implementations. We run a transient sim at exactly fc and         │
+// │  verify the output amplitude matches the -3dB prediction.          │
+// │                                                                    │
+// │  R = 1kΩ, C = 100nF → fc = 1/(2π × 1000 × 100e-9) = 1591.5 Hz      │
+// │                                                                    │
+// │  At f = fc:                                                        │
+// │    |H(jw)| = 1/√(1 + (f/fc)²) = 1/√2 = 0.7071                      │
+// │    Phase = -arctan(f/fc) = -45°                                    │
+// │                                                                    │
+// │  Acceptable error: < 2% on amplitude (0.693 to 0.721)              │
+// └────────────────────────────────────────────────────────────────────┘
 describe('low-pass filter -3dB point (analytical)', () => {
   it('gain at cutoff frequency is 1/sqrt(2) ≈ 0.707', async () => {
     const R = 1000;
@@ -387,28 +387,28 @@ describe('low-pass filter -3dB point (analytical)', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  FREQUENCY SWEEP DETERMINISM                                     │
-// │                                                                  │
-// │  The same low-pass filter at three frequencies: 100 Hz, 1 kHz,   │
-// │  5 kHz. Each output is snapshot-locked. This catches any change  │
-// │  in the SIN source generation, SPICE timestep, or the netlist    │
-// │  .tran parameters.                                               │
-// │                                                                  │
-// │  Schematic:  INPUT ──┤R1├──┬── OUTPUT                            │
-// │                            ═╪═ C1                                │
-// │                            GND                                   │
-// │                                                                  │
-// │  Expected behavior (R=1k, C=100n, fc≈1.6kHz):                    │
-// │                                                                  │
-// │  100 Hz:  gain ≈ 1.00  │  Output ≈ Input (nearly identical)      │
-// │   1 kHz:  gain ≈ 0.85  │  Output slightly smaller, phase-shifted │
-// │   5 kHz:  gain ≈ 0.30  │  Output much smaller, 90° lag           │
-// │                                                                  │
-// │  Why it matters: if any of these snapshots change, either the    │
-// │  SPICE engine updated, the netlist format changed, or the        │
-// │  timestep calculation drifted. All would affect every simulation.│
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  FREQUENCY SWEEP DETERMINISM                                       │
+// │                                                                    │
+// │  The same low-pass filter at three frequencies: 100 Hz, 1 kHz,     │
+// │  5 kHz. Each output is snapshot-locked. This catches any change    │
+// │  in the SIN source generation, SPICE timestep, or the netlist      │
+// │  .tran parameters.                                                 │
+// │                                                                    │
+// │  Schematic:  INPUT ──┤R1├──┬── OUTPUT                              │
+// │                            ═╪═ C1                                  │
+// │                            GND                                     │
+// │                                                                    │
+// │  Expected behavior (R=1k, C=100n, fc≈1.6kHz):                      │
+// │                                                                    │
+// │  100 Hz:  gain ≈ 1.00  │  Output ≈ Input (nearly identical)        │
+// │   1 kHz:  gain ≈ 0.85  │  Output slightly smaller, phase-shifted   │
+// │   5 kHz:  gain ≈ 0.30  │  Output much smaller, 90° lag             │
+// │                                                                    │
+// │  Why it matters: if any of these snapshots change, either the      │
+// │  SPICE engine updated, the netlist format changed, or the          │
+// │  timestep calculation drifted. All would affect every simulation.  │
+// └────────────────────────────────────────────────────────────────────┘
 describe('frequency sweep determinism', () => {
   function lowPassCircuit() {
     const components: Array<ComponentNode> = [

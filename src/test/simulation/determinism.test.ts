@@ -18,16 +18,16 @@ beforeAll(async () => {
   await engine.init();
 }, 15000);
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  SIMULATION DETERMINISM                                          │
-// │                                                                  │
-// │  The same netlist must produce bit-identical results every time. │
-// │  This is critical because the waveform display shows exact       │
-// │  voltage values and users compare before/after. Any              │
-// │  non-determinism would make the tool unreliable.                 │
-// │                                                                  │
-// │  We run the same low-pass filter twice and compare every sample. │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  SIMULATION DETERMINISM                                            │
+// │                                                                    │
+// │  The same netlist must produce bit-identical results every time.   │
+// │  This is critical because the waveform display shows exact         │
+// │  voltage values and users compare before/after. Any                │
+// │  non-determinism would make the tool unreliable.                   │
+// │                                                                    │
+// │  We run the same low-pass filter twice and compare every sample.   │
+// └────────────────────────────────────────────────────────────────────┘
 describe('simulation determinism', () => {
   it('same circuit produces bit-identical results on repeated runs', async () => {
     const components: Array<ComponentNode> = [
@@ -93,27 +93,27 @@ describe('simulation determinism', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  AMPLITUDE LINEARITY                                             │
-// │                                                                  │
-// │  Same circuit, different input amplitudes. A passive linear      │
-// │  circuit (resistors, capacitors) should scale proportionally:    │
-// │  doubling the input doubles the output.                          │
-// │                                                                  │
-// │  Schematic (same low-pass):                                      │
-// │      INPUT ───┤R1├───┬─── OUTPUT                                 │
-// │                      │                                           │
-// │                     ═╪═ C1                                       │
-// │                      │                                           │
-// │                     GND                                          │
-// │                                                                  │
-// │  Run 1: Vin = 0.5V peak → Vout = X                               │
-// │  Run 2: Vin = 1.0V peak → Vout = 2X (should be exactly 2x)       │
-// │                                                                  │
-// │  Why it matters: if the SPICE engine introduces nonlinearity in  │
-// │  a linear circuit, every simulation is wrong. This also catches  │
-// │  normalization bugs in the amplitude parameter.                  │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  AMPLITUDE LINEARITY                                               │
+// │                                                                    │
+// │  Same circuit, different input amplitudes. A passive linear        │
+// │  circuit (resistors, capacitors) should scale proportionally:      │
+// │  doubling the input doubles the output.                            │
+// │                                                                    │
+// │  Schematic (same low-pass):                                        │
+// │      INPUT ───┤R1├───┬─── OUTPUT                                   │
+// │                      │                                             │
+// │                     ═╪═ C1                                         │
+// │                      │                                             │
+// │                     GND                                            │
+// │                                                                    │
+// │  Run 1: Vin = 0.5V peak → Vout = X                                 │
+// │  Run 2: Vin = 1.0V peak → Vout = 2X (should be exactly 2x)         │
+// │                                                                    │
+// │  Why it matters: if the SPICE engine introduces nonlinearity in    │
+// │  a linear circuit, every simulation is wrong. This also catches    │
+// │  normalization bugs in the amplitude parameter.                    │
+// └────────────────────────────────────────────────────────────────────┘
 describe('amplitude linearity', () => {
   it('doubling input amplitude doubles output (linear circuit)', async () => {
     const components: Array<ComponentNode> = [
@@ -183,24 +183,24 @@ describe('amplitude linearity', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  LONG TRANSIENT STABILITY                                        │
-// │                                                                  │
-// │  A common SPICE pitfall: numerical error accumulates over long   │
-// │  simulations. Audio simulations can be several seconds long      │
-// │  (the guitar sample is ~2 seconds). This test verifies that the  │
-// │  simulation doesn't drift.                                       │
-// │                                                                  │
-// │  We run a 0.5-second passthrough simulation and compare the      │
-// │  first and last cycles of the sine wave — they should be         │
-// │  identical.                                                      │
-// │                                                                  │
-// │  First cycle:   ╭─╮          Last cycle:    ╭─╮                  │
-// │              ───╯ ╰───    ≈              ───╯ ╰───               │
-// │               (identical)                (should match)          │
-// │                                                                  │
-// │  Acceptable error: < 0.1% drift over 0.5 seconds.              │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  LONG TRANSIENT STABILITY                                          │
+// │                                                                    │
+// │  A common SPICE pitfall: numerical error accumulates over long     │
+// │  simulations. Audio simulations can be several seconds long        │
+// │  (the guitar sample is ~2 seconds). This test verifies that the    │
+// │  simulation doesn't drift.                                         │
+// │                                                                    │
+// │  We run a 0.5-second passthrough simulation and compare the        │
+// │  first and last cycles of the sine wave — they should be           │
+// │  identical.                                                        │
+// │                                                                    │
+// │  First cycle:   ╭─╮          Last cycle:    ╭─╮                    │
+// │              ───╯ ╰───    ≈              ───╯ ╰───                 │
+// │               (identical)                (should match)            │
+// │                                                                    │
+// │  Acceptable error: < 0.1% drift over 0.5 seconds.                  │
+// └────────────────────────────────────────────────────────────────────┘
 describe('long transient stability', () => {
   it('no amplitude drift over 0.5 seconds', async () => {
     const { nodes, edges } = makeCircuit(

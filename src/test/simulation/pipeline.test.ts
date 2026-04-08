@@ -19,27 +19,27 @@ beforeAll(async () => {
   await engine.init();
 }, 15000);
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  FULL PIPELINE — compile → simulate → voltageToAudioBuffer       │
-// │                                                                  │
-// │  Tests the complete data flow that happens when a user clicks    │
-// │  "Simulate" in the app:                                          │
-// │                                                                  │
-// │    ComponentNodes + Edges                                        │
-// │         │  compileNetlist()                                      │
-// │         ▼                                                        │
-// │    SPICE netlist string                                          │
-// │         │  engine.run()                                          │
-// │         ▼                                                        │
-// │    { timeValues, voltageValues }  (variable-step Float64)        │
-// │         │  voltageToAudioBuffer()                                │
-// │         ▼                                                        │
-// │    Float32Array @ 44100 Hz  (ready for Web Audio playback)       │
-// │                                                                  │
-// │  Why it matters: each step could silently corrupt the data       │
-// │  (wrong sample rate, bad interpolation, normalization to zero).  │
-// │  This end-to-end test catches integration bugs between layers.   │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  FULL PIPELINE — compile → simulate → voltageToAudioBuffer         │
+// │                                                                    │
+// │  Tests the complete data flow that happens when a user clicks      │
+// │  "Simulate" in the app:                                            │
+// │                                                                    │
+// │    ComponentNodes + Edges                                          │
+// │         │  compileNetlist()                                        │
+// │         ▼                                                          │
+// │    SPICE netlist string                                            │
+// │         │  engine.run()                                            │
+// │         ▼                                                          │
+// │    { timeValues, voltageValues }  (variable-step Float64)          │
+// │         │  voltageToAudioBuffer()                                  │
+// │         ▼                                                          │
+// │    Float32Array @ 44100 Hz  (ready for Web Audio playback)         │
+// │                                                                    │
+// │  Why it matters: each step could silently corrupt the data         │
+// │  (wrong sample rate, bad interpolation, normalization to zero).    │
+// │  This end-to-end test catches integration bugs between layers.     │
+// └────────────────────────────────────────────────────────────────────┘
 describe('full pipeline: compile → simulate → audio buffer', () => {
   it('produces a valid, non-silent Float32Array at 44100 Hz', async () => {
     const { nodes, edges } = makeCircuit(
@@ -83,25 +83,25 @@ describe('full pipeline: compile → simulate → audio buffer', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  PWL SOURCE DETERMINISM                                          │
-// │                                                                  │
-// │  Instead of a SIN test tone, feed a real audio buffer (a short   │
-// │  synthetic waveform) through the netlist as a PWL voltage source │
-// │  and snapshot the output. This tests the entire PWL code path:   │
-// │                                                                  │
-// │    Float32Array (44100 Hz)                                       │
-// │         │  buildPwlSource() — downsamples to 10 kHz              │
-// │         ▼                                                        │
-// │    PWL(0 0.0 0.0001 0.5 0.0002 1.0 ...)                          │
-// │         │  ngspice transient analysis                            │
-// │         ▼                                                        │
-// │    variable-step output                                          │
-// │                                                                  │
-// │  Why it matters: this is the path used when simulating with a    │
-// │  real guitar sample. If PWL downsampling or formatting changes,  │
-// │  the snapshot breaks.                                            │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  PWL SOURCE DETERMINISM                                            │
+// │                                                                    │
+// │  Instead of a SIN test tone, feed a real audio buffer (a short     │
+// │  synthetic waveform) through the netlist as a PWL voltage source   │
+// │  and snapshot the output. This tests the entire PWL code path:     │
+// │                                                                    │
+// │    Float32Array (44100 Hz)                                         │
+// │         │  buildPwlSource() — downsamples to 10 kHz                │
+// │         ▼                                                          │
+// │    PWL(0 0.0 0.0001 0.5 0.0002 1.0 ...)                            │
+// │         │  ngspice transient analysis                              │
+// │         ▼                                                          │
+// │    variable-step output                                            │
+// │                                                                    │
+// │  Why it matters: this is the path used when simulating with a      │
+// │  real guitar sample. If PWL downsampling or formatting changes,    │
+// │  the snapshot breaks.                                              │
+// └────────────────────────────────────────────────────────────────────┘
 describe('PWL source determinism', () => {
   it('synthetic buffer through passthrough produces deterministic output', async () => {
     const { nodes, edges } = makeCircuit(
@@ -141,21 +141,21 @@ describe('PWL source determinism', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  PWL WITH LONG AUDIO BUFFER                                      │
-// │                                                                  │
-// │  Real guitar samples are ~2 seconds at 44100 Hz = 88,200        │
-// │  samples. The PWL source downsamples to 10,000 Hz, producing    │
-// │  ~20,000 breakpoints. This tests that the SPICE engine handles  │
-// │  many breakpoints without errors or performance issues.          │
-// │                                                                  │
-// │  We simulate 0.1 seconds (4,410 samples → ~1,000 breakpoints)  │
-// │  as a realistic sub-sample test.                                │
-// │                                                                  │
-// │  Why it matters: the PWL source is how real audio reaches the   │
-// │  SPICE engine. Short test buffers (8 samples) don't stress the  │
-// │  breakpoint handling the way real audio does.                   │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  PWL WITH LONG AUDIO BUFFER                                        │
+// │                                                                    │
+// │  Real guitar samples are ~2 seconds at 44100 Hz = 88,200           │
+// │  samples. The PWL source downsamples to 10,000 Hz, producing       │
+// │  ~20,000 breakpoints. This tests that the SPICE engine handles     │
+// │  many breakpoints without errors or performance issues.            │
+// │                                                                    │
+// │  We simulate 0.1 seconds (4,410 samples → ~1,000 breakpoints)      │
+// │  as a realistic sub-sample test.                                   │
+// │                                                                    │
+// │  Why it matters: the PWL source is how real audio reaches the      │
+// │  SPICE engine. Short test buffers (8 samples) don't stress the     │
+// │  breakpoint handling the way real audio does.                      │
+// └────────────────────────────────────────────────────────────────────┘
 describe('PWL with long audio buffer', () => {
   it('handles 4410 samples without error', async () => {
     const { nodes, edges } = makeCircuit(

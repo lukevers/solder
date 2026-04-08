@@ -17,27 +17,27 @@ beforeAll(async () => {
   await engine.init();
 }, 15000);
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  POTENTIOMETER POSITION                                          │
-// │                                                                  │
-// │  A pot is modeled as two resistors. Changing position should     │
-// │  change the output. This verifies that the pot's `position`     │
-// │  parameter actually affects the simulation.                      │
-// │                                                                  │
-// │  Schematic (pot as volume control):                              │
-// │      INPUT ──┤Pot CCW├──┤Wiper├── OUTPUT                        │
-// │                         │                                       │
-// │                        [CW]                                      │
-// │                         │                                       │
-// │                        GND                                       │
-// │                                                                  │
-// │  Position = 0.0 → Wiper at CCW end → OUTPUT = INPUT             │
-// │  Position = 0.5 → Wiper at midpoint → OUTPUT = 0.5 × INPUT     │
-// │  Position = 1.0 → Wiper at CW end → OUTPUT ≈ 0 (all to GND)   │
-// │                                                                  │
-// │  Why it matters: every pedal has pots (Volume, Gain, Tone). If  │
-// │  position doesn't affect simulation, controls are broken.       │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  POTENTIOMETER POSITION                                            │
+// │                                                                    │
+// │  A pot is modeled as two resistors. Changing position should       │
+// │  change the output. This verifies that the pot's `position`        │
+// │  parameter actually affects the simulation.                        │
+// │                                                                    │
+// │  Schematic (pot as volume control):                                │
+// │      INPUT ──┤Pot CCW├──┤Wiper├── OUTPUT                           │
+// │                         │                                          │
+// │                        [CW]                                        │
+// │                         │                                          │
+// │                        GND                                         │
+// │                                                                    │
+// │  Position = 0.0 → Wiper at CCW end → OUTPUT = INPUT                │
+// │  Position = 0.5 → Wiper at midpoint → OUTPUT = 0.5 × INPUT         │
+// │  Position = 1.0 → Wiper at CW end → OUTPUT ≈ 0 (all to GND)        │
+// │                                                                    │
+// │  Why it matters: every pedal has pots (Volume, Gain, Tone). If     │
+// │  position doesn't affect simulation, controls are broken.          │
+// └────────────────────────────────────────────────────────────────────┘
 describe('potentiometer position', () => {
   function potCircuit(position: number) {
     const components: Array<ComponentNode> = [

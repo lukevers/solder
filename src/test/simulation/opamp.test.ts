@@ -25,34 +25,34 @@ beforeAll(async () => {
 //  correctly in standard configurations.
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  INVERTING AMPLIFIER                                             │
-// │                                                                  │
-// │  The most common op-amp configuration in audio. Gain is set by   │
-// │  the ratio of feedback resistor to input resistor:               │
-// │     Av = -Rf/Ri                                                  │
-// │                                                                  │
-// │  Schematic:                                                      │
-// │                     Rf = 100kΩ                                   │
-// │              ┌─────┤Rf├─────┐                                    │
-// │              │               │                                   │
-// │  INPUT ─┤Ri├─┤(-) U1        │                                   │
-// │    Ri=10k    │         (out)─┴── OUTPUT                         │
-// │   VBIAS ─────┤(+)                                               │
-// │              │                                                   │
-// │    VCC ──── vcc                                                  │
-// │    GND ──── gnd                                                  │
-// │                                                                  │
-// │  With Rf=100k and Ri=10k: Av = -100k/10k = -10                 │
-// │  0.05V input peak → 0.5V output peak (inverted)                │
-// │                                                                  │
-// │  Input:   ╭─╮   ╭─╮          Output:  ╰─╯   ╰─╯                │
-// │        ───╯ ╰───╯ ╰───    →       ───╭─╮───╭─╮───               │
-// │          0.05V peak                    0.5V peak (inverted)     │
-// │                                                                  │
-// │  Why it matters: the RAT's gain stage is an inverting amplifier. │
-// │  If the op-amp gain is wrong, the distortion level is wrong.    │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  INVERTING AMPLIFIER                                               │
+// │                                                                    │
+// │  The most common op-amp configuration in audio. Gain is set by     │
+// │  the ratio of feedback resistor to input resistor:                 │
+// │     Av = -Rf/Ri                                                    │
+// │                                                                    │
+// │  Schematic:                                                        │
+// │                     Rf = 100kΩ                                     │
+// │              ┌─────┤Rf├─────┐                                      │
+// │              │               │                                     │
+// │  INPUT ─┤Ri├─┤(-) U1        │                                      │
+// │    Ri=10k    │         (out)─┴── OUTPUT                            │
+// │   VBIAS ─────┤(+)                                                  │
+// │              │                                                     │
+// │    VCC ──── vcc                                                    │
+// │    GND ──── gnd                                                    │
+// │                                                                    │
+// │  With Rf=100k and Ri=10k: Av = -100k/10k = -10                     │
+// │  0.05V input peak → 0.5V output peak (inverted)                    │
+// │                                                                    │
+// │  Input:   ╭─╮   ╭─╮          Output:  ╰─╯   ╰─╯                    │
+// │        ───╯ ╰───╯ ╰───    →       ───╭─╮───╭─╮───                  │
+// │          0.05V peak                    0.5V peak (inverted)        │
+// │                                                                    │
+// │  Why it matters: the RAT's gain stage is an inverting amplifier.   │
+// │  If the op-amp gain is wrong, the distortion level is wrong.       │
+// └────────────────────────────────────────────────────────────────────┘
 describe('op-amp inverting amplifier', () => {
   function invertingAmp(model: 'TL072' | 'LM741') {
     const components: Array<ComponentNode> = [
@@ -205,22 +205,22 @@ describe('op-amp inverting amplifier', () => {
   });
 });
 
-// ┌──────────────────────────────────────────────────────────────────┐
-// │  OP-AMP UNITY-GAIN BUFFER (Voltage Follower)                    │
-// │                                                                  │
-// │  Schematic:                                                      │
-// │  INPUT ─────┤(+) U1 (out)──┬── OUTPUT                           │
-// │             │(-)────────────┘                                    │
-// │             vcc ── VCC                                           │
-// │             gnd ── GND                                           │
-// │                                                                  │
-// │  Gain = 1 (output follows input exactly)                        │
-// │  Tests op-amp stability with 100% negative feedback.            │
-// │                                                                  │
-// │  Why it matters: if the subcircuit model has phase margin        │
-// │  problems, a unity-gain buffer will oscillate. This is the      │
-// │  standard stability test.                                       │
-// └──────────────────────────────────────────────────────────────────┘
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  OP-AMP UNITY-GAIN BUFFER (Voltage Follower)                       │
+// │                                                                    │
+// │  Schematic:                                                        │
+// │  INPUT ─────┤(+) U1 (out)──┬── OUTPUT                              │
+// │             │(-)────────────┘                                      │
+// │             vcc ── VCC                                             │
+// │             gnd ── GND                                             │
+// │                                                                    │
+// │  Gain = 1 (output follows input exactly)                           │
+// │  Tests op-amp stability with 100% negative feedback.               │
+// │                                                                    │
+// │  Why it matters: if the subcircuit model has phase margin          │
+// │  problems, a unity-gain buffer will oscillate. This is the         │
+// │  standard stability test.                                          │
+// └────────────────────────────────────────────────────────────────────┘
 describe('op-amp unity-gain buffer', () => {
   it('output has AC content matching input frequency', async () => {
     const components: Array<ComponentNode> = [
