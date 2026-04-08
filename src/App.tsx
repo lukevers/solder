@@ -347,18 +347,15 @@ export default function App() {
                 >
                   <Repeat size={10} /> Loop
                 </button>
-                {(outputBuffer || selection) && (
-                  <>
-                    <div className="w-px bg-gray-700" />
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300 transition-colors"
-                    >
-                      <RotateCcw size={10} /> Reset
-                    </button>
-                  </>
-                )}
+                <div className="w-px bg-gray-700" />
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  disabled={!outputBuffer && !selection}
+                  className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 text-gray-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-gray-700 hover:enabled:text-gray-300"
+                >
+                  <RotateCcw size={10} /> Reset
+                </button>
               </div>
             )}
           </div>
