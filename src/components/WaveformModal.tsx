@@ -38,7 +38,7 @@ export function WaveformModal({ inputBuffer, outputBuffer, onClose }: Props) {
             ✕
           </button>
         </div>
-        <WaveformDisplay inputBuffer={inputBuffer} outputBuffer={outputBuffer} height={220} />
+        <WaveformDisplay inputBuffer={inputBuffer} outputBuffer={outputBuffer} height={220} showTicks />
       </div>
     </div>
   );

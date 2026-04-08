@@ -1,16 +1,20 @@
 // src/components/WaveformDisplay.tsx
 import { useEffect, useRef } from 'react';
 
+const SAMPLE_RATE = 44100;
+
 type Props = {
   inputBuffer: Float32Array | null;
   outputBuffer: Float32Array | null;
   height?: number;
+  showTicks?: boolean;
 };
 
 export function WaveformDisplay({
   inputBuffer,
   outputBuffer,
   height = 80,
+  showTicks = false,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const splitRef = useRef(0.5);
@@ -34,6 +38,31 @@ export function WaveformDisplay({
     ctx.fillRect(0, 0, w, h);
 
     const splitX = w * split;
+
+    // Time ticks
+    if (showTicks) {
+      const totalSamples = Math.max(inputBuffer?.length ?? 0, outputBuffer?.length ?? 0);
+      const duration = totalSamples / SAMPLE_RATE;
+      // Pick a tick interval that gives roughly 5–10 ticks
+      const candidates = [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10];
+      const interval = candidates.find((c) => duration / c <= 10 && duration / c >= 3) ?? candidates[candidates.length - 1];
+      const tickCount = Math.floor(duration / interval);
+      ctx.strokeStyle = '#1f2937';
+      ctx.lineWidth = 1;
+      ctx.fillStyle = '#4b5563';
+      ctx.font = '9px monospace';
+      ctx.textAlign = 'center';
+      for (let i = 1; i <= tickCount; i++) {
+        const t = i * interval;
+        const x = (t / duration) * w;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+        const label = t >= 1 ? `${t.toFixed(0)}s` : `${(t * 1000).toFixed(0)}ms`;
+        ctx.fillText(label, x, h - 3);
+      }
+    }
 
     function drawBuffer(buf: Float32Array, color: string) {
       if (!ctx) return;
@@ -94,7 +123,7 @@ export function WaveformDisplay({
 
   useEffect(() => {
     draw(splitRef.current);
-  }, [inputBuffer, outputBuffer, height]);
+  }, [inputBuffer, outputBuffer, height, showTicks]);
 
   function getFraction(e: React.PointerEvent<HTMLCanvasElement>): number {
     const canvas = canvasRef.current;
