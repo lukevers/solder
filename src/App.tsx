@@ -10,6 +10,7 @@ import { SchematicCanvas } from './components/SchematicCanvas';
 import { StatusBar } from './components/StatusBar';
 import { Toolbar } from './components/Toolbar';
 import { WaveformDisplay } from './components/WaveformDisplay';
+import { WaveformModal } from './components/WaveformModal';
 import type { SimulateRequest, SimulateResponse } from './lib/types';
 import { useStore } from './store';
 
@@ -51,6 +52,7 @@ export default function App() {
   );
 
   const [showExamples, setShowExamples] = useState(false);
+  const [showWaveformModal, setShowWaveformModal] = useState(false);
   const [sourceBuffer, setSourceBuffer] = useState<Float32Array | null>(null);
   const [playingOriginal, setPlayingOriginal] = useState(false);
 
@@ -220,8 +222,20 @@ export default function App() {
           <Inspector />
           <div className="border-t border-gray-800" />
           <div className="p-3">
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
-              Waveform
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-gray-500 uppercase tracking-wider">Waveform</span>
+              {(sourceBuffer || outputBuffer) && (
+                <button
+                  type="button"
+                  onClick={() => setShowWaveformModal(true)}
+                  className="text-gray-500 hover:text-gray-200 transition-colors"
+                  aria-label="Expand waveform"
+                >
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                    <path d="M1 5V1h4M8 1h4v4M12 8v4H8M5 12H1V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              )}
             </div>
             <WaveformDisplay inputBuffer={sourceBuffer} outputBuffer={outputBuffer} />
           </div>
@@ -231,6 +245,13 @@ export default function App() {
       </div>
 
       <StatusBar />
+      {showWaveformModal && (
+        <WaveformModal
+          inputBuffer={sourceBuffer}
+          outputBuffer={outputBuffer}
+          onClose={() => setShowWaveformModal(false)}
+        />
+      )}
     </div>
   );
 }
