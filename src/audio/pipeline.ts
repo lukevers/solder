@@ -16,6 +16,7 @@ export class AudioPipeline {
   private scriptNode: ScriptProcessorNode | null = null;
   private onInputBuffer: OnInputBuffer | null = null;
   private nextPlayTime = 0;
+  private activeSource: AudioBufferSourceNode | null = null;
 
   async init(volume: number): Promise<void> {
     this.ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
@@ -121,7 +122,43 @@ export class AudioPipeline {
     this.nextPlayTime += bufferDuration;
   }
 
+  /** Play a pre-simulated output buffer once. Calls onEnded when playback finishes naturally. */
+  playBuffer(buffer: Float32Array, onEnded?: () => void): void {
+    if (!this.ctx || !this.gainNode) return;
+    void this.ctx.resume();
+    this.stopPlayback();
+    const audioBuffer = this.ctx.createBuffer(
+      1,
+      buffer.length,
+      this.ctx.sampleRate,
+    );
+    audioBuffer.copyToChannel(buffer, 0);
+    this.activeSource = this.ctx.createBufferSource();
+    this.activeSource.buffer = audioBuffer;
+    this.activeSource.connect(this.gainNode);
+    if (onEnded) {
+      this.activeSource.onended = () => {
+        this.activeSource = null;
+        onEnded();
+      };
+    }
+    this.activeSource.start();
+  }
+
+  /** Stop batch playback if currently playing. */
+  stopPlayback(): void {
+    if (this.activeSource) {
+      try {
+        this.activeSource.stop();
+      } catch {
+        // Ignore if already stopped
+      }
+      this.activeSource = null;
+    }
+  }
+
   stop(): void {
+    this.stopPlayback();
     void this.ctx?.suspend();
     this.scriptNode?.disconnect();
     this.scriptNode = null;
