@@ -10,8 +10,7 @@ import { SchematicCanvas } from './components/SchematicCanvas';
 import { StatusBar } from './components/StatusBar';
 import { Toolbar } from './components/Toolbar';
 import { WaveformDisplay } from './components/WaveformDisplay';
-import { compileNetlist } from './lib/netlist';
-import type { SimulateResponse } from './lib/types';
+import type { SimulateRequest, SimulateResponse } from './lib/types';
 import { useStore } from './store';
 
 export default function App() {
@@ -19,9 +18,11 @@ export default function App() {
     nodes,
     edges,
     outputBuffer,
-    audioSource,
     volume,
     playing,
+    simulationDuration,
+    inputFrequency,
+    inputAmplitude,
     setSimulationStatus,
     setOutputBuffer,
     setSimulationError,
@@ -33,9 +34,11 @@ export default function App() {
       nodes: s.nodes,
       edges: s.edges,
       outputBuffer: s.outputBuffer,
-      audioSource: s.audioSource,
       volume: s.volume,
       playing: s.playing,
+      simulationDuration: s.simulationDuration,
+      inputFrequency: s.inputFrequency,
+      inputAmplitude: s.inputAmplitude,
       setSimulationStatus: s.setSimulationStatus,
       setOutputBuffer: s.setOutputBuffer,
       setSimulationError: s.setSimulationError,
@@ -65,52 +68,16 @@ export default function App() {
 
   const workerRef = useRef<Worker | null>(null);
   const pipelineRef = useRef<AudioPipeline | null>(null);
-  const inputBufRef = useRef<Float32Array>(new Float32Array(2048));
-  const [inputSnapshot, setInputSnapshot] = useState<Float32Array | null>(null);
 
-  // Refs so audio callbacks can read current circuit without stale closures
+  // Refs so callbacks read current values without stale closures
   const nodesRef = useRef(nodes);
   const edgesRef = useRef(edges);
-  // One simulation in flight at a time — prevents flooding the worker
-  const simInFlightRef = useRef(false);
-  // Tracks whether continuous playback is active, so status isn't toggled per-buffer
-  const playingRef = useRef(playing);
-
   useEffect(() => {
     nodesRef.current = nodes;
   }, [nodes]);
   useEffect(() => {
     edgesRef.current = edges;
   }, [edges]);
-  useEffect(() => {
-    playingRef.current = playing;
-  }, [playing]);
-
-  // Send one buffer to the worker
-  const postToWorker = useCallback(
-    (buf: Float32Array) => {
-      if (!workerRef.current || simInFlightRef.current) return;
-      try {
-        const netlist = compileNetlist(
-          nodesRef.current,
-          edgesRef.current,
-          buf,
-          44100,
-        );
-        simInFlightRef.current = true;
-        if (!playingRef.current) setSimulationStatus('running');
-        workerRef.current.postMessage(
-          { type: 'simulate', netlist, inputBuffer: buf },
-          [buf.buffer],
-        );
-      } catch (err) {
-        simInFlightRef.current = false;
-        setSimulationStatus('error');
-        setSimulationError(err instanceof Error ? err.message : String(err));
-      }
-    },
-    [setSimulationStatus, setSimulationError],
-  );
 
   // Initialize worker
   useEffect(() => {
@@ -120,18 +87,15 @@ export default function App() {
     );
     workerRef.current.onmessage = (e: MessageEvent<SimulateResponse>) => {
       const msg = e.data;
-      simInFlightRef.current = false;
       if (msg.type === 'result') {
-        if (!playingRef.current) setSimulationStatus('idle');
+        setSimulationStatus('idle');
         setOutputBuffer(msg.outputBuffer);
-        pipelineRef.current?.scheduleOutput(msg.outputBuffer);
       } else {
         setSimulationStatus('error');
         setSimulationError(msg.message);
       }
     };
     workerRef.current.onerror = (e: ErrorEvent) => {
-      simInFlightRef.current = false;
       setSimulationStatus('error');
       setSimulationError(e.message ?? 'Worker crashed');
     };
@@ -156,61 +120,39 @@ export default function App() {
     pipelineRef.current?.setVolume(volume);
   }, [volume]);
 
-  // Start/stop audio capture when playing state or source changes
+  // Play/stop output buffer when `playing` state changes
   useEffect(() => {
-    const pipeline = pipelineRef.current;
-    if (!pipeline) return;
-
-    pipeline.stop();
-    simInFlightRef.current = false;
-    if (!playing) {
-      setSimulationStatus('idle');
-      return;
-    }
-    setSimulationStatus('running');
-
-    // Called at ~46ms intervals by the ScriptProcessorNode.
-    // Triggers one simulation per chunk — rate-limited by the onaudioprocess clock.
-    function onInputBuffer(buf: Float32Array) {
-      inputBufRef.current = buf;
-      const simBuf = buf;
-      inputBufRef.current = new Float32Array(2048);
-      setInputSnapshot(new Float32Array(simBuf));
-      postToWorker(simBuf);
-    }
-
-    function onError(err: unknown) {
-      setSimulationError(err instanceof Error ? err.message : String(err));
-      setSimulationStatus('error');
-      setPlaying(false);
-    }
-
-    if (audioSource.type === 'sample') {
-      pipeline
-        .loadSample(audioSource.name)
-        .then(() =>
-          pipeline.startSampleCapture(audioSource.name, onInputBuffer),
-        )
-        .catch(onError);
+    if (playing && outputBuffer) {
+      pipelineRef.current?.playBuffer(outputBuffer, () => setPlaying(false));
     } else {
-      pipeline.startLiveCapture(onInputBuffer).catch(onError);
+      pipelineRef.current?.stopPlayback();
+    }
+  }, [playing, outputBuffer, setPlaying]);
+
+  const handleSimulate = useCallback(() => {
+    if (!workerRef.current) return;
+    try {
+      setSimulationStatus('running');
+      const request: SimulateRequest = {
+        type: 'simulate',
+        nodes: nodesRef.current,
+        edges: edgesRef.current,
+        duration: simulationDuration,
+        frequency: inputFrequency,
+        amplitude: inputAmplitude,
+      };
+      workerRef.current.postMessage(request);
+    } catch (err) {
+      setSimulationStatus('error');
+      setSimulationError(err instanceof Error ? err.message : String(err));
     }
   }, [
-    playing,
-    audioSource,
-    postToWorker,
-    setSimulationError,
     setSimulationStatus,
-    setPlaying,
+    setSimulationError,
+    simulationDuration,
+    inputFrequency,
+    inputAmplitude,
   ]);
-
-  // Manual simulate: kick off a one-shot (useful when not playing)
-  const handleSimulate = useCallback(() => {
-    const buf = inputBufRef.current;
-    inputBufRef.current = new Float32Array(2048);
-    setInputSnapshot(new Float32Array(buf));
-    postToWorker(buf);
-  }, [postToWorker]);
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
@@ -232,10 +174,7 @@ export default function App() {
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
               Waveform
             </div>
-            <WaveformDisplay
-              inputBuffer={inputSnapshot}
-              outputBuffer={outputBuffer}
-            />
+            <WaveformDisplay inputBuffer={null} outputBuffer={outputBuffer} />
           </div>
           <div className="border-t border-gray-800" />
           <AudioControls />

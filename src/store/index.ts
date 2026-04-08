@@ -110,6 +110,9 @@ type StoreState = {
   simulationStatus: SimulationStatus;
   outputBuffer: Float32Array | null;
   simulationError: string | null;
+  simulationDuration: number;
+  inputFrequency: number;
+  inputAmplitude: number;
   setSimulationStatus: (status: SimulationStatus) => void;
   setOutputBuffer: (buf: Float32Array) => void;
   setSimulationError: (msg: string) => void;
@@ -141,6 +144,9 @@ const initialState = {
   simulationStatus: 'idle' as SimulationStatus,
   outputBuffer: null as Float32Array | null,
   simulationError: null as string | null,
+  simulationDuration: 1.0,
+  inputFrequency: 1000,
+  inputAmplitude: 1.0,
 
   // audio slice
   audioSource: { type: 'sample', name: 'guitar' } as AudioSource,
