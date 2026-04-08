@@ -73,22 +73,28 @@ const PALETTE: Array<{
 
 type ToolbarProps = {
   onSimulate: () => void;
+  onReset: () => void;
   onToggleExamples: () => void;
   showExamples: boolean;
   onPlayOriginal: () => void;
   onStop: () => void;
   playingOriginal: boolean;
   hasSourceBuffer: boolean;
+  looping: boolean;
+  onToggleLoop: () => void;
 };
 
 export function Toolbar({
   onSimulate,
+  onReset,
   onToggleExamples,
   showExamples,
   onPlayOriginal,
   onStop,
   playingOriginal,
   hasSourceBuffer,
+  looping,
+  onToggleLoop,
 }: ToolbarProps) {
   const {
     addNode,
@@ -378,9 +384,36 @@ export function Toolbar({
 
         <div className="flex-1" />
 
-        {/* Play Dry (original sample) */}
+        {/* Reset */}
+        {outputBuffer && simulationStatus !== 'running' && (
+          <button
+            type="button"
+            onClick={onReset}
+            className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-400 hover:text-gray-200 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+          >
+            ↺ Reset
+          </button>
+        )}
+
+        {/* Loop toggle */}
         {hasSourceBuffer && (
-          playingOriginal ? (
+          <button
+            type="button"
+            onClick={onToggleLoop}
+            className={`border text-xs px-2 py-1 rounded font-mono font-bold transition-colors ${
+              looping
+                ? 'bg-blue-950 border-blue-600 text-blue-400'
+                : 'bg-gray-800 hover:bg-gray-700 border-gray-600 text-gray-500 hover:text-gray-300'
+            }`}
+            aria-label={looping ? 'Disable loop' : 'Enable loop'}
+          >
+            ↻
+          </button>
+        )}
+
+        {/* Play Dry (original sample) */}
+        {hasSourceBuffer &&
+          (playingOriginal ? (
             <button
               type="button"
               onClick={onStop}
@@ -399,8 +432,7 @@ export function Toolbar({
             >
               ▶ Dry
             </button>
-          )
-        )}
+          ))}
 
         {/* Simulate / Play Wet / Stop */}
         {simulationStatus === 'running' ? (

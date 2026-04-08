@@ -9,7 +9,10 @@ import { PedalPanel } from './components/PedalPanel';
 import { SchematicCanvas } from './components/SchematicCanvas';
 import { StatusBar } from './components/StatusBar';
 import { Toolbar } from './components/Toolbar';
-import { WaveformDisplay } from './components/WaveformDisplay';
+import {
+  WaveformDisplay,
+  type WaveformSelection,
+} from './components/WaveformDisplay';
 import { WaveformModal } from './components/WaveformModal';
 import type { SimulateRequest, SimulateResponse } from './lib/types';
 import { useStore } from './store';
@@ -27,6 +30,7 @@ export default function App() {
     inputAmplitude,
     setSimulationStatus,
     setOutputBuffer,
+    clearOutputBuffer,
     setSimulationError,
     setPlaying,
     undo,
@@ -44,6 +48,7 @@ export default function App() {
       inputAmplitude: s.inputAmplitude,
       setSimulationStatus: s.setSimulationStatus,
       setOutputBuffer: s.setOutputBuffer,
+      clearOutputBuffer: s.clearOutputBuffer,
       setSimulationError: s.setSimulationError,
       setPlaying: s.setPlaying,
       undo: s.undo,
@@ -55,6 +60,12 @@ export default function App() {
   const [showWaveformModal, setShowWaveformModal] = useState(false);
   const [sourceBuffer, setSourceBuffer] = useState<Float32Array | null>(null);
   const [playingOriginal, setPlayingOriginal] = useState(false);
+  const [selection, setSelection] = useState<WaveformSelection | null>(null);
+  const [looping, setLooping] = useState(false);
+  const [simulatedInput, setSimulatedInput] = useState<Float32Array | null>(
+    null,
+  );
+  const pendingInputRef = useRef<Float32Array | null>(null);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -79,12 +90,16 @@ export default function App() {
   // Refs so callbacks read current values without stale closures
   const nodesRef = useRef(nodes);
   const edgesRef = useRef(edges);
+  const selectionRef = useRef(selection);
   useEffect(() => {
     nodesRef.current = nodes;
   }, [nodes]);
   useEffect(() => {
     edgesRef.current = edges;
   }, [edges]);
+  useEffect(() => {
+    selectionRef.current = selection;
+  }, [selection]);
 
   // Initialize worker
   useEffect(() => {
@@ -95,12 +110,15 @@ export default function App() {
     workerRef.current.onmessage = (e: MessageEvent<SimulateResponse>) => {
       const msg = e.data;
       if (msg.type === 'result') {
-        const elapsed = simStartRef.current != null
-          ? (performance.now() - simStartRef.current) / 1000
-          : undefined;
+        const elapsed =
+          simStartRef.current != null
+            ? (performance.now() - simStartRef.current) / 1000
+            : undefined;
         simStartRef.current = null;
         setSimulationStatus('idle');
         setOutputBuffer(msg.outputBuffer, elapsed);
+        setSimulatedInput(pendingInputRef.current);
+        pendingInputRef.current = null;
       } else {
         setSimulationStatus('error');
         setSimulationError(msg.message);
@@ -132,6 +150,7 @@ export default function App() {
 
   // Load sample and update sourceBuffer whenever audioSource changes
   useEffect(() => {
+    setSelection(null);
     if (audioSource.type !== 'sample') {
       setSourceBuffer(null);
       return;
@@ -160,7 +179,15 @@ export default function App() {
     if (playing && outputBuffer) {
       pipeline.playBuffer(outputBuffer, () => setPlaying(false));
     } else if (playingOriginal && sourceBuffer) {
-      pipeline.playBuffer(sourceBuffer, () => setPlayingOriginal(false));
+      const sel = selectionRef.current;
+      if (sel) {
+        const start = Math.floor(sel.start * sourceBuffer.length);
+        const end = Math.floor(sel.end * sourceBuffer.length);
+        const sliced = new Float32Array(sourceBuffer.subarray(start, end));
+        pipeline.playBuffer(sliced, () => setPlayingOriginal(false));
+      } else {
+        pipeline.playBuffer(sourceBuffer, () => setPlayingOriginal(false));
+      }
     } else {
       pipeline.stopPlayback();
     }
@@ -176,6 +203,13 @@ export default function App() {
     setPlayingOriginal(false);
   }, [setPlaying]);
 
+  const handleReset = useCallback(() => {
+    setPlaying(false);
+    setPlayingOriginal(false);
+    clearOutputBuffer();
+    setSimulatedInput(null);
+  }, [setPlaying, clearOutputBuffer]);
+
   const handleSimulate = useCallback(() => {
     if (!workerRef.current) return;
     try {
@@ -188,9 +222,18 @@ export default function App() {
       if (audioSource.type === 'sample' && pipeline) {
         const data = pipeline.getSampleData(audioSource.name);
         if (data) {
-          inputBuffer = data;
+          const sel = selectionRef.current;
+          if (sel) {
+            const startSample = Math.floor(sel.start * data.length);
+            const endSample = Math.floor(sel.end * data.length);
+            inputBuffer = new Float32Array(
+              data.subarray(startSample, endSample),
+            );
+          } else {
+            inputBuffer = data;
+          }
           inputSampleRate = pipeline.getSampleRate();
-          duration = data.length / inputSampleRate;
+          duration = inputBuffer.length / inputSampleRate;
         }
       }
       const request: SimulateRequest = {
@@ -203,6 +246,9 @@ export default function App() {
         inputBuffer,
         inputSampleRate,
       };
+      pendingInputRef.current = inputBuffer
+        ? new Float32Array(inputBuffer)
+        : null;
       workerRef.current.postMessage(request);
     } catch (err) {
       setSimulationStatus('error');
@@ -221,12 +267,15 @@ export default function App() {
     <div className="flex flex-col h-screen overflow-hidden">
       <Toolbar
         onSimulate={handleSimulate}
+        onReset={handleReset}
         onToggleExamples={() => setShowExamples((v) => !v)}
         showExamples={showExamples}
         onPlayOriginal={handlePlayOriginal}
         onStop={handleStop}
         playingOriginal={playingOriginal}
         hasSourceBuffer={sourceBuffer !== null}
+        looping={looping}
+        onToggleLoop={() => setLooping((v) => !v)}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -239,21 +288,44 @@ export default function App() {
           <div className="border-t border-gray-800" />
           <div className="p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-gray-500 uppercase tracking-wider">Waveform</span>
+              <span className="text-xs text-gray-500 uppercase tracking-wider">
+                Waveform
+              </span>
               {(sourceBuffer || outputBuffer) && (
                 <button
                   type="button"
-                  onClick={() => setShowWaveformModal(true)}
+                  onClick={() => {
+                    setPlaying(false);
+                    setPlayingOriginal(false);
+                    setShowWaveformModal(true);
+                  }}
                   className="text-gray-500 hover:text-gray-200 transition-colors"
                   aria-label="Expand waveform"
                 >
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-                    <path d="M1 5V1h4M8 1h4v4M12 8v4H8M5 12H1V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 13 13"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M1 5V1h4M8 1h4v4M12 8v4H8M5 12H1V8"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </button>
               )}
             </div>
-            <WaveformDisplay inputBuffer={sourceBuffer} outputBuffer={outputBuffer} />
+            <WaveformDisplay
+              inputBuffer={outputBuffer ? simulatedInput : sourceBuffer}
+              outputBuffer={outputBuffer}
+              selection={outputBuffer ? null : selection}
+              onSelectionChange={outputBuffer ? undefined : setSelection}
+            />
           </div>
           <div className="border-t border-gray-800" />
           <AudioControls />
@@ -263,8 +335,13 @@ export default function App() {
       <StatusBar />
       {showWaveformModal && (
         <WaveformModal
-          inputBuffer={sourceBuffer}
+          inputBuffer={outputBuffer ? simulatedInput : sourceBuffer}
           outputBuffer={outputBuffer}
+          pipeline={pipelineRef.current}
+          selection={outputBuffer ? null : selection}
+          onSelectionChange={outputBuffer ? undefined : setSelection}
+          looping={looping}
+          onToggleLoop={() => setLooping((v) => !v)}
           onClose={() => setShowWaveformModal(false)}
         />
       )}

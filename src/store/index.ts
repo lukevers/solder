@@ -116,6 +116,7 @@ type StoreState = {
   inputAmplitude: number;
   setSimulationStatus: (status: SimulationStatus) => void;
   setOutputBuffer: (buf: Float32Array, elapsed?: number) => void;
+  clearOutputBuffer: () => void;
   setSimulationError: (msg: string) => void;
 
   // audio slice
@@ -236,19 +237,34 @@ export const useStore = create<StoreState>()(
           ],
           future: [],
           nodes: [...s.nodes, node],
-          outputBuffer: null, simulationElapsed: null,
+          outputBuffer: null,
+          simulationElapsed: null,
           simulationStatus: 'idle' as const,
         })),
       setNodes: (nodes) =>
         set((s) => {
           const oldIds = new Set(s.nodes.map((n) => n.id));
-          const topologyChanged = nodes.some((n) => !oldIds.has(n.id)) || nodes.length !== s.nodes.length;
+          const topologyChanged =
+            nodes.some((n) => !oldIds.has(n.id)) ||
+            nodes.length !== s.nodes.length;
           return {
             nodes,
-            ...(topologyChanged ? { outputBuffer: null, simulationElapsed: null, simulationStatus: 'idle' as const } : {}),
+            ...(topologyChanged
+              ? {
+                  outputBuffer: null,
+                  simulationElapsed: null,
+                  simulationStatus: 'idle' as const,
+                }
+              : {}),
           };
         }),
-      setEdges: (edges) => set({ edges, outputBuffer: null, simulationElapsed: null, simulationStatus: 'idle' as const }),
+      setEdges: (edges) =>
+        set({
+          edges,
+          outputBuffer: null,
+          simulationElapsed: null,
+          simulationStatus: 'idle' as const,
+        }),
       selectNode: (selectedNodeId) => set({ selectedNodeId }),
       updateNodeData: (id, data) =>
         set((s) => ({
@@ -260,7 +276,8 @@ export const useStore = create<StoreState>()(
           nodes: s.nodes.map((n) =>
             n.id === id ? ({ ...n, data } as ComponentNode) : n,
           ),
-          outputBuffer: null, simulationElapsed: null,
+          outputBuffer: null,
+          simulationElapsed: null,
           simulationStatus: 'idle' as const,
         })),
       loadCircuit: (nodes, edges) =>
@@ -284,7 +301,8 @@ export const useStore = create<StoreState>()(
             past: [],
             future: [],
             tabs: updatedTabs,
-            outputBuffer: null, simulationElapsed: null,
+            outputBuffer: null,
+            simulationElapsed: null,
             simulationStatus: 'idle' as const,
           };
         }),
@@ -308,7 +326,8 @@ export const useStore = create<StoreState>()(
           nodes: prev.nodes,
           edges: prev.edges,
           selectedNodeId: null,
-          outputBuffer: null, simulationElapsed: null,
+          outputBuffer: null,
+          simulationElapsed: null,
           simulationStatus: 'idle',
         });
       },
@@ -322,7 +341,8 @@ export const useStore = create<StoreState>()(
           nodes: next.nodes,
           edges: next.edges,
           selectedNodeId: null,
-          outputBuffer: null, simulationElapsed: null,
+          outputBuffer: null,
+          simulationElapsed: null,
           simulationStatus: 'idle',
         });
       },
@@ -330,7 +350,16 @@ export const useStore = create<StoreState>()(
       // simulation
       setSimulationStatus: (simulationStatus) => set({ simulationStatus }),
       setOutputBuffer: (outputBuffer, elapsed) =>
-        set({ outputBuffer, ...(elapsed != null ? { simulationElapsed: elapsed } : {}) }),
+        set({
+          outputBuffer,
+          ...(elapsed != null ? { simulationElapsed: elapsed } : {}),
+        }),
+      clearOutputBuffer: () =>
+        set({
+          outputBuffer: null,
+          simulationElapsed: null,
+          simulationStatus: 'idle',
+        }),
       setSimulationError: (simulationError) => set({ simulationError }),
 
       // audio

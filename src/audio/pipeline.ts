@@ -17,6 +17,9 @@ export class AudioPipeline {
   private onInputBuffer: OnInputBuffer | null = null;
   private nextPlayTime = 0;
   private activeSource: AudioBufferSourceNode | null = null;
+  private playbackStartTime = 0;
+  private playbackOffset = 0;
+  private playbackDuration = 0;
 
   async init(volume: number): Promise<void> {
     this.ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
@@ -149,12 +152,64 @@ export class AudioPipeline {
       this.activeSource = null;
       onEnded?.();
     };
+    this.playbackStartTime = this.ctx.currentTime;
+    this.playbackOffset = 0;
+    this.playbackDuration = buffer.length / this.ctx.sampleRate;
     this.activeSource.start();
+  }
+
+  /** Play a pre-simulated buffer starting at the given offset in seconds. */
+  playBufferFrom(
+    buffer: Float32Array,
+    offsetSeconds: number,
+    onEnded?: () => void,
+  ): void {
+    if (!this.ctx || !this.gainNode) return;
+    void this.ctx.resume();
+    this.stopPlayback();
+    const sampleRate = this.ctx.sampleRate;
+    const totalDuration = buffer.length / sampleRate;
+    const clampedOffset = Math.max(0, Math.min(offsetSeconds, totalDuration));
+    const offsetSamples = Math.floor(clampedOffset * sampleRate);
+    if (offsetSamples >= buffer.length) {
+      onEnded?.();
+      return;
+    }
+    const audioBuffer = this.ctx.createBuffer(
+      1,
+      buffer.length - offsetSamples,
+      sampleRate,
+    );
+    audioBuffer.copyToChannel(
+      new Float32Array(buffer.subarray(offsetSamples)),
+      0,
+    );
+    this.activeSource = this.ctx.createBufferSource();
+    this.activeSource.buffer = audioBuffer;
+    this.activeSource.connect(this.gainNode);
+    this.activeSource.onended = () => {
+      this.activeSource = null;
+      onEnded?.();
+    };
+    this.playbackStartTime = this.ctx.currentTime;
+    this.playbackOffset = clampedOffset;
+    this.playbackDuration = totalDuration;
+    this.activeSource.start();
+  }
+
+  /** Returns the current playback position as a fraction (0–1), or null if not playing. */
+  getPlaybackFraction(): number | null {
+    if (!this.ctx || !this.activeSource) return null;
+    const elapsed = this.ctx.currentTime - this.playbackStartTime;
+    const currentTime = this.playbackOffset + elapsed;
+    if (currentTime >= this.playbackDuration) return null;
+    return currentTime / this.playbackDuration;
   }
 
   /** Stop batch playback if currently playing. */
   stopPlayback(): void {
     if (this.activeSource) {
+      this.activeSource.onended = null;
       try {
         this.activeSource.stop();
       } catch {
