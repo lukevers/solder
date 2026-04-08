@@ -12,6 +12,7 @@ export type InputData = { label: string };
 export type OutputData = { label: string };
 export type DiodeData = { label: string; model: '1N914' | '1N4001' };
 export type PotData = { label: string; ohms: number; position: number };
+export type LabelData = { label: string };
 
 export type ComponentNode =
   | { id: string; type: 'resistor'; position: XYPosition; data: ResistorData }
@@ -22,7 +23,8 @@ export type ComponentNode =
   | { id: string; type: 'audiin'; position: XYPosition; data: InputData }
   | { id: string; type: 'audiout'; position: XYPosition; data: OutputData }
   | { id: string; type: 'diode'; position: XYPosition; data: DiodeData }
-  | { id: string; type: 'pot'; position: XYPosition; data: PotData };
+  | { id: string; type: 'pot'; position: XYPosition; data: PotData }
+  | { id: string; type: 'label'; position: XYPosition; data: LabelData };
 
 export type CircuitState = {
   nodes: Array<ComponentNode>;

@@ -3,6 +3,7 @@
 import { CapacitorNode } from './CapacitorNode';
 import { DiodeNode } from './DiodeNode';
 import { GroundNode } from './GroundNode';
+import { LabelNode } from './LabelNode';
 import { InputNode } from './InputNode';
 import { OpAmpNode } from './OpAmpNode';
 import { OutputNode } from './OutputNode';
@@ -20,4 +21,5 @@ export const nodeTypes = {
   audiout: OutputNode,
   diode: DiodeNode,
   pot: PotNode,
+  label: LabelNode,
 };

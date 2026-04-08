@@ -79,6 +79,12 @@ const PALETTE: Array<{
     type: 'opamp',
     defaultData: { label: 'U1', model: 'TL072' },
   },
+  {
+    label: 'NET',
+    tooltip: 'Net Label',
+    type: 'label',
+    defaultData: { label: 'NET1' },
+  },
 ];
 
 type ToolbarProps = {

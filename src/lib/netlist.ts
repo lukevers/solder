@@ -50,6 +50,7 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   audiout: ['in'],
   diode: ['a', 'k'],
   pot: ['ccw', 'wiper', 'cw'],
+  label: ['net'],
 };
 
 /** Port identifier: "${nodeId}|${handleId}" */
@@ -116,18 +117,22 @@ export function buildPortGroups(
     if (!adj.has(p)) adj.set(p, new Set());
   }
 
-  // Merge power nodes with same label into the same net (KiCad-style power flags).
-  // This lets users place multiple VCC/V+ symbols and they share one net automatically.
-  const powerByLabel = new Map<string, Array<Port>>();
+  // Merge power and label nodes with the same label into the same net
+  // (KiCad-style global net labels / power flags). Users can place multiple
+  // symbols and they share one net automatically without explicit wires.
+  const globalByLabel = new Map<string, Array<Port>>();
   for (const n of nodes) {
     if (n.type === 'power') {
-      const port: Port = `${n.id}|pos`;
-      const label = n.data.label;
-      if (!powerByLabel.has(label)) powerByLabel.set(label, []);
-      powerByLabel.get(label)!.push(port);
+      const key = `pwr:${n.data.label}`;
+      if (!globalByLabel.has(key)) globalByLabel.set(key, []);
+      globalByLabel.get(key)!.push(`${n.id}|pos`);
+    } else if (n.type === 'label') {
+      const key = `lbl:${n.data.label}`;
+      if (!globalByLabel.has(key)) globalByLabel.set(key, []);
+      globalByLabel.get(key)!.push(`${n.id}|net`);
     }
   }
-  for (const ports of powerByLabel.values()) {
+  for (const ports of globalByLabel.values()) {
     for (let i = 1; i < ports.length; i++) {
       if (!adj.has(ports[0])) adj.set(ports[0], new Set());
       if (!adj.has(ports[i])) adj.set(ports[i], new Set());

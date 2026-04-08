@@ -317,6 +317,25 @@ function PotInspector({
   );
 }
 
+function LabelInspector({
+  node,
+}: {
+  node: Extract<ComponentNode, { type: 'label' }>;
+}) {
+  const updateNodeData = useStore((s) => s.updateNodeData);
+  const { label } = node.data;
+
+  return (
+    <Field label="Net Name">
+      <input
+        className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+        value={label}
+        onChange={(e) => updateNodeData(node.id, { label: e.target.value })}
+      />
+    </Field>
+  );
+}
+
 export function Inspector() {
   const { nodes, selectedNodeId } = useStore(
     useShallow((s) => ({
@@ -340,12 +359,17 @@ export function Inspector() {
       <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">
         Inspector · {selected.type}
       </div>
-      {selected.type === 'resistor' && <ResistorInspector key={selected.id} node={selected} />}
-      {selected.type === 'capacitor' && <CapacitorInspector key={selected.id} node={selected} />}
+      {selected.type === 'resistor' && (
+        <ResistorInspector key={selected.id} node={selected} />
+      )}
+      {selected.type === 'capacitor' && (
+        <CapacitorInspector key={selected.id} node={selected} />
+      )}
       {selected.type === 'opamp' && <OpAmpInspector node={selected} />}
       {selected.type === 'power' && <PowerInspector node={selected} />}
       {selected.type === 'diode' && <DiodeInspector node={selected} />}
       {selected.type === 'pot' && <PotInspector node={selected} />}
+      {selected.type === 'label' && <LabelInspector node={selected} />}
     </div>
   );
 }
