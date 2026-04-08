@@ -152,7 +152,14 @@ export function SchematicCanvas() {
         return {
           ...edge,
           type: 'signal',
-          data: { ...edge.data, signalType: isDC ? 'dc' : 'ac' },
+          data: {
+            ...edge.data,
+            signalType: isDC ? 'dc' : 'ac',
+            sourceLabel: src?.data.label ?? src?.type ?? '?',
+            sourceHandle: edge.sourceHandle ?? '',
+            targetLabel: tgt?.data.label ?? tgt?.type ?? '?',
+            targetHandle: edge.targetHandle ?? '',
+          },
         };
       }),
     [edges, nodes],
