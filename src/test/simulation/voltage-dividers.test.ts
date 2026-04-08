@@ -229,10 +229,10 @@ describe('voltage divider', () => {
 // │  broken.                                                           │
 // │                                                                    │
 // │  Schematic:  9V DC ──┤R1 (9kΩ)├──┬── Vout                          │
-// │                                   │                                │
-// │                                  [R2] 1kΩ                          │
-// │                                   │                                │
-// │                                  GND                               │
+// │                                  │                                 │
+// │                                 [R2] 1kΩ                           │
+// │                                  │                                 │
+// │                                 GND                                │
 // │                                                                    │
 // │  Vout = 9V × R2/(R1+R2) = 9 × 1k/(9k+1k) = 0.9V                    │
 // │                                                                    │
@@ -315,8 +315,8 @@ describe('voltage divider DC accuracy', () => {
 // │  the simulation (not silently ignored or cached).                  │
 // │                                                                    │
 // │  Schematic:  INPUT ──┤R1├──┬── OUTPUT                              │
-// │                            ═╪═ C1 (100nF)                          │
-// │                            GND                                     │
+// │                           ═╪═ C1 (100nF)                           │
+// │                           GND                                      │
 // │                                                                    │
 // │  R1 = 100Ω  → fc ≈ 16 kHz  (5 kHz passes easily)                   │
 // │  R1 = 10kΩ  → fc ≈ 160 Hz  (5 kHz heavily attenuated)              │

@@ -270,11 +270,11 @@ describe('diode forward voltage drop', () => {
 // │  peaks at the same threshold.                                      │
 // │                                                                    │
 // │  Schematic:                                                        │
-// │                    ┌───|>|───┐                                      │
-// │       R1 = 1kΩ     │   D1    │                                      │
+// │                    ┌───|>|───┐                                     │
+// │       R1 = 1kΩ     │   D1    │                                     │
 // │  INPUT ──┤R├──┬────┤         ├──── GND                             │
-// │               │    │   D2    │                                      │
-// │             OUTPUT └───|<|───┘                                      │
+// │               │    │   D2    │                                     │
+// │             OUTPUT └───|<|───┘                                     │
 // │                                                                    │
 // │  D1 clips positive peaks, D2 clips negative peaks.                 │
 // │  Input: 5V peak sine → both peaks clip to ~0.6V                    │

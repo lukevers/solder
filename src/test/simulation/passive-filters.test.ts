@@ -396,8 +396,8 @@ describe('low-pass filter -3dB point (analytical)', () => {
 // │  .tran parameters.                                                 │
 // │                                                                    │
 // │  Schematic:  INPUT ──┤R1├──┬── OUTPUT                              │
-// │                            ═╪═ C1                                  │
-// │                            GND                                     │
+// │                           ═╪═ C1                                   │
+// │                           GND                                      │
 // │                                                                    │
 // │  Expected behavior (R=1k, C=100n, fc≈1.6kHz):                      │
 // │                                                                    │
