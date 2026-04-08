@@ -51,25 +51,25 @@ export function WaveformDisplay({
 
     const bothBuffers = inputBuffer && outputBuffer;
 
-    if (inputBuffer) {
+    if (outputBuffer) {
       if (bothBuffers) {
         ctx.save();
         ctx.beginPath();
         ctx.rect(0, 0, splitX, h);
         ctx.clip();
       }
-      drawBuffer(inputBuffer, '#be185d');
+      drawBuffer(outputBuffer, '#22c55e');
       if (bothBuffers) ctx.restore();
     }
 
-    if (outputBuffer) {
+    if (inputBuffer) {
       if (bothBuffers) {
         ctx.save();
         ctx.beginPath();
         ctx.rect(splitX, 0, w - splitX, h);
         ctx.clip();
       }
-      drawBuffer(outputBuffer, '#22c55e');
+      drawBuffer(inputBuffer, '#be185d');
       if (bothBuffers) ctx.restore();
     }
 
@@ -142,7 +142,7 @@ export function WaveformDisplay({
           {inputBuffer && (
             <button
               type="button"
-              onClick={() => { splitRef.current = 1; draw(1); }}
+              onClick={() => { splitRef.current = 0; draw(0); }}
               className="px-2 py-0.5 rounded border transition-colors"
               style={{ color: '#be185d', borderColor: '#be185d', background: 'transparent' }}
             >
@@ -152,7 +152,7 @@ export function WaveformDisplay({
           {outputBuffer && (
             <button
               type="button"
-              onClick={() => { splitRef.current = 0; draw(0); }}
+              onClick={() => { splitRef.current = 1; draw(1); }}
               className="px-2 py-0.5 rounded border transition-colors"
               style={{ color: '#22c55e', borderColor: '#22c55e', background: 'transparent' }}
             >
