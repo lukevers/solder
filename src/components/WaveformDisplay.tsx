@@ -49,25 +49,31 @@ export function WaveformDisplay({
       ctx.stroke();
     }
 
+    const bothBuffers = inputBuffer && outputBuffer;
+
     if (inputBuffer) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, 0, splitX, h);
-      ctx.clip();
+      if (bothBuffers) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, 0, splitX, h);
+        ctx.clip();
+      }
       drawBuffer(inputBuffer, '#be185d');
-      ctx.restore();
+      if (bothBuffers) ctx.restore();
     }
 
     if (outputBuffer) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(splitX, 0, w - splitX, h);
-      ctx.clip();
+      if (bothBuffers) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(splitX, 0, w - splitX, h);
+        ctx.clip();
+      }
       drawBuffer(outputBuffer, '#22c55e');
-      ctx.restore();
+      if (bothBuffers) ctx.restore();
     }
 
-    if (inputBuffer || outputBuffer) {
+    if (bothBuffers) {
       ctx.strokeStyle = '#e5e7eb';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
@@ -98,7 +104,7 @@ export function WaveformDisplay({
   }
 
   function onPointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
-    if (!inputBuffer && !outputBuffer) return;
+    if (!inputBuffer || !outputBuffer) return;
     draggingRef.current = true;
     (e.target as HTMLCanvasElement).setPointerCapture(e.pointerId);
     splitRef.current = getFraction(e);
@@ -116,6 +122,7 @@ export function WaveformDisplay({
   }
 
   const hasAny = inputBuffer || outputBuffer;
+  const hasBoth = inputBuffer && outputBuffer;
 
   return (
     <div className="flex flex-col gap-1">
@@ -124,7 +131,7 @@ export function WaveformDisplay({
         width={176}
         height={height}
         className="rounded border border-gray-800 w-full"
-        style={{ cursor: hasAny ? 'col-resize' : 'default' }}
+        style={{ cursor: hasBoth ? 'col-resize' : 'default' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
