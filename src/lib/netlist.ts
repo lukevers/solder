@@ -138,7 +138,7 @@ export function compileNetlist(
   const getNode = (nodeId: string, handle: string): string =>
     portToNode.get(`${nodeId}|${handle}`) ?? 'UNCONNECTED';
 
-  const lines: Array<string> = ['* solder — auto-generated netlist'];
+  const lines: Array<string> = ['* solder auto-generated netlist'];
 
   // Inline op-amp subcircuit definitions — only include models actually used
   const usedModels = new Set(
@@ -217,12 +217,18 @@ export function compileNetlist(
     // ground, audiin, audiout: no SPICE component line needed
   }
 
-  // Transient analysis: step = 1/SAMPLE_RATE, stop = duration
-  const step = (1 / SAMPLE_RATE).toExponential(6);
+  // High-impedance probe at output: prevents degenerate floating-node circuits
+  // and has negligible effect on real circuits
+  lines.push(`Rprobe ${outputSpiceNode} 0 1000Meg`);
+
+  // Save only the output voltage; without this ngspice may save all internal nodes
+  lines.push(`.save V(${outputSpiceNode})`);
+
+  // Transient analysis: step = 1/10000 (100 µs; audio-convert.ts interpolates to SAMPLE_RATE)
+  const step = (1 / 10000).toExponential(6);
   const stop = duration.toExponential(6);
   lines.push(`.tran ${step} ${stop}`);
 
-  lines.push(`.save V(${outputSpiceNode})`);
   lines.push('.end');
 
   return lines.join('\n');

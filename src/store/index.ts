@@ -144,7 +144,7 @@ const initialState = {
   simulationStatus: 'idle' as SimulationStatus,
   outputBuffer: null as Float32Array | null,
   simulationError: null as string | null,
-  simulationDuration: 1.0,
+  simulationDuration: 0.1,
   inputFrequency: 1000,
   inputAmplitude: 1.0,
 

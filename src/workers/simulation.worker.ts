@@ -16,13 +16,7 @@ self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
   const { nodes, edges, duration, frequency, amplitude } = e.data;
   try {
     await engine.init();
-    const netlist = compileNetlist(
-      nodes,
-      edges,
-      duration,
-      frequency,
-      amplitude,
-    );
+    const netlist = compileNetlist(nodes, edges, duration, frequency, amplitude);
     const output = await engine.run(netlist);
     const audioBuffer = voltageToAudioBuffer(output, SAMPLE_RATE);
     const response: SimulateResponse = {
