@@ -14,17 +14,17 @@ const PALETTE: Array<{
   unique?: boolean;
 }> = [
   {
-    label: 'IN',
+    label: 'INPUT',
     tooltip: 'Audio Input',
     type: 'audiin',
-    defaultData: { label: 'IN' },
+    defaultData: { label: 'INPUT' },
     unique: true,
   },
   {
-    label: 'OUT',
+    label: 'OUTPUT',
     tooltip: 'Audio Output',
     type: 'audiout',
-    defaultData: { label: 'OUT' },
+    defaultData: { label: 'OUTPUT' },
     unique: true,
   },
   {

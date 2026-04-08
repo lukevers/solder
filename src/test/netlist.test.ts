@@ -42,7 +42,7 @@ describe('buildPortGroups', () => {
         id: 'in1',
         type: 'audiin',
         position: { x: 0, y: 0 },
-        data: { label: 'IN' },
+        data: { label: 'INPUT' },
       },
       {
         id: 'r1',
@@ -116,7 +116,7 @@ describe('compileNetlist', () => {
         id: 'in1',
         type: 'audiin',
         position: { x: 0, y: 0 },
-        data: { label: 'IN' },
+        data: { label: 'INPUT' },
       },
       {
         id: 'r1',
@@ -134,7 +134,7 @@ describe('compileNetlist', () => {
         id: 'out1',
         type: 'audiout',
         position: { x: 300, y: 0 },
-        data: { label: 'OUT' },
+        data: { label: 'OUTPUT' },
       },
       {
         id: 'gnd1',
@@ -231,7 +231,7 @@ describe('compileNetlist', () => {
         id: 'in1',
         type: 'audiin',
         position: { x: 0, y: 0 },
-        data: { label: 'IN' },
+        data: { label: 'INPUT' },
       },
       {
         id: 'u1',
@@ -243,7 +243,7 @@ describe('compileNetlist', () => {
         id: 'out1',
         type: 'audiout',
         position: { x: 200, y: 0 },
-        data: { label: 'OUT' },
+        data: { label: 'OUTPUT' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -257,7 +257,7 @@ describe('compileNetlist', () => {
         id: 'in1',
         type: 'audiin',
         position: { x: 0, y: 0 },
-        data: { label: 'IN' },
+        data: { label: 'INPUT' },
       },
       {
         id: 'u1',
@@ -269,7 +269,7 @@ describe('compileNetlist', () => {
         id: 'out1',
         type: 'audiout',
         position: { x: 200, y: 0 },
-        data: { label: 'OUT' },
+        data: { label: 'OUTPUT' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -283,7 +283,7 @@ describe('compileNetlist', () => {
         id: 'out1',
         type: 'audiout',
         position: { x: 0, y: 0 },
-        data: { label: 'OUT' },
+        data: { label: 'OUTPUT' },
       },
     ];
     expect(() => compileNetlist(nodes, [])).toThrow('no input node');
@@ -295,7 +295,7 @@ describe('compileNetlist', () => {
         id: 'in1',
         type: 'audiin',
         position: { x: 0, y: 0 },
-        data: { label: 'IN' },
+        data: { label: 'INPUT' },
       },
     ];
     expect(() => compileNetlist(nodes, [])).toThrow('no output node');

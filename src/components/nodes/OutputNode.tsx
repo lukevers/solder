@@ -11,7 +11,7 @@ export function OutputNode({ id, data, selected }: NodeProps) {
     <div
       onClick={() => selectNode(id)}
       className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 60, height: 40 }}
+      style={{ width: 80, height: 40 }}
     >
       <Handle
         type="target"
@@ -19,11 +19,11 @@ export function OutputNode({ id, data, selected }: NodeProps) {
         id="in"
         style={{ background: '#22c55e' }}
       />
-      <svg width="60" height="40" viewBox="0 0 60 40">
+      <svg width="80" height="40" viewBox="0 0 80 40">
         <rect
           x="2"
           y="4"
-          width="56"
+          width="76"
           height="32"
           rx="4"
           fill="#1f2937"
@@ -31,7 +31,7 @@ export function OutputNode({ id, data, selected }: NodeProps) {
           strokeWidth="1.5"
         />
         <text
-          x="30"
+          x="40"
           y="24"
           textAnchor="middle"
           fill="#22c55e"

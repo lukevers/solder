@@ -16,7 +16,7 @@ const ratNodes: Array<ComponentNode> = [
     id: 'rat-in',
     type: 'audiin',
     position: { x: 30, y: 290 },
-    data: { label: 'IN' },
+    data: { label: 'INPUT' },
   },
   {
     id: 'rat-c1',
@@ -142,7 +142,7 @@ const ratNodes: Array<ComponentNode> = [
     id: 'rat-out',
     type: 'audiout',
     position: { x: 1370, y: 290 },
-    data: { label: 'OUT' },
+    data: { label: 'OUTPUT' },
   },
 ];
 

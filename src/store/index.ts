@@ -31,13 +31,13 @@ function defaultTab(name: string): Tab {
         id: `${id}-in`,
         type: 'audiin',
         position: { x: 100, y: 200 },
-        data: { label: 'IN' },
+        data: { label: 'INPUT' },
       },
       {
         id: `${id}-out`,
         type: 'audiout',
         position: { x: 400, y: 200 },
-        data: { label: 'OUT' },
+        data: { label: 'OUTPUT' },
       },
     ] as Array<ComponentNode>,
     edges: [
