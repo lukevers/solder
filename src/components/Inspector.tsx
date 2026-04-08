@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import type { Edge } from '@xyflow/react';
 import type { ComponentNode, DiodeData, PotData } from '../lib/types';
 import { useStore } from '../store';
 import {
@@ -336,15 +337,71 @@ function LabelInspector({
   );
 }
 
+function EdgeInspector({
+  edgeId,
+  nodes: allNodes,
+  edges,
+}: {
+  edgeId: string;
+  nodes: Array<ComponentNode>;
+  edges: Array<Edge>;
+}) {
+  const edge = edges.find((e) => e.id === edgeId);
+  if (!edge) return null;
+
+  const src = allNodes.find((n) => n.id === edge.source);
+  const tgt = allNodes.find((n) => n.id === edge.target);
+  const isDC =
+    src?.type === 'power' ||
+    src?.type === 'ground' ||
+    tgt?.type === 'power' ||
+    tgt?.type === 'ground';
+
+  return (
+    <>
+      <Field label="From">
+        <div className="text-xs font-mono text-gray-200">
+          {src?.data.label ?? src?.type ?? '?'}
+          <span className="text-gray-500">.{edge.sourceHandle}</span>
+        </div>
+      </Field>
+      <Field label="To">
+        <div className="text-xs font-mono text-gray-200">
+          {tgt?.data.label ?? tgt?.type ?? '?'}
+          <span className="text-gray-500">.{edge.targetHandle}</span>
+        </div>
+      </Field>
+      <Field label="Signal">
+        <div className="text-xs font-mono text-gray-200">
+          {isDC ? 'DC' : 'AC'}
+        </div>
+      </Field>
+    </>
+  );
+}
+
 export function Inspector() {
-  const { nodes, selectedNodeId } = useStore(
+  const { nodes, edges, selectedNodeId, selectedEdgeId } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
+      edges: s.edges,
       selectedNodeId: s.selectedNodeId,
+      selectedEdgeId: s.selectedEdgeId,
     })),
   );
 
   const selected = nodes.find((n) => n.id === selectedNodeId);
+
+  if (selectedEdgeId) {
+    return (
+      <div className="p-3">
+        <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">
+          Inspector · trace
+        </div>
+        <EdgeInspector edgeId={selectedEdgeId} nodes={nodes} edges={edges} />
+      </div>
+    );
+  }
 
   if (!selected) {
     return (

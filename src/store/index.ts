@@ -92,10 +92,12 @@ type StoreState = {
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
   selectedNodeId: string | null;
+  selectedEdgeId: string | null;
   addNode: (node: ComponentNode) => void;
   setNodes: (nodes: Array<ComponentNode>) => void;
   setEdges: (edges: Array<Edge>) => void;
   selectNode: (id: string | null) => void;
+  selectEdge: (id: string | null) => void;
   updateNodeData: (id: string, data: ComponentNode['data']) => void;
   loadCircuit: (nodes: Array<ComponentNode>, edges: Array<Edge>) => void;
 
@@ -139,6 +141,7 @@ const initialState = {
   nodes: firstTab.nodes,
   edges: firstTab.edges,
   selectedNodeId: null as string | null,
+  selectedEdgeId: null as string | null,
   past: [] as Array<Snapshot>,
   future: [] as Array<Snapshot>,
 
@@ -265,7 +268,10 @@ export const useStore = create<StoreState>()(
           simulationElapsed: null,
           simulationStatus: 'idle' as const,
         }),
-      selectNode: (selectedNodeId) => set({ selectedNodeId }),
+      selectNode: (selectedNodeId) =>
+        set({ selectedNodeId, selectedEdgeId: null }),
+      selectEdge: (selectedEdgeId) =>
+        set({ selectedEdgeId, selectedNodeId: null }),
       updateNodeData: (id, data) =>
         set((s) => ({
           past: [

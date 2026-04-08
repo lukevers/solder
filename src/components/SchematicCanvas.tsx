@@ -22,17 +22,25 @@ import { edgeTypes } from './edges';
 import { nodeTypes } from './nodes';
 
 export function SchematicCanvas() {
-  const { nodes, edges, setNodes, setEdges, selectNode, pushHistory } =
-    useStore(
-      useShallow((s) => ({
-        nodes: s.nodes,
-        edges: s.edges,
-        setNodes: s.setNodes,
-        setEdges: s.setEdges,
-        selectNode: s.selectNode,
-        pushHistory: s.pushHistory,
-      })),
-    );
+  const {
+    nodes,
+    edges,
+    setNodes,
+    setEdges,
+    selectNode,
+    selectEdge,
+    pushHistory,
+  } = useStore(
+    useShallow((s) => ({
+      nodes: s.nodes,
+      edges: s.edges,
+      setNodes: s.setNodes,
+      setEdges: s.setEdges,
+      selectNode: s.selectNode,
+      selectEdge: s.selectEdge,
+      pushHistory: s.pushHistory,
+    })),
+  );
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) =>
@@ -137,7 +145,17 @@ export function SchematicCanvas() {
     pushHistory();
   }, [pushHistory]);
 
-  const onPaneClick = useCallback(() => selectNode(null), [selectNode]);
+  const onPaneClick = useCallback(() => {
+    selectNode(null);
+    selectEdge(null);
+  }, [selectNode, selectEdge]);
+
+  const onEdgeClick = useCallback(
+    (_event: React.MouseEvent, edge: { id: string }) => {
+      selectEdge(edge.id);
+    },
+    [selectEdge],
+  );
 
   const [isInteractive, setIsInteractive] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -183,6 +201,7 @@ export function SchematicCanvas() {
         onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
         onNodeDragStart={onNodeDragStart}
+        onEdgeClick={onEdgeClick}
         onPaneClick={onPaneClick}
         nodesDraggable={isInteractive}
         nodesConnectable={isInteractive}
