@@ -39,22 +39,39 @@ export function WaveformDisplay({
 
     const splitX = w * split;
 
-    // Time ticks
+    // Grid lines (X and Y axes)
     if (showTicks) {
       const totalSamples = Math.max(inputBuffer?.length ?? 0, outputBuffer?.length ?? 0);
       const duration = totalSamples / SAMPLE_RATE;
-      // Pick a tick interval that gives roughly 5–10 ticks
+      ctx.lineWidth = 1;
+      ctx.font = '9px monospace';
+
+      // Y axis — amplitude levels: 0, ±0.5, ±1.0
+      // Waveform formula: y = h/2 - (amplitude * h) / 2.5
+      const ampLevels = [1.0, 0.5, 0, -0.5, -1.0];
+      for (const amp of ampLevels) {
+        const y = h / 2 - (amp * h) / 2.5;
+        ctx.strokeStyle = amp === 0 ? '#374151' : '#1f2937';
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+        ctx.fillStyle = '#4b5563';
+        ctx.textAlign = 'left';
+        const label = amp === 0 ? '0' : amp > 0 ? `+${amp}` : `${amp}`;
+        ctx.fillText(label, 3, y - 2);
+      }
+
+      // X axis — time ticks
       const candidates = [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10];
       const interval = candidates.find((c) => duration / c <= 10 && duration / c >= 3) ?? candidates[candidates.length - 1];
       const tickCount = Math.floor(duration / interval);
-      ctx.strokeStyle = '#1f2937';
-      ctx.lineWidth = 1;
       ctx.fillStyle = '#4b5563';
-      ctx.font = '9px monospace';
       ctx.textAlign = 'center';
       for (let i = 1; i <= tickCount; i++) {
         const t = i * interval;
         const x = (t / duration) * w;
+        ctx.strokeStyle = '#1f2937';
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, h);
