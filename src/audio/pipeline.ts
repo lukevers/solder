@@ -136,12 +136,10 @@ export class AudioPipeline {
     this.activeSource = this.ctx.createBufferSource();
     this.activeSource.buffer = audioBuffer;
     this.activeSource.connect(this.gainNode);
-    if (onEnded) {
-      this.activeSource.onended = () => {
-        this.activeSource = null;
-        onEnded();
-      };
-    }
+    this.activeSource.onended = () => {
+      this.activeSource = null;
+      onEnded?.();
+    };
     this.activeSource.start();
   }
 
