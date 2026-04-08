@@ -451,3 +451,25 @@ describe('loadCircuit', () => {
     expect(useStore.getState().future).toEqual([]);
   });
 });
+
+describe('trivial setters', () => {
+  it('setSimulationError stores the message', () => {
+    useStore.getState().setSimulationError('boom');
+    expect(useStore.getState().simulationError).toBe('boom');
+  });
+
+  it('setVolume updates volume', () => {
+    useStore.getState().setVolume(0.3);
+    expect(useStore.getState().volume).toBe(0.3);
+  });
+
+  it('setPlaying updates playing state', () => {
+    useStore.getState().setPlaying(true);
+    expect(useStore.getState().playing).toBe(true);
+  });
+
+  it('setAudioSource updates source', () => {
+    useStore.getState().setAudioSource({ type: 'live' });
+    expect(useStore.getState().audioSource).toEqual({ type: 'live' });
+  });
+});

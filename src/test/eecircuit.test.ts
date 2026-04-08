@@ -1,7 +1,10 @@
 // src/test/eecircuit.test.ts
 import type { ResultType } from 'eecircuit-engine';
 import { describe, expect, it } from 'vitest';
-import { extractSimulationOutput } from '../lib/engines/eecircuit';
+import {
+  EECircuitEngine,
+  extractSimulationOutput,
+} from '../lib/engines/eecircuit';
 
 function makeRealResult(
   overrides: Partial<Extract<ResultType, { dataType: 'real' }>> = {},
@@ -62,5 +65,12 @@ describe('extractSimulationOutput', () => {
       ],
     };
     expect(() => extractSimulationOutput(result)).toThrow('Expected real');
+  });
+});
+
+describe('EECircuitEngine', () => {
+  it('run() without init() rejects with not-initialised error', async () => {
+    const engine = new EECircuitEngine();
+    await expect(engine.run('* test')).rejects.toThrow('not initialised');
   });
 });

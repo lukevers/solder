@@ -918,3 +918,62 @@ describe('compileNetlist 1N4001 diode model', () => {
     expect(netlist).not.toContain('.model 1N914');
   });
 });
+
+describe('buildPortGroups edge cases', () => {
+  it('edges with missing handles are skipped', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 0, y: 0 },
+        data: { label: 'R1', ohms: 1000 },
+      },
+      {
+        id: 'r2',
+        type: 'resistor',
+        position: { x: 100, y: 0 },
+        data: { label: 'R2', ohms: 1000 },
+      },
+    ];
+    // Edge with null handles — should not crash or connect the ports
+    const edges: Array<Edge> = [
+      {
+        id: 'bad',
+        source: 'r1',
+        sourceHandle: null,
+        target: 'r2',
+        targetHandle: null,
+      },
+    ];
+    const groups = buildPortGroups(nodes, edges);
+    // R1 and R2 ports should still be on separate nets
+    expect(groups.get('r1|a')).not.toBe(groups.get('r2|a'));
+  });
+});
+
+describe('compileNetlist with capacitance formatting', () => {
+  it('emits correctly formatted capacitor values', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'c1',
+        type: 'capacitor',
+        position: { x: 100, y: 0 },
+        data: { label: 'C1', farads: 47e-9 },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toMatch(/^C1 \S+ \S+ 47n$/m);
+  });
+});

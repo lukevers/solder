@@ -63,4 +63,24 @@ describe('voltageToAudioBuffer', () => {
     expect(() => voltageToAudioBuffer(output, 100)).not.toThrow();
     expect(voltageToAudioBuffer(output, 100).length).toBe(20);
   });
+
+  it('handles duplicate timestamps (t1 === t0)', () => {
+    // Two points at the same time — the t1===t0 branch in audio-convert
+    const output: SimulationOutput = {
+      timeValues: new Float64Array([0, 0, 0.001]),
+      voltageValues: new Float64Array([0.5, 0.5, 1.0]),
+    };
+    const result = voltageToAudioBuffer(output, 44100);
+    expect(result.length).toBeGreaterThan(0);
+    expect(result.every((v) => Number.isFinite(v))).toBe(true);
+  });
+
+  it('single data point produces a 1-sample buffer', () => {
+    const output: SimulationOutput = {
+      timeValues: new Float64Array([0]),
+      voltageValues: new Float64Array([0.5]),
+    };
+    const result = voltageToAudioBuffer(output, 44100);
+    expect(result.length).toBe(1);
+  });
 });
