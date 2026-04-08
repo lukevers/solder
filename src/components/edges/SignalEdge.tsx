@@ -38,7 +38,13 @@ export function SignalEdge({
 
   const d = data as SignalEdgeData | undefined;
   const isDC = d?.signalType === 'dc';
-  const color = selected ? '#60a5fa' : isDC ? '#f59e0b' : '#3b82f6';
+  const color = selected
+    ? isDC
+      ? '#fbbf24'
+      : '#60a5fa'
+    : isDC
+      ? '#f59e0b'
+      : '#3b82f6';
 
   const fromLabel = d?.sourceLabel ?? '?';
   const fromPin = d?.sourceHandle ?? '';
