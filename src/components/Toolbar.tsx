@@ -395,7 +395,7 @@ export function Toolbar({
               onClick={onPlayOriginal}
               disabled={simulationStatus === 'running'}
               className="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 border border-gray-600 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
-              style={{ color: '#be185d' }}
+              style={{ color: '#f472b6' }}
             >
               ▶ Dry
             </button>
@@ -407,7 +407,7 @@ export function Toolbar({
           <button
             type="button"
             disabled
-            className="bg-green-800 disabled:opacity-50 border border-green-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+            className="bg-amber-800 disabled:opacity-50 border border-amber-700 text-amber-100 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
             ⏳ Simulating…
           </button>
@@ -423,7 +423,7 @@ export function Toolbar({
           <button
             type="button"
             onClick={() => setPlaying(true)}
-            className="bg-blue-800 hover:bg-blue-700 border border-blue-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+            className="bg-green-800 hover:bg-green-700 border border-green-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
             ▶ Play
           </button>
@@ -431,7 +431,7 @@ export function Toolbar({
           <button
             type="button"
             onClick={onSimulate}
-            className="bg-green-800 hover:bg-green-700 border border-green-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+            className="bg-amber-700 hover:bg-amber-600 border border-amber-600 text-amber-50 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
             ▶ Simulate
           </button>

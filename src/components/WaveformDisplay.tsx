@@ -69,7 +69,7 @@ export function WaveformDisplay({
         ctx.rect(splitX, 0, w - splitX, h);
         ctx.clip();
       }
-      drawBuffer(inputBuffer, '#be185d');
+      drawBuffer(inputBuffer, '#f472b6');
       if (bothBuffers) ctx.restore();
     }
 
@@ -144,7 +144,7 @@ export function WaveformDisplay({
               type="button"
               onClick={() => { splitRef.current = 0; draw(0); }}
               className="px-2 py-0.5 rounded border transition-colors"
-              style={{ color: '#be185d', borderColor: '#be185d', background: 'transparent' }}
+              style={{ color: '#f472b6', borderColor: '#f472b6', background: 'transparent' }}
             >
               dry
             </button>
