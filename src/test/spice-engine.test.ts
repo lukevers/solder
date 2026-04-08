@@ -26,12 +26,14 @@ describe('MockSpiceEngine', () => {
 
   it('run() returns same number of time and voltage points', async () => {
     const engine = new MockSpiceEngine();
+    await engine.init();
     const output = await engine.run('');
     expect(output.timeValues.length).toBe(output.voltageValues.length);
   });
 
   it('run() returns timeValues starting at 0', async () => {
     const engine = new MockSpiceEngine();
+    await engine.init();
     const output = await engine.run('');
     expect(output.timeValues[0]).toBe(0);
   });
@@ -39,6 +41,7 @@ describe('MockSpiceEngine', () => {
   it('run() returns sampleRate points for 1 second by default', async () => {
     const sampleRate = 44100;
     const engine = new MockSpiceEngine(1000, 1.0, sampleRate);
+    await engine.init();
     const output = await engine.run('');
     expect(output.timeValues.length).toBe(sampleRate);
   });
