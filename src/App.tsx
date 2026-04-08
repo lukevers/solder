@@ -109,12 +109,14 @@ export default function App() {
   // Initialize audio pipeline and pre-load the default sample
   // biome-ignore lint/correctness/useExhaustiveDependencies: init runs once on mount
   useEffect(() => {
+    let cancelled = false;
     const pipeline = new AudioPipeline();
     pipelineRef.current = pipeline;
     pipeline.init(volume).then(() => {
-      void pipeline.loadSample('guitar');
+      if (!cancelled) void pipeline.loadSample('guitar');
     });
     return () => {
+      cancelled = true;
       pipeline.destroy();
     };
   }, []);
