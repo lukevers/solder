@@ -1,6 +1,9 @@
 // src/lib/netlist.ts
 import type { Edge } from '@xyflow/react';
+import { LM741_SUBCKT, TL072_SUBCKT } from './spice-models';
 import type { ComponentNode } from './types';
+
+const SAMPLE_RATE = 44100;
 
 /** All port handles for each component type */
 const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
@@ -75,12 +78,10 @@ export function buildPortGroups(
   const portToNode = new Map<Port, string>();
   const visited = new Set<Port>();
 
-  // Seed all known ports into adjacency (so isolated ports are included)
   for (const p of allPorts(nodes)) {
     if (!adj.has(p)) adj.set(p, new Set());
   }
 
-  // Ground-connected ports first → node "0"
   const groundPorts = nodes
     .filter((n) => n.type === 'ground')
     .map((n) => `${n.id}|gnd`);
@@ -91,7 +92,6 @@ export function buildPortGroups(
     }
   }
 
-  // Remaining groups
   let counter = 1;
   for (const [port] of adj) {
     if (!visited.has(port)) {
@@ -118,31 +118,20 @@ function formatCapacitance(farads: number): string {
 }
 
 /**
- * Converts an audio input buffer to a SPICE PWL source string.
- * PWL(t0 v0 t1 v1 ...) where tn = n / sampleRate seconds
- */
-function bufferToPWL(buf: Float32Array, sampleRate: number): string {
-  const pairs: Array<string> = [];
-  for (let i = 0; i < buf.length; i++) {
-    const t = (i / sampleRate).toExponential(6);
-    const v = buf[i].toFixed(6);
-    pairs.push(`${t} ${v}`);
-  }
-  return `PWL(${pairs.join(' ')})`;
-}
-
-/**
- * Compiles a react-flow circuit graph into a SPICE netlist string.
- * @param nodes  - ComponentNode array from the circuit store
- * @param edges  - Edge array from the circuit store
- * @param inputBuffer - Float32Array of audio input samples
- * @param sampleRate  - Audio sample rate in Hz (typically 44100)
+ * Compiles a ReactFlow circuit graph into a SPICE netlist string.
+ *
+ * @param nodes     - ComponentNode array from the circuit store
+ * @param edges     - Edge array from the circuit store
+ * @param duration  - Simulation duration in seconds (default 1.0)
+ * @param frequency - AudioIn sine source frequency in Hz (default 1000)
+ * @param amplitude - AudioIn sine source amplitude in Volts (default 1.0)
  */
 export function compileNetlist(
   nodes: Array<ComponentNode>,
   edges: Array<Edge>,
-  inputBuffer: Float32Array,
-  sampleRate: number,
+  duration = 1.0,
+  frequency = 1000,
+  amplitude = 1.0,
 ): string {
   const portToNode = buildPortGroups(nodes, edges);
 
@@ -151,12 +140,12 @@ export function compileNetlist(
 
   const lines: Array<string> = ['* solder — auto-generated netlist'];
 
-  // Op-amp model includes — only include models actually present in the circuit
+  // Inline op-amp subcircuit definitions — only include models actually used
   const usedModels = new Set(
     nodes.filter((n) => n.type === 'opamp').map((n) => n.data.model),
   );
-  if (usedModels.has('TL072')) lines.push('.include TL072.lib');
-  if (usedModels.has('LM741')) lines.push('.include LM741.lib');
+  if (usedModels.has('TL072')) lines.push(TL072_SUBCKT);
+  if (usedModels.has('LM741')) lines.push(LM741_SUBCKT);
 
   // Diode model statements — inline for standard models
   const usedDiodeModels = new Set(
@@ -179,8 +168,8 @@ export function compileNetlist(
   const inputSpiceNode = getNode(inputNode.id, 'out');
   const outputSpiceNode = getNode(outputNode.id, 'in');
 
-  // Vin: audio source as PWL
-  lines.push(`Vin ${inputSpiceNode} 0 ${bufferToPWL(inputBuffer, sampleRate)}`);
+  // Vin: sinusoidal audio source SIN(offset amplitude frequency)
+  lines.push(`Vin ${inputSpiceNode} 0 SIN(0 ${amplitude} ${frequency})`);
 
   // Emit each component
   for (const node of nodes) {
@@ -225,15 +214,15 @@ export function compileNetlist(
         `${node.data.label}b ${nWiper} ${nCw} ${formatResistance(rHigh)}`,
       );
     }
-    // ground, input, output nodes: no SPICE line needed
+    // ground, audiin, audiout: no SPICE component line needed
   }
 
-  // Transient analysis: step = 1/sampleRate, stop = bufferSize/sampleRate
-  const step = (1 / sampleRate).toExponential(6);
-  const stop = (inputBuffer.length / sampleRate).toExponential(6);
+  // Transient analysis: step = 1/SAMPLE_RATE, stop = duration
+  const step = (1 / SAMPLE_RATE).toExponential(6);
+  const stop = duration.toExponential(6);
   lines.push(`.tran ${step} ${stop}`);
 
-  lines.push(`.probe V(${outputSpiceNode})`);
+  lines.push(`.save V(${outputSpiceNode})`);
   lines.push('.end');
 
   return lines.join('\n');

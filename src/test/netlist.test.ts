@@ -109,9 +109,6 @@ describe('buildPortGroups', () => {
 });
 
 describe('compileNetlist', () => {
-  const SAMPLE_RATE = 44100;
-  const BUFFER_SIZE = 2048;
-
   // Minimal circuit: IN → R1 → OUT, with C1 to GND
   function makeRCCircuit() {
     const nodes: Array<ComponentNode> = [
@@ -179,53 +176,128 @@ describe('compileNetlist', () => {
     return { nodes, edges };
   }
 
-  it('emits a Vin source line', () => {
+  it('emits a SIN Vin source line', () => {
     const { nodes, edges } = makeRCCircuit();
-    const buf = new Float32Array(BUFFER_SIZE).fill(0);
-    const netlist = compileNetlist(nodes, edges, buf, SAMPLE_RATE);
-    expect(netlist).toMatch(/^Vin /m);
+    const netlist = compileNetlist(nodes, edges);
+    expect(netlist).toMatch(/^Vin \S+ 0 SIN\(/m);
+  });
+
+  it('uses the supplied frequency in the SIN source', () => {
+    const { nodes, edges } = makeRCCircuit();
+    const netlist = compileNetlist(nodes, edges, 1.0, 440, 1.0);
+    expect(netlist).toContain('SIN(0 1 440)');
+  });
+
+  it('uses the supplied amplitude in the SIN source', () => {
+    const { nodes, edges } = makeRCCircuit();
+    const netlist = compileNetlist(nodes, edges, 1.0, 1000, 0.5);
+    expect(netlist).toContain('SIN(0 0.5 1000)');
   });
 
   it('emits R1 with correct resistance in kΩ notation', () => {
     const { nodes, edges } = makeRCCircuit();
-    const buf = new Float32Array(BUFFER_SIZE).fill(0);
-    const netlist = compileNetlist(nodes, edges, buf, SAMPLE_RATE);
+    const netlist = compileNetlist(nodes, edges);
     expect(netlist).toMatch(/R1 \S+ \S+ 10k/m);
   });
 
   it('emits C1 with correct capacitance in nF notation', () => {
     const { nodes, edges } = makeRCCircuit();
-    const buf = new Float32Array(BUFFER_SIZE).fill(0);
-    const netlist = compileNetlist(nodes, edges, buf, SAMPLE_RATE);
+    const netlist = compileNetlist(nodes, edges);
     expect(netlist).toMatch(/C1 \S+ 0 47n/m);
   });
 
-  it('emits .tran directive matching buffer size and sample rate', () => {
+  it('emits .tran with step 1/44100 and supplied duration', () => {
     const { nodes, edges } = makeRCCircuit();
-    const buf = new Float32Array(BUFFER_SIZE).fill(0);
-    const netlist = compileNetlist(nodes, edges, buf, SAMPLE_RATE);
-    expect(netlist).toMatch(/\.tran/);
+    const netlist = compileNetlist(nodes, edges, 2.0);
+    expect(netlist).toMatch(/\.tran 2\.267574e-5 2\.000000e\+0/m);
   });
 
-  it('emits .probe V() for output node', () => {
+  it('emits .save V() for output node (not .probe)', () => {
     const { nodes, edges } = makeRCCircuit();
-    const buf = new Float32Array(BUFFER_SIZE).fill(0);
-    const netlist = compileNetlist(nodes, edges, buf, SAMPLE_RATE);
-    expect(netlist).toMatch(/\.probe V\(\S+\)/m);
+    const netlist = compileNetlist(nodes, edges);
+    expect(netlist).toMatch(/^\.save V\(\S+\)/m);
+    expect(netlist).not.toMatch(/\.probe/);
   });
 
   it('contains .end', () => {
     const { nodes, edges } = makeRCCircuit();
-    const buf = new Float32Array(BUFFER_SIZE).fill(0);
-    const netlist = compileNetlist(nodes, edges, buf, SAMPLE_RATE);
+    const netlist = compileNetlist(nodes, edges);
     expect(netlist.trim()).toMatch(/\.end$/);
   });
 
-  it('injects PWL data from input buffer', () => {
-    const { nodes, edges } = makeRCCircuit();
-    const buf = new Float32Array(BUFFER_SIZE);
-    buf[1] = 0.5;
-    const netlist = compileNetlist(nodes, edges, buf, SAMPLE_RATE);
-    expect(netlist).toContain('0.5');
+  it('inlines TL072_SUBCKT when a TL072 op-amp is present', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'IN' },
+      },
+      {
+        id: 'u1',
+        type: 'opamp',
+        position: { x: 100, y: 0 },
+        data: { label: 'U1', model: 'TL072' },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.SUBCKT TL072');
+    expect(netlist).not.toContain('.include TL072.lib');
+  });
+
+  it('inlines LM741_SUBCKT when a LM741 op-amp is present', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'IN' },
+      },
+      {
+        id: 'u1',
+        type: 'opamp',
+        position: { x: 100, y: 0 },
+        data: { label: 'U1', model: 'LM741' },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.SUBCKT LM741');
+    expect(netlist).not.toContain('.include LM741.lib');
+  });
+
+  it('throws when circuit has no AudioIn node', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 0, y: 0 },
+        data: { label: 'OUT' },
+      },
+    ];
+    expect(() => compileNetlist(nodes, [])).toThrow('no input node');
+  });
+
+  it('throws when circuit has no AudioOut node', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'IN' },
+      },
+    ];
+    expect(() => compileNetlist(nodes, [])).toThrow('no output node');
   });
 });

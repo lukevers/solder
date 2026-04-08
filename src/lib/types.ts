@@ -32,8 +32,11 @@ export type CircuitState = {
 // Worker message types
 export type SimulateRequest = {
   type: 'simulate';
-  netlist: string;
-  inputBuffer: Float32Array;
+  nodes: Array<ComponentNode>;
+  edges: Array<Edge>;
+  duration: number;
+  frequency: number;
+  amplitude: number;
 };
 
 export type SimulateResponse =
