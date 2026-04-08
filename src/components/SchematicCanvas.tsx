@@ -14,7 +14,7 @@ import {
   type OnNodesChange,
   ReactFlow,
 } from '@xyflow/react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
@@ -52,6 +52,81 @@ export function SchematicCanvas() {
     (connection) => {
       pushHistory();
       setEdges(addEdge(connection, edges));
+    },
+    [edges, setEdges, pushHistory],
+  );
+
+  // Track connection start for drop-on-edge support
+  const connectStartRef = useRef<{
+    nodeId: string;
+    handleId: string;
+  } | null>(null);
+
+  const onConnectStart = useCallback(
+    (
+      _event: MouseEvent | TouchEvent,
+      params: { nodeId: string | null; handleId: string | null },
+    ) => {
+      if (params.nodeId && params.handleId) {
+        connectStartRef.current = {
+          nodeId: params.nodeId,
+          handleId: params.handleId,
+        };
+      }
+    },
+    [],
+  );
+
+  const onConnectEnd = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      const start = connectStartRef.current;
+      connectStartRef.current = null;
+      if (!start) return;
+
+      const clientX =
+        'changedTouches' in event
+          ? event.changedTouches[0].clientX
+          : event.clientX;
+      const clientY =
+        'changedTouches' in event
+          ? event.changedTouches[0].clientY
+          : event.clientY;
+
+      // Find edge element under pointer (skip the connection line being drawn)
+      const elements = document.elementsFromPoint(clientX, clientY);
+      let edgeEl: Element | null = null;
+      for (const el of elements) {
+        if (el.closest('.react-flow__connection')) continue;
+        const found = el.closest('.react-flow__edge');
+        if (found) {
+          edgeEl = found;
+          break;
+        }
+      }
+      if (!edgeEl) return;
+
+      const pathWithId = edgeEl.querySelector('path[id]');
+      if (!pathWithId) return;
+      const edgeId = pathWithId.id;
+
+      const edge = edges.find((e) => e.id === edgeId);
+      if (!edge) return;
+
+      // Don't connect to an edge that already involves this node
+      if (edge.source === start.nodeId || edge.target === start.nodeId) return;
+
+      pushHistory();
+      setEdges(
+        addEdge(
+          {
+            source: start.nodeId,
+            sourceHandle: start.handleId,
+            target: edge.source,
+            targetHandle: edge.sourceHandle ?? null,
+          },
+          edges,
+        ),
+      );
     },
     [edges, setEdges, pushHistory],
   );
@@ -94,6 +169,8 @@ export function SchematicCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onConnectStart={onConnectStart}
+        onConnectEnd={onConnectEnd}
         onNodeDragStart={onNodeDragStart}
         onPaneClick={onPaneClick}
         nodesDraggable={isInteractive}

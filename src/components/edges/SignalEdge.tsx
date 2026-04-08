@@ -26,6 +26,8 @@ export function SignalEdge({
 
   return (
     <>
+      {/* Wide invisible hit area for easier interaction */}
+      <path d={edgePath} fill="none" stroke="transparent" strokeWidth={20} />
       <path
         id={id}
         d={edgePath}
