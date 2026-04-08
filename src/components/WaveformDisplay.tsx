@@ -15,7 +15,7 @@ type Props = {
   /** Fires on pointer-up after a seek (click, not drag). */
   onSeekEnd?: (fraction: number) => void;
   /** Which signal to visually emphasise in overlaid mode. */
-  highlightSignal?: 'dry' | 'wet';
+  highlightSignal?: 'input' | 'wet';
   /** Current selection range (fractions 0–1). */
   selection?: WaveformSelection | null;
   /** Called when the user drags to create or update a selection. */
@@ -145,13 +145,13 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
         const hl = highlightRef.current;
         const hasBoth = inputBuffer && outputBuffer;
         const pairs: Array<[Float32Array | null, string, boolean]> =
-          hl === 'dry'
+          hl === 'input'
             ? [
                 [outputBuffer, '#22c55e', !!hasBoth],
-                [inputBuffer, '#f472b6', false],
+                [inputBuffer, '#3b82f6', false],
               ]
             : [
-                [inputBuffer, '#f472b6', !!hasBoth],
+                [inputBuffer, '#3b82f6', !!hasBoth],
                 [outputBuffer, '#22c55e', false],
               ];
         for (const [buf, color, dimmed] of pairs) {
@@ -182,7 +182,7 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
             ctx.rect(splitX, 0, w - splitX, plotH);
             ctx.clip();
           }
-          drawBuffer(inputBuffer, '#f472b6');
+          drawBuffer(inputBuffer, '#3b82f6');
           if (bothBuffers) ctx.restore();
         }
 
@@ -426,12 +426,12 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
                 }}
                 className="px-2 py-0.5 rounded border transition-colors"
                 style={{
-                  color: '#f472b6',
-                  borderColor: '#f472b6',
+                  color: '#3b82f6',
+                  borderColor: '#3b82f6',
                   background: 'transparent',
                 }}
               >
-                dry
+                input
               </button>
             )}
             {outputBuffer && (

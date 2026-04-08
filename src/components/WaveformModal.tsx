@@ -41,8 +41,8 @@ export function WaveformModal({
   selectionRef.current = selection;
   const playbackSelectionRef = useRef<WaveformSelection | null>(null);
 
-  const [activeSignal, setActiveSignal] = useState<'dry' | 'wet'>(
-    outputBuffer ? 'wet' : 'dry',
+  const [activeSignal, setActiveSignal] = useState<'input' | 'wet'>(
+    outputBuffer ? 'wet' : 'input',
   );
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(false);
@@ -59,17 +59,17 @@ export function WaveformModal({
     activeSignalRef.current = activeSignal;
   }, [activeSignal]);
   useEffect(() => {
-    if (!outputBuffer) setActiveSignal('dry');
+    if (!outputBuffer) setActiveSignal('input');
   }, [outputBuffer]);
 
-  const playFromRef = useRef<(signal: 'dry' | 'wet', fraction: number) => void>(
-    () => {},
-  );
+  const playFromRef = useRef<
+    (signal: 'input' | 'wet', fraction: number) => void
+  >(() => {});
 
   const playFrom = useCallback(
-    (signal: 'dry' | 'wet', fraction: number) => {
-      let buffer = signal === 'dry' ? inputBuffer : outputBuffer;
-      if (!buffer) buffer = signal === 'dry' ? outputBuffer : inputBuffer;
+    (signal: 'input' | 'wet', fraction: number) => {
+      let buffer = signal === 'input' ? inputBuffer : outputBuffer;
+      if (!buffer) buffer = signal === 'input' ? outputBuffer : inputBuffer;
       if (!buffer || !pipeline) return;
 
       const sel = selectionRef.current;
@@ -138,7 +138,7 @@ export function WaveformModal({
   handlePlayPauseRef.current = handlePlayPause;
 
   const handleSignalChange = useCallback(
-    (signal: 'dry' | 'wet') => {
+    (signal: 'input' | 'wet') => {
       if (signal === activeSignalRef.current) return;
       setActiveSignal(signal);
       activeSignalRef.current = signal;
@@ -379,18 +379,19 @@ export function WaveformModal({
               <div className="flex items-center gap-1 text-xs font-mono">
                 <button
                   type="button"
-                  onClick={() => handleSignalChange('dry')}
+                  onClick={() => handleSignalChange('input')}
                   className="px-2 py-0.5 rounded border transition-colors"
                   style={{
-                    color: '#f472b6',
-                    borderColor: activeSignal === 'dry' ? '#f472b6' : '#374151',
+                    color: '#3b82f6',
+                    borderColor:
+                      activeSignal === 'input' ? '#3b82f6' : '#374151',
                     background:
-                      activeSignal === 'dry'
-                        ? 'rgba(244,114,182,0.15)'
+                      activeSignal === 'input'
+                        ? 'rgba(59,130,246,0.15)'
                         : 'transparent',
                   }}
                 >
-                  dry
+                  input
                 </button>
                 <button
                   type="button"

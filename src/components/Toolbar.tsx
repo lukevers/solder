@@ -411,16 +411,16 @@ export function Toolbar({
           </button>
         )}
 
-        {/* Play Dry (original sample) */}
+        {/* Play Input (original sample) */}
         {hasSourceBuffer &&
           (playingOriginal ? (
             <button
               type="button"
               onClick={onStop}
               className="bg-red-900 hover:bg-red-800 border border-red-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
-              style={{ color: '#fda4af' }}
+              style={{ color: '#93c5fd' }}
             >
-              ⏹ Dry
+              ⏹ Input
             </button>
           ) : (
             <button
@@ -428,9 +428,9 @@ export function Toolbar({
               onClick={onPlayOriginal}
               disabled={simulationStatus === 'running'}
               className="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 border border-gray-600 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
-              style={{ color: '#f472b6' }}
+              style={{ color: '#3b82f6' }}
             >
-              ▶ Dry
+              ▶ Input
             </button>
           ))}
 
