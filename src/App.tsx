@@ -230,6 +230,7 @@ export default function App() {
     setPlayingOriginal(false);
     clearOutputBuffer();
     setSimulatedInput(null);
+    setSelection(null);
   }, [setPlaying, clearOutputBuffer]);
 
   const handleSimulate = useCallback(() => {
