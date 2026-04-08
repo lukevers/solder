@@ -260,13 +260,6 @@ const ratEdges: Array<Edge> = [
     targetHandle: 'in_neg',
   },
   {
-    id: 'rat-e13b',
-    source: 'rat-rdist',
-    sourceHandle: 'ccw',
-    target: 'rat-u1',
-    targetHandle: 'in_neg',
-  },
-  {
     id: 'rat-e14',
     source: 'rat-u1',
     sourceHandle: 'out',
