@@ -12,6 +12,7 @@ type SignalEdgeData = {
   sourceHandle?: string;
   targetLabel?: string;
   targetHandle?: string;
+  connecting?: boolean;
 };
 
 export function SignalEdge({
@@ -71,7 +72,7 @@ export function SignalEdge({
         strokeDasharray="6 5"
         className={isDC ? 'edge-anim-dc' : 'edge-anim-ac'}
       />
-      {hovered && (
+      {hovered && !d?.connecting && (
         <EdgeLabelRenderer>
           <div
             className="pointer-events-none absolute bg-gray-800 border border-gray-600 rounded px-2 py-1 text-xs font-mono text-gray-300 shadow-lg whitespace-nowrap"

@@ -67,6 +67,7 @@ export function SchematicCanvas() {
       _event: MouseEvent | TouchEvent,
       params: { nodeId: string | null; handleId: string | null },
     ) => {
+      setIsConnecting(true);
       if (params.nodeId && params.handleId) {
         connectStartRef.current = {
           nodeId: params.nodeId,
@@ -79,6 +80,7 @@ export function SchematicCanvas() {
 
   const onConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent) => {
+      setIsConnecting(false);
       const start = connectStartRef.current;
       connectStartRef.current = null;
       if (!start) return;
@@ -138,6 +140,7 @@ export function SchematicCanvas() {
   const onPaneClick = useCallback(() => selectNode(null), [selectNode]);
 
   const [isInteractive, setIsInteractive] = useState(true);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const signalEdges = useMemo(
     () =>
@@ -159,10 +162,11 @@ export function SchematicCanvas() {
             sourceHandle: edge.sourceHandle ?? '',
             targetLabel: tgt?.data.label ?? tgt?.type ?? '?',
             targetHandle: edge.targetHandle ?? '',
+            connecting: isConnecting,
           },
         };
       }),
-    [edges, nodes],
+    [edges, nodes, isConnecting],
   );
 
   return (
