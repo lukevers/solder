@@ -229,7 +229,7 @@ const ratEdges: Array<Edge> = [
     source: 'rat-rfb',
     sourceHandle: 'b',
     target: 'rat-rdist',
-    targetHandle: 'ccw',
+    targetHandle: 'cw',
   },
   {
     id: 'rat-e13',
@@ -241,7 +241,7 @@ const ratEdges: Array<Edge> = [
   {
     id: 'rat-e13b',
     source: 'rat-rdist',
-    sourceHandle: 'cw',
+    sourceHandle: 'ccw',
     target: 'rat-u1',
     targetHandle: 'in_neg',
   },
