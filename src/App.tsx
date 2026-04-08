@@ -51,6 +51,8 @@ export default function App() {
   );
 
   const [showExamples, setShowExamples] = useState(false);
+  const [sourceBuffer, setSourceBuffer] = useState<Float32Array | null>(null);
+  const [playingOriginal, setPlayingOriginal] = useState(false);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -70,6 +72,7 @@ export default function App() {
 
   const workerRef = useRef<Worker | null>(null);
   const pipelineRef = useRef<AudioPipeline | null>(null);
+  const simStartRef = useRef<number | null>(null);
 
   // Refs so callbacks read current values without stale closures
   const nodesRef = useRef(nodes);
@@ -90,8 +93,12 @@ export default function App() {
     workerRef.current.onmessage = (e: MessageEvent<SimulateResponse>) => {
       const msg = e.data;
       if (msg.type === 'result') {
+        const elapsed = simStartRef.current != null
+          ? (performance.now() - simStartRef.current) / 1000
+          : undefined;
+        simStartRef.current = null;
         setSimulationStatus('idle');
-        setOutputBuffer(msg.outputBuffer);
+        setOutputBuffer(msg.outputBuffer, elapsed);
       } else {
         setSimulationStatus('error');
         setSimulationError(msg.message);
@@ -112,8 +119,10 @@ export default function App() {
     let cancelled = false;
     const pipeline = new AudioPipeline();
     pipelineRef.current = pipeline;
-    pipeline.init(volume).then(() => {
-      if (!cancelled) void pipeline.loadSample('guitar');
+    pipeline.init(volume).then(async () => {
+      if (cancelled) return;
+      await pipeline.loadSample('guitar');
+      if (!cancelled) setSourceBuffer(pipeline.getSampleData('guitar'));
     });
     return () => {
       cancelled = true;
@@ -126,19 +135,34 @@ export default function App() {
     pipelineRef.current?.setVolume(volume);
   }, [volume]);
 
-  // Play/stop output buffer when `playing` state changes
+  // Unified playback effect — only one of playing/playingOriginal is true at a time
   useEffect(() => {
+    const pipeline = pipelineRef.current;
+    if (!pipeline) return;
     if (playing && outputBuffer) {
-      pipelineRef.current?.playBuffer(outputBuffer, () => setPlaying(false));
+      pipeline.playBuffer(outputBuffer, () => setPlaying(false));
+    } else if (playingOriginal && sourceBuffer) {
+      pipeline.playBuffer(sourceBuffer, () => setPlayingOriginal(false));
     } else {
-      pipelineRef.current?.stopPlayback();
+      pipeline.stopPlayback();
     }
-  }, [playing, outputBuffer, setPlaying]);
+  }, [playing, playingOriginal, outputBuffer, sourceBuffer, setPlaying]);
+
+  const handlePlayOriginal = useCallback(() => {
+    setPlaying(false);
+    setPlayingOriginal(true);
+  }, [setPlaying]);
+
+  const handleStop = useCallback(() => {
+    setPlaying(false);
+    setPlayingOriginal(false);
+  }, [setPlaying]);
 
   const handleSimulate = useCallback(() => {
     if (!workerRef.current) return;
     try {
       setSimulationStatus('running');
+      simStartRef.current = performance.now();
       const pipeline = pipelineRef.current;
       let inputBuffer: Float32Array | undefined;
       let inputSampleRate: number | undefined;
@@ -181,6 +205,10 @@ export default function App() {
         onSimulate={handleSimulate}
         onToggleExamples={() => setShowExamples((v) => !v)}
         showExamples={showExamples}
+        onPlayOriginal={handlePlayOriginal}
+        onStop={handleStop}
+        playingOriginal={playingOriginal}
+        hasSourceBuffer={sourceBuffer !== null}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -195,7 +223,7 @@ export default function App() {
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
               Waveform
             </div>
-            <WaveformDisplay inputBuffer={null} outputBuffer={outputBuffer} />
+            <WaveformDisplay inputBuffer={sourceBuffer} outputBuffer={outputBuffer} />
           </div>
           <div className="border-t border-gray-800" />
           <AudioControls />

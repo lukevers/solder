@@ -75,12 +75,20 @@ type ToolbarProps = {
   onSimulate: () => void;
   onToggleExamples: () => void;
   showExamples: boolean;
+  onPlayOriginal: () => void;
+  onStop: () => void;
+  playingOriginal: boolean;
+  hasSourceBuffer: boolean;
 };
 
 export function Toolbar({
   onSimulate,
   onToggleExamples,
   showExamples,
+  onPlayOriginal,
+  onStop,
+  playingOriginal,
+  hasSourceBuffer,
 }: ToolbarProps) {
   const {
     addNode,
@@ -370,7 +378,31 @@ export function Toolbar({
 
         <div className="flex-1" />
 
-        {/* Simulate / Play / Stop */}
+        {/* Play Dry (original sample) */}
+        {hasSourceBuffer && (
+          playingOriginal ? (
+            <button
+              type="button"
+              onClick={onStop}
+              className="bg-red-900 hover:bg-red-800 border border-red-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+              style={{ color: '#fda4af' }}
+            >
+              ⏹ Dry
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onPlayOriginal}
+              disabled={simulationStatus === 'running'}
+              className="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 border border-gray-600 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+              style={{ color: '#be185d' }}
+            >
+              ▶ Dry
+            </button>
+          )
+        )}
+
+        {/* Simulate / Play Wet / Stop */}
         {simulationStatus === 'running' ? (
           <button
             type="button"
@@ -382,7 +414,7 @@ export function Toolbar({
         ) : outputBuffer && playing ? (
           <button
             type="button"
-            onClick={() => setPlaying(false)}
+            onClick={onStop}
             className="bg-red-800 hover:bg-red-700 border border-red-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
             ⏹ Stop

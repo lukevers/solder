@@ -1,0 +1,179 @@
+<h2>Hybrid: logo-row with A-style tab strip</h2>
+<p class="subtitle">Logo + Examples on the left, full-width tab strip to the right — still two rows total</p>
+
+<style>
+  .ui-mock {
+    font-family: monospace;
+    font-size: 11px;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #0f172a;
+    color: #94a3b8;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .bar {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border-bottom: 1px solid #1e293b;
+    font-size: 10px;
+  }
+  .bar.logo-bar { background: #111827; }
+  .bar.palette-bar { background: #111827; align-items: center; gap: 6px; padding: 5px 10px; }
+  .left-chrome {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    border-right: 1px solid #1e293b;
+    flex-shrink: 0;
+  }
+  .tab-strip {
+    display: flex;
+    align-items: stretch;
+    flex: 1;
+  }
+  .tab {
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    border-right: 1px solid #1e293b;
+    color: #4b5563;
+    font-size: 10px;
+    white-space: nowrap;
+    height: 100%;
+    cursor: pointer;
+    gap: 6px;
+  }
+  .tab.active {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-bottom: 2px solid #3b82f6;
+    margin-bottom: -1px;
+  }
+  .tab.new-tab {
+    color: #374151;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+  .tab .close {
+    color: #374151;
+    font-size: 9px;
+  }
+  .tab.active .close { color: #6b7280; }
+  .canvas-row {
+    display: flex;
+    height: 72px;
+  }
+  .canvas-area {
+    flex: 1;
+    background: #0c1322;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e3a5f;
+    font-size: 18px;
+    letter-spacing: 2px;
+    border-right: 1px solid #1e293b;
+  }
+  .sidebar {
+    width: 50px;
+    background: #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #374151;
+    font-size: 9px;
+    text-align: center;
+  }
+  .logo { color: #60a5fa; font-weight: bold; font-size: 11px; }
+  .btn {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 3px;
+    padding: 2px 6px;
+    color: #9ca3af;
+    font-size: 9px;
+  }
+  .btn.green {
+    background: #14532d;
+    border-color: #15803d;
+    color: #86efac;
+  }
+  .spacer { flex: 1; }
+  .divider { width: 1px; background: #374151; margin: 4px 2px; }
+</style>
+
+<div class="cards" style="gap: 20px; flex-direction: column;">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 12px; background: #0a0f1a;">
+      <div class="ui-mock">
+        <div class="bar logo-bar" style="height: 32px;">
+          <div class="left-chrome">
+            <span class="logo">⚡ solder</span>
+            <div class="btn">📁 Examples</div>
+            <div class="divider"></div>
+          </div>
+          <div class="tab-strip">
+            <div class="tab active">Circuit 1 <span class="close">✕</span></div>
+            <div class="tab">Circuit 2 <span class="close">✕</span></div>
+            <div class="tab new-tab">＋</div>
+          </div>
+        </div>
+        <div class="bar palette-bar">
+          <div class="btn">IN</div><div class="btn">OUT</div><div class="btn">V+</div>
+          <div class="btn">GND</div><div class="btn">R</div><div class="btn">C</div>
+          <div class="btn">POT</div><div class="btn">D</div><div class="btn">U</div>
+          <div class="spacer"></div><div class="btn green">▶ Simulate</div>
+        </div>
+        <div class="canvas-row">
+          <div class="canvas-area">· · · · · · · · ·</div>
+          <div class="sidebar">side<br/>bar</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Option 1 — Logo left, tabs fill the rest</h3>
+      <p>Logo + Examples pinned left with a divider, then a full tab strip grows rightward. Active tab has blue underline like option A. Two rows total.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 12px; background: #0a0f1a;">
+      <div class="ui-mock">
+        <div class="bar logo-bar" style="height: 32px;">
+          <div class="tab-strip">
+            <div class="tab active">Circuit 1 <span class="close">✕</span></div>
+            <div class="tab">Circuit 2 <span class="close">✕</span></div>
+            <div class="tab new-tab">＋</div>
+            <div class="spacer"></div>
+          </div>
+          <div class="left-chrome" style="border-right: none; border-left: 1px solid #1e293b;">
+            <span class="logo">⚡ solder</span>
+            <div class="btn">📁 Examples</div>
+          </div>
+        </div>
+        <div class="bar palette-bar">
+          <div class="btn">IN</div><div class="btn">OUT</div><div class="btn">V+</div>
+          <div class="btn">GND</div><div class="btn">R</div><div class="btn">C</div>
+          <div class="btn">POT</div><div class="btn">D</div><div class="btn">U</div>
+          <div class="spacer"></div><div class="btn green">▶ Simulate</div>
+        </div>
+        <div class="canvas-row">
+          <div class="canvas-area">· · · · · · · · ·</div>
+          <div class="sidebar">side<br/>bar</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Option 2 — Tabs left, logo pinned right</h3>
+      <p>Tabs start from the left edge (like a browser), logo + Examples anchored to the right. Maximizes horizontal tab space.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top: 8px;">Click to select, then let me know in the terminal — or describe any tweaks.</p>
