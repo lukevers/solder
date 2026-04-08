@@ -20,6 +20,10 @@ export function WaveformDisplay({
   const splitRef = useRef(0.5);
   const draggingRef = useRef(false);
 
+  // Padding reserved for axis labels (only when ticks are shown)
+  const padL = showTicks ? 30 : 0;
+  const padB = showTicks ? 16 : 0;
+
   function draw(split: number) {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -37,7 +41,13 @@ export function WaveformDisplay({
     ctx.fillStyle = '#0d1117';
     ctx.fillRect(0, 0, w, h);
 
-    const splitX = w * split;
+    // Plot area dimensions
+    const plotW = w - padL;
+    const plotH = h - padB;
+    const plotMidY = plotH / 2;
+
+    // X position of the reveal divider within the plot area
+    const splitX = padL + plotW * split;
 
     // Grid lines (X and Y axes)
     if (showTicks) {
@@ -46,20 +56,19 @@ export function WaveformDisplay({
       ctx.lineWidth = 1;
       ctx.font = '9px monospace';
 
-      // Y axis — amplitude levels: 0, ±0.5, ±1.0
-      // Waveform formula: y = h/2 - (amplitude * h) / 2.5
+      // Y axis — amplitude levels: ±1.0, ±0.5, 0
       const ampLevels = [1.0, 0.5, 0, -0.5, -1.0];
       for (const amp of ampLevels) {
-        const y = h / 2 - (amp * h) / 2.5;
+        const y = plotMidY - (amp * plotH) / 2.5;
         ctx.strokeStyle = amp === 0 ? '#374151' : '#1f2937';
         ctx.beginPath();
-        ctx.moveTo(0, y);
+        ctx.moveTo(padL, y);
         ctx.lineTo(w, y);
         ctx.stroke();
         ctx.fillStyle = '#4b5563';
-        ctx.textAlign = 'left';
+        ctx.textAlign = 'right';
         const label = amp === 0 ? '0' : amp > 0 ? `+${amp}` : `${amp}`;
-        ctx.fillText(label, 3, y - 2);
+        ctx.fillText(label, padL - 4, y + 3);
       }
 
       // X axis — time ticks
@@ -70,11 +79,11 @@ export function WaveformDisplay({
       ctx.textAlign = 'center';
       for (let i = 1; i <= tickCount; i++) {
         const t = i * interval;
-        const x = (t / duration) * w;
+        const x = padL + (t / duration) * plotW;
         ctx.strokeStyle = '#1f2937';
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
+        ctx.lineTo(x, plotH);
         ctx.stroke();
         const label = t >= 1 ? `${t.toFixed(0)}s` : `${(t * 1000).toFixed(0)}ms`;
         ctx.fillText(label, x, h - 3);
@@ -87,8 +96,8 @@ export function WaveformDisplay({
       ctx.strokeStyle = color;
       ctx.lineWidth = 1;
       for (let i = 0; i < buf.length; i++) {
-        const x = (i / buf.length) * w;
-        const y = h / 2 - (buf[i] * h) / 2.5;
+        const x = padL + (i / buf.length) * plotW;
+        const y = plotMidY - (buf[i] * plotH) / 2.5;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
@@ -101,7 +110,7 @@ export function WaveformDisplay({
       if (bothBuffers) {
         ctx.save();
         ctx.beginPath();
-        ctx.rect(0, 0, splitX, h);
+        ctx.rect(padL, 0, splitX - padL, plotH);
         ctx.clip();
       }
       drawBuffer(outputBuffer, '#22c55e');
@@ -112,7 +121,7 @@ export function WaveformDisplay({
       if (bothBuffers) {
         ctx.save();
         ctx.beginPath();
-        ctx.rect(splitX, 0, w - splitX, h);
+        ctx.rect(splitX, 0, w - splitX, plotH);
         ctx.clip();
       }
       drawBuffer(inputBuffer, '#f472b6');
@@ -124,10 +133,10 @@ export function WaveformDisplay({
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(splitX, 0);
-      ctx.lineTo(splitX, h);
+      ctx.lineTo(splitX, plotH);
       ctx.stroke();
 
-      const cy = h / 2;
+      const cy = plotH / 2;
       ctx.fillStyle = '#e5e7eb';
       ctx.beginPath();
       ctx.arc(splitX, cy, 6, 0, Math.PI * 2);
@@ -146,7 +155,9 @@ export function WaveformDisplay({
     const canvas = canvasRef.current;
     if (!canvas) return 0.5;
     const rect = canvas.getBoundingClientRect();
-    return Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const plotW = rect.width - padL;
+    const x = e.clientX - rect.left - padL;
+    return Math.max(0, Math.min(1, x / plotW));
   }
 
   function onPointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
