@@ -96,7 +96,7 @@ const ratNodes: Array<ComponentNode> = [
   {
     id: 'rat-rdist',
     type: 'pot',
-    position: { x: 1100, y: 80 },
+    position: { x: 1100, y: 120 },
     data: { label: 'DIST', ohms: 500000, position: 0.5 },
   },
 
