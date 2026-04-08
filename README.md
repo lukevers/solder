@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# Solder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A visual circuit editor and audio effects simulator. Place and connect circuit components on a schematic canvas, then simulate audio signal processing via SPICE (ngspice compiled to WebAssembly).
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Circuit Editor**
+- Drag-and-drop component palette: resistors, capacitors, op-amps, diodes, potentiometers, power supplies, ground
+- Net labels for KiCad-style global connections (place multiple labels with the same name and they share a net automatically)
+- KiCad-style power pins (multiple GND/VCC symbols share the same net without explicit wires)
+- Drop connections onto existing wires to join a net
+- Undo/redo, multi-tab circuits, JSON import/export
+- Click traces or components to inspect in the sidebar
 
-## React Compiler
+**Simulation**
+- Compiles circuit to SPICE netlist and runs transient analysis via ngspice WASM ([eecircuit-engine](https://www.npmjs.com/package/eecircuit-engine))
+- Use guitar/bass samples or a SIN test tone as input
+- Select a region of the input waveform to simulate only a portion
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Audio Playback & Waveform**
+- Play input and output audio with looping support
+- Waveform display with input/output overlay comparison
+- Expandable modal with seek (click), scrub (drag), and region selection
+- Animated playback cursor tied to audio position
 
-## Expanding the ESLint configuration
+**Presets**
+- ProCo RAT distortion pedal example circuit
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open [http://localhost:5173](http://localhost:5173). The dev server enables Cross-Origin Isolation headers required for SharedArrayBuffer (ngspice WASM).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Commands
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm dev          # Start dev server with HMR
+pnpm build        # TypeScript compile + production build
+pnpm preview      # Preview production build locally
+pnpm lint         # Lint with Biome
+pnpm test         # Run all tests (vitest)
+pnpm test:ui      # Run tests with interactive Vitest UI
 ```
+
+## Tech Stack
+
+- **UI:** React 19 + TypeScript + Vite
+- **Canvas:** [XYFlow / React Flow](https://reactflow.dev) for the schematic editor
+- **State:** Zustand with undo/redo history
+- **Audio:** Web Audio API for playback, ScriptProcessorNode for capture
+- **Simulation:** ngspice WASM via eecircuit-engine, running in a Web Worker
+- **Styling:** Tailwind CSS
+- **Icons:** [Lucide React](https://lucide.dev)
+- **Linting:** Biome (single quotes, 2-space indent)
+- **Testing:** Vitest + jsdom + Testing Library
