@@ -8,14 +8,12 @@ export function StatusBar() {
     simulationStatus,
     simulationError,
     outputBuffer,
-    simulationDuration,
   } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
       simulationStatus: s.simulationStatus,
       simulationError: s.simulationError,
       outputBuffer: s.outputBuffer,
-      simulationDuration: s.simulationDuration,
     })),
   );
 
@@ -32,7 +30,7 @@ export function StatusBar() {
       : simulationStatus === 'running'
         ? '● simulating…'
         : outputBuffer
-          ? `● ready · ${simulationDuration.toFixed(1)} s`
+          ? `● ready · ${(outputBuffer.length / 44100).toFixed(1)} s`
           : '● ready';
 
   return (
