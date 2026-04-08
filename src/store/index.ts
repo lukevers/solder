@@ -234,9 +234,19 @@ export const useStore = create<StoreState>()(
           ],
           future: [],
           nodes: [...s.nodes, node],
+          outputBuffer: null,
+          simulationStatus: 'idle' as const,
         })),
-      setNodes: (nodes) => set({ nodes }),
-      setEdges: (edges) => set({ edges }),
+      setNodes: (nodes) =>
+        set((s) => {
+          const oldIds = new Set(s.nodes.map((n) => n.id));
+          const topologyChanged = nodes.some((n) => !oldIds.has(n.id)) || nodes.length !== s.nodes.length;
+          return {
+            nodes,
+            ...(topologyChanged ? { outputBuffer: null, simulationStatus: 'idle' as const } : {}),
+          };
+        }),
+      setEdges: (edges) => set({ edges, outputBuffer: null, simulationStatus: 'idle' as const }),
       selectNode: (selectedNodeId) => set({ selectedNodeId }),
       updateNodeData: (id, data) =>
         set((s) => ({
@@ -248,6 +258,8 @@ export const useStore = create<StoreState>()(
           nodes: s.nodes.map((n) =>
             n.id === id ? ({ ...n, data } as ComponentNode) : n,
           ),
+          outputBuffer: null,
+          simulationStatus: 'idle' as const,
         })),
       loadCircuit: (nodes, edges) =>
         set((s) => {
@@ -270,6 +282,8 @@ export const useStore = create<StoreState>()(
             past: [],
             future: [],
             tabs: updatedTabs,
+            outputBuffer: null,
+            simulationStatus: 'idle' as const,
           };
         }),
 
@@ -292,6 +306,8 @@ export const useStore = create<StoreState>()(
           nodes: prev.nodes,
           edges: prev.edges,
           selectedNodeId: null,
+          outputBuffer: null,
+          simulationStatus: 'idle',
         });
       },
       redo: () => {
@@ -304,6 +320,8 @@ export const useStore = create<StoreState>()(
           nodes: next.nodes,
           edges: next.edges,
           selectedNodeId: null,
+          outputBuffer: null,
+          simulationStatus: 'idle',
         });
       },
 
