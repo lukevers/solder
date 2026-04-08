@@ -6,8 +6,6 @@ import {
   Hourglass,
   Play,
   Plus,
-  Repeat,
-  RotateCcw,
   Square,
   Upload,
   X,
@@ -85,7 +83,6 @@ const PALETTE: Array<{
 
 type ToolbarProps = {
   onSimulate: () => void;
-  onReset: () => void;
   onToggleExamples: () => void;
   showExamples: boolean;
   onPlayOriginal: () => void;
@@ -93,14 +90,10 @@ type ToolbarProps = {
   onStop: () => void;
   playingOriginal: boolean;
   hasSourceBuffer: boolean;
-  hasSelection: boolean;
-  looping: boolean;
-  onToggleLoop: () => void;
 };
 
 export function Toolbar({
   onSimulate,
-  onReset,
   onToggleExamples,
   showExamples,
   onPlayOriginal,
@@ -108,9 +101,6 @@ export function Toolbar({
   onStop,
   playingOriginal,
   hasSourceBuffer,
-  hasSelection,
-  looping,
-  onToggleLoop,
 }: ToolbarProps) {
   const {
     addNode,
@@ -357,33 +347,6 @@ export function Toolbar({
         })}
 
         <div className="flex-1" />
-
-        {/* Reset */}
-        {(outputBuffer || hasSelection) && simulationStatus !== 'running' && (
-          <button
-            type="button"
-            onClick={onReset}
-            className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-400 hover:text-gray-200 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
-          >
-            <RotateCcw size={10} /> Reset
-          </button>
-        )}
-
-        {/* Loop toggle */}
-        {hasSourceBuffer && (
-          <button
-            type="button"
-            onClick={onToggleLoop}
-            className={`flex items-center gap-1 border text-xs px-3 py-1 rounded font-mono font-bold transition-colors ${
-              looping
-                ? 'bg-blue-950 border-blue-600 text-blue-400'
-                : 'bg-gray-800 hover:bg-gray-700 border-gray-600 text-gray-500 hover:text-gray-300'
-            }`}
-            aria-label={looping ? 'Disable loop' : 'Enable loop'}
-          >
-            <Repeat size={10} /> Loop
-          </button>
-        )}
 
         {/* Play Input (original sample) */}
         {hasSourceBuffer &&

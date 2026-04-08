@@ -1,5 +1,5 @@
 // src/App.tsx
-import { Maximize2 } from 'lucide-react';
+import { Maximize2, Repeat, RotateCcw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { AudioPipeline } from './audio/pipeline';
@@ -290,7 +290,6 @@ export default function App() {
     <div className="flex flex-col h-screen overflow-hidden">
       <Toolbar
         onSimulate={handleSimulate}
-        onReset={handleReset}
         onToggleExamples={() => setShowExamples((v) => !v)}
         showExamples={showExamples}
         onPlayOriginal={handlePlayOriginal}
@@ -298,9 +297,6 @@ export default function App() {
         onStop={handleStop}
         playingOriginal={playingOriginal}
         hasSourceBuffer={sourceBuffer !== null}
-        hasSelection={selection !== null}
-        looping={looping}
-        onToggleLoop={() => setLooping((v) => !v)}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -337,6 +333,34 @@ export default function App() {
               selection={outputBuffer ? null : selection}
               onSelectionChange={outputBuffer ? undefined : setSelection}
             />
+            {(sourceBuffer || outputBuffer) && (
+              <div className="flex mt-2 rounded border border-gray-700 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setLooping((v) => !v)}
+                  className={`flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono transition-colors ${
+                    looping
+                      ? 'bg-blue-950 text-blue-400'
+                      : 'bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300'
+                  }`}
+                  aria-label={looping ? 'Disable loop' : 'Enable loop'}
+                >
+                  <Repeat size={10} /> Loop
+                </button>
+                {(outputBuffer || selection) && (
+                  <>
+                    <div className="w-px bg-gray-700" />
+                    <button
+                      type="button"
+                      onClick={handleReset}
+                      className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300 transition-colors"
+                    >
+                      <RotateCcw size={10} /> Reset
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
           <div className="border-t border-gray-800" />
           <AudioControls />
