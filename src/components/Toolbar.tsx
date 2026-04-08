@@ -423,7 +423,7 @@ export function Toolbar({
           <button
             type="button"
             onClick={() => setPlaying(true)}
-            className="bg-green-800 hover:bg-green-700 border border-green-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+            className="bg-green-600 hover:bg-green-500 border border-green-500 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
             ▶ Play
           </button>
