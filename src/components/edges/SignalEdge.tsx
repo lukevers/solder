@@ -62,6 +62,18 @@ export function SignalEdge({
   const [copied, setCopied] = useState(false);
   const tooltipText = `${fromLabel}.${fromPin} → ${toLabel}.${toPin}  ${isDC ? 'DC' : 'AC'}`;
 
+  function fallbackCopy(text: string) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.position = 'fixed';
+    el.style.opacity = '0';
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    setCopied(true);
+  }
+
   return (
     <>
       {/* Wide invisible hit area for easier interaction */}
@@ -91,22 +103,34 @@ export function SignalEdge({
       />
       {hovered && !d?.connecting && (
         <EdgeLabelRenderer>
+          {/* biome-ignore lint/a11y/useKeyWithClickEvents: tooltip copy action */}
           <div
-            className="absolute bg-gray-800 border border-gray-600 rounded px-2 py-1 text-xs font-mono text-gray-300 shadow-lg whitespace-nowrap cursor-pointer hover:border-gray-400 transition-colors"
+            className="nopan nodrag nowheel absolute bg-gray-800 border border-gray-600 rounded px-2 py-1 text-xs font-mono text-gray-300 shadow-lg whitespace-nowrap cursor-pointer hover:border-gray-400 transition-colors"
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              zIndex: 10,
             }}
             onMouseEnter={showTooltip}
             onMouseLeave={() => {
               hideTooltip();
               setCopied(false);
             }}
-            onMouseDown={(e) => e.stopPropagation()}
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
             onClick={(e) => {
               e.stopPropagation();
-              navigator.clipboard.writeText(tooltipText).then(() => {
-                setCopied(true);
-              });
+              e.preventDefault();
+              const text = tooltipText;
+              if (navigator.clipboard?.writeText) {
+                navigator.clipboard.writeText(text).then(
+                  () => setCopied(true),
+                  () => fallbackCopy(text),
+                );
+              } else {
+                fallbackCopy(text);
+              }
             }}
           >
             {copied ? (
