@@ -59,6 +59,8 @@ export function SignalEdge({
   const fromPin = d?.sourceHandle ?? '';
   const toLabel = d?.targetLabel ?? '?';
   const toPin = d?.targetHandle ?? '';
+  const [copied, setCopied] = useState(false);
+  const tooltipText = `${fromLabel}.${fromPin} → ${toLabel}.${toPin}  ${isDC ? 'DC' : 'AC'}`;
 
   return (
     <>
@@ -90,21 +92,34 @@ export function SignalEdge({
       {hovered && !d?.connecting && (
         <EdgeLabelRenderer>
           <div
-            className="absolute bg-gray-800 border border-gray-600 rounded px-2 py-1 text-xs font-mono text-gray-300 shadow-lg whitespace-nowrap select-all cursor-text"
+            className="absolute bg-gray-800 border border-gray-600 rounded px-2 py-1 text-xs font-mono text-gray-300 shadow-lg whitespace-nowrap cursor-pointer hover:border-gray-400 transition-colors"
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
             }}
             onMouseEnter={showTooltip}
-            onMouseLeave={hideTooltip}
+            onMouseLeave={() => {
+              hideTooltip();
+              setCopied(false);
+            }}
+            onClick={() => {
+              navigator.clipboard.writeText(tooltipText);
+              setCopied(true);
+            }}
           >
-            <span className="text-gray-400">{fromLabel}</span>
-            <span className="text-gray-600">.</span>
-            <span className="text-gray-500">{fromPin}</span>
-            <span className="text-gray-600 mx-1">&rarr;</span>
-            <span className="text-gray-400">{toLabel}</span>
-            <span className="text-gray-600">.</span>
-            <span className="text-gray-500">{toPin}</span>
-            <span className="ml-2 text-gray-600">{isDC ? 'DC' : 'AC'}</span>
+            {copied ? (
+              <span className="text-green-400">Copied!</span>
+            ) : (
+              <>
+                <span className="text-gray-400">{fromLabel}</span>
+                <span className="text-gray-600">.</span>
+                <span className="text-gray-500">{fromPin}</span>
+                <span className="text-gray-600 mx-1">&rarr;</span>
+                <span className="text-gray-400">{toLabel}</span>
+                <span className="text-gray-600">.</span>
+                <span className="text-gray-500">{toPin}</span>
+                <span className="ml-2 text-gray-600">{isDC ? 'DC' : 'AC'}</span>
+              </>
+            )}
           </div>
         </EdgeLabelRenderer>
       )}
