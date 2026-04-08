@@ -63,6 +63,7 @@ export default function App() {
   const [playingOriginal, setPlayingOriginal] = useState(false);
   const [selection, setSelection] = useState<WaveformSelection | null>(null);
   const [looping, setLooping] = useState(false);
+  const loopingRef = useRef(false);
   const [simulatedInput, setSimulatedInput] = useState<Float32Array | null>(
     null,
   );
@@ -98,6 +99,9 @@ export default function App() {
   useEffect(() => {
     edgesRef.current = edges;
   }, [edges]);
+  useEffect(() => {
+    loopingRef.current = looping;
+  }, [looping]);
   useEffect(() => {
     selectionRef.current = selection;
   }, [selection]);
@@ -177,17 +181,29 @@ export default function App() {
   useEffect(() => {
     const pipeline = pipelineRef.current;
     if (!pipeline) return;
+
+    function playWithLoop(buf: Float32Array, onStop: () => void) {
+      const onEnded = () => {
+        if (loopingRef.current) {
+          pipeline!.playBuffer(buf, onEnded);
+        } else {
+          onStop();
+        }
+      };
+      pipeline!.playBuffer(buf, onEnded);
+    }
+
     if (playing && outputBuffer) {
-      pipeline.playBuffer(outputBuffer, () => setPlaying(false));
+      playWithLoop(outputBuffer, () => setPlaying(false));
     } else if (playingOriginal && sourceBuffer) {
       const sel = selectionRef.current;
       if (sel) {
         const start = Math.floor(sel.start * sourceBuffer.length);
         const end = Math.floor(sel.end * sourceBuffer.length);
         const sliced = new Float32Array(sourceBuffer.subarray(start, end));
-        pipeline.playBuffer(sliced, () => setPlayingOriginal(false));
+        playWithLoop(sliced, () => setPlayingOriginal(false));
       } else {
-        pipeline.playBuffer(sourceBuffer, () => setPlayingOriginal(false));
+        playWithLoop(sourceBuffer, () => setPlayingOriginal(false));
       }
     } else {
       pipeline.stopPlayback();
