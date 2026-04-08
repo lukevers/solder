@@ -101,9 +101,12 @@ export function SignalEdge({
               hideTooltip();
               setCopied(false);
             }}
-            onClick={() => {
-              navigator.clipboard.writeText(tooltipText);
-              setCopied(true);
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(tooltipText).then(() => {
+                setCopied(true);
+              });
             }}
           >
             {copied ? (
