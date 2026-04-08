@@ -1,35 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`PWL source determinism > synthetic buffer through passthrough produces deterministic output 1`] = `
-[
-  0,
-  0.552935,
-  -0.551806,
-  0.552128,
-  -0.552242,
-  0.552426,
-  -0.552635,
-  0.552877,
-  -0.553152,
-  0.553008,
-]
-`;
-
-exports[`diode clipping (half-wave rectifier) > produces deterministic snapshot 1`] = `
-[
-  0,
-  0.000373,
-  0.353783,
-  0.000151,
-  -0.000452,
-  0.347761,
-  -0.000385,
-  0.397952,
-  -0.00031,
-  -0.000893,
-]
-`;
-
 exports[`frequency sweep determinism > 1 kHz snapshot 1`] = `
 [
   0,
@@ -113,18 +83,5 @@ exports[`passthrough (wire only) > produces deterministic snapshot 1`] = `
   -0.990461,
   0.990461,
   -0.990461,
-]
-`;
-
-exports[`voltage divider > produces deterministic snapshot 1`] = `
-[
-  0,
-  0.099854,
-  -0.360153,
-  0.441143,
-  0.087511,
-  -0.495228,
-  0.218557,
-  0.360153,
 ]
 `;

@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`voltage divider > produces deterministic snapshot 1`] = `
+[
+  0,
+  0.099854,
+  -0.360153,
+  0.441143,
+  0.087511,
+  -0.495228,
+  0.218557,
+  0.360153,
+]
+`;

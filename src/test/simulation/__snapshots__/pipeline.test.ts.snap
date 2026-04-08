@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PWL source determinism > synthetic buffer through passthrough produces deterministic output 1`] = `
+[
+  0,
+  0.552935,
+  -0.551806,
+  0.552128,
+  -0.552242,
+  0.552426,
+  -0.552635,
+  0.552877,
+  -0.553152,
+  0.553008,
+]
+`;
