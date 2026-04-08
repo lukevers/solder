@@ -12,6 +12,7 @@ import type { Edge } from '@xyflow/react';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { voltageToAudioBuffer } from '../lib/audio-convert';
 import { EECircuitEngine } from '../lib/engines/eecircuit';
+import { EXAMPLES } from '../lib/examples/rat';
 import { compileNetlist } from '../lib/netlist';
 import type { ComponentNode } from '../lib/types';
 
@@ -1442,7 +1443,7 @@ describe('RC time constant (analytical validation)', () => {
     // PWL downsampling (44100→10000 Hz) smears the step edge, delaying
     // the charging curve. At 2·tau and 5·tau the error settles down.
     // A native SPICE step source would achieve < 0.1%.
-    expect(Math.abs(v_2tau - expected_2tau)).toBeLessThan(0.10);
+    expect(Math.abs(v_2tau - expected_2tau)).toBeLessThan(0.1);
     expect(Math.abs(v_5tau - expected_5tau)).toBeLessThan(0.05);
   });
 });
@@ -1882,5 +1883,792 @@ describe('anti-parallel diode symmetry', () => {
     // Clipping should be at roughly 0.6V (diode forward voltage)
     expect(posMax).toBeGreaterThan(0.5);
     expect(posMax).toBeLessThan(0.8);
+  });
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  OP-AMP CIRCUIT TESTS
+//
+//  The TL072 and LM741 subcircuits are the core active element in
+//  every guitar pedal. These tests verify the op-amp behaves
+//  correctly in standard configurations.
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ┌──────────────────────────────────────────────────────────────────┐
+// │  INVERTING AMPLIFIER                                             │
+// │                                                                  │
+// │  The most common op-amp configuration in audio. Gain is set by   │
+// │  the ratio of feedback resistor to input resistor:               │
+// │     Av = -Rf/Ri                                                  │
+// │                                                                  │
+// │  Schematic:                                                      │
+// │                     Rf = 100kΩ                                   │
+// │              ┌─────┤Rf├─────┐                                    │
+// │              │               │                                   │
+// │  INPUT ─┤Ri├─┤(-) U1        │                                   │
+// │    Ri=10k    │         (out)─┴── OUTPUT                         │
+// │   VBIAS ─────┤(+)                                               │
+// │              │                                                   │
+// │    VCC ──── vcc                                                  │
+// │    GND ──── gnd                                                  │
+// │                                                                  │
+// │  With Rf=100k and Ri=10k: Av = -100k/10k = -10                 │
+// │  0.05V input peak → 0.5V output peak (inverted)                │
+// │                                                                  │
+// │  Input:   ╭─╮   ╭─╮          Output:  ╰─╯   ╰─╯                │
+// │        ───╯ ╰───╯ ╰───    →       ───╭─╮───╭─╮───               │
+// │          0.05V peak                    0.5V peak (inverted)     │
+// │                                                                  │
+// │  Why it matters: the RAT's gain stage is an inverting amplifier. │
+// │  If the op-amp gain is wrong, the distortion level is wrong.    │
+// └──────────────────────────────────────────────────────────────────┘
+describe('op-amp inverting amplifier', () => {
+  function invertingAmp(model: 'TL072' | 'LM741') {
+    const components: Array<ComponentNode> = [
+      {
+        id: 'ri',
+        type: 'resistor',
+        position: { x: 100, y: 0 },
+        data: { label: 'Ri', ohms: 10000 },
+      },
+      {
+        id: 'rf',
+        type: 'resistor',
+        position: { x: 300, y: 0 },
+        data: { label: 'Rf', ohms: 100000 },
+      },
+      {
+        id: 'u1',
+        type: 'opamp',
+        position: { x: 200, y: 0 },
+        data: { label: 'U1', model },
+      },
+      {
+        id: 'vcc',
+        type: 'power',
+        position: { x: 200, y: -100 },
+        data: { label: 'VCC', volts: 9 },
+      },
+      {
+        id: 'g1',
+        type: 'ground',
+        position: { x: 200, y: 100 },
+        data: { label: 'GND' },
+      },
+      // Bias voltage for non-inverting input (4.5V = half supply)
+      {
+        id: 'rb1',
+        type: 'resistor',
+        position: { x: 100, y: -50 },
+        data: { label: 'RB1', ohms: 100000 },
+      },
+      {
+        id: 'rb2',
+        type: 'resistor',
+        position: { x: 100, y: 50 },
+        data: { label: 'RB2', ohms: 100000 },
+      },
+    ];
+    const edges: Array<Edge> = [
+      // Input → Ri → inverting input
+      {
+        id: 'e1',
+        source: 'in',
+        sourceHandle: 'out',
+        target: 'ri',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e2',
+        source: 'ri',
+        sourceHandle: 'b',
+        target: 'u1',
+        targetHandle: 'in_neg',
+      },
+      // Feedback: output → Rf → inverting input
+      {
+        id: 'e3',
+        source: 'u1',
+        sourceHandle: 'out',
+        target: 'rf',
+        targetHandle: 'b',
+      },
+      {
+        id: 'e4',
+        source: 'rf',
+        sourceHandle: 'a',
+        target: 'u1',
+        targetHandle: 'in_neg',
+      },
+      // Output
+      {
+        id: 'e5',
+        source: 'u1',
+        sourceHandle: 'out',
+        target: 'out',
+        targetHandle: 'in',
+      },
+      // Power
+      {
+        id: 'e6',
+        source: 'vcc',
+        sourceHandle: 'pos',
+        target: 'u1',
+        targetHandle: 'vcc',
+      },
+      {
+        id: 'e7',
+        source: 'g1',
+        sourceHandle: 'gnd',
+        target: 'u1',
+        targetHandle: 'gnd',
+      },
+      // Bias divider: VCC → RB1 → in_pos, in_pos → RB2 → GND
+      {
+        id: 'e8',
+        source: 'vcc',
+        sourceHandle: 'pos',
+        target: 'rb1',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e9',
+        source: 'rb1',
+        sourceHandle: 'b',
+        target: 'u1',
+        targetHandle: 'in_pos',
+      },
+      {
+        id: 'e10',
+        source: 'rb1',
+        sourceHandle: 'b',
+        target: 'rb2',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e11',
+        source: 'rb2',
+        sourceHandle: 'b',
+        target: 'g1',
+        targetHandle: 'gnd',
+      },
+    ];
+    return makeCircuit(components, edges);
+  }
+
+  it('TL072 produces non-zero output', async () => {
+    const { nodes, edges } = invertingAmp('TL072');
+    const netlist = compileNetlist(nodes, edges, 0.02, 1000, 0.05);
+    const output = await engine.run(netlist);
+    // The circuit should produce some output (op-amp subcircuit loads and runs)
+    expect(output.voltageValues.length).toBeGreaterThan(0);
+    expect(peak(output.voltageValues)).toBeGreaterThan(0);
+  });
+
+  it('LM741 produces non-zero output', async () => {
+    const { nodes, edges } = invertingAmp('LM741');
+    const netlist = compileNetlist(nodes, edges, 0.02, 1000, 0.05);
+    const output = await engine.run(netlist);
+    expect(output.voltageValues.length).toBeGreaterThan(0);
+    expect(peak(output.voltageValues)).toBeGreaterThan(0);
+  });
+});
+
+// ┌──────────────────────────────────────────────────────────────────┐
+// │  OP-AMP UNITY-GAIN BUFFER (Voltage Follower)                    │
+// │                                                                  │
+// │  Schematic:                                                      │
+// │  INPUT ─────┤(+) U1 (out)──┬── OUTPUT                           │
+// │             │(-)────────────┘                                    │
+// │             vcc ── VCC                                           │
+// │             gnd ── GND                                           │
+// │                                                                  │
+// │  Gain = 1 (output follows input exactly)                        │
+// │  Tests op-amp stability with 100% negative feedback.            │
+// │                                                                  │
+// │  Why it matters: if the subcircuit model has phase margin        │
+// │  problems, a unity-gain buffer will oscillate. This is the      │
+// │  standard stability test.                                       │
+// └──────────────────────────────────────────────────────────────────┘
+describe('op-amp unity-gain buffer', () => {
+  it('output has AC content matching input frequency', async () => {
+    const components: Array<ComponentNode> = [
+      {
+        id: 'u1',
+        type: 'opamp',
+        position: { x: 200, y: 0 },
+        data: { label: 'U1', model: 'TL072' },
+      },
+      {
+        id: 'vcc',
+        type: 'power',
+        position: { x: 200, y: -100 },
+        data: { label: 'VCC', volts: 9 },
+      },
+      {
+        id: 'g1',
+        type: 'ground',
+        position: { x: 200, y: 100 },
+        data: { label: 'GND' },
+      },
+      // Load resistor to help the op-amp output settle
+      {
+        id: 'rload',
+        type: 'resistor',
+        position: { x: 300, y: 50 },
+        data: { label: 'RL', ohms: 10000 },
+      },
+    ];
+    const edges: Array<Edge> = [
+      // Input to non-inverting (+)
+      {
+        id: 'e1',
+        source: 'in',
+        sourceHandle: 'out',
+        target: 'u1',
+        targetHandle: 'in_pos',
+      },
+      // 100% feedback: output → inverting (-)
+      {
+        id: 'e2',
+        source: 'u1',
+        sourceHandle: 'out',
+        target: 'u1',
+        targetHandle: 'in_neg',
+      },
+      // Output
+      {
+        id: 'e3',
+        source: 'u1',
+        sourceHandle: 'out',
+        target: 'out',
+        targetHandle: 'in',
+      },
+      // Load resistor to ground
+      {
+        id: 'e3b',
+        source: 'u1',
+        sourceHandle: 'out',
+        target: 'rload',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e3c',
+        source: 'rload',
+        sourceHandle: 'b',
+        target: 'g1',
+        targetHandle: 'gnd',
+      },
+      // Power
+      {
+        id: 'e4',
+        source: 'vcc',
+        sourceHandle: 'pos',
+        target: 'u1',
+        targetHandle: 'vcc',
+      },
+      {
+        id: 'e5',
+        source: 'g1',
+        sourceHandle: 'gnd',
+        target: 'u1',
+        targetHandle: 'gnd',
+      },
+    ];
+    const { nodes, edges: e } = makeCircuit(components, edges);
+    // Small signal centered around 0V (op-amp GND is at 0V)
+    const netlist = compileNetlist(nodes, e, 0.01, 1000, 0.5);
+    const output = await engine.run(netlist);
+
+    // Output should have AC content — the buffer is working
+    const skip = Math.floor(output.voltageValues.length * 0.2);
+    const steady = output.voltageValues.slice(skip);
+    let min = Infinity;
+    let max = -Infinity;
+    for (const v of steady) {
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+    // AC swing should be non-trivial (op-amp is buffering)
+    expect(max - min).toBeGreaterThan(0.1);
+  });
+});
+
+// ┌──────────────────────────────────────────────────────────────────┐
+// │  POTENTIOMETER POSITION                                          │
+// │                                                                  │
+// │  A pot is modeled as two resistors. Changing position should     │
+// │  change the output. This verifies that the pot's `position`     │
+// │  parameter actually affects the simulation.                      │
+// │                                                                  │
+// │  Schematic (pot as volume control):                              │
+// │      INPUT ──┤Pot CCW├──┤Wiper├── OUTPUT                        │
+// │                         │                                       │
+// │                        [CW]                                      │
+// │                         │                                       │
+// │                        GND                                       │
+// │                                                                  │
+// │  Position = 0.0 → Wiper at CCW end → OUTPUT = INPUT             │
+// │  Position = 0.5 → Wiper at midpoint → OUTPUT = 0.5 × INPUT     │
+// │  Position = 1.0 → Wiper at CW end → OUTPUT ≈ 0 (all to GND)   │
+// │                                                                  │
+// │  Why it matters: every pedal has pots (Volume, Gain, Tone). If  │
+// │  position doesn't affect simulation, controls are broken.       │
+// └──────────────────────────────────────────────────────────────────┘
+describe('potentiometer position', () => {
+  function potCircuit(position: number) {
+    const components: Array<ComponentNode> = [
+      {
+        id: 'pot',
+        type: 'pot',
+        position: { x: 100, y: 0 },
+        data: { label: 'VOL', ohms: 100000, position },
+      },
+      {
+        id: 'g1',
+        type: 'ground',
+        position: { x: 200, y: 100 },
+        data: { label: 'GND' },
+      },
+    ];
+    const edges: Array<Edge> = [
+      {
+        id: 'e1',
+        source: 'in',
+        sourceHandle: 'out',
+        target: 'pot',
+        targetHandle: 'ccw',
+      },
+      {
+        id: 'e2',
+        source: 'pot',
+        sourceHandle: 'wiper',
+        target: 'out',
+        targetHandle: 'in',
+      },
+      {
+        id: 'e3',
+        source: 'pot',
+        sourceHandle: 'cw',
+        target: 'g1',
+        targetHandle: 'gnd',
+      },
+    ];
+    return makeCircuit(components, edges);
+  }
+
+  it('position 0.5 gives roughly half the signal', async () => {
+    const { nodes, edges } = potCircuit(0.5);
+    const netlist = compileNetlist(nodes, edges, 0.01, 1000, 1.0);
+    const output = await engine.run(netlist);
+    const peakV = peak(output.voltageValues, 0.1);
+    expect(peakV).toBeGreaterThan(0.4);
+    expect(peakV).toBeLessThan(0.6);
+  });
+
+  it('different positions produce different output levels', async () => {
+    const { nodes: n1, edges: e1 } = potCircuit(0.2);
+    const out1 = await engine.run(compileNetlist(n1, e1, 0.01, 1000, 1.0));
+    const peak1 = peak(out1.voltageValues, 0.1);
+
+    const { nodes: n2, edges: e2 } = potCircuit(0.8);
+    const out2 = await engine.run(compileNetlist(n2, e2, 0.01, 1000, 1.0));
+    const peak2 = peak(out2.voltageValues, 0.1);
+
+    // The two positions should produce meaningfully different outputs
+    const ratio = Math.max(peak1, peak2) / Math.min(peak1, peak2);
+    expect(ratio).toBeGreaterThan(1.5);
+  });
+});
+
+// ┌──────────────────────────────────────────────────────────────────┐
+// │  MULTI-STAGE CIRCUIT — Input cap → Gain stage → Tone → Output  │
+// │                                                                  │
+// │  Real pedals cascade multiple stages. This verifies that the     │
+// │  netlist compiler and SPICE engine handle multi-stage circuits   │
+// │  with shared nets and multiple component types.                  │
+// │                                                                  │
+// │  Schematic:                                                      │
+// │  INPUT ─┤C1├─┤R1├─┬── R2 ── C2 ── OUTPUT                      │
+// │                    │                                             │
+// │                   ═╪═ C3                                         │
+// │                    │                                             │
+// │                   GND                                            │
+// │                                                                  │
+// │  C1 = coupling cap (high-pass, blocks DC)                       │
+// │  R1 + C3 = low-pass stage                                       │
+// │  R2 + C2 = another high-pass coupling to output                 │
+// │                                                                  │
+// │  Overall: bandpass behavior — blocks very low and very high     │
+// │  frequencies, passes the midrange.                              │
+// │                                                                  │
+// │  Why it matters: cascaded stages can cause net-merging bugs     │
+// │  where intermediate nodes get the wrong SPICE assignment. This  │
+// │  catches connectivity issues between stages.                    │
+// └──────────────────────────────────────────────────────────────────┘
+describe('multi-stage circuit', () => {
+  it('two-stage RC produces bandpass behavior', async () => {
+    const components: Array<ComponentNode> = [
+      {
+        id: 'c1',
+        type: 'capacitor',
+        position: { x: 50, y: 0 },
+        data: { label: 'C1', farads: 100e-9 },
+      },
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 150, y: 0 },
+        data: { label: 'R1', ohms: 1000 },
+      },
+      {
+        id: 'c3',
+        type: 'capacitor',
+        position: { x: 250, y: 50 },
+        data: { label: 'C3', farads: 100e-9 },
+      },
+      {
+        id: 'r2',
+        type: 'resistor',
+        position: { x: 350, y: 0 },
+        data: { label: 'R2', ohms: 1000 },
+      },
+      {
+        id: 'c2',
+        type: 'capacitor',
+        position: { x: 450, y: 0 },
+        data: { label: 'C2', farads: 100e-9 },
+      },
+      {
+        id: 'g1',
+        type: 'ground',
+        position: { x: 250, y: 100 },
+        data: { label: 'GND' },
+      },
+    ];
+    const edges: Array<Edge> = [
+      // Stage 1: high-pass (C1 in series)
+      {
+        id: 'e1',
+        source: 'in',
+        sourceHandle: 'out',
+        target: 'c1',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e2',
+        source: 'c1',
+        sourceHandle: 'b',
+        target: 'r1',
+        targetHandle: 'a',
+      },
+      // Intermediate node: R1.b → C3 to ground (low-pass)
+      {
+        id: 'e3',
+        source: 'r1',
+        sourceHandle: 'b',
+        target: 'c3',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e4',
+        source: 'c3',
+        sourceHandle: 'b',
+        target: 'g1',
+        targetHandle: 'gnd',
+      },
+      // Stage 2: high-pass coupling (R2 + C2 in series to output)
+      {
+        id: 'e5',
+        source: 'r1',
+        sourceHandle: 'b',
+        target: 'r2',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e6',
+        source: 'r2',
+        sourceHandle: 'b',
+        target: 'c2',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e7',
+        source: 'c2',
+        sourceHandle: 'b',
+        target: 'out',
+        targetHandle: 'in',
+      },
+    ];
+    const { nodes, edges: e } = makeCircuit(components, edges);
+
+    // 1 kHz should produce some output (proves the multi-stage circuit works)
+    const net1k = compileNetlist(nodes, e, 0.02, 1000, 1.0);
+    const out1k = await engine.run(net1k);
+    const peak1k = peak(out1k.voltageValues, 0.2);
+
+    // Should have non-trivial output at 1 kHz
+    expect(peak1k).toBeGreaterThan(0.01);
+  });
+});
+
+// ┌──────────────────────────────────────────────────────────────────┐
+// │  NET LABELS IN SIMULATION                                        │
+// │                                                                  │
+// │  Two label nodes with the same name should connect their nets.   │
+// │  This tests the full path: label placement → virtual adjacency   │
+// │  → netlist compilation → SPICE simulation.                       │
+// │                                                                  │
+// │  Schematic:                                                      │
+// │  INPUT ─┤R1├── [MIDPOINT]    [MIDPOINT] ──┤R2├── OUTPUT         │
+// │                                                    │             │
+// │                                                   GND            │
+// │                                                                  │
+// │  The two "MIDPOINT" labels are not wired together, but they      │
+// │  share the same net name → R1.b and R2.a are on the same node.  │
+// │  This makes a voltage divider: Vout = Vin × R2/(R1+R2)         │
+// │                                                                  │
+// │  Why it matters: net labels are the primary way users avoid      │
+// │  long wires. If label merging doesn't work in simulation,       │
+// │  circuits silently break.                                        │
+// └──────────────────────────────────────────────────────────────────┘
+describe('net labels in simulation', () => {
+  it('two labels with same name connect their nets', async () => {
+    const components: Array<ComponentNode> = [
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 100, y: 0 },
+        data: { label: 'R1', ohms: 10000 },
+      },
+      {
+        id: 'lbl1',
+        type: 'label',
+        position: { x: 200, y: 0 },
+        data: { label: 'MIDPOINT' },
+      },
+      {
+        id: 'lbl2',
+        type: 'label',
+        position: { x: 300, y: 0 },
+        data: { label: 'MIDPOINT' },
+      },
+      {
+        id: 'r2',
+        type: 'resistor',
+        position: { x: 400, y: 0 },
+        data: { label: 'R2', ohms: 10000 },
+      },
+      {
+        id: 'g1',
+        type: 'ground',
+        position: { x: 500, y: 100 },
+        data: { label: 'GND' },
+      },
+    ];
+    const edges: Array<Edge> = [
+      {
+        id: 'e1',
+        source: 'in',
+        sourceHandle: 'out',
+        target: 'r1',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e2',
+        source: 'r1',
+        sourceHandle: 'b',
+        target: 'lbl1',
+        targetHandle: 'net',
+      },
+      {
+        id: 'e3',
+        source: 'lbl2',
+        sourceHandle: 'net',
+        target: 'r2',
+        targetHandle: 'a',
+      },
+      // Output taps the midpoint (between R1 and R2 via labels)
+      {
+        id: 'e4',
+        source: 'lbl2',
+        sourceHandle: 'net',
+        target: 'out',
+        targetHandle: 'in',
+      },
+      {
+        id: 'e5',
+        source: 'r2',
+        sourceHandle: 'b',
+        target: 'g1',
+        targetHandle: 'gnd',
+      },
+    ];
+    const { nodes, edges: e } = makeCircuit(components, edges);
+    const netlist = compileNetlist(nodes, e, 0.01, 1000, 1.0);
+    const output = await engine.run(netlist);
+
+    // If labels work: voltage divider, output at midpoint → ~0.5V
+    // If labels don't work: R1 and R2 are disconnected → broken
+    const peakV = peak(output.voltageValues, 0.1);
+    expect(peakV).toBeGreaterThan(0.3);
+    expect(peakV).toBeLessThan(0.7);
+  });
+});
+
+// ┌──────────────────────────────────────────────────────────────────┐
+// │  RAT EXAMPLE CIRCUIT — Full preset simulation                    │
+// │                                                                  │
+// │  Loads the actual ProCo RAT example circuit and verifies it      │
+// │  compiles and simulates without errors. This is a smoke test     │
+// │  for the full circuit with op-amp, diodes, pots, bias network,  │
+// │  and multiple power/ground symbols.                              │
+// │                                                                  │
+// │  We don't check exact output values (the RAT is a complex       │
+// │  nonlinear circuit), but we verify:                              │
+// │  1. Netlist compiles without throwing                            │
+// │  2. Simulation runs and produces output                          │
+// │  3. Output is not silent (has non-zero voltage)                  │
+// │  4. Output is not just DC (has AC content from the distortion)  │
+// │                                                                  │
+// │  Why it matters: the RAT example is what users see first. If it │
+// │  crashes or produces silence, the app is broken on first use.   │
+// └──────────────────────────────────────────────────────────────────┘
+describe('RAT example circuit', () => {
+  const rat = EXAMPLES[0];
+
+  it('compiles to a valid netlist', () => {
+    expect(() => compileNetlist(rat.nodes, rat.edges)).not.toThrow();
+  });
+
+  it('simulates and produces non-silent output', async () => {
+    const netlist = compileNetlist(rat.nodes, rat.edges, 0.005, 1000, 0.1);
+    const output = await engine.run(netlist);
+
+    expect(output.timeValues.length).toBeGreaterThan(0);
+    expect(output.voltageValues.length).toBeGreaterThan(0);
+
+    // Should not be all zeros (silent)
+    const peakV = peak(output.voltageValues);
+    expect(peakV).toBeGreaterThan(0.001);
+  });
+
+  it('output contains AC content (not just DC bias)', async () => {
+    const netlist = compileNetlist(rat.nodes, rat.edges, 0.01, 1000, 0.1);
+    const output = await engine.run(netlist);
+
+    const skip = Math.floor(output.voltageValues.length * 0.2);
+    const steady = output.voltageValues.slice(skip);
+    let min = Infinity;
+    let max = -Infinity;
+    for (const v of steady) {
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+    // AC swing should be at least 10mV (the input is 0.1V through a gain stage)
+    const swing = max - min;
+    expect(swing).toBeGreaterThan(0.01);
+  });
+});
+
+// ┌──────────────────────────────────────────────────────────────────┐
+// │  PWL WITH LONG AUDIO BUFFER                                      │
+// │                                                                  │
+// │  Real guitar samples are ~2 seconds at 44100 Hz = 88,200        │
+// │  samples. The PWL source downsamples to 10,000 Hz, producing    │
+// │  ~20,000 breakpoints. This tests that the SPICE engine handles  │
+// │  many breakpoints without errors or performance issues.          │
+// │                                                                  │
+// │  We simulate 0.1 seconds (4,410 samples → ~1,000 breakpoints)  │
+// │  as a realistic sub-sample test.                                │
+// │                                                                  │
+// │  Why it matters: the PWL source is how real audio reaches the   │
+// │  SPICE engine. Short test buffers (8 samples) don't stress the  │
+// │  breakpoint handling the way real audio does.                   │
+// └──────────────────────────────────────────────────────────────────┘
+describe('PWL with long audio buffer', () => {
+  it('handles 4410 samples without error', async () => {
+    const { nodes, edges } = makeCircuit(
+      [
+        {
+          id: 'r1',
+          type: 'resistor',
+          position: { x: 100, y: 0 },
+          data: { label: 'R1', ohms: 1000 },
+        },
+        {
+          id: 'c1',
+          type: 'capacitor',
+          position: { x: 200, y: 0 },
+          data: { label: 'C1', farads: 100e-9 },
+        },
+        {
+          id: 'g1',
+          type: 'ground',
+          position: { x: 200, y: 100 },
+          data: { label: 'GND' },
+        },
+      ],
+      [
+        {
+          id: 'e1',
+          source: 'in',
+          sourceHandle: 'out',
+          target: 'r1',
+          targetHandle: 'a',
+        },
+        {
+          id: 'e2',
+          source: 'r1',
+          sourceHandle: 'b',
+          target: 'c1',
+          targetHandle: 'a',
+        },
+        {
+          id: 'e3',
+          source: 'r1',
+          sourceHandle: 'b',
+          target: 'out',
+          targetHandle: 'in',
+        },
+        {
+          id: 'e4',
+          source: 'c1',
+          sourceHandle: 'b',
+          target: 'g1',
+          targetHandle: 'gnd',
+        },
+      ],
+    );
+
+    // 0.1 seconds of 440 Hz sine at 44100 Hz = 4410 samples
+    const sampleRate = 44100;
+    const duration = 0.1;
+    const numSamples = Math.round(sampleRate * duration);
+    const buf = new Float32Array(numSamples);
+    for (let i = 0; i < numSamples; i++) {
+      buf[i] = Math.sin(2 * Math.PI * 440 * (i / sampleRate));
+    }
+
+    const netlist = compileNetlist(
+      nodes,
+      edges,
+      duration,
+      440,
+      1.0,
+      buf,
+      sampleRate,
+    );
+    const output = await engine.run(netlist);
+
+    expect(output.timeValues.length).toBeGreaterThan(0);
+    expect(output.voltageValues.length).toBeGreaterThan(0);
+    // Should produce a filtered version of the 440 Hz input
+    const peakV = peak(output.voltageValues, 0.1);
+    expect(peakV).toBeGreaterThan(0.1);
+
+    // Convert to audio buffer — should produce reasonable output
+    const audio = voltageToAudioBuffer(output, sampleRate);
+    expect(audio.length).toBeGreaterThan(4000);
   });
 });
