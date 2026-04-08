@@ -246,11 +246,12 @@ export function compileNetlist(
       const nCw = getNode(node.id, 'cw');
       const rLow = Math.max(node.data.ohms * (1 - node.data.position), 1);
       const rHigh = Math.max(node.data.ohms * node.data.position, 1);
+      // Prefix R to guarantee resistor element regardless of label (e.g. "DIST" → "RDISTa")
       lines.push(
-        `${node.data.label}a ${nCcw} ${nWiper} ${formatResistance(rLow)}`,
+        `R${node.data.label}a ${nCcw} ${nWiper} ${formatResistance(rLow)}`,
       );
       lines.push(
-        `${node.data.label}b ${nWiper} ${nCw} ${formatResistance(rHigh)}`,
+        `R${node.data.label}b ${nWiper} ${nCw} ${formatResistance(rHigh)}`,
       );
     }
     // ground, audiin, audiout: no SPICE component line needed
