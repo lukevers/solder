@@ -4,7 +4,7 @@ import {
   type EdgeProps,
   getSmoothStepPath,
 } from '@xyflow/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 type SignalEdgeData = {
   signalType?: string;
@@ -27,6 +27,15 @@ export function SignalEdge({
   selected,
 }: EdgeProps) {
   const [hovered, setHovered] = useState(false);
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function showTooltip() {
+    if (leaveTimer.current) clearTimeout(leaveTimer.current);
+    setHovered(true);
+  }
+  function hideTooltip() {
+    leaveTimer.current = setTimeout(() => setHovered(false), 150);
+  }
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -59,8 +68,8 @@ export function SignalEdge({
         fill="none"
         stroke="transparent"
         strokeWidth={20}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
       />
       <path
         id={id}
@@ -81,10 +90,12 @@ export function SignalEdge({
       {hovered && !d?.connecting && (
         <EdgeLabelRenderer>
           <div
-            className="pointer-events-none absolute bg-gray-800 border border-gray-600 rounded px-2 py-1 text-xs font-mono text-gray-300 shadow-lg whitespace-nowrap"
+            className="absolute bg-gray-800 border border-gray-600 rounded px-2 py-1 text-xs font-mono text-gray-300 shadow-lg whitespace-nowrap select-all cursor-text"
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
             }}
+            onMouseEnter={showTooltip}
+            onMouseLeave={hideTooltip}
           >
             <span className="text-gray-400">{fromLabel}</span>
             <span className="text-gray-600">.</span>
