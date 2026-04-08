@@ -28,7 +28,18 @@ export function WaveformModal({ inputBuffer, outputBuffer, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xs text-gray-400 uppercase tracking-wider font-mono">Waveform</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400 uppercase tracking-wider font-mono">Waveform</span>
+            <div className="relative group">
+              <div className="w-4 h-4 rounded-full border border-gray-600 text-gray-500 flex items-center justify-center text-xs cursor-default leading-none select-none">
+                i
+              </div>
+              <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-6 w-64 bg-gray-800 border border-gray-600 rounded p-3 text-xs text-gray-300 font-sans opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10 shadow-xl">
+                <p className="mb-2"><span className="text-gray-400 font-mono">Y axis</span> — normalized amplitude, from -1.0 (full negative) to +1.0 (full positive). In digital audio, ±1.0 is the maximum level before clipping.</p>
+                <p><span className="text-gray-400 font-mono">X axis</span> — time in milliseconds (ms) or seconds (s).</p>
+              </div>
+            </div>
+          </div>
           <button
             type="button"
             onClick={onClose}
