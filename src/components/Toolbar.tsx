@@ -372,14 +372,14 @@ export function Toolbar({
           <button
             type="button"
             onClick={onToggleLoop}
-            className={`border text-xs px-2 py-1 rounded font-mono font-bold transition-colors ${
+            className={`flex items-center gap-1 border text-xs px-3 py-1 rounded font-mono font-bold transition-colors ${
               looping
                 ? 'bg-blue-950 border-blue-600 text-blue-400'
                 : 'bg-gray-800 hover:bg-gray-700 border-gray-600 text-gray-500 hover:text-gray-300'
             }`}
             aria-label={looping ? 'Disable loop' : 'Enable loop'}
           >
-            <Repeat size={12} />
+            <Repeat size={10} /> Loop
           </button>
         )}
 
