@@ -12,136 +12,157 @@ export type ExampleCircuit = {
 };
 
 const ratNodes: Array<ComponentNode> = [
+  // ── Input chain (y=340) ──
   {
     id: 'rat-in',
     type: 'audiin',
-    position: { x: 30, y: 290 },
+    position: { x: 40, y: 340 },
     data: { label: 'INPUT' },
   },
   {
     id: 'rat-c1',
     type: 'capacitor',
-    position: { x: 155, y: 290 },
+    position: { x: 220, y: 340 },
     data: { label: 'C1', farads: 47e-9 },
   },
   {
     id: 'rat-r1',
     type: 'resistor',
-    position: { x: 285, y: 290 },
+    position: { x: 400, y: 340 },
     data: { label: 'R1', ohms: 47 },
   },
   {
     id: 'rat-r2',
     type: 'resistor',
-    position: { x: 415, y: 290 },
+    position: { x: 580, y: 340 },
     data: { label: 'R2', ohms: 100 },
   },
+
+  // ── Op-amp ──
   {
     id: 'rat-u1',
     type: 'opamp',
-    position: { x: 590, y: 250 },
+    position: { x: 780, y: 300 },
     data: { label: 'U1', model: 'TL072' },
   },
+
+  // ── Bias (above signal path) ──
   {
     id: 'rat-vcc',
     type: 'power',
-    position: { x: 505, y: 30 },
+    position: { x: 580, y: 40 },
+    data: { label: 'VCC', volts: 9 },
+  },
+  {
+    id: 'rat-vcc2',
+    type: 'power',
+    position: { x: 820, y: 220 },
     data: { label: 'VCC', volts: 9 },
   },
   {
     id: 'rat-rbias1',
     type: 'resistor',
-    position: { x: 415, y: 115 },
+    position: { x: 580, y: 160 },
     data: { label: 'R3', ohms: 47000 },
   },
   {
     id: 'rat-rbias2',
     type: 'resistor',
-    position: { x: 550, y: 115 },
+    position: { x: 760, y: 160 },
     data: { label: 'R4', ohms: 47000 },
   },
   {
     id: 'rat-gnd_b',
     type: 'ground',
-    position: { x: 565, y: 215 },
+    position: { x: 860, y: 200 },
     data: { label: 'GND' },
   },
+
+  // ── Op-amp ground ──
   {
     id: 'rat-gnd_u',
     type: 'ground',
-    position: { x: 660, y: 405 },
+    position: { x: 820, y: 460 },
     data: { label: 'GND' },
   },
+
+  // ── Feedback: R5 + DIST (above, y=80) ──
   {
     id: 'rat-rfb',
     type: 'resistor',
-    position: { x: 730, y: 130 },
+    position: { x: 920, y: 80 },
     data: { label: 'R5', ohms: 2200 },
   },
   {
     id: 'rat-rdist',
     type: 'pot',
-    position: { x: 865, y: 130 },
+    position: { x: 1100, y: 80 },
     data: { label: 'DIST', ohms: 500000, position: 0.5 },
   },
+
+  // ── Feedback: C2 (top, y=20) ──
   {
     id: 'rat-cfb',
     type: 'capacitor',
-    position: { x: 800, y: 40 },
+    position: { x: 920, y: 20 },
     data: { label: 'C2', farads: 100e-12 },
   },
+
+  // ── Clipping diodes (below, y=460/540) ──
   {
     id: 'rat-d1',
     type: 'diode',
-    position: { x: 665, y: 370 },
+    position: { x: 680, y: 460 },
     data: { label: 'D1', model: '1N914' },
   },
   {
     id: 'rat-d2',
     type: 'diode',
-    position: { x: 665, y: 450 },
+    position: { x: 680, y: 540 },
     data: { label: 'D2', model: '1N914' },
   },
+
+  // ── Tone + output (y=340) ──
   {
     id: 'rat-rtone',
     type: 'resistor',
-    position: { x: 960, y: 290 },
+    position: { x: 1060, y: 340 },
     data: { label: 'R6', ohms: 10000 },
   },
   {
     id: 'rat-ctone',
     type: 'capacitor',
-    position: { x: 960, y: 380 },
+    position: { x: 1060, y: 440 },
     data: { label: 'C3', farads: 100e-9 },
   },
   {
     id: 'rat-gnd_t',
     type: 'ground',
-    position: { x: 960, y: 478 },
+    position: { x: 1100, y: 540 },
     data: { label: 'GND' },
   },
   {
     id: 'rat-cout',
     type: 'capacitor',
-    position: { x: 1090, y: 290 },
+    position: { x: 1240, y: 340 },
     data: { label: 'C4', farads: 100e-9 },
   },
   {
     id: 'rat-vol',
     type: 'pot',
-    position: { x: 1215, y: 290 },
+    position: { x: 1420, y: 340 },
     data: { label: 'VOL', ohms: 100000, position: 0.8 },
   },
   {
     id: 'rat-gnd_v',
     type: 'ground',
-    position: { x: 1215, y: 408 },
+    position: { x: 1460, y: 460 },
     data: { label: 'GND' },
   },
   {
     id: 'rat-out',
     type: 'audiout',
-    position: { x: 1370, y: 290 },
+    position: { x: 1600, y: 340 },
     data: { label: 'OUTPUT' },
   },
 ];
@@ -177,7 +198,7 @@ const ratEdges: Array<Edge> = [
   },
   {
     id: 'rat-e5',
-    source: 'rat-vcc',
+    source: 'rat-vcc2',
     sourceHandle: 'pos',
     target: 'rat-u1',
     targetHandle: 'vcc',
