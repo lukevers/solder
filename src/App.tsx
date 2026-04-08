@@ -298,6 +298,7 @@ export default function App() {
         onStop={handleStop}
         playingOriginal={playingOriginal}
         hasSourceBuffer={sourceBuffer !== null}
+        hasSelection={selection !== null}
         looping={looping}
         onToggleLoop={() => setLooping((v) => !v)}
       />

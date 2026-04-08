@@ -93,6 +93,7 @@ type ToolbarProps = {
   onStop: () => void;
   playingOriginal: boolean;
   hasSourceBuffer: boolean;
+  hasSelection: boolean;
   looping: boolean;
   onToggleLoop: () => void;
 };
@@ -107,6 +108,7 @@ export function Toolbar({
   onStop,
   playingOriginal,
   hasSourceBuffer,
+  hasSelection,
   looping,
   onToggleLoop,
 }: ToolbarProps) {
@@ -357,7 +359,7 @@ export function Toolbar({
         <div className="flex-1" />
 
         {/* Reset */}
-        {outputBuffer && simulationStatus !== 'running' && (
+        {(outputBuffer || hasSelection) && simulationStatus !== 'running' && (
           <button
             type="button"
             onClick={onReset}
