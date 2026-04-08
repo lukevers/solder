@@ -89,6 +89,7 @@ type ToolbarProps = {
   onToggleExamples: () => void;
   showExamples: boolean;
   onPlayOriginal: () => void;
+  onPlayOutput: () => void;
   onStop: () => void;
   playingOriginal: boolean;
   hasSourceBuffer: boolean;
@@ -102,6 +103,7 @@ export function Toolbar({
   onToggleExamples,
   showExamples,
   onPlayOriginal,
+  onPlayOutput,
   onStop,
   playingOriginal,
   hasSourceBuffer,
@@ -122,7 +124,6 @@ export function Toolbar({
     setSimulationError,
     outputBuffer,
     playing,
-    setPlaying,
   } = useStore(
     useShallow((s) => ({
       addNode: s.addNode,
@@ -138,7 +139,6 @@ export function Toolbar({
       setSimulationError: s.setSimulationError,
       outputBuffer: s.outputBuffer,
       playing: s.playing,
-      setPlaying: s.setPlaying,
     })),
   );
 
@@ -426,10 +426,10 @@ export function Toolbar({
         ) : outputBuffer ? (
           <button
             type="button"
-            onClick={() => setPlaying(true)}
+            onClick={onPlayOutput}
             className="flex items-center gap-1 bg-green-600 hover:bg-green-500 border border-green-500 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
-            <Play size={10} /> Play
+            <Play size={10} /> Output
           </button>
         ) : (
           <button

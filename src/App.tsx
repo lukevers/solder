@@ -215,6 +215,11 @@ export default function App() {
     setPlayingOriginal(true);
   }, [setPlaying]);
 
+  const handlePlayOutput = useCallback(() => {
+    setPlayingOriginal(false);
+    setPlaying(true);
+  }, [setPlaying]);
+
   const handleStop = useCallback(() => {
     setPlaying(false);
     setPlayingOriginal(false);
@@ -288,6 +293,7 @@ export default function App() {
         onToggleExamples={() => setShowExamples((v) => !v)}
         showExamples={showExamples}
         onPlayOriginal={handlePlayOriginal}
+        onPlayOutput={handlePlayOutput}
         onStop={handleStop}
         playingOriginal={playingOriginal}
         hasSourceBuffer={sourceBuffer !== null}
