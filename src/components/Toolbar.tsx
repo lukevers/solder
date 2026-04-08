@@ -94,6 +94,9 @@ export function Toolbar({
     renameTab,
     loadCircuit,
     setSimulationError,
+    outputBuffer,
+    playing,
+    setPlaying,
   } = useStore(
     useShallow((s) => ({
       addNode: s.addNode,
@@ -107,6 +110,9 @@ export function Toolbar({
       renameTab: s.renameTab,
       loadCircuit: s.loadCircuit,
       setSimulationError: s.setSimulationError,
+      outputBuffer: s.outputBuffer,
+      playing: s.playing,
+      setPlaying: s.setPlaying,
     })),
   );
 
@@ -222,7 +228,7 @@ export function Toolbar({
                     {tab.name}
                   </span>
                 )}
-                {tabs.length > 1 && (
+                {
                   <button
                     type="button"
                     onClick={(e) => {
@@ -234,7 +240,7 @@ export function Toolbar({
                   >
                     ✕
                   </button>
-                )}
+                }
               </div>
             );
           })}
@@ -364,15 +370,40 @@ export function Toolbar({
 
         <div className="flex-1" />
 
-        {/* Simulate */}
-        <button
-          type="button"
-          onClick={onSimulate}
-          disabled={simulationStatus === 'running'}
-          className="bg-green-800 hover:bg-green-700 disabled:opacity-50 border border-green-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
-        >
-          {simulationStatus === 'running' ? '⏳ Simulating…' : '▶ Simulate'}
-        </button>
+        {/* Simulate / Play / Stop */}
+        {simulationStatus === 'running' ? (
+          <button
+            type="button"
+            disabled
+            className="bg-green-800 disabled:opacity-50 border border-green-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+          >
+            ⏳ Simulating…
+          </button>
+        ) : outputBuffer && playing ? (
+          <button
+            type="button"
+            onClick={() => setPlaying(false)}
+            className="bg-red-800 hover:bg-red-700 border border-red-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+          >
+            ⏹ Stop
+          </button>
+        ) : outputBuffer ? (
+          <button
+            type="button"
+            onClick={() => setPlaying(true)}
+            className="bg-blue-800 hover:bg-blue-700 border border-blue-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+          >
+            ▶ Play
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onSimulate}
+            className="bg-green-800 hover:bg-green-700 border border-green-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+          >
+            ▶ Simulate
+          </button>
+        )}
       </div>
     </div>
   );

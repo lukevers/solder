@@ -1,14 +1,21 @@
 // src/components/StatusBar.tsx
-
 import { useShallow } from 'zustand/react/shallow';
 import { useStore } from '../store';
 
 export function StatusBar() {
-  const { nodes, simulationStatus, simulationError } = useStore(
+  const {
+    nodes,
+    simulationStatus,
+    simulationError,
+    outputBuffer,
+    simulationDuration,
+  } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
       simulationStatus: s.simulationStatus,
       simulationError: s.simulationError,
+      outputBuffer: s.outputBuffer,
+      simulationDuration: s.simulationDuration,
     })),
   );
 
@@ -24,7 +31,9 @@ export function StatusBar() {
       ? `● error: ${simulationError ?? 'unknown'}`
       : simulationStatus === 'running'
         ? '● simulating…'
-        : '● ready';
+        : outputBuffer
+          ? `● ready · ${simulationDuration.toFixed(1)} s`
+          : '● ready';
 
   return (
     <div className="flex gap-4 px-3 py-1 bg-gray-900 border-t border-gray-800 text-xs font-mono text-gray-500 flex-shrink-0">
@@ -32,7 +41,7 @@ export function StatusBar() {
       <span>components: {nodes.length}</span>
       <span>ngspice · WASM</span>
       <div className="flex-1" />
-      <span>44100 Hz · 2048 samples/buffer</span>
+      <span>44100 Hz</span>
     </div>
   );
 }
