@@ -966,8 +966,8 @@ describe('full pipeline: compile → simulate → audio buffer', () => {
 // │                      │                                           │
 // │                     GND                                          │
 // │                                                                  │
-// │  Run 1: Vin = 0.5V peak → Vout = X                              │
-// │  Run 2: Vin = 1.0V peak → Vout = 2X (should be exactly 2x)     │
+// │  Run 1: Vin = 0.5V peak → Vout = X                               │
+// │  Run 2: Vin = 1.0V peak → Vout = 2X (should be exactly 2x)       │
 // │                                                                  │
 // │  Why it matters: if the SPICE engine introduces nonlinearity in  │
 // │  a linear circuit, every simulation is wrong. This also catches  │
@@ -1054,15 +1054,15 @@ describe('amplitude linearity', () => {
 // │                            ═╪═ C1                                │
 // │                            GND                                   │
 // │                                                                  │
-// │  Expected behavior (R=1k, C=100n, fc≈1.6kHz):                   │
+// │  Expected behavior (R=1k, C=100n, fc≈1.6kHz):                    │
 // │                                                                  │
-// │  100 Hz:  gain ≈ 1.00  │  Output ≈ Input (nearly identical)     │
+// │  100 Hz:  gain ≈ 1.00  │  Output ≈ Input (nearly identical)      │
 // │   1 kHz:  gain ≈ 0.85  │  Output slightly smaller, phase-shifted │
-// │   5 kHz:  gain ≈ 0.30  │  Output much smaller, 90° lag          │
+// │   5 kHz:  gain ≈ 0.30  │  Output much smaller, 90° lag           │
 // │                                                                  │
 // │  Why it matters: if any of these snapshots change, either the    │
 // │  SPICE engine updated, the netlist format changed, or the        │
-// │  timestep calculation drifted. All would affect every simulation. │
+// │  timestep calculation drifted. All would affect every simulation.│
 // └──────────────────────────────────────────────────────────────────┘
 describe('frequency sweep determinism', () => {
   function lowPassCircuit() {
@@ -1151,7 +1151,7 @@ describe('frequency sweep determinism', () => {
 // │    Float32Array (44100 Hz)                                       │
 // │         │  buildPwlSource() — downsamples to 10 kHz              │
 // │         ▼                                                        │
-// │    PWL(0 0.0 0.0001 0.5 0.0002 1.0 ...)                         │
+// │    PWL(0 0.0 0.0001 0.5 0.0002 1.0 ...)                          │
 // │         │  ngspice transient analysis                            │
 // │         ▼                                                        │
 // │    variable-step output                                          │
@@ -1207,11 +1207,11 @@ describe('PWL source determinism', () => {
 // │  the simulation (not silently ignored or cached).                │
 // │                                                                  │
 // │  Schematic:  INPUT ──┤R1├──┬── OUTPUT                            │
-// │                            ═╪═ C1 (100nF)                       │
+// │                            ═╪═ C1 (100nF)                        │
 // │                            GND                                   │
 // │                                                                  │
-// │  R1 = 100Ω  → fc ≈ 16 kHz  (5 kHz passes easily)               │
-// │  R1 = 10kΩ  → fc ≈ 160 Hz  (5 kHz heavily attenuated)          │
+// │  R1 = 100Ω  → fc ≈ 16 kHz  (5 kHz passes easily)                 │
+// │  R1 = 10kΩ  → fc ≈ 160 Hz  (5 kHz heavily attenuated)            │
 // │                                                                  │
 // │  Why it matters: if the netlist compiler ignores a resistor      │
 // │  value change (e.g., uses a cached netlist), both runs would     │

@@ -65,7 +65,12 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:www.logipipe.com)",
       "Bash(pnpm add:*)",
-      "Bash(find /Users/lukevers/code/solder/node_modules/eecircuit-engine -name README* -o -name *.md)"
+      "Bash(find /Users/lukevers/code/solder/node_modules/eecircuit-engine -name README* -o -name *.md)",
+      "Bash(pnpm lint:*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//private/tmp/claude-501/-Users-lukevers-Code-typescript-github-com-lukevers-solder/37d29f3a-2886-4007-ab5d-f6cda5abe4a1/tasks/**)",
+      "Bash(done)"
     ]
   }
 }
