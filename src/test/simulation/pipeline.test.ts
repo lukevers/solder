@@ -8,11 +8,9 @@
 // sample rate, bad interpolation, normalization to zero). The PWL tests
 // verify the path used when simulating with real guitar samples.
 
-import type { Edge } from '@xyflow/react';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { voltageToAudioBuffer } from '../../lib/audio-convert';
 import { compileNetlist } from '../../lib/netlist';
-import type { ComponentNode } from '../../lib/types';
 import { engine, makeCircuit, peak, snapshot } from './setup';
 
 beforeAll(async () => {

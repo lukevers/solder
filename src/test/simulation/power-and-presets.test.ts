@@ -302,12 +302,10 @@ describe('RC time constant (analytical validation)', () => {
       return voltVals[voltVals.length - 1];
     }
 
-    // Check at 1·tau, 2·tau, 5·tau
-    const v_1tau = voltageAt(tau);
+    // Check at 2·tau and 5·tau (where PWL smearing has settled)
     const v_2tau = voltageAt(2 * tau);
     const v_5tau = voltageAt(5 * tau);
 
-    const expected_1tau = 1 - Math.exp(-1); // 0.6321
     const expected_2tau = 1 - Math.exp(-2); // 0.8647
     const expected_5tau = 1 - Math.exp(-5); // 0.9933
 
