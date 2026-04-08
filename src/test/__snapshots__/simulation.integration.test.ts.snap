@@ -1,0 +1,40 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`high-pass RC filter > produces deterministic snapshot at 1 kHz 1`] = `
+[
+  0,
+  0.019504,
+  0.283423,
+  0.313922,
+  -0.52058,
+  0.007794,
+  0.515763,
+  -0.326553,
+]
+`;
+
+exports[`low-pass RC filter > produces deterministic snapshot at 1 kHz 1`] = `
+[
+  0,
+  0.000317,
+  0.714375,
+  -0.685325,
+  -0.247679,
+  0.838419,
+  -0.270492,
+  -0.671245,
+]
+`;
+
+exports[`voltage divider > produces deterministic snapshot 1`] = `
+[
+  0,
+  0.099854,
+  -0.360153,
+  0.441143,
+  0.087511,
+  -0.495228,
+  0.218557,
+  0.360153,
+]
+`;
