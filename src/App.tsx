@@ -1,4 +1,5 @@
 // src/App.tsx
+import { Maximize2 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { AudioPipeline } from './audio/pipeline';
@@ -302,21 +303,7 @@ export default function App() {
                   className="text-gray-500 hover:text-gray-200 transition-colors"
                   aria-label="Expand waveform"
                 >
-                  <svg
-                    width="13"
-                    height="13"
-                    viewBox="0 0 13 13"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M1 5V1h4M8 1h4v4M12 8v4H8M5 12H1V8"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <Maximize2 size={13} />
                 </button>
               )}
             </div>

@@ -1,6 +1,17 @@
 // src/components/Toolbar.tsx
 
-import { Repeat } from 'lucide-react';
+import {
+  Download,
+  FolderOpen,
+  Hourglass,
+  Play,
+  Plus,
+  Repeat,
+  RotateCcw,
+  Square,
+  Upload,
+  X,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { exportCircuit, importCircuit } from '../lib/circuit-io';
@@ -253,7 +264,7 @@ export function Toolbar({
                     className="text-gray-600 hover:text-gray-300 leading-none transition-colors"
                     aria-label={`Close ${tab.name}`}
                   >
-                    ✕
+                    <X size={10} />
                   </button>
                 }
               </div>
@@ -267,7 +278,7 @@ export function Toolbar({
             className="px-3 text-gray-500 hover:text-gray-200 hover:bg-gray-800 text-sm transition-colors flex-shrink-0"
             aria-label="New tab"
           >
-            ＋
+            <Plus size={14} />
           </button>
         </div>
       </div>
@@ -292,19 +303,7 @@ export function Toolbar({
               : 'bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200'
           }`}
         >
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M1 3.5A1.5 1.5 0 012.5 2h2.086a1 1 0 01.707.293L6 3h3.5A1.5 1.5 0 0111 4.5v4A1.5 1.5 0 019.5 10h-7A1.5 1.5 0 011 8.5v-5z"
-              fill="currentColor"
-              fillOpacity="0.7"
-            />
-          </svg>
+          <FolderOpen size={12} />
           Examples
         </button>
 
@@ -314,21 +313,7 @@ export function Toolbar({
           onClick={handleExport}
           className="flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
         >
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M5 1v6M2 5l3 3 3-3M1 9h8"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Download size={10} />
           Export
         </button>
 
@@ -338,21 +323,7 @@ export function Toolbar({
           onClick={() => fileInputRef.current?.click()}
           className="flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
         >
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M5 9V3M2 5l3-3 3 3M1 1h8"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Upload size={10} />
           Import
         </button>
 
@@ -390,9 +361,9 @@ export function Toolbar({
           <button
             type="button"
             onClick={onReset}
-            className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-400 hover:text-gray-200 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+            className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-400 hover:text-gray-200 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
-            ↺ Reset
+            <RotateCcw size={10} /> Reset
           </button>
         )}
 
@@ -418,20 +389,20 @@ export function Toolbar({
             <button
               type="button"
               onClick={onStop}
-              className="bg-red-900 hover:bg-red-800 border border-red-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-red-900 hover:bg-red-800 border border-red-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
               style={{ color: '#93c5fd' }}
             >
-              ⏹ Input
+              <Square size={10} /> Input
             </button>
           ) : (
             <button
               type="button"
               onClick={onPlayOriginal}
               disabled={simulationStatus === 'running'}
-              className="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 border border-gray-600 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 border border-gray-600 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
               style={{ color: '#3b82f6' }}
             >
-              ▶ Input
+              <Play size={10} /> Input
             </button>
           ))}
 
@@ -440,33 +411,33 @@ export function Toolbar({
           <button
             type="button"
             disabled
-            className="bg-amber-800 disabled:opacity-50 border border-amber-700 text-amber-100 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+            className="flex items-center gap-1 bg-amber-800 disabled:opacity-50 border border-amber-700 text-amber-100 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
-            ⏳ Simulating…
+            <Hourglass size={10} /> Simulating…
           </button>
         ) : outputBuffer && playing ? (
           <button
             type="button"
             onClick={onStop}
-            className="bg-red-800 hover:bg-red-700 border border-red-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+            className="flex items-center gap-1 bg-red-800 hover:bg-red-700 border border-red-700 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
-            ⏹ Stop
+            <Square size={10} /> Stop
           </button>
         ) : outputBuffer ? (
           <button
             type="button"
             onClick={() => setPlaying(true)}
-            className="bg-green-600 hover:bg-green-500 border border-green-500 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+            className="flex items-center gap-1 bg-green-600 hover:bg-green-500 border border-green-500 text-white text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
-            ▶ Play
+            <Play size={10} /> Play
           </button>
         ) : (
           <button
             type="button"
             onClick={onSimulate}
-            className="bg-amber-700 hover:bg-amber-600 border border-amber-600 text-amber-50 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
+            className="flex items-center gap-1 bg-amber-700 hover:bg-amber-600 border border-amber-600 text-amber-50 text-xs px-3 py-1 rounded font-mono font-bold transition-colors"
           >
-            ▶ Simulate
+            <Play size={10} /> Simulate
           </button>
         )}
       </div>

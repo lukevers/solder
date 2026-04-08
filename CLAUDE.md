@@ -57,6 +57,7 @@ Web Audio API integration: loads `.wav` samples from `/public/samples/`, exposes
 
 ## Tooling
 - **Linter/Formatter:** Biome (`biome.json`) — single quotes, 2-space indent; VSCode extension `biomejs.biome` recommended
+- **Icons:** [Lucide React](https://lucide.dev) (`lucide-react`) — use Lucide icons for all UI icons (toolbar buttons, modal controls, etc.). Do NOT use inline SVGs or emoji/text symbols for icons. Circuit node renderers in `src/components/nodes/` use inline SVG for schematic drawings, which is fine — those are not UI icons.
 - **CSS:** Tailwind CSS + PostCSS
 - **Tests:** Vitest with jsdom; `@testing-library/react` and `@testing-library/jest-dom` matchers; test files live in `src/test/`
 

@@ -1,5 +1,5 @@
 // src/components/WaveformModal.tsx
-import { Repeat } from 'lucide-react';
+import { Pause, Play, Repeat, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AudioPipeline } from '../audio/pipeline';
 import {
@@ -278,10 +278,10 @@ export function WaveformModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-200 transition-colors text-lg leading-none"
+            className="text-gray-500 hover:text-gray-200 transition-colors leading-none"
             aria-label="Close"
           >
-            ✕
+            <X size={16} />
           </button>
         </div>
 
@@ -307,26 +307,7 @@ export function WaveformModal({
                 className="w-8 h-8 flex items-center justify-center rounded border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 transition-colors"
                 aria-label={isPlaying ? 'Pause' : 'Play'}
               >
-                {isPlaying ? (
-                  <svg
-                    width="12"
-                    height="14"
-                    viewBox="0 0 12 14"
-                    fill="currentColor"
-                  >
-                    <rect x="0" y="0" width="4" height="14" rx="1" />
-                    <rect x="8" y="0" width="4" height="14" rx="1" />
-                  </svg>
-                ) : (
-                  <svg
-                    width="12"
-                    height="14"
-                    viewBox="0 0 12 14"
-                    fill="currentColor"
-                  >
-                    <path d="M0 0v14l12-7z" />
-                  </svg>
-                )}
+                {isPlaying ? <Pause size={14} /> : <Play size={14} />}
               </button>
 
               <button
@@ -355,7 +336,7 @@ export function WaveformModal({
                       className="text-gray-500 hover:text-gray-300 transition-colors leading-none"
                       aria-label="Clear selection"
                     >
-                      ✕
+                      <X size={12} />
                     </button>
                   )}
                 </div>
