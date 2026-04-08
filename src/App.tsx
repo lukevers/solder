@@ -115,22 +115,38 @@ export default function App() {
     };
   }, [setSimulationStatus, setOutputBuffer, setSimulationError]);
 
-  // Initialize audio pipeline and pre-load the default sample
+  // Initialize audio pipeline
   // biome-ignore lint/correctness/useExhaustiveDependencies: init runs once on mount
   useEffect(() => {
     let cancelled = false;
     const pipeline = new AudioPipeline();
     pipelineRef.current = pipeline;
-    pipeline.init(volume).then(async () => {
-      if (cancelled) return;
-      await pipeline.loadSample('guitar');
-      if (!cancelled) setSourceBuffer(pipeline.getSampleData('guitar'));
+    pipeline.init(volume).then(() => {
+      if (!cancelled) setSourceBuffer(null);
     });
     return () => {
       cancelled = true;
       pipeline.destroy();
     };
   }, []);
+
+  // Load sample and update sourceBuffer whenever audioSource changes
+  useEffect(() => {
+    if (audioSource.type !== 'sample') {
+      setSourceBuffer(null);
+      return;
+    }
+    const name = audioSource.name;
+    let cancelled = false;
+    const pipeline = pipelineRef.current;
+    if (!pipeline) return;
+    pipeline.loadSample(name).then(() => {
+      if (!cancelled) setSourceBuffer(pipeline.getSampleData(name));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [audioSource]);
 
   // Sync volume changes
   useEffect(() => {

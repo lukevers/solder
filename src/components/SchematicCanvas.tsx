@@ -14,7 +14,7 @@ import {
   type OnNodesChange,
   ReactFlow,
 } from '@xyflow/react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
@@ -62,6 +62,8 @@ export function SchematicCanvas() {
 
   const onPaneClick = useCallback(() => selectNode(null), [selectNode]);
 
+  const [isInteractive, setIsInteractive] = useState(true);
+
   const signalEdges = useMemo(
     () =>
       edges.map((edge) => {
@@ -94,6 +96,9 @@ export function SchematicCanvas() {
         onConnect={onConnect}
         onNodeDragStart={onNodeDragStart}
         onPaneClick={onPaneClick}
+        nodesDraggable={isInteractive}
+        nodesConnectable={isInteractive}
+        elementsSelectable={isInteractive}
         snapToGrid
         snapGrid={[20, 20]}
         fitView
@@ -105,7 +110,7 @@ export function SchematicCanvas() {
           lineWidth={0.5}
           color="#1f2937"
         />
-        <Controls />
+        <Controls onInteractiveChange={setIsInteractive} />
       </ReactFlow>
     </div>
   );
