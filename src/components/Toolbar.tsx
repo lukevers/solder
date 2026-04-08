@@ -349,15 +349,14 @@ export function Toolbar({
         <div className="flex-1" />
 
         {/* Input / Output button group */}
-        <div className="flex rounded overflow-hidden border border-gray-600">
+        <div className="flex rounded border border-gray-700 overflow-hidden">
           {/* Input play/stop */}
           {hasSourceBuffer &&
             (playingOriginal ? (
               <button
                 type="button"
                 onClick={onStop}
-                className="flex items-center gap-1 bg-red-900 hover:bg-red-800 text-xs px-3 py-1 font-mono font-bold transition-colors"
-                style={{ color: '#93c5fd' }}
+                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
               >
                 <Square size={10} /> Input
               </button>
@@ -366,21 +365,20 @@ export function Toolbar({
                 type="button"
                 onClick={onPlayOriginal}
                 disabled={simulationStatus === 'running'}
-                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-xs px-3 py-1 font-mono font-bold transition-colors"
-                style={{ color: '#3b82f6' }}
+                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-blue-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
               >
                 <Play size={10} /> Input
               </button>
             ))}
 
-          {hasSourceBuffer && <div className="w-px bg-gray-600" />}
+          {hasSourceBuffer && <div className="w-px bg-gray-700" />}
 
           {/* Simulate / Output play / Stop */}
           {simulationStatus === 'running' ? (
             <button
               type="button"
               disabled
-              className="flex items-center gap-1 bg-amber-800 disabled:opacity-50 text-amber-100 text-xs px-3 py-1 font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-gray-800 disabled:opacity-50 text-amber-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
             >
               <Hourglass size={10} /> Simulating…
             </button>
@@ -388,7 +386,7 @@ export function Toolbar({
             <button
               type="button"
               onClick={onStop}
-              className="flex items-center gap-1 bg-red-800 hover:bg-red-700 text-white text-xs px-3 py-1 font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
             >
               <Square size={10} /> Stop
             </button>
@@ -396,7 +394,7 @@ export function Toolbar({
             <button
               type="button"
               onClick={onPlayOutput}
-              className="flex items-center gap-1 bg-green-600 hover:bg-green-500 text-white text-xs px-3 py-1 font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-green-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
             >
               <Play size={10} /> Output
             </button>
@@ -404,7 +402,7 @@ export function Toolbar({
             <button
               type="button"
               onClick={onSimulate}
-              className="flex items-center gap-1 bg-amber-700 hover:bg-amber-600 text-amber-50 text-xs px-3 py-1 font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-amber-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
             >
               <Play size={10} /> Simulate
             </button>
