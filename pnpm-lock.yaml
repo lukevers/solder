@@ -8,6 +8,9 @@ dependencies:
   '@xyflow/react':
     specifier: ^12.10.2
     version: 12.10.2(@types/react@19.2.14)(react-dom@19.2.4)(react@19.2.4)
+  eecircuit-engine:
+    specifier: ^1.7.0
+    version: 1.7.0
   react:
     specifier: ^19.2.4
     version: 19.2.4
@@ -1029,6 +1032,10 @@ packages:
   /dom-accessibility-api@0.6.3:
     resolution: {integrity: sha512-7ZgogeTnjuHbo+ct10G9Ffp0mif17idi0IyWNVA/wcwcm7NPOD/WEHVP3n7n3MhXqxoIYm8d6MuZohYWIZ4T3w==}
     dev: true
+
+  /eecircuit-engine@1.7.0:
+    resolution: {integrity: sha512-ZDpr/w/H81uCH3n2vjf0vohxOQqQ4NCsvaXkoYwcH+LCxIGKpBdvAIvGN5IdozW6AFJ8tojquKvDya3337yjSQ==}
+    dev: false
 
   /electron-to-chromium@1.5.332:
     resolution: {integrity: sha512-7OOtytmh/rINMLwaFTbcMVvYXO3AUm029X0LcyfYk0B557RlPkdpTpnH9+htMlfu5dKwOmT0+Zs2Aw+lnn6TeQ==}
