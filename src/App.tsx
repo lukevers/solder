@@ -20,6 +20,7 @@ export default function App() {
     outputBuffer,
     volume,
     playing,
+    audioSource,
     simulationDuration,
     inputFrequency,
     inputAmplitude,
@@ -36,6 +37,7 @@ export default function App() {
       outputBuffer: s.outputBuffer,
       volume: s.volume,
       playing: s.playing,
+      audioSource: s.audioSource,
       simulationDuration: s.simulationDuration,
       inputFrequency: s.inputFrequency,
       inputAmplitude: s.inputAmplitude,
@@ -104,12 +106,14 @@ export default function App() {
     };
   }, [setSimulationStatus, setOutputBuffer, setSimulationError]);
 
-  // Initialize audio pipeline
+  // Initialize audio pipeline and pre-load the default sample
   // biome-ignore lint/correctness/useExhaustiveDependencies: init runs once on mount
   useEffect(() => {
     const pipeline = new AudioPipeline();
     pipelineRef.current = pipeline;
-    pipeline.init(volume);
+    pipeline.init(volume).then(() => {
+      void pipeline.loadSample('guitar');
+    });
     return () => {
       pipeline.destroy();
     };
@@ -133,13 +137,27 @@ export default function App() {
     if (!workerRef.current) return;
     try {
       setSimulationStatus('running');
+      const pipeline = pipelineRef.current;
+      let inputBuffer: Float32Array | undefined;
+      let inputSampleRate: number | undefined;
+      let duration = simulationDuration;
+      if (audioSource.type === 'sample' && pipeline) {
+        const data = pipeline.getSampleData(audioSource.name);
+        if (data) {
+          inputBuffer = data;
+          inputSampleRate = pipeline.getSampleRate();
+          duration = data.length / inputSampleRate;
+        }
+      }
       const request: SimulateRequest = {
         type: 'simulate',
         nodes: nodesRef.current,
         edges: edgesRef.current,
-        duration: simulationDuration,
+        duration,
         frequency: inputFrequency,
         amplitude: inputAmplitude,
+        inputBuffer,
+        inputSampleRate,
       };
       workerRef.current.postMessage(request);
     } catch (err) {
@@ -149,6 +167,7 @@ export default function App() {
   }, [
     setSimulationStatus,
     setSimulationError,
+    audioSource,
     simulationDuration,
     inputFrequency,
     inputAmplitude,

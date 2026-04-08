@@ -206,10 +206,10 @@ describe('compileNetlist', () => {
     expect(netlist).toMatch(/C1 \S+ 0 47n/m);
   });
 
-  it('emits .tran with step 1/44100 and supplied duration', () => {
+  it('emits .tran with step 1/SPICE_SAMPLE_RATE and supplied duration', () => {
     const { nodes, edges } = makeRCCircuit();
     const netlist = compileNetlist(nodes, edges, 2.0);
-    expect(netlist).toMatch(/\.tran 2\.267574e-5 2\.000000e\+0/m);
+    expect(netlist).toMatch(/\.tran 1\.000000e-4 2\.000000e\+0/m);
   });
 
   it('emits .save V() for output node (not .probe)', () => {

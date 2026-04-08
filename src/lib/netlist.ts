@@ -5,6 +5,39 @@ import type { ComponentNode } from './types';
 
 const SAMPLE_RATE = 44100;
 
+/**
+ * Time-step rate used for SPICE transient analysis.
+ * audio-convert.ts interpolates SPICE output back up to SAMPLE_RATE.
+ * Nyquist of SPICE_SAMPLE_RATE/2 = 5 kHz — sufficient for most guitar effects.
+ */
+export const SPICE_SAMPLE_RATE = 10000;
+
+/**
+ * Builds a PWL (piecewise-linear) voltage source line by downsampling
+ * inputBuffer from inputSampleRate to SPICE_SAMPLE_RATE.
+ */
+function buildPwlSource(
+  node: string,
+  inputBuffer: Float32Array,
+  inputSampleRate: number,
+  amplitude: number,
+  duration: number,
+): string {
+  const numPoints = Math.round(duration * SPICE_SAMPLE_RATE) + 1;
+  const ratio = inputSampleRate / SPICE_SAMPLE_RATE;
+  const pairs: string[] = [];
+  for (let i = 0; i < numPoints; i++) {
+    const t = i / SPICE_SAMPLE_RATE;
+    const srcIdx = i * ratio;
+    const lo = Math.floor(srcIdx);
+    const hi = Math.min(lo + 1, inputBuffer.length - 1);
+    const frac = srcIdx - lo;
+    const v = (inputBuffer[lo] ?? 0) * (1 - frac) + (inputBuffer[hi] ?? 0) * frac;
+    pairs.push(`${t.toExponential(4)} ${(v * amplitude).toFixed(6)}`);
+  }
+  return `Vin ${node} 0 PWL(${pairs.join(' ')})`;
+}
+
 /** All port handles for each component type */
 const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   resistor: ['a', 'b'],
@@ -132,6 +165,8 @@ export function compileNetlist(
   duration = 1.0,
   frequency = 1000,
   amplitude = 1.0,
+  inputBuffer?: Float32Array,
+  inputSampleRate = 44100,
 ): string {
   const portToNode = buildPortGroups(nodes, edges);
 
@@ -168,8 +203,12 @@ export function compileNetlist(
   const inputSpiceNode = getNode(inputNode.id, 'out');
   const outputSpiceNode = getNode(outputNode.id, 'in');
 
-  // Vin: sinusoidal audio source SIN(offset amplitude frequency)
-  lines.push(`Vin ${inputSpiceNode} 0 SIN(0 ${amplitude} ${frequency})`);
+  // Input source: PWL from real audio if provided, otherwise SIN test tone
+  if (inputBuffer && inputBuffer.length > 0) {
+    lines.push(buildPwlSource(inputSpiceNode, inputBuffer, inputSampleRate, amplitude, duration));
+  } else {
+    lines.push(`Vin ${inputSpiceNode} 0 SIN(0 ${amplitude} ${frequency})`);
+  }
 
   // Emit each component
   for (const node of nodes) {
@@ -224,8 +263,8 @@ export function compileNetlist(
   // Save only the output voltage; without this ngspice may save all internal nodes
   lines.push(`.save V(${outputSpiceNode})`);
 
-  // Transient analysis: step = 1/10000 (100 µs; audio-convert.ts interpolates to SAMPLE_RATE)
-  const step = (1 / 10000).toExponential(6);
+  // Transient analysis: step matches SPICE_SAMPLE_RATE; audio-convert.ts interpolates to SAMPLE_RATE
+  const step = (1 / SPICE_SAMPLE_RATE).toExponential(6);
   const stop = duration.toExponential(6);
   lines.push(`.tran ${step} ${stop}`);
 

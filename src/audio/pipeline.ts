@@ -25,6 +25,15 @@ export class AudioPipeline {
     this.gainNode.connect(this.ctx.destination);
   }
 
+  getSampleData(name: string): Float32Array | null {
+    const buf = this.sampleBuffers.get(name);
+    return buf ? buf.getChannelData(0) : null;
+  }
+
+  getSampleRate(): number {
+    return this.ctx?.sampleRate ?? SAMPLE_RATE;
+  }
+
   setVolume(volume: number): void {
     if (this.gainNode) this.gainNode.gain.value = volume;
   }

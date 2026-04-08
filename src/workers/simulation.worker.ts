@@ -13,10 +13,10 @@ const engine: SpiceEngine = new EECircuitEngine();
 
 self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
   if (e.data.type !== 'simulate') return;
-  const { nodes, edges, duration, frequency, amplitude } = e.data;
+  const { nodes, edges, duration, frequency, amplitude, inputBuffer, inputSampleRate } = e.data;
   try {
     await engine.init();
-    const netlist = compileNetlist(nodes, edges, duration, frequency, amplitude);
+    const netlist = compileNetlist(nodes, edges, duration, frequency, amplitude, inputBuffer, inputSampleRate);
     const output = await engine.run(netlist);
     const audioBuffer = voltageToAudioBuffer(output, SAMPLE_RATE);
     const response: SimulateResponse = {

@@ -37,6 +37,10 @@ export type SimulateRequest = {
   duration: number;
   frequency: number;
   amplitude: number;
+  /** Raw audio samples to use as PWL voltage source; absent → use SIN test tone */
+  inputBuffer?: Float32Array;
+  /** Sample rate of inputBuffer (default 44100) */
+  inputSampleRate?: number;
 };
 
 export type SimulateResponse =
