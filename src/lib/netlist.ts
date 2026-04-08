@@ -32,7 +32,8 @@ function buildPwlSource(
     const lo = Math.floor(srcIdx);
     const hi = Math.min(lo + 1, inputBuffer.length - 1);
     const frac = srcIdx - lo;
-    const v = (inputBuffer[lo] ?? 0) * (1 - frac) + (inputBuffer[hi] ?? 0) * frac;
+    const v =
+      (inputBuffer[lo] ?? 0) * (1 - frac) + (inputBuffer[hi] ?? 0) * frac;
     pairs.push(`${t.toExponential(4)} ${(v * amplitude).toFixed(6)}`);
   }
   return `Vin ${node} 0 PWL(${pairs.join(' ')})`;
@@ -113,6 +114,26 @@ export function buildPortGroups(
 
   for (const p of allPorts(nodes)) {
     if (!adj.has(p)) adj.set(p, new Set());
+  }
+
+  // Merge power nodes with same label into the same net (KiCad-style power flags).
+  // This lets users place multiple VCC/V+ symbols and they share one net automatically.
+  const powerByLabel = new Map<string, Array<Port>>();
+  for (const n of nodes) {
+    if (n.type === 'power') {
+      const port: Port = `${n.id}|pos`;
+      const label = n.data.label;
+      if (!powerByLabel.has(label)) powerByLabel.set(label, []);
+      powerByLabel.get(label)!.push(port);
+    }
+  }
+  for (const ports of powerByLabel.values()) {
+    for (let i = 1; i < ports.length; i++) {
+      if (!adj.has(ports[0])) adj.set(ports[0], new Set());
+      if (!adj.has(ports[i])) adj.set(ports[i], new Set());
+      adj.get(ports[0])!.add(ports[i]);
+      adj.get(ports[i])!.add(ports[0]);
+    }
   }
 
   const groundPorts = nodes
@@ -205,10 +226,21 @@ export function compileNetlist(
 
   // Input source: PWL from real audio if provided, otherwise SIN test tone
   if (inputBuffer && inputBuffer.length > 0) {
-    lines.push(buildPwlSource(inputSpiceNode, inputBuffer, inputSampleRate, amplitude, duration));
+    lines.push(
+      buildPwlSource(
+        inputSpiceNode,
+        inputBuffer,
+        inputSampleRate,
+        amplitude,
+        duration,
+      ),
+    );
   } else {
     lines.push(`Vin ${inputSpiceNode} 0 SIN(0 ${amplitude} ${frequency})`);
   }
+
+  // Track emitted power sources to deduplicate (multiple VCC symbols = one source)
+  const emittedPower = new Set<string>();
 
   // Emit each component
   for (const node of nodes) {
@@ -234,8 +266,11 @@ export function compileNetlist(
         `X${node.data.label} ${inPos} ${inNeg} ${vcc} ${gnd} ${out} ${node.data.model}`,
       );
     } else if (node.type === 'power') {
-      const pos = getNode(node.id, 'pos');
-      lines.push(`V${node.data.label} ${pos} 0 DC ${node.data.volts}`);
+      if (!emittedPower.has(node.data.label)) {
+        emittedPower.add(node.data.label);
+        const pos = getNode(node.id, 'pos');
+        lines.push(`V${node.data.label} ${pos} 0 DC ${node.data.volts}`);
+      }
     } else if (node.type === 'diode') {
       const na = getNode(node.id, 'a');
       const nk = getNode(node.id, 'k');

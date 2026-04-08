@@ -49,6 +49,13 @@ Any circuit mutation (add/delete node, connect/disconnect edge, update component
 - `src/lib/circuit-io.ts` — JSON import/export for circuits
 - `src/lib/examples/` — preset circuits (e.g., `rat.ts`)
 
+### KiCad-style power pins
+Ground and Power nodes act as global net labels (like KiCad power flags). Users can place multiple instances:
+- **Ground**: All ground nodes are automatically on SPICE net `0` regardless of wiring. Place a GND symbol anywhere and wire it locally — no need to draw a long wire back to a single ground.
+- **Power**: All power nodes with the same label (e.g., `VCC`) share the same net and only one voltage source is emitted. Place multiple VCC symbols throughout the circuit and they're all connected.
+
+Connections can also be dropped directly onto existing wires (edges) to join that net without targeting a specific handle.
+
 ### Component nodes (`src/components/nodes/`)
 One renderer per circuit element type: `ResistorNode`, `CapacitorNode`, `OpAmpNode`, `DiodeNode`, `PotentiometerNode`, `PowerNode`, `GroundNode`, `AudioInNode`, `AudioOutNode`.
 
