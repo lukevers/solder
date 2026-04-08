@@ -1,5 +1,5 @@
 // src/components/WaveformDisplay.tsx
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 type Props = {
   inputBuffer: Float32Array | null;
@@ -13,10 +13,10 @@ export function WaveformDisplay({
   height = 80,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [splitFraction, setSplitFraction] = useState(0.5);
+  const splitRef = useRef(0.5);
   const draggingRef = useRef(false);
 
-  useEffect(() => {
+  function draw(split: number) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -33,7 +33,7 @@ export function WaveformDisplay({
     ctx.fillStyle = '#0d1117';
     ctx.fillRect(0, 0, w, h);
 
-    const splitX = w * splitFraction;
+    const splitX = w * split;
 
     function drawBuffer(buf: Float32Array, color: string) {
       if (!ctx) return;
@@ -49,7 +49,6 @@ export function WaveformDisplay({
       ctx.stroke();
     }
 
-    // Draw dry (left of split)
     if (inputBuffer) {
       ctx.save();
       ctx.beginPath();
@@ -59,7 +58,6 @@ export function WaveformDisplay({
       ctx.restore();
     }
 
-    // Draw wet (right of split)
     if (outputBuffer) {
       ctx.save();
       ctx.beginPath();
@@ -69,7 +67,6 @@ export function WaveformDisplay({
       ctx.restore();
     }
 
-    // Draw divider line
     if (inputBuffer || outputBuffer) {
       ctx.strokeStyle = '#e5e7eb';
       ctx.lineWidth = 1.5;
@@ -78,7 +75,6 @@ export function WaveformDisplay({
       ctx.lineTo(splitX, h);
       ctx.stroke();
 
-      // Draw handle circle
       const cy = h / 2;
       ctx.fillStyle = '#e5e7eb';
       ctx.beginPath();
@@ -88,7 +84,11 @@ export function WaveformDisplay({
       ctx.lineWidth = 1;
       ctx.stroke();
     }
-  }, [inputBuffer, outputBuffer, height, splitFraction]);
+  }
+
+  useEffect(() => {
+    draw(splitRef.current);
+  }, [inputBuffer, outputBuffer, height]);
 
   function getFraction(e: React.PointerEvent<HTMLCanvasElement>): number {
     const canvas = canvasRef.current;
@@ -101,12 +101,14 @@ export function WaveformDisplay({
     if (!inputBuffer && !outputBuffer) return;
     draggingRef.current = true;
     (e.target as HTMLCanvasElement).setPointerCapture(e.pointerId);
-    setSplitFraction(getFraction(e));
+    splitRef.current = getFraction(e);
+    draw(splitRef.current);
   }
 
   function onPointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
     if (!draggingRef.current) return;
-    setSplitFraction(getFraction(e));
+    splitRef.current = getFraction(e);
+    draw(splitRef.current);
   }
 
   function onPointerUp() {
@@ -130,12 +132,8 @@ export function WaveformDisplay({
       />
       {hasAny && (
         <div className="flex items-center justify-between text-xs font-mono">
-          {inputBuffer && (
-            <span style={{ color: '#be185d' }}>dry</span>
-          )}
-          {outputBuffer && (
-            <span style={{ color: '#22c55e' }}>wet</span>
-          )}
+          {inputBuffer && <span style={{ color: '#be185d' }}>dry</span>}
+          {outputBuffer && <span style={{ color: '#22c55e' }}>wet</span>}
         </div>
       )}
     </div>
