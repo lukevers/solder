@@ -138,9 +138,27 @@ export function WaveformDisplay({
         onPointerCancel={onPointerUp}
       />
       {hasAny && (
-        <div className="flex items-center justify-between text-xs font-mono">
-          {inputBuffer && <span style={{ color: '#be185d' }}>dry</span>}
-          {outputBuffer && <span style={{ color: '#22c55e' }}>wet</span>}
+        <div className="flex items-center justify-between text-xs font-mono gap-1">
+          {inputBuffer && (
+            <button
+              type="button"
+              onClick={() => { splitRef.current = 1; draw(1); }}
+              className="px-2 py-0.5 rounded border transition-colors"
+              style={{ color: '#be185d', borderColor: '#be185d', background: 'transparent' }}
+            >
+              dry
+            </button>
+          )}
+          {outputBuffer && (
+            <button
+              type="button"
+              onClick={() => { splitRef.current = 0; draw(0); }}
+              className="px-2 py-0.5 rounded border transition-colors"
+              style={{ color: '#22c55e', borderColor: '#22c55e', background: 'transparent' }}
+            >
+              wet
+            </button>
+          )}
         </div>
       )}
     </div>
