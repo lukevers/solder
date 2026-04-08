@@ -1,5 +1,6 @@
 // src/components/Toolbar.tsx
 
+import { Repeat } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { exportCircuit, importCircuit } from '../lib/circuit-io';
@@ -407,7 +408,7 @@ export function Toolbar({
             }`}
             aria-label={looping ? 'Disable loop' : 'Enable loop'}
           >
-            ↻
+            <Repeat size={12} />
           </button>
         )}
 

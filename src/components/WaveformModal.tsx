@@ -1,4 +1,5 @@
 // src/components/WaveformModal.tsx
+import { Repeat } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AudioPipeline } from '../audio/pipeline';
 import {
@@ -338,21 +339,7 @@ export function WaveformModal({
                 }`}
                 aria-label={looping ? 'Disable loop' : 'Enable loop'}
               >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M10 1l2 2-2 2" />
-                  <path d="M4 3h8" />
-                  <path d="M4 11l-2-2 2-2" />
-                  <path d="M10 11H2" />
-                </svg>
+                <Repeat size={14} />
               </button>
 
               {selection && totalDuration > 0 && (
