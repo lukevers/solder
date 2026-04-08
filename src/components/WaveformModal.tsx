@@ -42,8 +42,8 @@ export function WaveformModal({
   selectionRef.current = selection;
   const playbackSelectionRef = useRef<WaveformSelection | null>(null);
 
-  const [activeSignal, setActiveSignal] = useState<'input' | 'wet'>(
-    outputBuffer ? 'wet' : 'input',
+  const [activeSignal, setActiveSignal] = useState<'input' | 'output'>(
+    outputBuffer ? 'output' : 'input',
   );
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(false);
@@ -64,11 +64,11 @@ export function WaveformModal({
   }, [outputBuffer]);
 
   const playFromRef = useRef<
-    (signal: 'input' | 'wet', fraction: number) => void
+    (signal: 'input' | 'output', fraction: number) => void
   >(() => {});
 
   const playFrom = useCallback(
-    (signal: 'input' | 'wet', fraction: number) => {
+    (signal: 'input' | 'output', fraction: number) => {
       let buffer = signal === 'input' ? inputBuffer : outputBuffer;
       if (!buffer) buffer = signal === 'input' ? outputBuffer : inputBuffer;
       if (!buffer || !pipeline) return;
@@ -139,7 +139,7 @@ export function WaveformModal({
   handlePlayPauseRef.current = handlePlayPause;
 
   const handleSignalChange = useCallback(
-    (signal: 'input' | 'wet') => {
+    (signal: 'input' | 'output') => {
       if (signal === activeSignalRef.current) return;
       setActiveSignal(signal);
       activeSignalRef.current = signal;
@@ -363,18 +363,19 @@ export function WaveformModal({
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleSignalChange('wet')}
+                  onClick={() => handleSignalChange('output')}
                   className="px-2 py-0.5 rounded border transition-colors"
                   style={{
                     color: '#22c55e',
-                    borderColor: activeSignal === 'wet' ? '#22c55e' : '#374151',
+                    borderColor:
+                      activeSignal === 'output' ? '#22c55e' : '#374151',
                     background:
-                      activeSignal === 'wet'
+                      activeSignal === 'output'
                         ? 'rgba(34,197,94,0.15)'
                         : 'transparent',
                   }}
                 >
-                  wet
+                  output
                 </button>
               </div>
             )}

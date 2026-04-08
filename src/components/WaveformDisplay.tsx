@@ -15,7 +15,7 @@ type Props = {
   /** Fires on pointer-up after a seek (click, not drag). */
   onSeekEnd?: (fraction: number) => void;
   /** Which signal to visually emphasise in overlaid mode. */
-  highlightSignal?: 'input' | 'wet';
+  highlightSignal?: 'input' | 'output';
   /** Current selection range (fractions 0–1). */
   selection?: WaveformSelection | null;
   /** Called when the user drags to create or update a selection. */
@@ -448,7 +448,7 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
                   background: 'transparent',
                 }}
               >
-                wet
+                output
               </button>
             )}
           </div>
