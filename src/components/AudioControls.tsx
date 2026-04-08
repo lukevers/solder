@@ -6,21 +6,10 @@ import { useStore } from '../store';
 const SAMPLES = ['guitar', 'bass'];
 
 export function AudioControls() {
-  const {
-    audioSource,
-    volume,
-    playing,
-    setAudioSource,
-    setVolume,
-    setPlaying,
-  } = useStore(
+  const { audioSource, setAudioSource } = useStore(
     useShallow((s) => ({
       audioSource: s.audioSource,
-      volume: s.volume,
-      playing: s.playing,
       setAudioSource: s.setAudioSource,
-      setVolume: s.setVolume,
-      setPlaying: s.setPlaying,
     })),
   );
 
@@ -29,7 +18,7 @@ export function AudioControls() {
       <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
         Audio Source
       </div>
-      <div className="flex flex-col gap-1.5 mb-3">
+      <div className="flex flex-col gap-1.5">
         {SAMPLES.map((name) => (
           <label
             key={name}
@@ -58,29 +47,6 @@ export function AudioControls() {
           🎙 Live input
         </label>
       </div>
-
-      <div className="mb-3">
-        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-          Volume
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volume}
-          onChange={(e) => setVolume(Number(e.target.value))}
-          className="w-full accent-green-500"
-        />
-      </div>
-
-      <button
-        type="button"
-        onClick={() => setPlaying(!playing)}
-        className="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs py-1.5 rounded font-mono transition-colors"
-      >
-        {playing ? '⏹ Stop' : '▶ Play'}
-      </button>
     </div>
   );
 }
