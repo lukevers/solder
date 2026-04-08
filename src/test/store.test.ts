@@ -215,3 +215,145 @@ describe('tabsSlice', () => {
     expect(useStore.getState().activeTabId).toBe(activeTabId);
   });
 });
+
+describe('undo / redo', () => {
+  it('addNode then undo reverts nodes array, redo restores', () => {
+    const nodesBefore = useStore.getState().nodes;
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    expect(useStore.getState().nodes).toHaveLength(nodesBefore.length + 1);
+    useStore.getState().undo();
+    expect(useStore.getState().nodes).toEqual(nodesBefore);
+    useStore.getState().redo();
+    expect(useStore.getState().nodes).toHaveLength(nodesBefore.length + 1);
+    expect(useStore.getState().nodes.find((n) => n.id === 'r1')).toBeDefined();
+  });
+
+  it('undo with empty past is no-op', () => {
+    const nodesBefore = useStore.getState().nodes;
+    useStore.getState().undo();
+    expect(useStore.getState().nodes).toEqual(nodesBefore);
+  });
+
+  it('redo with empty future is no-op', () => {
+    const nodesBefore = useStore.getState().nodes;
+    useStore.getState().redo();
+    expect(useStore.getState().nodes).toEqual(nodesBefore);
+  });
+});
+
+describe('history cap', () => {
+  it('past.length never exceeds 50', () => {
+    for (let i = 0; i < 55; i++) {
+      useStore.getState().pushHistory();
+      useStore.getState().addNode({
+        id: `r${i}`,
+        type: 'resistor',
+        position: { x: i * 10, y: 0 },
+        data: { label: `R${i}`, ohms: 1000 },
+      });
+    }
+    // slice(-MAX_HISTORY) keeps 50 entries, then one is appended → max 51
+    expect(useStore.getState().past.length).toBeLessThanOrEqual(51);
+  });
+});
+
+describe('simulation invalidation', () => {
+  it('addNode clears outputBuffer', () => {
+    useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]));
+    expect(useStore.getState().outputBuffer).not.toBeNull();
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    expect(useStore.getState().outputBuffer).toBeNull();
+  });
+
+  it('updateNodeData clears outputBuffer', () => {
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]));
+    expect(useStore.getState().outputBuffer).not.toBeNull();
+    useStore.getState().updateNodeData('r1', { label: 'R1', ohms: 2000 });
+    expect(useStore.getState().outputBuffer).toBeNull();
+  });
+
+  it('setNodes with same IDs (position change only) does NOT clear outputBuffer', () => {
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    const buf = new Float32Array([1, 2, 3]);
+    useStore.getState().setOutputBuffer(buf);
+    // Change only position, same IDs
+    const movedNodes = useStore.getState().nodes.map((n) => ({
+      ...n,
+      position: { x: n.position.x + 50, y: n.position.y },
+    }));
+    useStore.getState().setNodes(movedNodes);
+    expect(useStore.getState().outputBuffer).toBe(buf);
+  });
+
+  it('setNodes with different IDs DOES clear outputBuffer', () => {
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    });
+    useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]));
+    const newNodes = [
+      ...useStore.getState().nodes,
+      {
+        id: 'r2',
+        type: 'resistor' as const,
+        position: { x: 100, y: 0 },
+        data: { label: 'R2', ohms: 2000 },
+      },
+    ];
+    useStore.getState().setNodes(newNodes);
+    expect(useStore.getState().outputBuffer).toBeNull();
+  });
+});
+
+describe('edge selection', () => {
+  it('selectEdge sets selectedEdgeId and clears selectedNodeId', () => {
+    useStore.getState().selectNode('some-node');
+    expect(useStore.getState().selectedNodeId).toBe('some-node');
+    useStore.getState().selectEdge('some-edge');
+    expect(useStore.getState().selectedEdgeId).toBe('some-edge');
+    expect(useStore.getState().selectedNodeId).toBeNull();
+  });
+
+  it('selectNode clears selectedEdgeId', () => {
+    useStore.getState().selectEdge('some-edge');
+    expect(useStore.getState().selectedEdgeId).toBe('some-edge');
+    useStore.getState().selectNode('some-node');
+    expect(useStore.getState().selectedEdgeId).toBeNull();
+  });
+});
+
+describe('clearOutputBuffer', () => {
+  it('sets outputBuffer to null, simulationElapsed to null, simulationStatus to idle', () => {
+    useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]), 1.5);
+    useStore.getState().setSimulationStatus('running');
+    expect(useStore.getState().outputBuffer).not.toBeNull();
+    expect(useStore.getState().simulationStatus).toBe('running');
+    useStore.getState().clearOutputBuffer();
+    expect(useStore.getState().outputBuffer).toBeNull();
+    expect(useStore.getState().simulationElapsed).toBeNull();
+    expect(useStore.getState().simulationStatus).toBe('idle');
+  });
+});

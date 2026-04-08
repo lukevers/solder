@@ -1,18 +1,13 @@
 // src/components/nodes/PowerNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { PowerData } from '../../lib/types';
-import { useStore } from '../../store';
+import { HANDLE_STYLE, NodeShell } from './NodeShell';
 
 export function PowerNode({ id, data, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
   const d = data as PowerData;
 
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 40, height: 40 }}
-    >
+    <NodeShell id={id} width={40} height={40}>
       <svg width="40" height="40" viewBox="0 0 40 40">
         <circle
           cx="20"
@@ -48,8 +43,8 @@ export function PowerNode({ id, data, selected }: NodeProps) {
         type="source"
         position={Position.Bottom}
         id="pos"
-        style={{ background: '#4b5563' }}
+        style={HANDLE_STYLE}
       />
-    </div>
+    </NodeShell>
   );
 }

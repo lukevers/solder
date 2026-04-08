@@ -2,13 +2,12 @@
 import { Pause, Play, Repeat, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AudioPipeline } from '../audio/pipeline';
+import { SAMPLE_RATE } from '../lib/constants';
 import {
   WaveformDisplay,
   type WaveformDisplayHandle,
   type WaveformSelection,
 } from './WaveformDisplay';
-
-const SAMPLE_RATE = 44100;
 
 function formatTime(seconds: number): string {
   if (seconds >= 1) return `${seconds.toFixed(1)}s`;

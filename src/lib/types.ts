@@ -51,3 +51,15 @@ export type SimulateResponse =
 
 // Audio source
 export type AudioSource = { type: 'sample'; name: string } | { type: 'live' };
+
+export function isEdgeDC(
+  srcType?: ComponentNode['type'],
+  tgtType?: ComponentNode['type'],
+): boolean {
+  return (
+    srcType === 'power' ||
+    srcType === 'ground' ||
+    tgtType === 'power' ||
+    tgtType === 'ground'
+  );
+}

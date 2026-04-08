@@ -1,19 +1,14 @@
 // src/components/nodes/OpAmpNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { OpAmpData } from '../../lib/types';
-import { useStore } from '../../store';
+import { HANDLE_STYLE, NodeShell } from './NodeShell';
 
 export function OpAmpNode({ id, data, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
   const d = data as OpAmpData;
   const stroke = selected ? '#fb923c' : '#f97316';
 
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 80, height: 80 }}
-    >
+    <NodeShell id={id} width={80} height={80}>
       {/* +in — non-inverting, top-left at y=20 (25% of 80) */}
       <Handle
         type="target"
@@ -47,7 +42,7 @@ export function OpAmpNode({ id, data, selected }: NodeProps) {
         type="source"
         position={Position.Right}
         id="out"
-        style={{ background: '#4b5563' }}
+        style={HANDLE_STYLE}
       />
 
       <svg width="80" height="80" viewBox="0 0 80 80">
@@ -84,6 +79,6 @@ export function OpAmpNode({ id, data, selected }: NodeProps) {
           {d.model}
         </text>
       </svg>
-    </div>
+    </NodeShell>
   );
 }

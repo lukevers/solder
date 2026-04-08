@@ -1,10 +1,9 @@
 // src/components/nodes/PotNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { PotData } from '../../lib/types';
-import { useStore } from '../../store';
+import { NodeShell } from './NodeShell';
 
 export function PotNode({ id, data, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
   const d = data as PotData;
   const stroke = selected ? '#60a5fa' : '#9ca3af';
   const wiperColor = selected ? '#60a5fa' : '#a78bfa';
@@ -20,11 +19,7 @@ export function PotNode({ id, data, selected }: NodeProps) {
         : `${d.ohms}Ω`;
 
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 80, height: 60 }}
-    >
+    <NodeShell id={id} width={80} height={60}>
       {/* CCW end — left at y=20 (explicit px, on 20px grid) */}
       <Handle
         type="target"
@@ -118,6 +113,6 @@ export function PotNode({ id, data, selected }: NodeProps) {
           {val} {pct}%
         </text>
       </svg>
-    </div>
+    </NodeShell>
   );
 }

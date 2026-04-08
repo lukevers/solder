@@ -1,26 +1,21 @@
 // src/components/nodes/CapacitorNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { CapacitorData } from '../../lib/types';
-import { useStore } from '../../store';
+import { HANDLE_STYLE, NodeShell } from './NodeShell';
 
 export function CapacitorNode({ id, data, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
   const d = data as CapacitorData;
 
   const faradsLabel =
     d.farads >= 1e-6 ? `${d.farads * 1e6}μF` : `${d.farads * 1e9}nF`;
 
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 60, height: 40 }}
-    >
+    <NodeShell id={id} width={60} height={40}>
       <Handle
         type="target"
         position={Position.Left}
         id="a"
-        style={{ background: '#4b5563' }}
+        style={HANDLE_STYLE}
       />
       <svg width="60" height="40" viewBox="0 0 60 40">
         <line
@@ -80,8 +75,8 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
         type="source"
         position={Position.Right}
         id="b"
-        style={{ background: '#4b5563' }}
+        style={HANDLE_STYLE}
       />
-    </div>
+    </NodeShell>
   );
 }

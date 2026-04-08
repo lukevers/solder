@@ -1,24 +1,19 @@
 // src/components/nodes/DiodeNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { DiodeData } from '../../lib/types';
-import { useStore } from '../../store';
+import { HANDLE_STYLE, NodeShell } from './NodeShell';
 
 export function DiodeNode({ id, data, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
   const d = data as DiodeData;
   const stroke = selected ? '#60a5fa' : '#e5e7eb';
 
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 60, height: 40 }}
-    >
+    <NodeShell id={id} width={60} height={40}>
       <Handle
         type="target"
         position={Position.Left}
         id="a"
-        style={{ background: '#4b5563' }}
+        style={HANDLE_STYLE}
       />
       <svg width="60" height="40" viewBox="0 0 60 40">
         <line
@@ -69,8 +64,8 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
         type="source"
         position={Position.Right}
         id="k"
-        style={{ background: '#4b5563' }}
+        style={HANDLE_STYLE}
       />
-    </div>
+    </NodeShell>
   );
 }

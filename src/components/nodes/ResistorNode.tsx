@@ -1,23 +1,18 @@
 // src/components/nodes/ResistorNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { ResistorData } from '../../lib/types';
-import { useStore } from '../../store';
+import { HANDLE_STYLE, NodeShell } from './NodeShell';
 
 export function ResistorNode({ id, data, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
   const d = data as ResistorData;
 
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 80, height: 40 }}
-    >
+    <NodeShell id={id} width={80} height={40}>
       <Handle
         type="target"
         position={Position.Left}
         id="a"
-        style={{ background: '#4b5563' }}
+        style={HANDLE_STYLE}
       />
       <svg width="80" height="40" viewBox="0 0 80 40">
         <line
@@ -67,8 +62,8 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
         type="source"
         position={Position.Right}
         id="b"
-        style={{ background: '#4b5563' }}
+        style={HANDLE_STYLE}
       />
-    </div>
+    </NodeShell>
   );
 }

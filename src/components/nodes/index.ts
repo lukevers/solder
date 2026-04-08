@@ -3,8 +3,8 @@
 import { CapacitorNode } from './CapacitorNode';
 import { DiodeNode } from './DiodeNode';
 import { GroundNode } from './GroundNode';
-import { LabelNode } from './LabelNode';
 import { InputNode } from './InputNode';
+import { LabelNode } from './LabelNode';
 import { OpAmpNode } from './OpAmpNode';
 import { OutputNode } from './OutputNode';
 import { PotNode } from './PotNode';

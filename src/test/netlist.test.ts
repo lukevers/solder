@@ -2,7 +2,12 @@
 
 import type { Edge } from '@xyflow/react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { buildPortGroups, compileNetlist } from '../lib/netlist';
+import {
+  buildPortGroups,
+  compileNetlist,
+  formatCapacitance,
+  formatResistance,
+} from '../lib/netlist';
 import type { CircuitState, ComponentNode } from '../lib/types';
 
 describe('types', () => {
@@ -299,5 +304,297 @@ describe('compileNetlist', () => {
       },
     ];
     expect(() => compileNetlist(nodes, [])).toThrow('no output node');
+  });
+
+  it('emits diode model and element line', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'd1',
+        type: 'diode',
+        position: { x: 100, y: 0 },
+        data: { label: 'D1', model: '1N914' },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model 1N914 D(');
+    expect(netlist).toMatch(/^D1 /m);
+  });
+
+  it('emits R-prefixed pot split-resistors', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'pot1',
+        type: 'pot',
+        position: { x: 100, y: 0 },
+        data: { label: 'DIST', ohms: 500000, position: 0.5 },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    const rdistLines = netlist.split('\n').filter((l) => l.startsWith('RDIST'));
+    expect(rdistLines).toHaveLength(2);
+  });
+
+  it('emits VVCC line for a power node', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'pwr1',
+        type: 'power',
+        position: { x: 100, y: 0 },
+        data: { label: 'VCC', volts: 9 },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toMatch(/^VVCC \S+ 0 DC 9$/m);
+  });
+
+  it('deduplicates power nodes with same label', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'pwr1',
+        type: 'power',
+        position: { x: 100, y: 0 },
+        data: { label: 'VCC', volts: 9 },
+      },
+      {
+        id: 'pwr2',
+        type: 'power',
+        position: { x: 200, y: 0 },
+        data: { label: 'VCC', volts: 9 },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 300, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    const vccLines = netlist.split('\n').filter((l) => l.startsWith('VVCC'));
+    expect(vccLines).toHaveLength(1);
+  });
+
+  it('always includes Rprobe line', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 100, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toMatch(/^Rprobe \S+ 0 1000Meg$/m);
+  });
+
+  it('label nodes produce no SPICE component line', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'lbl1',
+        type: 'label',
+        position: { x: 100, y: 0 },
+        data: { label: 'NET1' },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    // The label name should not appear as a SPICE element line
+    expect(netlist).not.toMatch(/^NET1 /m);
+  });
+});
+
+describe('formatResistance', () => {
+  it('formats 100 as "100"', () => {
+    expect(formatResistance(100)).toBe('100');
+  });
+
+  it('formats 4700 as "4.7k"', () => {
+    expect(formatResistance(4700)).toBe('4.7k');
+  });
+
+  it('formats 1000000 as "1Meg"', () => {
+    expect(formatResistance(1000000)).toBe('1Meg');
+  });
+
+  it('formats 2200000 as "2.2Meg"', () => {
+    expect(formatResistance(2200000)).toBe('2.2Meg');
+  });
+});
+
+describe('formatCapacitance', () => {
+  it('formats 100e-12 as "100p"', () => {
+    expect(formatCapacitance(100e-12)).toBe('100p');
+  });
+
+  it('formats 47e-9 as "47n"', () => {
+    expect(formatCapacitance(47e-9)).toBe('47n');
+  });
+
+  it('formats 1e-6 as "1u"', () => {
+    expect(formatCapacitance(1e-6)).toBe('1u');
+  });
+
+  it('formats 10e-3 as "10m"', () => {
+    expect(formatCapacitance(10e-3)).toBe('10m');
+  });
+});
+
+describe('buildPortGroups with label nodes', () => {
+  it('two label nodes with same name share the same SPICE net', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'lbl1',
+        type: 'label',
+        position: { x: 0, y: 0 },
+        data: { label: 'NET1' },
+      },
+      {
+        id: 'lbl2',
+        type: 'label',
+        position: { x: 100, y: 0 },
+        data: { label: 'NET1' },
+      },
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 200, y: 0 },
+        data: { label: 'R1', ohms: 1000 },
+      },
+      {
+        id: 'r2',
+        type: 'resistor',
+        position: { x: 300, y: 0 },
+        data: { label: 'R2', ohms: 2000 },
+      },
+    ];
+    const edges: Array<Edge> = [
+      {
+        id: 'e1',
+        source: 'r1',
+        sourceHandle: 'b',
+        target: 'lbl1',
+        targetHandle: 'net',
+      },
+      {
+        id: 'e2',
+        source: 'r2',
+        sourceHandle: 'a',
+        target: 'lbl2',
+        targetHandle: 'net',
+      },
+    ];
+    const groups = buildPortGroups(nodes, edges);
+    expect(groups.get('lbl1|net')).toBe(groups.get('lbl2|net'));
+    // R1.b and R2.a should share the same net through the labels
+    expect(groups.get('r1|b')).toBe(groups.get('r2|a'));
+  });
+});
+
+describe('buildPortGroups with power nodes', () => {
+  it('two power nodes with same label share the same SPICE net', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'pwr1',
+        type: 'power',
+        position: { x: 0, y: 0 },
+        data: { label: 'VCC', volts: 9 },
+      },
+      {
+        id: 'pwr2',
+        type: 'power',
+        position: { x: 100, y: 0 },
+        data: { label: 'VCC', volts: 9 },
+      },
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 200, y: 0 },
+        data: { label: 'R1', ohms: 1000 },
+      },
+      {
+        id: 'r2',
+        type: 'resistor',
+        position: { x: 300, y: 0 },
+        data: { label: 'R2', ohms: 2000 },
+      },
+    ];
+    const edges: Array<Edge> = [
+      {
+        id: 'e1',
+        source: 'pwr1',
+        sourceHandle: 'pos',
+        target: 'r1',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e2',
+        source: 'pwr2',
+        sourceHandle: 'pos',
+        target: 'r2',
+        targetHandle: 'a',
+      },
+    ];
+    const groups = buildPortGroups(nodes, edges);
+    expect(groups.get('pwr1|pos')).toBe(groups.get('pwr2|pos'));
+    // R1.a and R2.a should share the same net through the power nodes
+    expect(groups.get('r1|a')).toBe(groups.get('r2|a'));
   });
 });

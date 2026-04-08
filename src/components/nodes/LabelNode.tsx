@@ -1,20 +1,15 @@
 // src/components/nodes/LabelNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { LabelData } from '../../lib/types';
-import { useStore } from '../../store';
+import { NodeShell } from './NodeShell';
 
 export function LabelNode({ id, data, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
   const d = data as LabelData;
 
   const color = selected ? '#60a5fa' : '#a78bfa';
 
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ height: 28 }}
-    >
+    <NodeShell id={id} width={80} height={28}>
       <svg width="80" height="28" viewBox="0 0 80 28">
         {/* Flag shape: rectangle with a triangular notch on the right */}
         <path
@@ -42,6 +37,6 @@ export function LabelNode({ id, data, selected }: NodeProps) {
         isConnectableEnd={true}
         style={{ background: '#a78bfa' }}
       />
-    </div>
+    </NodeShell>
   );
 }

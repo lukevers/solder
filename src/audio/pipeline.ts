@@ -1,6 +1,7 @@
 // src/audio/pipeline.ts
 
-const SAMPLE_RATE = 44100;
+import { SAMPLE_RATE } from '../lib/constants';
+
 const BUFFER_SIZE = 2048;
 
 type OnInputBuffer = (buf: Float32Array) => void;

@@ -1,18 +1,13 @@
 // src/components/nodes/OutputNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { OutputData } from '../../lib/types';
-import { useStore } from '../../store';
+import { NodeShell } from './NodeShell';
 
 export function OutputNode({ id, data, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
   const d = data as OutputData;
 
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 80, height: 40 }}
-    >
+    <NodeShell id={id} width={80} height={40}>
       <Handle
         type="target"
         position={Position.Left}
@@ -42,6 +37,6 @@ export function OutputNode({ id, data, selected }: NodeProps) {
           {d.label}
         </text>
       </svg>
-    </div>
+    </NodeShell>
   );
 }

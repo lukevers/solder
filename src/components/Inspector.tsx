@@ -1,18 +1,69 @@
 // src/components/Inspector.tsx
 
+import type { Edge } from '@xyflow/react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import type { Edge } from '@xyflow/react';
-import type { ComponentNode, DiodeData, PotData } from '../lib/types';
-import { useStore } from '../store';
+import {
+  type ComponentNode,
+  type DiodeData,
+  isEdgeDC,
+  type PotData,
+} from '../lib/types';
 import {
   CAP_MULTIPLIERS,
-  RES_MULTIPLIERS,
+  type CapUnit,
   detectCapUnit,
   detectResUnit,
-  type CapUnit,
+  RES_MULTIPLIERS,
   type ResUnit,
 } from '../lib/units';
+import { useStore } from '../store';
+
+const INPUT_CLASS =
+  'w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono';
+
+function UnitInput<U extends string>({
+  value,
+  unit,
+  units,
+  min,
+  onValueChange,
+  onUnitChange,
+}: {
+  value: number;
+  unit: U;
+  units: Array<U>;
+  min?: number;
+  onValueChange: (v: number) => void;
+  onUnitChange: (u: U) => void;
+}) {
+  return (
+    <div className="flex rounded border border-gray-700 overflow-hidden">
+      <input
+        type="number"
+        className="flex-1 min-w-0 bg-gray-950 text-gray-200 px-2 py-1 text-xs font-mono focus:outline-none"
+        value={value}
+        min={min}
+        onChange={(e) => onValueChange(Number(e.target.value))}
+      />
+      {units.map((u) => (
+        <button
+          key={u}
+          type="button"
+          onClick={() => onUnitChange(u)}
+          className={[
+            'px-2 py-1 text-xs font-mono border-l border-gray-700',
+            u === unit
+              ? 'bg-blue-950 text-blue-300'
+              : 'bg-gray-950 text-gray-500 hover:text-gray-300',
+          ].join(' ')}
+        >
+          {u}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 function Field({
   label,
@@ -31,7 +82,7 @@ function Field({
   );
 }
 
-const RES_UNITS: ResUnit[] = ['Ω', 'kΩ', 'MΩ'];
+const RES_UNITS: Array<ResUnit> = ['Ω', 'kΩ', 'MΩ'];
 
 function ResistorInspector({
   node,
@@ -48,7 +99,7 @@ function ResistorInspector({
     <>
       <Field label="Label">
         <input
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={label}
           onChange={(e) =>
             updateNodeData(node.id, { label: e.target.value, ohms })
@@ -56,41 +107,25 @@ function ResistorInspector({
         />
       </Field>
       <Field label="Resistance">
-        <div className="flex rounded border border-gray-700 overflow-hidden">
-          <input
-            type="number"
-            className="flex-1 min-w-0 bg-gray-950 text-gray-200 px-2 py-1 text-xs font-mono focus:outline-none"
-            value={displayValue}
-            min={0}
-            onChange={(e) =>
-              updateNodeData(node.id, {
-                label,
-                ohms: Number(e.target.value) / RES_MULTIPLIERS[unit],
-              })
-            }
-          />
-          {RES_UNITS.map((u) => (
-            <button
-              key={u}
-              type="button"
-              onClick={() => setUnit(u)}
-              className={[
-                'px-2 py-1 text-xs font-mono border-l border-gray-700',
-                u === unit
-                  ? 'bg-blue-950 text-blue-300'
-                  : 'bg-gray-950 text-gray-500 hover:text-gray-300',
-              ].join(' ')}
-            >
-              {u}
-            </button>
-          ))}
-        </div>
+        <UnitInput
+          value={displayValue}
+          unit={unit}
+          units={RES_UNITS}
+          min={0}
+          onValueChange={(v) =>
+            updateNodeData(node.id, {
+              label,
+              ohms: v / RES_MULTIPLIERS[unit],
+            })
+          }
+          onUnitChange={setUnit}
+        />
       </Field>
     </>
   );
 }
 
-const CAP_UNITS: CapUnit[] = ['pF', 'nF', 'µF', 'mF'];
+const CAP_UNITS: Array<CapUnit> = ['pF', 'nF', 'µF', 'mF'];
 
 function CapacitorInspector({
   node,
@@ -107,7 +142,7 @@ function CapacitorInspector({
     <>
       <Field label="Label">
         <input
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={label}
           onChange={(e) =>
             updateNodeData(node.id, { label: e.target.value, farads })
@@ -115,35 +150,19 @@ function CapacitorInspector({
         />
       </Field>
       <Field label="Capacitance">
-        <div className="flex rounded border border-gray-700 overflow-hidden">
-          <input
-            type="number"
-            className="flex-1 min-w-0 bg-gray-950 text-gray-200 px-2 py-1 text-xs font-mono focus:outline-none"
-            value={displayValue}
-            min={0}
-            onChange={(e) =>
-              updateNodeData(node.id, {
-                label,
-                farads: Number(e.target.value) / CAP_MULTIPLIERS[unit],
-              })
-            }
-          />
-          {CAP_UNITS.map((u) => (
-            <button
-              key={u}
-              type="button"
-              onClick={() => setUnit(u)}
-              className={[
-                'px-2 py-1 text-xs font-mono border-l border-gray-700',
-                u === unit
-                  ? 'bg-blue-950 text-blue-300'
-                  : 'bg-gray-950 text-gray-500 hover:text-gray-300',
-              ].join(' ')}
-            >
-              {u}
-            </button>
-          ))}
-        </div>
+        <UnitInput
+          value={displayValue}
+          unit={unit}
+          units={CAP_UNITS}
+          min={0}
+          onValueChange={(v) =>
+            updateNodeData(node.id, {
+              label,
+              farads: v / CAP_MULTIPLIERS[unit],
+            })
+          }
+          onUnitChange={setUnit}
+        />
       </Field>
     </>
   );
@@ -161,7 +180,7 @@ function OpAmpInspector({
     <>
       <Field label="Label">
         <input
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={label}
           onChange={(e) =>
             updateNodeData(node.id, { label: e.target.value, model })
@@ -170,7 +189,7 @@ function OpAmpInspector({
       </Field>
       <Field label="Model">
         <select
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={model}
           onChange={(e) =>
             updateNodeData(node.id, {
@@ -199,7 +218,7 @@ function PowerInspector({
     <>
       <Field label="Label">
         <input
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={label}
           onChange={(e) =>
             updateNodeData(node.id, { label: e.target.value, volts })
@@ -209,7 +228,7 @@ function PowerInspector({
       <Field label="Voltage (V)">
         <input
           type="number"
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={volts}
           onChange={(e) =>
             updateNodeData(node.id, { label, volts: Number(e.target.value) })
@@ -232,7 +251,7 @@ function DiodeInspector({
     <>
       <Field label="Label">
         <input
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={label}
           onChange={(e) =>
             updateNodeData(node.id, { label: e.target.value, model })
@@ -241,7 +260,7 @@ function DiodeInspector({
       </Field>
       <Field label="Model">
         <select
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={model}
           onChange={(e) =>
             updateNodeData(node.id, {
@@ -271,7 +290,7 @@ function PotInspector({
     <>
       <Field label="Label">
         <input
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={label}
           onChange={(e) =>
             updateNodeData(node.id, {
@@ -285,7 +304,7 @@ function PotInspector({
       <Field label="Resistance (Ω)">
         <input
           type="number"
-          className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+          className={INPUT_CLASS}
           value={ohms}
           min={1}
           onChange={(e) =>
@@ -329,7 +348,7 @@ function LabelInspector({
   return (
     <Field label="Net Name">
       <input
-        className="w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono"
+        className={INPUT_CLASS}
         value={label}
         onChange={(e) => updateNodeData(node.id, { label: e.target.value })}
       />
@@ -351,11 +370,7 @@ function EdgeInspector({
 
   const src = allNodes.find((n) => n.id === edge.source);
   const tgt = allNodes.find((n) => n.id === edge.target);
-  const isDC =
-    src?.type === 'power' ||
-    src?.type === 'ground' ||
-    tgt?.type === 'power' ||
-    tgt?.type === 'ground';
+  const isDC = isEdgeDC(src?.type, tgt?.type);
 
   return (
     <>

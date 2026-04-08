@@ -3,8 +3,6 @@ import type { Edge } from '@xyflow/react';
 import { LM741_SUBCKT, TL072_SUBCKT } from './spice-models';
 import type { ComponentNode } from './types';
 
-const SAMPLE_RATE = 44100;
-
 /**
  * Time-step rate used for SPICE transient analysis.
  * audio-convert.ts interpolates SPICE output back up to SAMPLE_RATE.
@@ -162,14 +160,14 @@ export function buildPortGroups(
 }
 
 /** Format ohms as SPICE: 10000 → "10k", 1000000 → "1Meg", etc. */
-function formatResistance(ohms: number): string {
+export function formatResistance(ohms: number): string {
   if (ohms >= 1e6) return `${parseFloat((ohms / 1e6).toPrecision(10))}Meg`;
   if (ohms >= 1e3) return `${parseFloat((ohms / 1e3).toPrecision(10))}k`;
   return `${ohms}`;
 }
 
 /** Format farads as SPICE: 47e-9 → "47n", 100e-12 → "100p", etc. */
-function formatCapacitance(farads: number): string {
+export function formatCapacitance(farads: number): string {
   if (farads >= 1e-3) return `${parseFloat((farads * 1e3).toPrecision(10))}m`;
   if (farads >= 1e-6) return `${parseFloat((farads * 1e6).toPrecision(10))}u`;
   if (farads >= 1e-9) return `${parseFloat((farads * 1e9).toPrecision(10))}n`;

@@ -1,22 +1,16 @@
 // src/components/nodes/GroundNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
-import { useStore } from '../../store';
+import { HANDLE_STYLE, NodeShell } from './NodeShell';
 
 export function GroundNode({ id, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
-
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 40, height: 36 }}
-    >
+    <NodeShell id={id} width={40} height={36}>
       <Handle
         type="source"
         position={Position.Top}
         id="gnd"
         isConnectableEnd={true}
-        style={{ background: '#4b5563' }}
+        style={HANDLE_STYLE}
       />
       <svg width="40" height="36" viewBox="0 0 40 36">
         <line
@@ -52,6 +46,6 @@ export function GroundNode({ id, selected }: NodeProps) {
           strokeWidth="1"
         />
       </svg>
-    </div>
+    </NodeShell>
   );
 }

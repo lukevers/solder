@@ -1,18 +1,13 @@
 // src/components/nodes/InputNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { InputData } from '../../lib/types';
-import { useStore } from '../../store';
+import { NodeShell } from './NodeShell';
 
 export function InputNode({ id, data, selected }: NodeProps) {
-  const selectNode = useStore((s) => s.selectNode);
   const d = data as InputData;
 
   return (
-    <div
-      onClick={() => selectNode(id)}
-      className="relative flex items-center justify-center cursor-pointer"
-      style={{ width: 80, height: 40 }}
-    >
+    <NodeShell id={id} width={80} height={40}>
       <svg width="80" height="40" viewBox="0 0 80 40">
         <rect
           x="2"
@@ -42,6 +37,6 @@ export function InputNode({ id, data, selected }: NodeProps) {
         id="out"
         style={{ background: '#3b82f6' }}
       />
-    </div>
+    </NodeShell>
   );
 }

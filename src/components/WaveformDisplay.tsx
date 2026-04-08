@@ -1,7 +1,6 @@
 // src/components/WaveformDisplay.tsx
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-
-const SAMPLE_RATE = 44100;
+import { SAMPLE_RATE } from '../lib/constants';
 
 export type WaveformSelection = { start: number; end: number };
 

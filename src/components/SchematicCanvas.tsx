@@ -16,7 +16,7 @@ import {
 } from '@xyflow/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import type { ComponentNode } from '../lib/types';
+import { type ComponentNode, isEdgeDC } from '../lib/types';
 import { useStore } from '../store';
 import { edgeTypes } from './edges';
 import { nodeTypes } from './nodes';
@@ -165,11 +165,7 @@ export function SchematicCanvas() {
       edges.map((edge) => {
         const src = nodes.find((n) => n.id === edge.source);
         const tgt = nodes.find((n) => n.id === edge.target);
-        const isDC =
-          src?.type === 'power' ||
-          src?.type === 'ground' ||
-          tgt?.type === 'power' ||
-          tgt?.type === 'ground';
+        const isDC = isEdgeDC(src?.type, tgt?.type);
         return {
           ...edge,
           type: 'signal',
