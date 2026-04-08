@@ -2,8 +2,12 @@
 
 /**
  * TL072 operational amplifier macromodel subcircuit.
- * Created using PARTS Release 4.01. Pin order: IN+, IN-, V+, V-, OUT.
- * Source: Texas Instruments / ngspice distribution.
+ * Based on the Texas Instruments / ngspice distribution macromodel.
+ * Pin order: IN+, IN-, V+, V-, OUT.
+ *
+ * POLY() removed for compatibility with eecircuit-engine (no XSPICE):
+ *   - EGND POLY(2) → single E element: V(99,4) = 0.5*V(3,4)  [midpoint]
+ *   - FB   POLY(5) → five individual F elements that sum at node 7
  */
 export const TL072_SUBCKT = `* TL072 OPERATIONAL AMPLIFIER "MACROMODEL" SUBCIRCUIT
 * CONNECTIONS:   NON-INVERTING INPUT
@@ -20,8 +24,12 @@ export const TL072_SUBCKT = `* TL072 OPERATIONAL AMPLIFIER "MACROMODEL" SUBCIRCU
   DLP  90 91 DX
   DLN  92 90 DX
   DP    4  3 DX
-  EGND 99  0 POLY(2) (3,0) (4,0) 0 .5 .5
-  FB    7 99 POLY(5) VB VC VE VLP VLN 0 4.715E6 -5E6 5E6 5E6 -5E6
+  EGND 99  4 3  4 0.5
+  FB1   7 99 VB  4.715E6
+  FB2   7 99 VC -5E6
+  FB3   7 99 VE  5E6
+  FB4   7 99 VLP 5E6
+  FB5   7 99 VLN -5E6
   GA    6  0 11 12 282.8E-6
   GCM   0  6 10 99 8.942E-9
   ISS   3 10 DC 195.0E-6
@@ -47,8 +55,12 @@ export const TL072_SUBCKT = `* TL072 OPERATIONAL AMPLIFIER "MACROMODEL" SUBCIRCU
 
 /**
  * LM741 operational amplifier macromodel subcircuit.
- * National Semiconductor macro-model. Pin order: IN+, IN-, V+, V-, OUT.
- * Source: National Semiconductor / ngspice distribution.
+ * Based on the National Semiconductor macro-model.
+ * Pin order: IN+, IN-, V+, V-, OUT.
+ *
+ * POLY() removed for compatibility with eecircuit-engine (no XSPICE):
+ *   - EOS POLY(1) → E element + series offset voltage source (intermediate node eos_m)
+ *   - F6  POLY(1) → F element + parallel DC current source
  */
 export const LM741_SUBCKT = `* LM741 OPERATIONAL AMPLIFIER MACRO-MODEL
 * CONNECTIONS:   NON-INVERTING INPUT
@@ -68,7 +80,8 @@ Q1 5 2 4 QX
 Q2 6 7 4 QX
 C4 5 6 60.3614P
 I2 99 50 1.6MA
-EOS 7 1 POLY(1) 16 49 1E-3 1
+EOS_vc 7 eos_m 16 49 1
+VEOS_os eos_m 1 1E-3
 R8 99 49 40K
 R9 49 50 40K
 V2 99 8 1.63
@@ -85,7 +98,8 @@ C5 98 15 5.3052E-15
 G4 98 16 3 49 3.1623E-8
 L2 98 17 530.5M
 R13 17 16 1K
-F6 50 99 POLY(1) V6 450U 1
+F6a 50 99 V6 1
+IF6b 50 99 DC 450U
 E1 99 23 99 15 1
 R16 24 23 25
 D5 26 24 DX

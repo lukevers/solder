@@ -12,9 +12,10 @@ export function GroundNode({ id, selected }: NodeProps) {
       style={{ width: 40, height: 36 }}
     >
       <Handle
-        type="target"
+        type="source"
         position={Position.Top}
         id="gnd"
+        isConnectableEnd={true}
         style={{ background: '#4b5563' }}
       />
       <svg width="40" height="36" viewBox="0 0 40 36">
