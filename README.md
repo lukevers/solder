@@ -5,16 +5,18 @@ A visual circuit editor and audio effects simulator. Place and connect circuit c
 ## Features
 
 **Circuit Editor**
-- Drag-and-drop component palette: resistors, capacitors, op-amps, diodes, potentiometers, power supplies, ground
+- Drag-and-drop component palette: resistors, capacitors, op-amps (TL072, LM741), diodes (1N914, 1N4001), potentiometers, power supplies, ground
 - Net labels for KiCad-style global connections (place multiple labels with the same name and they share a net automatically)
 - KiCad-style power pins (multiple GND/VCC symbols share the same net without explicit wires)
 - Drop connections onto existing wires to join a net
-- Undo/redo, multi-tab circuits, JSON import/export
-- Click traces or components to inspect in the sidebar
+- Undo/redo (`Cmd/Ctrl+Z`, `Cmd/Ctrl+Shift+Z`), multi-tab circuits, JSON import/export
+- Click traces or components to inspect and edit values in the sidebar
+- Potentiometers have visual knob controls with animated SVG wiper
+- Circuit state persists across browser sessions via local storage
 
 **Simulation**
 - Compiles circuit to SPICE netlist and runs transient analysis via ngspice WASM ([eecircuit-engine](https://www.npmjs.com/package/eecircuit-engine))
-- Use guitar/bass samples or a SIN test tone as input
+- Use guitar/bass samples, a SIN test tone, or live microphone input
 - Select a region of the input waveform to simulate only a portion
 
 **Audio Playback & Waveform**
@@ -34,6 +36,8 @@ pnpm dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173). The dev server enables Cross-Origin Isolation headers required for SharedArrayBuffer (ngspice WASM).
+
+Requires a modern browser with WebAssembly and SharedArrayBuffer support.
 
 ## Commands
 
