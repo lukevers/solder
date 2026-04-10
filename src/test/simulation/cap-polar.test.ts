@@ -50,7 +50,7 @@ describe('cap_polar netlist compilation', () => {
       {
         id: 'e1',
         source: 'in1',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'cp1',
         targetHandle: 'pos',
       },
@@ -59,7 +59,7 @@ describe('cap_polar netlist compilation', () => {
         source: 'cp1',
         sourceHandle: 'neg',
         target: 'out1',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
     ];
     const netlist = compileNetlist(nodes, edges);
@@ -132,7 +132,7 @@ describe('cap_polar in RC low-pass filter', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -148,7 +148,7 @@ describe('cap_polar in RC low-pass filter', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -239,7 +239,7 @@ describe('cap_polar as coupling capacitor', () => {
       {
         id: 'e2',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'b',
       },
@@ -257,7 +257,7 @@ describe('cap_polar as coupling capacitor', () => {
         source: 'cp1',
         sourceHandle: 'neg',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e5',

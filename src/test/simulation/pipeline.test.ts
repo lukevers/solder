@@ -53,7 +53,7 @@ describe('full pipeline: compile → simulate → audio buffer', () => {
         {
           id: 'e1',
           source: 'in',
-          sourceHandle: 'out',
+          sourceHandle: 'pos',
           target: 'r1',
           targetHandle: 'a',
         },
@@ -62,7 +62,7 @@ describe('full pipeline: compile → simulate → audio buffer', () => {
           source: 'r1',
           sourceHandle: 'b',
           target: 'out',
-          targetHandle: 'in',
+          targetHandle: 'pos',
         },
       ],
     );
@@ -108,9 +108,9 @@ describe('PWL source determinism', () => {
         {
           id: 'e1',
           source: 'in',
-          sourceHandle: 'out',
+          sourceHandle: 'pos',
           target: 'out',
-          targetHandle: 'in',
+          targetHandle: 'pos',
         },
       ],
     );
@@ -181,7 +181,7 @@ describe('PWL with long audio buffer', () => {
         {
           id: 'e1',
           source: 'in',
-          sourceHandle: 'out',
+          sourceHandle: 'pos',
           target: 'r1',
           targetHandle: 'a',
         },
@@ -197,7 +197,7 @@ describe('PWL with long audio buffer', () => {
           source: 'r1',
           sourceHandle: 'b',
           target: 'out',
-          targetHandle: 'in',
+          targetHandle: 'pos',
         },
         {
           id: 'e4',

@@ -66,7 +66,7 @@ describe('diode clipping (half-wave rectifier)', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'd1',
         targetHandle: 'a',
       },
@@ -82,7 +82,7 @@ describe('diode clipping (half-wave rectifier)', () => {
         source: 'd1',
         sourceHandle: 'k',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -136,7 +136,7 @@ describe('diode clipping (half-wave rectifier)', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'd1',
         targetHandle: 'a',
       },
@@ -152,7 +152,7 @@ describe('diode clipping (half-wave rectifier)', () => {
         source: 'd1',
         sourceHandle: 'k',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -237,7 +237,7 @@ describe('diode forward voltage drop', () => {
         source: 'd1',
         sourceHandle: 'k',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -319,7 +319,7 @@ describe('anti-parallel diode symmetry', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -328,7 +328,7 @@ describe('anti-parallel diode symmetry', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       // D1: anode at output, cathode at ground (clips positive)
       {

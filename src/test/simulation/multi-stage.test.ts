@@ -88,7 +88,7 @@ describe('multi-stage circuit', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'c1',
         targetHandle: 'a',
       },
@@ -134,7 +134,7 @@ describe('multi-stage circuit', () => {
         source: 'c2',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
     ];
     const { nodes, edges: e } = makeCircuit(components, edges);
@@ -207,7 +207,7 @@ describe('net labels in simulation', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -231,7 +231,7 @@ describe('net labels in simulation', () => {
         source: 'lbl2',
         sourceHandle: 'net',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e5',

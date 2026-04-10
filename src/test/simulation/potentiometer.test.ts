@@ -58,7 +58,7 @@ describe('potentiometer position', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'pot',
         targetHandle: 'ccw',
       },
@@ -67,7 +67,7 @@ describe('potentiometer position', () => {
         source: 'pot',
         sourceHandle: 'wiper',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e3',

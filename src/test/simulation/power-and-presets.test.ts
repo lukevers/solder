@@ -87,7 +87,7 @@ describe('KiCad-style power pins', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e3',
@@ -240,7 +240,7 @@ describe('RC time constant (analytical validation)', () => {
         {
           id: 'e1',
           source: 'in',
-          sourceHandle: 'out',
+          sourceHandle: 'pos',
           target: 'r1',
           targetHandle: 'a',
         },
@@ -256,7 +256,7 @@ describe('RC time constant (analytical validation)', () => {
           source: 'r1',
           sourceHandle: 'b',
           target: 'out',
-          targetHandle: 'in',
+          targetHandle: 'pos',
         },
         {
           id: 'e4',

@@ -8,7 +8,6 @@ import {
   type DiodeData,
   isEdgeDC,
   type PotData,
-  type PotTaper,
 } from '../lib/types';
 import {
   CAP_MULTIPLIERS,

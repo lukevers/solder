@@ -42,9 +42,9 @@ describe('passthrough (wire only)', () => {
         {
           id: 'e1',
           source: 'in',
-          sourceHandle: 'out',
+          sourceHandle: 'pos',
           target: 'out',
-          targetHandle: 'in',
+          targetHandle: 'pos',
         },
       ],
     );
@@ -66,9 +66,9 @@ describe('passthrough (wire only)', () => {
         {
           id: 'e1',
           source: 'in',
-          sourceHandle: 'out',
+          sourceHandle: 'pos',
           target: 'out',
-          targetHandle: 'in',
+          targetHandle: 'pos',
         },
       ],
     );
@@ -132,7 +132,7 @@ describe('low-pass RC filter', () => {
     {
       id: 'e1',
       source: 'in',
-      sourceHandle: 'out',
+      sourceHandle: 'pos',
       target: 'r1',
       targetHandle: 'a',
     },
@@ -148,7 +148,7 @@ describe('low-pass RC filter', () => {
       source: 'r1',
       sourceHandle: 'b',
       target: 'out',
-      targetHandle: 'in',
+      targetHandle: 'pos',
     },
     {
       id: 'e4',
@@ -245,7 +245,7 @@ describe('high-pass RC filter', () => {
     {
       id: 'e1',
       source: 'in',
-      sourceHandle: 'out',
+      sourceHandle: 'pos',
       target: 'c1',
       targetHandle: 'a',
     },
@@ -261,7 +261,7 @@ describe('high-pass RC filter', () => {
       source: 'c1',
       sourceHandle: 'b',
       target: 'out',
-      targetHandle: 'in',
+      targetHandle: 'pos',
     },
     {
       id: 'e4',
@@ -348,7 +348,7 @@ describe('low-pass filter -3dB point (analytical)', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -364,7 +364,7 @@ describe('low-pass filter -3dB point (analytical)', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -435,7 +435,7 @@ describe('frequency sweep determinism', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -451,7 +451,7 @@ describe('frequency sweep determinism', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',

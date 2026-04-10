@@ -114,11 +114,12 @@ describe('tabsSlice', () => {
     const { tabs, activeTabId, nodes, edges } = useStore.getState();
     expect(tabs).toHaveLength(2);
     expect(activeTabId).toBe(tabs[1].id);
-    // new tab starts with default in/out nodes
-    expect(nodes).toHaveLength(2);
+    // new tab starts with default in/out nodes + ground nodes
+    expect(nodes).toHaveLength(4);
     expect(nodes.some((n) => n.type === 'audiin')).toBe(true);
     expect(nodes.some((n) => n.type === 'audiout')).toBe(true);
-    expect(edges).toHaveLength(1);
+    expect(nodes.filter((n) => n.type === 'ground')).toHaveLength(2);
+    expect(edges).toHaveLength(3);
   });
 
   it('addTab names new tab Circuit 2 when Circuit 1 exists', () => {
@@ -411,8 +412,8 @@ describe('tab switching preserves state', () => {
     useStore.getState().addTab();
     const tab2Id = useStore.getState().activeTabId;
     expect(tab2Id).not.toBe(tab1Id);
-    // New tab starts with default nodes (INPUT + OUTPUT)
-    expect(useStore.getState().nodes).toHaveLength(2);
+    // New tab starts with default nodes (INPUT + OUTPUT + 2 GND)
+    expect(useStore.getState().nodes).toHaveLength(4);
 
     // Switch back to tab 1
     useStore.getState().switchTab(tab1Id);
@@ -421,7 +422,7 @@ describe('tab switching preserves state', () => {
 
     // Switch to tab 2 — still has default nodes
     useStore.getState().switchTab(tab2Id);
-    expect(useStore.getState().nodes).toHaveLength(2);
+    expect(useStore.getState().nodes).toHaveLength(4);
   });
 });
 

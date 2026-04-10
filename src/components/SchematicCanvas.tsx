@@ -13,13 +13,31 @@ import {
   type OnEdgesChange,
   type OnNodesChange,
   ReactFlow,
+  useReactFlow,
 } from '@xyflow/react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { type ComponentNode, isEdgeDC } from '../lib/types';
 import { useStore } from '../store';
 import { edgeTypes } from './edges';
 import { nodeTypes } from './nodes';
+
+/** Triggers fitView when tabs switch, close, or a circuit/example is loaded */
+function FitViewOnChange() {
+  const { fitView } = useReactFlow();
+  const viewResetKey = useStore((s) => s.viewResetKey);
+
+  useEffect(() => {
+    // Reference key so the linter sees it as used; the real purpose is
+    // to re-trigger this effect whenever the key increments.
+    void viewResetKey;
+    // Delay so React Flow can process the new nodes before we fit
+    const id = setTimeout(() => fitView({ padding: 0.15 }), 50);
+    return () => clearTimeout(id);
+  }, [viewResetKey, fitView]);
+
+  return null;
+}
 
 export function SchematicCanvas() {
   const {
@@ -214,6 +232,7 @@ export function SchematicCanvas() {
           color="#1f2937"
         />
         <Controls onInteractiveChange={setIsInteractive} />
+        <FitViewOnChange />
       </ReactFlow>
     </div>
   );

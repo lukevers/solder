@@ -61,13 +61,13 @@ describe('buildPortGroups', () => {
       {
         id: 'e1',
         source: 'in1',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
     ];
     const groups = buildPortGroups(nodes, edges);
-    expect(groups.get('in1|out')).toBe(groups.get('r1|a'));
+    expect(groups.get('in1|pos')).toBe(groups.get('r1|a'));
   });
 
   it('ground propagates through connected edges', () => {
@@ -153,7 +153,7 @@ describe('compileNetlist', () => {
       {
         id: 'e1',
         source: 'in1',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -169,7 +169,7 @@ describe('compileNetlist', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out1',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -185,7 +185,7 @@ describe('compileNetlist', () => {
   it('emits a SIN Vin source line', () => {
     const { nodes, edges } = makeRCCircuit();
     const netlist = compileNetlist(nodes, edges);
-    expect(netlist).toMatch(/^Vin \S+ 0 SIN\(/m);
+    expect(netlist).toMatch(/^Vin \S+ \S+ SIN\(/m);
   });
 
   it('uses the supplied frequency in the SIN source', () => {
@@ -345,7 +345,7 @@ describe('compileNetlist', () => {
         id: 'pot1',
         type: 'pot',
         position: { x: 100, y: 0 },
-        data: { label: 'DIST', ohms: 500000, position: 0.5 },
+        data: { label: 'DIST', ohms: 500000, position: 0.5, taper: 'linear' },
       },
       {
         id: 'out1',
@@ -432,7 +432,7 @@ describe('compileNetlist', () => {
       },
     ];
     const netlist = compileNetlist(nodes, []);
-    expect(netlist).toMatch(/^Rprobe \S+ 0 1000Meg$/m);
+    expect(netlist).toMatch(/^Rprobe \S+ \S+ 1000Meg$/m);
   });
 
   it('label nodes produce no SPICE component line', () => {
@@ -674,7 +674,7 @@ describe('compileNetlist with connected circuit', () => {
       {
         id: 'e1',
         source: 'in1',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -683,7 +683,7 @@ describe('compileNetlist with connected circuit', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out1',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
     ];
     const netlist = compileNetlist(nodes, edges);

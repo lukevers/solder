@@ -54,7 +54,7 @@ describe('simulation determinism', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -70,7 +70,7 @@ describe('simulation determinism', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -140,7 +140,7 @@ describe('amplitude linearity', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -156,7 +156,7 @@ describe('amplitude linearity', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -209,9 +209,9 @@ describe('long transient stability', () => {
         {
           id: 'e1',
           source: 'in',
-          sourceHandle: 'out',
+          sourceHandle: 'pos',
           target: 'out',
-          targetHandle: 'in',
+          targetHandle: 'pos',
         },
       ],
     );

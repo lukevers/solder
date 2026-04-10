@@ -105,7 +105,7 @@ describe('op-amp inverting amplifier', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'ri',
         targetHandle: 'a',
       },
@@ -137,7 +137,7 @@ describe('op-amp inverting amplifier', () => {
         source: 'u1',
         sourceHandle: 'out',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       // Power
       {
@@ -255,7 +255,7 @@ describe('op-amp unity-gain buffer', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'u1',
         targetHandle: 'in_pos',
       },
@@ -273,7 +273,7 @@ describe('op-amp unity-gain buffer', () => {
         source: 'u1',
         sourceHandle: 'out',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       // Load resistor to ground
       {

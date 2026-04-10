@@ -20,6 +20,12 @@ const ratNodes: Array<ComponentNode> = [
     data: { label: 'INPUT' },
   },
   {
+    id: 'rat-gnd_in',
+    type: 'ground',
+    position: { x: 80, y: 460 },
+    data: { label: 'GND' },
+  },
+  {
     id: 'rat-c1',
     type: 'capacitor',
     position: { x: 220, y: 340 },
@@ -165,15 +171,28 @@ const ratNodes: Array<ComponentNode> = [
     position: { x: 1600, y: 340 },
     data: { label: 'OUTPUT' },
   },
+  {
+    id: 'rat-gnd_out',
+    type: 'ground',
+    position: { x: 1640, y: 460 },
+    data: { label: 'GND' },
+  },
 ];
 
 const ratEdges: Array<Edge> = [
   {
     id: 'rat-e1',
     source: 'rat-in',
-    sourceHandle: 'out',
+    sourceHandle: 'pos',
     target: 'rat-c1',
     targetHandle: 'a',
+  },
+  {
+    id: 'rat-e_in_gnd',
+    source: 'rat-in',
+    sourceHandle: 'neg',
+    target: 'rat-gnd_in',
+    targetHandle: 'gnd',
   },
   {
     id: 'rat-e2',
@@ -341,7 +360,14 @@ const ratEdges: Array<Edge> = [
     source: 'rat-vol',
     sourceHandle: 'wiper',
     target: 'rat-out',
-    targetHandle: 'in',
+    targetHandle: 'pos',
+  },
+  {
+    id: 'rat-e_out_gnd',
+    source: 'rat-gnd_out',
+    sourceHandle: 'gnd',
+    target: 'rat-out',
+    targetHandle: 'neg',
   },
   {
     id: 'rat-e26',

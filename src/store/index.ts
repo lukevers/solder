@@ -34,19 +34,45 @@ function defaultTab(name: string): Tab {
         data: { label: 'INPUT' },
       },
       {
+        id: `${id}-gnd-in`,
+        type: 'ground',
+        position: { x: 140, y: 320 },
+        data: { label: 'GND' },
+      },
+      {
         id: `${id}-out`,
         type: 'audiout',
         position: { x: 400, y: 200 },
         data: { label: 'OUTPUT' },
+      },
+      {
+        id: `${id}-gnd-out`,
+        type: 'ground',
+        position: { x: 340, y: 320 },
+        data: { label: 'GND' },
       },
     ] as Array<ComponentNode>,
     edges: [
       {
         id: `${id}-edge`,
         source: `${id}-in`,
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: `${id}-out`,
-        targetHandle: 'in',
+        targetHandle: 'pos',
+      },
+      {
+        id: `${id}-edge-in-gnd`,
+        source: `${id}-in`,
+        sourceHandle: 'neg',
+        target: `${id}-gnd-in`,
+        targetHandle: 'gnd',
+      },
+      {
+        id: `${id}-edge-out-gnd`,
+        source: `${id}-gnd-out`,
+        sourceHandle: 'gnd',
+        target: `${id}-out`,
+        targetHandle: 'neg',
       },
     ] as Array<Edge>,
     selectedNodeId: null,
@@ -98,6 +124,9 @@ type StoreState = {
   switchTab: (id: string) => void;
   closeTab: (id: string) => void;
   renameTab: (id: string, name: string) => void;
+
+  /** Incremented on tab switch, close, or loadCircuit to trigger fitView */
+  viewResetKey: number;
 
   // circuit slice
   nodes: Array<ComponentNode>;
@@ -161,6 +190,7 @@ const initialState = {
   // tab slice
   tabs: [firstTab] as Array<Tab>,
   activeTabId: firstTab.id,
+  viewResetKey: 0,
 
   // circuit slice (seeded from first tab)
   nodes: firstTab.nodes,
@@ -205,6 +235,7 @@ export const useStore = create<StoreState>()(
           return {
             tabs: [...flushed, newTab],
             activeTabId: newTab.id,
+            viewResetKey: s.viewResetKey + 1,
             nodes: newTab.nodes,
             edges: newTab.edges,
             selectedNodeId: null,
@@ -220,6 +251,7 @@ export const useStore = create<StoreState>()(
           return {
             tabs: flushed,
             activeTabId: id,
+            viewResetKey: s.viewResetKey + 1,
             nodes: target.nodes,
             edges: target.edges,
             selectedNodeId: target.selectedNodeId,
@@ -236,6 +268,7 @@ export const useStore = create<StoreState>()(
             return {
               tabs: [newTab],
               activeTabId: newTab.id,
+              viewResetKey: s.viewResetKey + 1,
               nodes: newTab.nodes,
               edges: newTab.edges,
               selectedNodeId: null,
@@ -249,6 +282,7 @@ export const useStore = create<StoreState>()(
             return {
               tabs: remaining,
               activeTabId: next.id,
+              viewResetKey: s.viewResetKey + 1,
               nodes: next.nodes,
               edges: next.edges,
               selectedNodeId: next.selectedNodeId,
@@ -338,6 +372,7 @@ export const useStore = create<StoreState>()(
             past: [],
             future: [],
             tabs: updatedTabs,
+            viewResetKey: s.viewResetKey + 1,
             ...clearSim,
           };
         }),

@@ -64,7 +64,7 @@ describe('voltage divider', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -80,7 +80,7 @@ describe('voltage divider', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -124,7 +124,7 @@ describe('voltage divider', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -140,7 +140,7 @@ describe('voltage divider', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -185,7 +185,7 @@ describe('voltage divider', () => {
       {
         id: 'e1',
         source: 'in',
-        sourceHandle: 'out',
+        sourceHandle: 'pos',
         target: 'r1',
         targetHandle: 'a',
       },
@@ -201,7 +201,7 @@ describe('voltage divider', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -286,7 +286,7 @@ describe('voltage divider DC accuracy', () => {
         source: 'r1',
         sourceHandle: 'b',
         target: 'out',
-        targetHandle: 'in',
+        targetHandle: 'pos',
       },
       {
         id: 'e4',
@@ -352,7 +352,7 @@ describe('component value sensitivity', () => {
         {
           id: 'e1',
           source: 'in',
-          sourceHandle: 'out',
+          sourceHandle: 'pos',
           target: 'r1',
           targetHandle: 'a',
         },
@@ -368,7 +368,7 @@ describe('component value sensitivity', () => {
           source: 'r1',
           sourceHandle: 'b',
           target: 'out',
-          targetHandle: 'in',
+          targetHandle: 'pos',
         },
         {
           id: 'e4',

@@ -15,7 +15,8 @@ export const SPICE_SAMPLE_RATE = 10000;
  * inputBuffer from inputSampleRate to SPICE_SAMPLE_RATE.
  */
 function buildPwlSource(
-  node: string,
+  nodePos: string,
+  nodeNeg: string,
   inputBuffer: Float32Array,
   inputSampleRate: number,
   amplitude: number,
@@ -34,7 +35,7 @@ function buildPwlSource(
       (inputBuffer[lo] ?? 0) * (1 - frac) + (inputBuffer[hi] ?? 0) * frac;
     pairs.push(`${t.toExponential(4)} ${(v * amplitude).toFixed(6)}`);
   }
-  return `Vin ${node} 0 PWL(${pairs.join(' ')})`;
+  return `Vin ${nodePos} ${nodeNeg} PWL(${pairs.join(' ')})`;
 }
 
 /** All port handles for each component type */
@@ -44,8 +45,8 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   opamp: ['in_pos', 'in_neg', 'out', 'vcc', 'gnd'],
   power: ['pos'],
   ground: ['gnd'],
-  audiin: ['out'],
-  audiout: ['in'],
+  audiin: ['pos', 'neg'],
+  audiout: ['pos', 'neg'],
   diode: ['a', 'k'],
   pot: ['ccw', 'wiper', 'cw'],
   cap_polar: ['pos', 'neg'],
@@ -204,7 +205,6 @@ export function applyTaper(
       return position * position * position;
     case 'antilog':
       return 1 - (1 - position) * (1 - position) * (1 - position);
-    case 'linear':
     default:
       return position;
   }
@@ -251,14 +251,17 @@ export function compileNetlist(
   if (!inputNode) throw new Error('Circuit has no input node');
   if (!outputNode) throw new Error('Circuit has no output node');
 
-  const inputSpiceNode = getNode(inputNode.id, 'out');
-  const outputSpiceNode = getNode(outputNode.id, 'in');
+  const inputPos = getNode(inputNode.id, 'pos');
+  const inputNeg = getNode(inputNode.id, 'neg');
+  const outputPos = getNode(outputNode.id, 'pos');
+  const outputNeg = getNode(outputNode.id, 'neg');
 
   // Input source: PWL from real audio if provided, otherwise SIN test tone
   if (inputBuffer && inputBuffer.length > 0) {
     lines.push(
       buildPwlSource(
-        inputSpiceNode,
+        inputPos,
+        inputNeg,
         inputBuffer,
         inputSampleRate,
         amplitude,
@@ -266,7 +269,9 @@ export function compileNetlist(
       ),
     );
   } else {
-    lines.push(`Vin ${inputSpiceNode} 0 SIN(0 ${amplitude} ${frequency})`);
+    lines.push(
+      `Vin ${inputPos} ${inputNeg} SIN(0 ${amplitude} ${frequency})`,
+    );
   }
 
   // Track emitted power sources to deduplicate (multiple VCC symbols = one source)
@@ -331,10 +336,10 @@ export function compileNetlist(
 
   // High-impedance probe at output: prevents degenerate floating-node circuits
   // and has negligible effect on real circuits
-  lines.push(`Rprobe ${outputSpiceNode} 0 1000Meg`);
+  lines.push(`Rprobe ${outputPos} ${outputNeg} 1000Meg`);
 
   // Save only the output voltage; without this ngspice may save all internal nodes
-  lines.push(`.save V(${outputSpiceNode})`);
+  lines.push(`.save V(${outputPos})`);
 
   // Transient analysis: step matches SPICE_SAMPLE_RATE; audio-convert.ts interpolates to SAMPLE_RATE
   const step = (1 / SPICE_SAMPLE_RATE).toExponential(6);

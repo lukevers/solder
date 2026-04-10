@@ -21,12 +21,23 @@ export class AudioPipeline {
   private playbackStartTime = 0;
   private playbackOffset = 0;
   private playbackDuration = 0;
+  private initPromise: Promise<void> | null = null;
 
   async init(volume: number): Promise<void> {
+    this.initPromise = this._init(volume);
+    return this.initPromise;
+  }
+
+  private async _init(volume: number): Promise<void> {
     this.ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
     this.gainNode = this.ctx.createGain();
     this.gainNode.gain.value = volume;
     this.gainNode.connect(this.ctx.destination);
+  }
+
+  /** Wait for init to complete before proceeding */
+  async ready(): Promise<void> {
+    await this.initPromise;
   }
 
   getSampleData(name: string): Float32Array | null {
@@ -43,7 +54,8 @@ export class AudioPipeline {
   }
 
   async loadSample(name: string): Promise<void> {
-    if (!this.ctx) throw new Error('Pipeline not initialized');
+    await this.ready();
+    if (!this.ctx) return; // destroyed before init resolved
     if (this.sampleBuffers.has(name)) return;
     const res = await fetch(`/samples/${name}.wav`);
     if (!res.ok)
