@@ -20,7 +20,7 @@ export function NodeShell({ id, width, height, children }: NodeShellProps) {
   const updateNodeInternals = useUpdateNodeInternals();
 
   useEffect(() => {
-    if (rotation) updateNodeInternals(id);
+    updateNodeInternals(id);
   }, [rotation, id, updateNodeInternals]);
 
   return (
