@@ -458,7 +458,7 @@ export const useStore = create<StoreState>()(
     {
       name: 'solder-tabs',
       partialize: (state) => ({
-        tabs: state.tabs,
+        tabs: flushActive(state),
         activeTabId: state.activeTabId,
       }),
       onRehydrateStorage: () => (state) => {
