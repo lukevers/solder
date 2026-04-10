@@ -3,6 +3,7 @@
 import type { Edge } from '@xyflow/react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import {
+  applyTaper,
   buildPortGroups,
   compileNetlist,
   formatCapacitance,
@@ -975,5 +976,146 @@ describe('compileNetlist with capacitance formatting', () => {
     ];
     const netlist = compileNetlist(nodes, []);
     expect(netlist).toMatch(/^C1 \S+ \S+ 47n$/m);
+  });
+});
+
+describe('applyTaper', () => {
+  it('linear taper returns position unchanged', () => {
+    expect(applyTaper(0, 'linear')).toBe(0);
+    expect(applyTaper(0.25, 'linear')).toBe(0.25);
+    expect(applyTaper(0.5, 'linear')).toBe(0.5);
+    expect(applyTaper(0.75, 'linear')).toBe(0.75);
+    expect(applyTaper(1, 'linear')).toBe(1);
+  });
+
+  it('log taper: endpoints are 0 and 1', () => {
+    expect(applyTaper(0, 'log')).toBe(0);
+    expect(applyTaper(1, 'log')).toBe(1);
+  });
+
+  it('log taper: midpoint is well below 0.5', () => {
+    const mid = applyTaper(0.5, 'log');
+    expect(mid).toBeCloseTo(0.125, 5);
+  });
+
+  it('log taper: curve is monotonically increasing', () => {
+    let prev = 0;
+    for (let i = 1; i <= 10; i++) {
+      const val = applyTaper(i / 10, 'log');
+      expect(val).toBeGreaterThan(prev);
+      prev = val;
+    }
+  });
+
+  it('antilog taper: endpoints are 0 and 1', () => {
+    expect(applyTaper(0, 'antilog')).toBe(0);
+    expect(applyTaper(1, 'antilog')).toBe(1);
+  });
+
+  it('antilog taper: midpoint is well above 0.5', () => {
+    const mid = applyTaper(0.5, 'antilog');
+    expect(mid).toBeCloseTo(0.875, 5);
+  });
+
+  it('antilog taper: curve is monotonically increasing', () => {
+    let prev = 0;
+    for (let i = 1; i <= 10; i++) {
+      const val = applyTaper(i / 10, 'antilog');
+      expect(val).toBeGreaterThan(prev);
+      prev = val;
+    }
+  });
+
+  it('log and antilog are symmetric around 0.5', () => {
+    for (const pos of [0.1, 0.2, 0.3, 0.4, 0.5]) {
+      const logVal = applyTaper(pos, 'log');
+      const antiVal = applyTaper(1 - pos, 'antilog');
+      expect(logVal).toBeCloseTo(1 - antiVal, 10);
+    }
+  });
+
+  it('defaults to linear when taper is undefined', () => {
+    expect(applyTaper(0.5)).toBe(0.5);
+    expect(applyTaper(0.3)).toBe(0.3);
+  });
+});
+
+describe('compileNetlist pot taper', () => {
+  const makePotCircuit = (position: number, taper: 'linear' | 'log' | 'antilog') => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'pot1',
+        type: 'pot',
+        position: { x: 100, y: 0 },
+        data: { label: 'VR1', ohms: 100000, position, taper },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    return compileNetlist(nodes, []);
+  };
+
+  const extractResistances = (netlist: string) => {
+    const lines = netlist.split('\n').filter((l) => l.startsWith('RVR1'));
+    return lines.map((l) => l.split(' ').pop()!);
+  };
+
+  it('linear taper at 0.5 produces equal split', () => {
+    const values = extractResistances(makePotCircuit(0.5, 'linear'));
+    expect(values).toHaveLength(2);
+    expect(values[0]).toBe(values[1]);
+  });
+
+  it('log taper at 0.5 produces unequal split biased toward low side', () => {
+    const netlist = makePotCircuit(0.5, 'log');
+    const lines = netlist.split('\n').filter((l) => l.startsWith('RVR1'));
+    // log at 0.5 → effective = 0.125
+    // rLow = 100k * (1 - 0.125) = 87500, rHigh = 100k * 0.125 = 12500
+    expect(lines).toHaveLength(2);
+    // The two resistances should be very different
+    expect(lines[0]).not.toBe(lines[1]);
+  });
+
+  it('antilog taper at 0.5 produces unequal split biased toward high side', () => {
+    const netlist = makePotCircuit(0.5, 'antilog');
+    const lines = netlist.split('\n').filter((l) => l.startsWith('RVR1'));
+    // antilog at 0.5 → effective = 0.875
+    // rLow = 100k * (1 - 0.875) = 12500, rHigh = 100k * 0.875 = 87500
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).not.toBe(lines[1]);
+  });
+
+  it('log and antilog at 0.5 produce mirrored splits', () => {
+    const logValues = extractResistances(makePotCircuit(0.5, 'log'));
+    const antiValues = extractResistances(makePotCircuit(0.5, 'antilog'));
+    // log: [rLow=87.5k, rHigh=12.5k], antilog: [rLow=12.5k, rHigh=87.5k]
+    expect(logValues[0]).toBe(antiValues[1]);
+    expect(logValues[1]).toBe(antiValues[0]);
+  });
+
+  it('all tapers produce same result at position=0', () => {
+    const lin = extractResistances(makePotCircuit(0, 'linear'));
+    const log = extractResistances(makePotCircuit(0, 'log'));
+    const anti = extractResistances(makePotCircuit(0, 'antilog'));
+    expect(lin).toEqual(log);
+    expect(lin).toEqual(anti);
+  });
+
+  it('all tapers produce same result at position=1', () => {
+    const lin = extractResistances(makePotCircuit(1, 'linear'));
+    const log = extractResistances(makePotCircuit(1, 'log'));
+    const anti = extractResistances(makePotCircuit(1, 'antilog'));
+    expect(lin).toEqual(log);
+    expect(lin).toEqual(anti);
   });
 });

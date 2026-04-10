@@ -71,7 +71,7 @@ const PALETTE: Array<{
     label: 'POT',
     tooltip: 'Potentiometer',
     type: 'pot',
-    defaultData: { label: 'VR1', ohms: 100000, position: 0.5 },
+    defaultData: { label: 'VR1', ohms: 100000, position: 0.5, taper: 'linear' },
   },
   {
     label: 'D',

@@ -38,7 +38,9 @@ const KNOB_SIZE = 56;
 const CX = KNOB_SIZE / 2;
 const CY = KNOB_SIZE / 2;
 const OUTER_R = 22; // track ring radius
-const INNER_R = 16; // knob face radius
+const SKIRT_R = 18; // flying-saucer skirt radius
+const DOME_R = 9; // raised center dome radius
+const RIDGE_COUNT = 32; // grip ridges around skirt
 const START_DEG = 225; // 7 o'clock (min)
 const TOTAL_DEG = 270; // 270° travel
 
@@ -48,7 +50,8 @@ function PotKnob({ nodeId, data }: { nodeId: string; data: PotData }) {
   const updateNodeData = useStore((s) => s.updateNodeData);
   const dragRef = useRef<{ startY: number; startPos: number } | null>(null);
   const uid = useId();
-  const gradId = `knob-grad-${uid}`;
+  const skirtGradId = `knob-skirt-${uid}`;
+  const domeGradId = `knob-dome-${uid}`;
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent<SVGSVGElement>) => {
@@ -81,9 +84,6 @@ function PotKnob({ nodeId, data }: { nodeId: string; data: PotData }) {
       ? arcPath(CX, CY, OUTER_R, START_DEG, currentDeg)
       : '';
 
-  // Indicator tip
-  const tip = polarToXY(CX, CY, INNER_R - 3, currentDeg);
-
   const pct = Math.round(data.position * 100);
 
   return (
@@ -98,9 +98,18 @@ function PotKnob({ nodeId, data }: { nodeId: string; data: PotData }) {
         onPointerUp={onPointerUp}
       >
         <defs>
-          <radialGradient id={gradId} cx="40%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#4b5563" />
-            <stop offset="100%" stopColor="#111827" />
+          {/* Flat silver skirt gradient */}
+          <radialGradient id={skirtGradId} cx="45%" cy="42%" r="55%">
+            <stop offset="0%" stopColor="#d4d4d8" />
+            <stop offset="50%" stopColor="#a1a1aa" />
+            <stop offset="85%" stopColor="#71717a" />
+            <stop offset="100%" stopColor="#52525b" />
+          </radialGradient>
+          {/* Raised dome gradient */}
+          <radialGradient id={domeGradId} cx="38%" cy="30%" r="55%">
+            <stop offset="0%" stopColor="#71717a" />
+            <stop offset="60%" stopColor="#3f3f46" />
+            <stop offset="100%" stopColor="#1c1c1e" />
           </radialGradient>
         </defs>
 
@@ -124,27 +133,70 @@ function PotKnob({ nodeId, data }: { nodeId: string; data: PotData }) {
           />
         )}
 
-        {/* Knob face */}
-        <circle cx={CX} cy={CY} r={INNER_R} fill={`url(#${gradId})`} />
+        {/* Flying-saucer skirt */}
+        <circle cx={CX} cy={CY} r={SKIRT_R} fill={`url(#${skirtGradId})`} />
         <circle
           cx={CX}
           cy={CY}
-          r={INNER_R}
+          r={SKIRT_R}
           fill="none"
-          stroke="#6b7280"
+          stroke="#a1a1aa"
           strokeWidth="0.5"
         />
 
-        {/* Indicator */}
-        <line
-          x1={CX}
-          y1={CY}
-          x2={tip.x.toFixed(2)}
-          y2={tip.y.toFixed(2)}
-          stroke="#e5e7eb"
-          strokeWidth="2"
-          strokeLinecap="round"
+        {/* Grip ridges around skirt edge */}
+        {Array.from({ length: RIDGE_COUNT }, (_, i) => {
+          const angle = (i * 360) / RIDGE_COUNT;
+          const inner = polarToXY(CX, CY, SKIRT_R - 1.5, angle);
+          const outer = polarToXY(CX, CY, SKIRT_R, angle);
+          return (
+            <line
+              key={i}
+              x1={inner.x.toFixed(2)}
+              y1={inner.y.toFixed(2)}
+              x2={outer.x.toFixed(2)}
+              y2={outer.y.toFixed(2)}
+              stroke="#8888"
+              strokeWidth="0.6"
+            />
+          );
+        })}
+
+        {/* Indicator triangle on skirt */}
+        {(() => {
+          const triR = SKIRT_R - 1;
+          const triTip = polarToXY(CX, CY, triR, currentDeg);
+          const triL = polarToXY(CX, CY, triR - 7, currentDeg - 17.5);
+          const triRt = polarToXY(CX, CY, triR - 7, currentDeg + 17.5);
+          return (
+            <polygon
+              points={`${triTip.x.toFixed(2)},${triTip.y.toFixed(2)} ${triL.x.toFixed(2)},${triL.y.toFixed(2)} ${triRt.x.toFixed(2)},${triRt.y.toFixed(2)}`}
+              fill="#18181b"
+            />
+          );
+        })()}
+
+        {/* Step ring between skirt and dome */}
+        <circle
+          cx={CX}
+          cy={CY}
+          r={DOME_R + 1.5}
+          fill="none"
+          stroke="#71717a"
+          strokeWidth="1"
         />
+
+        {/* Raised dome cap */}
+        <circle cx={CX} cy={CY} r={DOME_R} fill={`url(#${domeGradId})`} />
+        <circle
+          cx={CX}
+          cy={CY}
+          r={DOME_R}
+          fill="none"
+          stroke="#52525b"
+          strokeWidth="0.4"
+        />
+
       </svg>
 
       <div className="text-center">

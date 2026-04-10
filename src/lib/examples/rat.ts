@@ -97,7 +97,7 @@ const ratNodes: Array<ComponentNode> = [
     id: 'rat-rdist',
     type: 'pot',
     position: { x: 1100, y: 120 },
-    data: { label: 'DIST', ohms: 500000, position: 0.5 },
+    data: { label: 'DIST', ohms: 500000, position: 0.5, taper: 'linear' },
   },
 
   // ── Feedback: C2 (top, y=20) ──
@@ -127,7 +127,7 @@ const ratNodes: Array<ComponentNode> = [
     id: 'rat-filter',
     type: 'pot',
     position: { x: 1060, y: 340 },
-    data: { label: 'FILTER', ohms: 100000, position: 0.5 },
+    data: { label: 'FILTER', ohms: 100000, position: 0.5, taper: 'linear' },
   },
   {
     id: 'rat-ctone',
@@ -151,7 +151,7 @@ const ratNodes: Array<ComponentNode> = [
     id: 'rat-vol',
     type: 'pot',
     position: { x: 1420, y: 340 },
-    data: { label: 'VOL', ohms: 100000, position: 0.8 },
+    data: { label: 'VOL', ohms: 100000, position: 0.8, taper: 'log' },
   },
   {
     id: 'rat-gnd_v',

@@ -1,7 +1,7 @@
 // src/lib/netlist.ts
 import type { Edge } from '@xyflow/react';
 import { LM741_SUBCKT, TL072_SUBCKT } from './spice-models';
-import type { ComponentNode } from './types';
+import type { ComponentNode, PotTaper } from './types';
 
 /**
  * Time-step rate used for SPICE transient analysis.
@@ -184,6 +184,32 @@ export function formatCapacitance(farads: number): string {
  * @param frequency - AudioIn sine source frequency in Hz (default 1000)
  * @param amplitude - AudioIn sine source amplitude in Volts (default 1.0)
  */
+
+/**
+ * Maps a linear wiper position (0–1) to an effective resistance ratio
+ * based on the potentiometer taper curve.
+ *
+ * - **linear**: position maps directly (B taper)
+ * - **log**: cubic curve — slow start, fast finish (A/audio taper).
+ *   At 50% rotation ≈ 12.5% effective resistance.
+ * - **antilog**: inverse cubic — fast start, slow finish (C/reverse audio taper).
+ *   At 50% rotation ≈ 87.5% effective resistance.
+ */
+export function applyTaper(
+  position: number,
+  taper: PotTaper = 'linear',
+): number {
+  switch (taper) {
+    case 'log':
+      return position * position * position;
+    case 'antilog':
+      return 1 - (1 - position) * (1 - position) * (1 - position);
+    case 'linear':
+    default:
+      return position;
+  }
+}
+
 export function compileNetlist(
   nodes: Array<ComponentNode>,
   edges: Array<Edge>,
@@ -289,8 +315,9 @@ export function compileNetlist(
       const nCcw = getNode(node.id, 'ccw');
       const nWiper = getNode(node.id, 'wiper');
       const nCw = getNode(node.id, 'cw');
-      const rLow = Math.max(node.data.ohms * (1 - node.data.position), 1);
-      const rHigh = Math.max(node.data.ohms * node.data.position, 1);
+      const effective = applyTaper(node.data.position, node.data.taper);
+      const rLow = Math.max(node.data.ohms * (1 - effective), 1);
+      const rHigh = Math.max(node.data.ohms * effective, 1);
       // Prefix R to guarantee resistor element regardless of label (e.g. "DIST" → "RDISTa")
       lines.push(
         `R${node.data.label}a ${nCcw} ${nWiper} ${formatResistance(rLow)}`,

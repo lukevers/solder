@@ -11,7 +11,13 @@ export type GroundData = { label: string };
 export type InputData = { label: string };
 export type OutputData = { label: string };
 export type DiodeData = { label: string; model: '1N914' | '1N4001' };
-export type PotData = { label: string; ohms: number; position: number };
+export type PotTaper = 'linear' | 'log' | 'antilog';
+export type PotData = {
+  label: string;
+  ohms: number;
+  position: number;
+  taper?: PotTaper;
+};
 export type LabelData = { label: string };
 
 type NodeBase = { id: string; position: XYPosition; rotation?: number };

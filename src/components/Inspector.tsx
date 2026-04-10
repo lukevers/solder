@@ -8,6 +8,7 @@ import {
   type DiodeData,
   isEdgeDC,
   type PotData,
+  type PotTaper,
 } from '../lib/types';
 import {
   CAP_MULTIPLIERS,
@@ -279,19 +280,24 @@ function DiodeInspector({
 
 function PotInspector({
   node,
-  onSweep,
 }: {
   node: Extract<ComponentNode, { type: 'pot' }>;
-  onSweep?: (nodeId: string) => void;
 }) {
-  const { updateNodeData, sweepStatus } = useStore(
-    useShallow((s) => ({
-      updateNodeData: s.updateNodeData,
-      sweepStatus: s.sweepStatus,
-    })),
-  );
-  const { label, ohms, position } = node.data;
+  const updateNodeData = useStore((s) => s.updateNodeData);
+  const { label, ohms, position, taper = 'linear' } = node.data;
+  const [unit, setUnit] = useState<ResUnit>(() => detectResUnit(ohms));
   const pct = Math.round(position * 100);
+
+  const displayValue = +(ohms * RES_MULTIPLIERS[unit]).toPrecision(6);
+
+  const update = (patch: Partial<PotData>) =>
+    updateNodeData(node.id, {
+      label,
+      ohms,
+      position,
+      taper,
+      ...patch,
+    } as PotData);
 
   return (
     <>
@@ -299,29 +305,46 @@ function PotInspector({
         <input
           className={INPUT_CLASS}
           value={label}
-          onChange={(e) =>
-            updateNodeData(node.id, {
-              label: e.target.value,
-              ohms,
-              position,
-            } as PotData)
-          }
+          onChange={(e) => update({ label: e.target.value })}
         />
       </Field>
-      <Field label="Resistance (Ω)">
-        <input
-          type="number"
-          className={INPUT_CLASS}
-          value={ohms}
-          min={1}
-          onChange={(e) =>
-            updateNodeData(node.id, {
-              label,
-              ohms: Number(e.target.value),
-              position,
-            } as PotData)
+      <Field label="Resistance">
+        <UnitInput
+          value={displayValue}
+          unit={unit}
+          units={RES_UNITS}
+          min={0}
+          onValueChange={(v) =>
+            update({ ohms: v / RES_MULTIPLIERS[unit] })
           }
+          onUnitChange={setUnit}
         />
+      </Field>
+      <Field label="Taper">
+        <div className="flex rounded border border-gray-700 overflow-hidden">
+          {(
+            [
+              { value: 'log', label: 'A', tip: 'Logarithmic (audio) — slow start, fast finish' },
+              { value: 'linear', label: 'B', tip: 'Linear — even response across full range' },
+              { value: 'antilog', label: 'C', tip: 'Anti-log (reverse audio) — fast start, slow finish' },
+            ] as const
+          ).map(({ value, label: lbl, tip }) => (
+            <button
+              key={value}
+              type="button"
+              title={tip}
+              onClick={() => update({ taper: value })}
+              className={[
+                'flex-1 px-2 py-1 text-xs font-mono font-bold border-r last:border-r-0 border-gray-700 transition-colors',
+                value === taper
+                  ? 'bg-blue-950 text-blue-300'
+                  : 'bg-gray-950 text-gray-500 hover:text-gray-300',
+              ].join(' ')}
+            >
+              {lbl}
+            </button>
+          ))}
+        </div>
       </Field>
       <Field label={`Position — ${pct}%`}>
         <input
@@ -331,26 +354,31 @@ function PotInspector({
           max={1}
           step={0.01}
           value={position}
-          onChange={(e) =>
-            updateNodeData(node.id, {
-              label,
-              ohms,
-              position: Number(e.target.value),
-            } as PotData)
-          }
+          onChange={(e) => update({ position: Number(e.target.value) })}
         />
       </Field>
-      {onSweep && (
-        <button
-          type="button"
-          onClick={() => onSweep(node.id)}
-          disabled={sweepStatus === 'running'}
-          className="w-full mt-1 text-xs py-1.5 rounded font-mono transition-colors bg-amber-950 border border-amber-700 text-amber-300 hover:bg-amber-900 disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          {sweepStatus === 'running' ? 'Sweeping…' : 'Sweep 0–100%'}
-        </button>
-      )}
     </>
+  );
+}
+
+function SweepButton({
+  nodeId,
+  onSweep,
+}: {
+  nodeId: string;
+  onSweep: (nodeId: string) => void;
+}) {
+  const sweepStatus = useStore((s) => s.sweepStatus);
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSweep(nodeId)}
+      disabled={sweepStatus === 'running'}
+      className="w-full mt-1 text-xs py-1.5 rounded font-mono transition-colors bg-amber-950 border border-amber-700 text-amber-300 hover:bg-amber-900 disabled:opacity-40 disabled:cursor-not-allowed"
+    >
+      {sweepStatus === 'running' ? 'Sweeping…' : 'Sweep 0–100%'}
+    </button>
   );
 }
 
@@ -491,11 +519,12 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
       {selected.type === 'opamp' && <OpAmpInspector node={selected} />}
       {selected.type === 'power' && <PowerInspector node={selected} />}
       {selected.type === 'diode' && <DiodeInspector node={selected} />}
-      {selected.type === 'pot' && (
-        <PotInspector node={selected} onSweep={onSweep} />
-      )}
+      {selected.type === 'pot' && <PotInspector node={selected} />}
       {selected.type === 'label' && <LabelInspector node={selected} />}
       <RotationControl nodeId={selected.id} rotation={selected.rotation ?? 0} />
+      {selected.type === 'pot' && onSweep && (
+        <SweepButton nodeId={selected.id} onSweep={onSweep} />
+      )}
     </div>
   );
 }
