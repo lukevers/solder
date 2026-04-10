@@ -9,13 +9,18 @@ import { Inspector } from './components/Inspector';
 import { PedalPanel } from './components/PedalPanel';
 import { SchematicCanvas } from './components/SchematicCanvas';
 import { StatusBar } from './components/StatusBar';
+import { SweepResults } from './components/SweepResults';
 import { Toolbar } from './components/Toolbar';
 import {
   WaveformDisplay,
   type WaveformSelection,
 } from './components/WaveformDisplay';
 import { WaveformModal } from './components/WaveformModal';
-import type { SimulateRequest, SimulateResponse } from './lib/types';
+import {
+  type SimulateRequest,
+  type SimulateResponse,
+  SWEEP_POSITIONS,
+} from './lib/types';
 import { useStore } from './store';
 
 export default function App() {
@@ -36,6 +41,15 @@ export default function App() {
     setPlaying,
     undo,
     redo,
+    sweepResults,
+    sweepStatus,
+    sweepPlayingIndex,
+    requestSweep,
+    addSweepResult,
+    completeSweep,
+    failSweep,
+    clearSweep,
+    setSweepPlayingIndex,
   } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
@@ -54,6 +68,15 @@ export default function App() {
       setPlaying: s.setPlaying,
       undo: s.undo,
       redo: s.redo,
+      sweepResults: s.sweepResults,
+      sweepStatus: s.sweepStatus,
+      sweepPlayingIndex: s.sweepPlayingIndex,
+      requestSweep: s.requestSweep,
+      addSweepResult: s.addSweepResult,
+      completeSweep: s.completeSweep,
+      failSweep: s.failSweep,
+      clearSweep: s.clearSweep,
+      setSweepPlayingIndex: s.setSweepPlayingIndex,
     })),
   );
 
@@ -71,14 +94,30 @@ export default function App() {
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      // Skip when typing in an input/textarea
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
       const mod = e.metaKey || e.ctrlKey;
-      if (!mod) return;
-      if (e.key === 'z' && !e.shiftKey) {
-        e.preventDefault();
-        undo();
-      } else if ((e.key === 'z' && e.shiftKey) || e.key === 'y') {
-        e.preventDefault();
-        redo();
+      if (mod) {
+        if (e.key === 'z' && !e.shiftKey) {
+          e.preventDefault();
+          undo();
+        } else if ((e.key === 'z' && e.shiftKey) || e.key === 'y') {
+          e.preventDefault();
+          redo();
+        }
+        return;
+      }
+
+      if (e.key === 'r' || e.key === 'R') {
+        const { selectedNodeId, nodes, rotateNode } = useStore.getState();
+        if (!selectedNodeId) return;
+        const node = nodes.find((n) => n.id === selectedNodeId);
+        if (!node) return;
+        const cur = node.rotation ?? 0;
+        const next = e.shiftKey ? (cur - 90 + 360) % 360 : (cur + 90) % 360;
+        rotateNode(selectedNodeId, next);
       }
     }
     window.addEventListener('keydown', onKeyDown);
@@ -86,6 +125,7 @@ export default function App() {
   }, [undo, redo]);
 
   const workerRef = useRef<Worker | null>(null);
+  const sweepWorkersRef = useRef<Array<Worker>>([]);
   const pipelineRef = useRef<AudioPipeline | null>(null);
   const simStartRef = useRef<number | null>(null);
 
@@ -286,6 +326,123 @@ export default function App() {
     inputAmplitude,
   ]);
 
+  const handleSweep = useCallback(
+    (nodeId: string) => {
+      // Terminate any previous sweep workers
+      for (const w of sweepWorkersRef.current) w.terminate();
+      sweepWorkersRef.current = [];
+
+      requestSweep(nodeId);
+
+      const pipeline = pipelineRef.current;
+      let inputBuffer: Float32Array | undefined;
+      let inputSampleRate: number | undefined;
+      let duration = simulationDuration;
+      if (audioSource.type === 'sample' && pipeline) {
+        const data = pipeline.getSampleData(audioSource.name);
+        if (data) {
+          const sel = selectionRef.current;
+          if (sel) {
+            const startSample = Math.floor(sel.start * data.length);
+            const endSample = Math.floor(sel.end * data.length);
+            inputBuffer = new Float32Array(
+              data.subarray(startSample, endSample),
+            );
+          } else {
+            inputBuffer = data;
+          }
+          inputSampleRate = pipeline.getSampleRate();
+          duration = inputBuffer.length / inputSampleRate;
+        }
+      }
+
+      let completed = 0;
+      let failed = false;
+      const total = SWEEP_POSITIONS.length;
+
+      for (const position of SWEEP_POSITIONS) {
+        const worker = new Worker(
+          new URL('./workers/simulation.worker.ts', import.meta.url),
+          { type: 'module' },
+        );
+        sweepWorkersRef.current.push(worker);
+
+        // Clone nodes with the target pot's position overridden
+        const sweepNodes = nodesRef.current.map((n) =>
+          n.id === nodeId && n.type === 'pot'
+            ? { ...n, data: { ...n.data, position } }
+            : n,
+        );
+
+        worker.onmessage = (e: MessageEvent<SimulateResponse>) => {
+          if (failed) return;
+          const msg = e.data;
+          if (msg.type === 'result') {
+            addSweepResult({ position, outputBuffer: msg.outputBuffer });
+            completed++;
+            if (completed === total) {
+              completeSweep();
+              for (const w of sweepWorkersRef.current) w.terminate();
+              sweepWorkersRef.current = [];
+            }
+          } else {
+            failed = true;
+            failSweep(msg.message);
+            for (const w of sweepWorkersRef.current) w.terminate();
+            sweepWorkersRef.current = [];
+          }
+        };
+
+        worker.onerror = (e: ErrorEvent) => {
+          if (failed) return;
+          failed = true;
+          failSweep(e.message ?? 'Sweep worker crashed');
+          for (const w of sweepWorkersRef.current) w.terminate();
+          sweepWorkersRef.current = [];
+        };
+
+        const request: SimulateRequest = {
+          type: 'simulate',
+          nodes: sweepNodes,
+          edges: edgesRef.current,
+          duration,
+          frequency: inputFrequency,
+          amplitude: inputAmplitude,
+          inputBuffer: inputBuffer ? new Float32Array(inputBuffer) : undefined,
+          inputSampleRate,
+        };
+        worker.postMessage(request);
+      }
+    },
+    [
+      requestSweep,
+      addSweepResult,
+      completeSweep,
+      failSweep,
+      audioSource,
+      simulationDuration,
+      inputFrequency,
+      inputAmplitude,
+    ],
+  );
+
+  // Handle sweep playback
+  useEffect(() => {
+    const pipeline = pipelineRef.current;
+    if (!pipeline) return;
+    if (sweepPlayingIndex != null && sweepResults[sweepPlayingIndex]) {
+      const buf = sweepResults[sweepPlayingIndex].outputBuffer;
+      pipeline.playBuffer(buf, () => setSweepPlayingIndex(null));
+    }
+  }, [sweepPlayingIndex, sweepResults, setSweepPlayingIndex]);
+
+  // Clean up sweep workers on unmount
+  useEffect(() => {
+    return () => {
+      for (const w of sweepWorkersRef.current) w.terminate();
+    };
+  }, []);
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Toolbar
@@ -305,60 +462,79 @@ export default function App() {
 
         <div className="w-52 bg-gray-900 border-l border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
           <PedalPanel />
-          <Inspector />
+          <Inspector onSweep={handleSweep} />
           <div className="border-t border-gray-800" />
-          <div className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-gray-500 uppercase tracking-wider">
-                Waveform
-              </span>
+          {sweepResults.length > 0 || sweepStatus === 'running' ? (
+            <SweepResults
+              results={sweepResults}
+              status={sweepStatus}
+              playingIndex={sweepPlayingIndex}
+              onPlay={(i) => {
+                setPlaying(false);
+                setPlayingOriginal(false);
+                pipelineRef.current?.stopPlayback();
+                setSweepPlayingIndex(i);
+              }}
+              onStop={() => {
+                pipelineRef.current?.stopPlayback();
+                setSweepPlayingIndex(null);
+              }}
+              onClear={clearSweep}
+            />
+          ) : (
+            <div className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-gray-500 uppercase tracking-wider">
+                  Waveform
+                </span>
+                {(sourceBuffer || outputBuffer) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPlaying(false);
+                      setPlayingOriginal(false);
+                      setShowWaveformModal(true);
+                    }}
+                    className="text-gray-500 hover:text-gray-200 transition-colors"
+                    aria-label="Expand waveform"
+                  >
+                    <Maximize2 size={13} />
+                  </button>
+                )}
+              </div>
+              <WaveformDisplay
+                inputBuffer={outputBuffer ? simulatedInput : sourceBuffer}
+                outputBuffer={outputBuffer}
+                selection={outputBuffer ? null : selection}
+                onSelectionChange={outputBuffer ? undefined : setSelection}
+              />
               {(sourceBuffer || outputBuffer) && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPlaying(false);
-                    setPlayingOriginal(false);
-                    setShowWaveformModal(true);
-                  }}
-                  className="text-gray-500 hover:text-gray-200 transition-colors"
-                  aria-label="Expand waveform"
-                >
-                  <Maximize2 size={13} />
-                </button>
+                <div className="flex mt-2 rounded border border-gray-700 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setLooping((v) => !v)}
+                    className={`flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono transition-colors ${
+                      looping
+                        ? 'bg-blue-950 text-blue-400'
+                        : 'bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300'
+                    }`}
+                    aria-label={looping ? 'Disable loop' : 'Enable loop'}
+                  >
+                    <Repeat size={10} /> Loop
+                  </button>
+                  <div className="w-px bg-gray-700" />
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    disabled={!outputBuffer && !selection}
+                    className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 text-gray-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-gray-700 hover:enabled:text-gray-300"
+                  >
+                    <RotateCcw size={10} /> Reset
+                  </button>
+                </div>
               )}
             </div>
-            <WaveformDisplay
-              inputBuffer={outputBuffer ? simulatedInput : sourceBuffer}
-              outputBuffer={outputBuffer}
-              selection={outputBuffer ? null : selection}
-              onSelectionChange={outputBuffer ? undefined : setSelection}
-            />
-            {(sourceBuffer || outputBuffer) && (
-              <div className="flex mt-2 rounded border border-gray-700 overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setLooping((v) => !v)}
-                  className={`flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono transition-colors ${
-                    looping
-                      ? 'bg-blue-950 text-blue-400'
-                      : 'bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300'
-                  }`}
-                  aria-label={looping ? 'Disable loop' : 'Enable loop'}
-                >
-                  <Repeat size={10} /> Loop
-                </button>
-                <div className="w-px bg-gray-700" />
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  disabled={!outputBuffer && !selection}
-                  className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 text-gray-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-gray-700 hover:enabled:text-gray-300"
-                >
-                  <RotateCcw size={10} /> Reset
-                </button>
-              </div>
-            )}
-          </div>
+          )}
           <div className="border-t border-gray-800" />
           <AudioControls />
         </div>

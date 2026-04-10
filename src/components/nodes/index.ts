@@ -1,6 +1,7 @@
 // src/components/nodes/index.ts
 
 import { CapacitorNode } from './CapacitorNode';
+import { CapPolarNode } from './CapPolarNode';
 import { DiodeNode } from './DiodeNode';
 import { GroundNode } from './GroundNode';
 import { InputNode } from './InputNode';
@@ -14,6 +15,7 @@ import { ResistorNode } from './ResistorNode';
 export const nodeTypes = {
   resistor: ResistorNode,
   capacitor: CapacitorNode,
+  cap_polar: CapPolarNode,
   opamp: OpAmpNode,
   power: PowerNode,
   ground: GroundNode,

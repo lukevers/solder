@@ -1,9 +1,9 @@
-// src/components/nodes/CapacitorNode.tsx
+// src/components/nodes/CapPolarNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { CapacitorData } from '../../lib/types';
 import { HANDLE_STYLE, NodeShell } from './NodeShell';
 
-export function CapacitorNode({ id, data, selected }: NodeProps) {
+export function CapPolarNode({ id, data, selected }: NodeProps) {
   const d = data as CapacitorData;
 
   const faradsLabel =
@@ -13,47 +13,43 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
         ? `${+(d.farads * 1e9).toPrecision(4)}nF`
         : `${+(d.farads * 1e12).toPrecision(4)}pF`;
 
+  const wire = selected ? '#60a5fa' : '#9ca3af';
+  const plate = selected ? '#60a5fa' : '#e5e7eb';
+
   return (
     <NodeShell id={id} width={60} height={40}>
       <Handle
         type="target"
         position={Position.Left}
-        id="a"
+        id="pos"
         style={HANDLE_STYLE}
       />
       <svg width="60" height="40" viewBox="0 0 60 40">
-        <line
-          x1="0"
-          y1="20"
-          x2="22"
-          y2="20"
-          stroke={selected ? '#60a5fa' : '#9ca3af'}
-          strokeWidth="1.5"
-        />
-        <line
-          x1="22"
-          y1="8"
-          x2="22"
-          y2="32"
-          stroke={selected ? '#60a5fa' : '#e5e7eb'}
+        {/* Left wire */}
+        <line x1="0" y1="20" x2="22" y2="20" stroke={wire} strokeWidth="1.5" />
+        {/* Flat plate (positive side) */}
+        <line x1="22" y1="8" x2="22" y2="32" stroke={plate} strokeWidth="2.5" />
+        {/* Curved plate (negative side) */}
+        <path
+          d="M 28 8 Q 32 20 28 32"
+          fill="none"
+          stroke={plate}
           strokeWidth="2.5"
         />
-        <line
-          x1="28"
-          y1="8"
-          x2="28"
-          y2="32"
-          stroke={selected ? '#60a5fa' : '#e5e7eb'}
-          strokeWidth="2.5"
-        />
-        <line
-          x1="28"
-          y1="20"
-          x2="60"
-          y2="20"
-          stroke={selected ? '#60a5fa' : '#9ca3af'}
-          strokeWidth="1.5"
-        />
+        {/* Right wire */}
+        <line x1="28" y1="20" x2="60" y2="20" stroke={wire} strokeWidth="1.5" />
+        {/* + sign near positive plate */}
+        <text
+          x="16"
+          y="12"
+          textAnchor="middle"
+          fill="#6b7280"
+          fontSize="8"
+          fontFamily="monospace"
+        >
+          +
+        </text>
+        {/* Label */}
         <text
           x="25"
           y="6"
@@ -64,6 +60,7 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
         >
           {d.label}
         </text>
+        {/* Value */}
         <text
           x="30"
           y="38"
@@ -78,7 +75,7 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
       <Handle
         type="source"
         position={Position.Right}
-        id="b"
+        id="neg"
         style={HANDLE_STYLE}
       />
     </NodeShell>

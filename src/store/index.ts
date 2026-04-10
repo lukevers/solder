@@ -3,7 +3,7 @@
 import type { Edge } from '@xyflow/react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AudioSource, ComponentNode } from '../lib/types';
+import type { AudioSource, ComponentNode, SweepResult } from '../lib/types';
 
 type SimulationStatus = 'idle' | 'running' | 'error';
 
@@ -64,6 +64,17 @@ function nextTabName(tabs: Array<Tab>): string {
   return `Circuit ${max + 1}`;
 }
 
+const clearSim = {
+  outputBuffer: null as Float32Array | null,
+  simulationElapsed: null as number | null,
+  simulationStatus: 'idle' as const,
+  sweepResults: [] as Array<SweepResult>,
+  sweepStatus: 'idle' as 'idle' | 'running' | 'done',
+  sweepNodeId: null as string | null,
+  sweepPlayingIndex: null as number | null,
+  sweepError: null as string | null,
+};
+
 function flushActive(s: StoreState): Array<Tab> {
   return s.tabs.map((t) =>
     t.id === s.activeTabId
@@ -99,6 +110,7 @@ type StoreState = {
   selectNode: (id: string | null) => void;
   selectEdge: (id: string | null) => void;
   updateNodeData: (id: string, data: ComponentNode['data']) => void;
+  rotateNode: (id: string, rotation: number) => void;
   loadCircuit: (nodes: Array<ComponentNode>, edges: Array<Edge>) => void;
 
   // history slice
@@ -120,6 +132,19 @@ type StoreState = {
   setOutputBuffer: (buf: Float32Array, elapsed?: number) => void;
   clearOutputBuffer: () => void;
   setSimulationError: (msg: string) => void;
+
+  // sweep slice
+  sweepNodeId: string | null;
+  sweepStatus: 'idle' | 'running' | 'done';
+  sweepResults: Array<SweepResult>;
+  sweepError: string | null;
+  sweepPlayingIndex: number | null;
+  requestSweep: (nodeId: string) => void;
+  addSweepResult: (result: SweepResult) => void;
+  completeSweep: () => void;
+  failSweep: (error: string) => void;
+  clearSweep: () => void;
+  setSweepPlayingIndex: (index: number | null) => void;
 
   // audio slice
   audioSource: AudioSource;
@@ -153,6 +178,13 @@ const initialState = {
   simulationElapsed: null as number | null,
   inputFrequency: 1000,
   inputAmplitude: 1.0,
+
+  // sweep slice
+  sweepNodeId: null as string | null,
+  sweepStatus: 'idle' as 'idle' | 'running' | 'done',
+  sweepResults: [] as Array<SweepResult>,
+  sweepError: null as string | null,
+  sweepPlayingIndex: null as number | null,
 
   // audio slice
   audioSource: { type: 'sample', name: 'guitar' } as AudioSource,
@@ -240,9 +272,7 @@ export const useStore = create<StoreState>()(
           ],
           future: [],
           nodes: [...s.nodes, node],
-          outputBuffer: null,
-          simulationElapsed: null,
-          simulationStatus: 'idle' as const,
+          ...clearSim,
         })),
       setNodes: (nodes) =>
         set((s) => {
@@ -252,21 +282,13 @@ export const useStore = create<StoreState>()(
             nodes.length !== s.nodes.length;
           return {
             nodes,
-            ...(topologyChanged
-              ? {
-                  outputBuffer: null,
-                  simulationElapsed: null,
-                  simulationStatus: 'idle' as const,
-                }
-              : {}),
+            ...(topologyChanged ? clearSim : {}),
           };
         }),
       setEdges: (edges) =>
         set({
           edges,
-          outputBuffer: null,
-          simulationElapsed: null,
-          simulationStatus: 'idle' as const,
+          ...clearSim,
         }),
       selectNode: (selectedNodeId) =>
         set({ selectedNodeId, selectedEdgeId: null }),
@@ -282,9 +304,18 @@ export const useStore = create<StoreState>()(
           nodes: s.nodes.map((n) =>
             n.id === id ? ({ ...n, data } as ComponentNode) : n,
           ),
-          outputBuffer: null,
-          simulationElapsed: null,
-          simulationStatus: 'idle' as const,
+          ...clearSim,
+        })),
+      rotateNode: (id, rotation) =>
+        set((s) => ({
+          past: [
+            ...s.past.slice(-MAX_HISTORY),
+            { nodes: s.nodes, edges: s.edges },
+          ],
+          future: [],
+          nodes: s.nodes.map((n) =>
+            n.id === id ? ({ ...n, rotation } as ComponentNode) : n,
+          ),
         })),
       loadCircuit: (nodes, edges) =>
         set((s) => {
@@ -307,9 +338,7 @@ export const useStore = create<StoreState>()(
             past: [],
             future: [],
             tabs: updatedTabs,
-            outputBuffer: null,
-            simulationElapsed: null,
-            simulationStatus: 'idle' as const,
+            ...clearSim,
           };
         }),
 
@@ -332,9 +361,7 @@ export const useStore = create<StoreState>()(
           nodes: prev.nodes,
           edges: prev.edges,
           selectedNodeId: null,
-          outputBuffer: null,
-          simulationElapsed: null,
-          simulationStatus: 'idle',
+          ...clearSim,
         });
       },
       redo: () => {
@@ -347,9 +374,7 @@ export const useStore = create<StoreState>()(
           nodes: next.nodes,
           edges: next.edges,
           selectedNodeId: null,
-          outputBuffer: null,
-          simulationElapsed: null,
-          simulationStatus: 'idle',
+          ...clearSim,
         });
       },
 
@@ -360,13 +385,35 @@ export const useStore = create<StoreState>()(
           outputBuffer,
           ...(elapsed != null ? { simulationElapsed: elapsed } : {}),
         }),
-      clearOutputBuffer: () =>
-        set({
-          outputBuffer: null,
-          simulationElapsed: null,
-          simulationStatus: 'idle',
-        }),
+      clearOutputBuffer: () => set(clearSim),
       setSimulationError: (simulationError) => set({ simulationError }),
+
+      // sweep
+      requestSweep: (nodeId) =>
+        set({
+          sweepNodeId: nodeId,
+          sweepStatus: 'running',
+          sweepResults: [],
+          sweepError: null,
+          sweepPlayingIndex: null,
+        }),
+      addSweepResult: (result) =>
+        set((s) => ({
+          sweepResults: [...s.sweepResults, result].sort(
+            (a, b) => a.position - b.position,
+          ),
+        })),
+      completeSweep: () => set({ sweepStatus: 'done' }),
+      failSweep: (error) => set({ sweepStatus: 'idle', sweepError: error }),
+      clearSweep: () =>
+        set({
+          sweepNodeId: null,
+          sweepStatus: 'idle',
+          sweepResults: [],
+          sweepError: null,
+          sweepPlayingIndex: null,
+        }),
+      setSweepPlayingIndex: (sweepPlayingIndex) => set({ sweepPlayingIndex }),
 
       // audio
       setAudioSource: (audioSource) => set({ audioSource }),

@@ -62,6 +62,12 @@ const PALETTE: Array<{
     defaultData: { label: 'C1', farads: 47e-9 },
   },
   {
+    label: 'C+',
+    tooltip: 'Polarized Capacitor',
+    type: 'cap_polar',
+    defaultData: { label: 'C1', farads: 1e-6 },
+  },
+  {
     label: 'POT',
     tooltip: 'Potentiometer',
     type: 'pot',

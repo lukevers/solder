@@ -1,0 +1,166 @@
+// src/components/SweepResults.tsx
+
+import { Hourglass, Play, Square, X } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { SAMPLE_RATE } from '../lib/constants';
+import type { SweepResult } from '../lib/types';
+
+const SWEEP_COLORS = [
+  '#ef4444', // 0%   red
+  '#f59e0b', // 25%  amber
+  '#22c55e', // 50%  green
+  '#3b82f6', // 75%  blue
+  '#a855f7', // 100% purple
+];
+
+type Props = {
+  results: Array<SweepResult>;
+  status: 'idle' | 'running' | 'done';
+  playingIndex: number | null;
+  onPlay: (index: number) => void;
+  onStop: () => void;
+  onClear: () => void;
+};
+
+function SweepWaveformCanvas({
+  results,
+  playingIndex,
+}: {
+  results: Array<SweepResult>;
+  playingIndex: number | null;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || results.length === 0) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio ?? 1;
+    const w = canvas.getBoundingClientRect().width || canvas.offsetWidth;
+    const h = 80;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.scale(dpr, dpr);
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#0d1117';
+    ctx.fillRect(0, 0, w, h);
+
+    const midY = h / 2;
+
+    for (let i = 0; i < results.length; i++) {
+      const buf = results[i].outputBuffer;
+      const color = SWEEP_COLORS[i % SWEEP_COLORS.length];
+      const dimmed = playingIndex != null && playingIndex !== i;
+
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = dimmed ? 0.2 : 1;
+
+      for (let s = 0; s < buf.length; s++) {
+        const x = (s / buf.length) * w;
+        const y = midY - (buf[s] * h) / 2.5;
+        if (s === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }, [results, playingIndex]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={176}
+      height={80}
+      className="rounded border border-gray-800 w-full"
+    />
+  );
+}
+
+export function SweepResults({
+  results,
+  status,
+  playingIndex,
+  onPlay,
+  onStop,
+  onClear,
+}: Props) {
+  const duration =
+    results.length > 0
+      ? (results[0].outputBuffer.length / SAMPLE_RATE).toFixed(1)
+      : null;
+
+  return (
+    <div className="p-3">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs text-gray-500 uppercase tracking-wider">
+          Pot Sweep
+          {status === 'running' && (
+            <span className="text-amber-400 ml-1">({results.length}/5)</span>
+          )}
+        </span>
+        <button
+          type="button"
+          onClick={onClear}
+          className="text-gray-500 hover:text-gray-200 transition-colors"
+          aria-label="Close sweep results"
+        >
+          <X size={13} />
+        </button>
+      </div>
+
+      {status === 'running' && results.length === 0 ? (
+        <div className="flex items-center justify-center gap-2 h-20 rounded border border-gray-800 bg-gray-950 text-amber-400 text-xs font-mono">
+          <Hourglass size={12} /> Simulating 5 variants…
+        </div>
+      ) : (
+        <SweepWaveformCanvas results={results} playingIndex={playingIndex} />
+      )}
+
+      {results.length > 0 && (
+        <div className="mt-2 flex flex-col gap-1">
+          {results.map((r, i) => {
+            const color = SWEEP_COLORS[i % SWEEP_COLORS.length];
+            const pct = Math.round(r.position * 100);
+            const isPlaying = playingIndex === i;
+
+            return (
+              <button
+                key={r.position}
+                type="button"
+                onClick={() => (isPlaying ? onStop() : onPlay(i))}
+                className={`flex items-center gap-2 text-xs font-mono px-2 py-1 rounded border transition-colors ${
+                  isPlaying
+                    ? 'bg-gray-800 border-gray-600'
+                    : 'bg-gray-950 border-gray-800 hover:border-gray-600'
+                }`}
+              >
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: color }}
+                />
+                <span className="text-gray-300">{pct}%</span>
+                <span className="flex-1" />
+                {isPlaying ? (
+                  <Square size={10} className="text-red-400" />
+                ) : (
+                  <Play size={10} className="text-gray-500" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {duration && (
+        <div className="mt-1 text-xs font-mono text-gray-600 text-center">
+          {duration}s each
+        </div>
+      )}
+    </div>
+  );
+}

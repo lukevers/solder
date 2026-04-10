@@ -130,7 +130,7 @@ const CAP_UNITS: Array<CapUnit> = ['pF', 'nF', 'µF', 'mF'];
 function CapacitorInspector({
   node,
 }: {
-  node: Extract<ComponentNode, { type: 'capacitor' }>;
+  node: Extract<ComponentNode, { type: 'capacitor' | 'cap_polar' }>;
 }) {
   const updateNodeData = useStore((s) => s.updateNodeData);
   const { label, farads } = node.data;
@@ -279,10 +279,17 @@ function DiodeInspector({
 
 function PotInspector({
   node,
+  onSweep,
 }: {
   node: Extract<ComponentNode, { type: 'pot' }>;
+  onSweep?: (nodeId: string) => void;
 }) {
-  const updateNodeData = useStore((s) => s.updateNodeData);
+  const { updateNodeData, sweepStatus } = useStore(
+    useShallow((s) => ({
+      updateNodeData: s.updateNodeData,
+      sweepStatus: s.sweepStatus,
+    })),
+  );
   const { label, ohms, position } = node.data;
   const pct = Math.round(position * 100);
 
@@ -333,6 +340,16 @@ function PotInspector({
           }
         />
       </Field>
+      {onSweep && (
+        <button
+          type="button"
+          onClick={() => onSweep(node.id)}
+          disabled={sweepStatus === 'running'}
+          className="w-full mt-1 text-xs py-1.5 rounded font-mono transition-colors bg-amber-950 border border-amber-700 text-amber-300 hover:bg-amber-900 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {sweepStatus === 'running' ? 'Sweeping…' : 'Sweep 0–100%'}
+        </button>
+      )}
     </>
   );
 }
@@ -395,7 +412,41 @@ function EdgeInspector({
   );
 }
 
-export function Inspector() {
+const ROTATIONS = [0, 90, 180, 270];
+
+function RotationControl({
+  nodeId,
+  rotation,
+}: {
+  nodeId: string;
+  rotation: number;
+}) {
+  const rotateNode = useStore((s) => s.rotateNode);
+
+  return (
+    <Field label="Rotation">
+      <div className="flex rounded border border-gray-700 overflow-hidden">
+        {ROTATIONS.map((r) => (
+          <button
+            key={r}
+            type="button"
+            onClick={() => rotateNode(nodeId, r)}
+            className={[
+              'flex-1 px-1 py-1 text-xs font-mono border-r last:border-r-0 border-gray-700 transition-colors',
+              r === rotation
+                ? 'bg-blue-950 text-blue-300'
+                : 'bg-gray-950 text-gray-500 hover:text-gray-300',
+            ].join(' ')}
+          >
+            {r}°
+          </button>
+        ))}
+      </div>
+    </Field>
+  );
+}
+
+export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
   const { nodes, edges, selectedNodeId, selectedEdgeId } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
@@ -434,14 +485,17 @@ export function Inspector() {
       {selected.type === 'resistor' && (
         <ResistorInspector key={selected.id} node={selected} />
       )}
-      {selected.type === 'capacitor' && (
+      {(selected.type === 'capacitor' || selected.type === 'cap_polar') && (
         <CapacitorInspector key={selected.id} node={selected} />
       )}
       {selected.type === 'opamp' && <OpAmpInspector node={selected} />}
       {selected.type === 'power' && <PowerInspector node={selected} />}
       {selected.type === 'diode' && <DiodeInspector node={selected} />}
-      {selected.type === 'pot' && <PotInspector node={selected} />}
+      {selected.type === 'pot' && (
+        <PotInspector node={selected} onSweep={onSweep} />
+      )}
       {selected.type === 'label' && <LabelInspector node={selected} />}
+      <RotationControl nodeId={selected.id} rotation={selected.rotation ?? 0} />
     </div>
   );
 }

@@ -70,7 +70,10 @@
       "Bash(for f:*)",
       "Bash(do echo:*)",
       "Read(//private/tmp/claude-501/-Users-lukevers-Code-typescript-github-com-lukevers-solder/37d29f3a-2886-4007-ab5d-f6cda5abe4a1/tasks/**)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(npx vite:*)",
+      "Bash(/tmp/rat_analysis.txt:*)",
+      "Read(//tmp/**)"
     ]
   }
 }

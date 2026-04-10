@@ -35,7 +35,7 @@ const ratNodes: Array<ComponentNode> = [
     id: 'rat-r2',
     type: 'resistor',
     position: { x: 580, y: 340 },
-    data: { label: 'R2', ohms: 100 },
+    data: { label: 'R2', ohms: 1000 },
   },
 
   // ── Op-amp ──
@@ -124,16 +124,16 @@ const ratNodes: Array<ComponentNode> = [
 
   // ── Tone + output (y=340) ──
   {
-    id: 'rat-rtone',
-    type: 'resistor',
+    id: 'rat-filter',
+    type: 'pot',
     position: { x: 1060, y: 340 },
-    data: { label: 'R6', ohms: 10000 },
+    data: { label: 'FILTER', ohms: 100000, position: 0.5 },
   },
   {
     id: 'rat-ctone',
     type: 'capacitor',
     position: { x: 1060, y: 440 },
-    data: { label: 'C3', farads: 100e-9 },
+    data: { label: 'C3', farads: 3.3e-9 },
   },
   {
     id: 'rat-gnd_t',
@@ -143,9 +143,9 @@ const ratNodes: Array<ComponentNode> = [
   },
   {
     id: 'rat-cout',
-    type: 'capacitor',
+    type: 'cap_polar',
     position: { x: 1240, y: 340 },
-    data: { label: 'C4', farads: 100e-9 },
+    data: { label: 'C4', farads: 1e-6 },
   },
   {
     id: 'rat-vol',
@@ -305,13 +305,20 @@ const ratEdges: Array<Edge> = [
     id: 'rat-e20',
     source: 'rat-u1',
     sourceHandle: 'out',
-    target: 'rat-rtone',
-    targetHandle: 'a',
+    target: 'rat-cout',
+    targetHandle: 'pos',
+  },
+  {
+    id: 'rat-e20b',
+    source: 'rat-u1',
+    sourceHandle: 'out',
+    target: 'rat-filter',
+    targetHandle: 'cw',
   },
   {
     id: 'rat-e21',
-    source: 'rat-rtone',
-    sourceHandle: 'b',
+    source: 'rat-filter',
+    sourceHandle: 'wiper',
     target: 'rat-ctone',
     targetHandle: 'a',
   },
@@ -323,16 +330,9 @@ const ratEdges: Array<Edge> = [
     targetHandle: 'gnd',
   },
   {
-    id: 'rat-e23',
-    source: 'rat-rtone',
-    sourceHandle: 'b',
-    target: 'rat-cout',
-    targetHandle: 'a',
-  },
-  {
     id: 'rat-e24',
     source: 'rat-cout',
-    sourceHandle: 'b',
+    sourceHandle: 'neg',
     target: 'rat-vol',
     targetHandle: 'ccw',
   },

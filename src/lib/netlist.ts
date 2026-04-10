@@ -48,6 +48,7 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   audiout: ['in'],
   diode: ['a', 'k'],
   pot: ['ccw', 'wiper', 'cw'],
+  cap_polar: ['pos', 'neg'],
   label: ['net'],
 };
 
@@ -258,6 +259,12 @@ export function compileNetlist(
       const nb = getNode(node.id, 'b');
       lines.push(
         `${node.data.label} ${na} ${nb} ${formatCapacitance(node.data.farads)}`,
+      );
+    } else if (node.type === 'cap_polar') {
+      const nPos = getNode(node.id, 'pos');
+      const nNeg = getNode(node.id, 'neg');
+      lines.push(
+        `${node.data.label} ${nPos} ${nNeg} ${formatCapacitance(node.data.farads)}`,
       );
     } else if (node.type === 'opamp') {
       const inPos = getNode(node.id, 'in_pos');
