@@ -30,8 +30,9 @@ export const engine = new EECircuitEngine();
 /**
  * Wraps a list of components + edges into a complete circuit by
  * auto-adding INPUT and OUTPUT nodes if not already present.
- * This lets each test focus on the circuit-under-test without
- * repeating the boilerplate audiin/audiout nodes.
+ * Also auto-grounds the neg handles of in/out nodes when they are
+ * not explicitly wired — without this, the Vin source and Rprobe
+ * create floating nets that cause ngspice singular-matrix failures.
  */
 export function makeCircuit(
   components: Array<ComponentNode>,
@@ -39,7 +40,14 @@ export function makeCircuit(
 ): { nodes: Array<ComponentNode>; edges: Array<Edge> } {
   const hasIn = components.some((n) => n.type === 'audiin');
   const hasOut = components.some((n) => n.type === 'audiout');
-  const nodes = [
+  const inId = hasIn
+    ? components.find((n) => n.type === 'audiin')!.id
+    : 'in';
+  const outId = hasOut
+    ? components.find((n) => n.type === 'audiout')!.id
+    : 'out';
+
+  const nodes: Array<ComponentNode> = [
     ...(!hasIn
       ? [
           {
@@ -62,7 +70,50 @@ export function makeCircuit(
         ]
       : []),
   ];
-  return { nodes, edges };
+
+  const extraEdges: Array<Edge> = [];
+
+  // Auto-ground in/out neg handles if not already wired
+  const handlesUsed = new Set(
+    edges.flatMap((e) => [
+      `${e.source}|${e.sourceHandle}`,
+      `${e.target}|${e.targetHandle}`,
+    ]),
+  );
+
+  if (!handlesUsed.has(`${inId}|neg`)) {
+    nodes.push({
+      id: '__g_in',
+      type: 'ground',
+      position: { x: 0, y: 100 },
+      data: { label: 'GND' },
+    });
+    extraEdges.push({
+      id: '__e_in_gnd',
+      source: inId,
+      sourceHandle: 'neg',
+      target: '__g_in',
+      targetHandle: 'gnd',
+    });
+  }
+
+  if (!handlesUsed.has(`${outId}|neg`)) {
+    nodes.push({
+      id: '__g_out',
+      type: 'ground',
+      position: { x: 500, y: 100 },
+      data: { label: 'GND' },
+    });
+    extraEdges.push({
+      id: '__e_out_gnd',
+      source: outId,
+      sourceHandle: 'neg',
+      target: '__g_out',
+      targetHandle: 'gnd',
+    });
+  }
+
+  return { nodes, edges: [...edges, ...extraEdges] };
 }
 
 /**

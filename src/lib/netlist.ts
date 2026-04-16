@@ -1,6 +1,18 @@
 // src/lib/netlist.ts
 import type { Edge } from '@xyflow/react';
-import { LM741_SUBCKT, TL072_SUBCKT } from './spice-models';
+import {
+  BJT_2N3904,
+  BJT_2N3906,
+  BJT_AC128,
+  JFET_2N5457,
+  JFET_2N5460,
+  JFET_J201,
+  LM741_SUBCKT,
+  MOSFET_BS170,
+  MOSFET_IRF510,
+  MOSFET_IRF9510,
+  TL072_SUBCKT,
+} from './spice-models';
 import type { ComponentNode, PotTaper, WaveformType } from './types';
 
 /**
@@ -51,6 +63,9 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   pot: ['ccw', 'wiper', 'cw'],
   cap_polar: ['pos', 'neg'],
   label: ['net'],
+  bjt: ['b', 'c', 'e'],
+  jfet: ['g', 'd', 's'],
+  mosfet: ['g', 'd', 's'],
 };
 
 /** Port identifier: "${nodeId}|${handleId}" */
@@ -250,6 +265,30 @@ function buildCircuitBody(
       '.model 1N4001 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u)',
     );
 
+  // BJT model statements
+  const usedBJTModels = new Set(
+    nodes.filter((n) => n.type === 'bjt').map((n) => n.data.model),
+  );
+  if (usedBJTModels.has('2N3904')) lines.push(BJT_2N3904);
+  if (usedBJTModels.has('2N3906')) lines.push(BJT_2N3906);
+  if (usedBJTModels.has('AC128')) lines.push(BJT_AC128);
+
+  // JFET model statements
+  const usedJFETModels = new Set(
+    nodes.filter((n) => n.type === 'jfet').map((n) => n.data.model),
+  );
+  if (usedJFETModels.has('2N5457')) lines.push(JFET_2N5457);
+  if (usedJFETModels.has('J201')) lines.push(JFET_J201);
+  if (usedJFETModels.has('2N5460')) lines.push(JFET_2N5460);
+
+  // MOSFET model statements
+  const usedMOSFETModels = new Set(
+    nodes.filter((n) => n.type === 'mosfet').map((n) => n.data.model),
+  );
+  if (usedMOSFETModels.has('BS170')) lines.push(MOSFET_BS170);
+  if (usedMOSFETModels.has('IRF510')) lines.push(MOSFET_IRF510);
+  if (usedMOSFETModels.has('IRF9510')) lines.push(MOSFET_IRF9510);
+
   // Find input and output nodes
   const inputNode = nodes.find((n) => n.type === 'audiin');
   const outputNode = nodes.find((n) => n.type === 'audiout');
@@ -317,6 +356,26 @@ function buildCircuitBody(
       );
       lines.push(
         `R${node.data.label}b ${nWiper} ${nCw} ${formatResistance(rHigh)}`,
+      );
+    } else if (node.type === 'bjt') {
+      const nc = getNode(node.id, 'c');
+      const nb = getNode(node.id, 'b');
+      const ne = getNode(node.id, 'e');
+      // Prefix Q to guarantee BJT element regardless of label
+      lines.push(`Q${node.data.label} ${nc} ${nb} ${ne} ${node.data.model}`);
+    } else if (node.type === 'jfet') {
+      const nd = getNode(node.id, 'd');
+      const ng = getNode(node.id, 'g');
+      const ns = getNode(node.id, 's');
+      // Prefix J to guarantee JFET element
+      lines.push(`J${node.data.label} ${nd} ${ng} ${ns} ${node.data.model}`);
+    } else if (node.type === 'mosfet') {
+      const nd = getNode(node.id, 'd');
+      const ng = getNode(node.id, 'g');
+      const ns = getNode(node.id, 's');
+      // Prefix M; bulk tied to source for discrete MOSFETs
+      lines.push(
+        `M${node.data.label} ${nd} ${ng} ${ns} ${ns} ${node.data.model}`,
       );
     }
     // ground, audiin, audiout: no SPICE component line needed

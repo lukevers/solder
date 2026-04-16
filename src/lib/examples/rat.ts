@@ -1,6 +1,7 @@
 // src/lib/examples/rat.ts
 import type { Edge } from '@xyflow/react';
 import type { ComponentNode } from '../types';
+import { fuzzFaceNodes, fuzzFaceEdges } from './fuzz-face';
 
 export type ExampleCircuit = {
   id: string;
@@ -387,5 +388,14 @@ export const EXAMPLES: Array<ExampleCircuit> = [
     tags: ['distortion', 'fuzz', 'guitar'],
     nodes: ratNodes,
     edges: ratEdges,
+  },
+  {
+    id: 'fuzzface',
+    name: 'Fuzz Face',
+    description:
+      'Two-transistor PNP germanium fuzz. AC128 common-emitter stages with shunt-series feedback (R4) for the classic 60s fuzz tone.',
+    tags: ['fuzz', 'guitar', 'vintage'],
+    nodes: fuzzFaceNodes,
+    edges: fuzzFaceEdges,
   },
 ];

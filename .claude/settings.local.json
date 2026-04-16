@@ -74,7 +74,10 @@
       "Bash(npx vite:*)",
       "Bash(/tmp/rat_analysis.txt:*)",
       "Read(//tmp/**)",
-      "Bash(timeout 8 pnpm dev)"
+      "Bash(timeout 8 pnpm dev)",
+      "WebFetch(domain:www.electrosmash.com)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "Bash(npm test:*)"
     ]
   }
 }

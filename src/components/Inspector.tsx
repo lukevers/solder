@@ -4,8 +4,14 @@ import type { Edge } from '@xyflow/react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import {
+  type BJTData,
+  type BJTModel,
   type ComponentNode,
   type DiodeData,
+  type JFETData,
+  type JFETModel,
+  type MOSFETData,
+  type MOSFETModel,
   isEdgeDC,
   type PotData,
 } from '../lib/types';
@@ -277,6 +283,160 @@ function DiodeInspector({
   );
 }
 
+const BJT_MODEL_POLARITY: Record<BJTModel, 'NPN' | 'PNP'> = {
+  '2N3904': 'NPN',
+  '2N3906': 'PNP',
+  AC128: 'PNP',
+};
+
+function BJTInspector({
+  node,
+}: {
+  node: Extract<ComponentNode, { type: 'bjt' }>;
+}) {
+  const updateNodeData = useStore((s) => s.updateNodeData);
+  const { label, polarity, model } = node.data;
+
+  return (
+    <>
+      <Field label="Label">
+        <input
+          className={INPUT_CLASS}
+          value={label}
+          onChange={(e) =>
+            updateNodeData(node.id, { label: e.target.value, polarity, model })
+          }
+        />
+      </Field>
+      <Field label="Model">
+        <select
+          className={INPUT_CLASS}
+          value={model}
+          onChange={(e) => {
+            const m = e.target.value as BJTModel;
+            updateNodeData(node.id, {
+              label,
+              polarity: BJT_MODEL_POLARITY[m],
+              model: m,
+            } as BJTData);
+          }}
+        >
+          <option value="2N3904">2N3904 (NPN)</option>
+          <option value="2N3906">2N3906 (PNP)</option>
+          <option value="AC128">AC128 (PNP Ge)</option>
+        </select>
+      </Field>
+      <Field label="Polarity">
+        <div className="text-xs font-mono text-gray-200">{polarity}</div>
+      </Field>
+    </>
+  );
+}
+
+const JFET_MODEL_POLARITY: Record<JFETModel, 'N' | 'P'> = {
+  '2N5457': 'N',
+  J201: 'N',
+  '2N5460': 'P',
+};
+
+function JFETInspector({
+  node,
+}: {
+  node: Extract<ComponentNode, { type: 'jfet' }>;
+}) {
+  const updateNodeData = useStore((s) => s.updateNodeData);
+  const { label, polarity, model } = node.data;
+
+  return (
+    <>
+      <Field label="Label">
+        <input
+          className={INPUT_CLASS}
+          value={label}
+          onChange={(e) =>
+            updateNodeData(node.id, { label: e.target.value, polarity, model })
+          }
+        />
+      </Field>
+      <Field label="Model">
+        <select
+          className={INPUT_CLASS}
+          value={model}
+          onChange={(e) => {
+            const m = e.target.value as JFETModel;
+            updateNodeData(node.id, {
+              label,
+              polarity: JFET_MODEL_POLARITY[m],
+              model: m,
+            } as JFETData);
+          }}
+        >
+          <option value="2N5457">2N5457 (N-ch)</option>
+          <option value="J201">J201 (N-ch)</option>
+          <option value="2N5460">2N5460 (P-ch)</option>
+        </select>
+      </Field>
+      <Field label="Channel">
+        <div className="text-xs font-mono text-gray-200">
+          {polarity}-channel
+        </div>
+      </Field>
+    </>
+  );
+}
+
+const MOSFET_MODEL_POLARITY: Record<MOSFETModel, 'N' | 'P'> = {
+  BS170: 'N',
+  IRF510: 'N',
+  IRF9510: 'P',
+};
+
+function MOSFETInspector({
+  node,
+}: {
+  node: Extract<ComponentNode, { type: 'mosfet' }>;
+}) {
+  const updateNodeData = useStore((s) => s.updateNodeData);
+  const { label, polarity, model } = node.data;
+
+  return (
+    <>
+      <Field label="Label">
+        <input
+          className={INPUT_CLASS}
+          value={label}
+          onChange={(e) =>
+            updateNodeData(node.id, { label: e.target.value, polarity, model })
+          }
+        />
+      </Field>
+      <Field label="Model">
+        <select
+          className={INPUT_CLASS}
+          value={model}
+          onChange={(e) => {
+            const m = e.target.value as MOSFETModel;
+            updateNodeData(node.id, {
+              label,
+              polarity: MOSFET_MODEL_POLARITY[m],
+              model: m,
+            } as MOSFETData);
+          }}
+        >
+          <option value="BS170">BS170 (N-ch)</option>
+          <option value="IRF510">IRF510 (N-ch)</option>
+          <option value="IRF9510">IRF9510 (P-ch)</option>
+        </select>
+      </Field>
+      <Field label="Channel">
+        <div className="text-xs font-mono text-gray-200">
+          {polarity}-channel
+        </div>
+      </Field>
+    </>
+  );
+}
+
 function PotInspector({
   node,
 }: {
@@ -367,16 +527,27 @@ function SweepButton({
   nodeId: string;
   onSweep: (nodeId: string) => void;
 }) {
-  const sweepStatus = useStore((s) => s.sweepStatus);
+  const { sweepStatus, simulationStatus } = useStore(
+    useShallow((s) => ({
+      sweepStatus: s.sweepStatus,
+      simulationStatus: s.simulationStatus,
+    })),
+  );
+  const busy =
+    sweepStatus === 'running' || simulationStatus === 'running';
 
   return (
     <button
       type="button"
       onClick={() => onSweep(nodeId)}
-      disabled={sweepStatus === 'running'}
+      disabled={busy}
       className="w-full mt-1 text-xs py-1.5 rounded font-mono transition-colors bg-amber-950 border border-amber-700 text-amber-300 hover:bg-amber-900 disabled:opacity-40 disabled:cursor-not-allowed"
     >
-      {sweepStatus === 'running' ? 'Sweeping…' : 'Sweep 0–100%'}
+      {sweepStatus === 'running'
+        ? 'Sweeping…'
+        : simulationStatus === 'running'
+          ? 'Simulating…'
+          : 'Sweep 0–100%'}
     </button>
   );
 }
@@ -518,6 +689,9 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
       {selected.type === 'opamp' && <OpAmpInspector node={selected} />}
       {selected.type === 'power' && <PowerInspector node={selected} />}
       {selected.type === 'diode' && <DiodeInspector node={selected} />}
+      {selected.type === 'bjt' && <BJTInspector node={selected} />}
+      {selected.type === 'jfet' && <JFETInspector node={selected} />}
+      {selected.type === 'mosfet' && <MOSFETInspector node={selected} />}
       {selected.type === 'pot' && <PotInspector node={selected} />}
       {selected.type === 'label' && <LabelInspector node={selected} />}
       <RotationControl nodeId={selected.id} rotation={selected.rotation ?? 0} />

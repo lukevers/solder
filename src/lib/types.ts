@@ -19,6 +19,24 @@ export type PotData = {
   taper?: PotTaper;
 };
 export type LabelData = { label: string };
+export type BJTModel = '2N3904' | '2N3906' | 'AC128';
+export type BJTData = {
+  label: string;
+  polarity: 'NPN' | 'PNP';
+  model: BJTModel;
+};
+export type JFETModel = '2N5457' | 'J201' | '2N5460';
+export type JFETData = {
+  label: string;
+  polarity: 'N' | 'P';
+  model: JFETModel;
+};
+export type MOSFETModel = 'BS170' | 'IRF510' | 'IRF9510';
+export type MOSFETData = {
+  label: string;
+  polarity: 'N' | 'P';
+  model: MOSFETModel;
+};
 
 type NodeBase = { id: string; position: XYPosition; rotation?: number };
 
@@ -33,7 +51,10 @@ export type ComponentNode =
   | (NodeBase & { type: 'diode'; data: DiodeData })
   | (NodeBase & { type: 'pot'; data: PotData })
   | (NodeBase & { type: 'cap_polar'; data: CapacitorData })
-  | (NodeBase & { type: 'label'; data: LabelData });
+  | (NodeBase & { type: 'label'; data: LabelData })
+  | (NodeBase & { type: 'bjt'; data: BJTData })
+  | (NodeBase & { type: 'jfet'; data: JFETData })
+  | (NodeBase & { type: 'mosfet'; data: MOSFETData });
 
 export type CircuitState = {
   nodes: Array<ComponentNode>;

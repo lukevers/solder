@@ -57,6 +57,14 @@ const TRACE_COLORS = [
   '#a3e635', // yellow-green
 ];
 
+const SWEEP_COLORS = [
+  '#ef4444', // 0%   red
+  '#f59e0b', // 25%  amber
+  '#22c55e', // 50%  green
+  '#3b82f6', // 75%  blue
+  '#a855f7', // 100% purple
+];
+
 const WAVEFORMS: Array<{ value: WaveformType; label: string }> = [
   { value: 'sine', label: 'Sine' },
   { value: 'square', label: 'Square' },
@@ -85,8 +93,13 @@ export function CircuitAnalyzer({
   simulatedInput,
   onClose,
 }: Props) {
-  const { nodes, edges } = useStore(
-    useShallow((s) => ({ nodes: s.nodes, edges: s.edges })),
+  const { nodes, edges, sweepResults, sweepNodeId } = useStore(
+    useShallow((s) => ({
+      nodes: s.nodes,
+      edges: s.edges,
+      sweepResults: s.sweepResults,
+      sweepNodeId: s.sweepNodeId,
+    })),
   );
 
   const [tab, setTab] = useState<Tab>('analyze');
@@ -105,6 +118,9 @@ export function CircuitAnalyzer({
   // Scope tab state
   const [showScopeInput, setShowScopeInput] = useState(true);
   const [showScopeOutput, setShowScopeOutput] = useState(true);
+  const [showSweepTraces, setShowSweepTraces] = useState<
+    Record<number, boolean>
+  >({});
 
   // Shared oscilloscope state
   const [timeDivIdx, setTimeDivIdx] = useState(1);
@@ -235,14 +251,35 @@ export function CircuitAnalyzer({
     [enabledAnalyzeTraces],
   );
 
+  const sweepPotLabel = useMemo(() => {
+    if (!sweepNodeId) return null;
+    const pot = nodes.find((n) => n.id === sweepNodeId);
+    return pot?.data.label ?? null;
+  }, [sweepNodeId, nodes]);
+
   const scopeTraces: Array<ScopeTrace> = useMemo(() => {
     const t: Array<ScopeTrace> = [];
     if (showScopeInput && simulatedInput)
       t.push({ color: '#60a5fa', values: simulatedInput });
     if (showScopeOutput && outputBuffer)
       t.push({ color: '#4ade80', values: outputBuffer });
+    for (let i = 0; i < sweepResults.length; i++) {
+      if (showSweepTraces[i]) {
+        t.push({
+          color: SWEEP_COLORS[i % SWEEP_COLORS.length],
+          values: sweepResults[i].outputBuffer,
+        });
+      }
+    }
     return t;
-  }, [outputBuffer, simulatedInput, showScopeInput, showScopeOutput]);
+  }, [
+    outputBuffer,
+    simulatedInput,
+    showScopeInput,
+    showScopeOutput,
+    sweepResults,
+    showSweepTraces,
+  ]);
 
   const activeTraces = tab === 'analyze' ? analyzeScopeTraces : scopeTraces;
 
@@ -259,8 +296,9 @@ export function CircuitAnalyzer({
     return nice.find((n) => n >= padded) ?? padded;
   }, [activeTraces]);
 
+  const hasSweepEnabled = Object.values(showSweepTraces).some(Boolean);
   const emptyMessage =
-    tab === 'scope' && !outputBuffer && !simulatedInput
+    tab === 'scope' && !outputBuffer && !simulatedInput && !hasSweepEnabled
       ? 'Run a simulation to see waveforms'
       : undefined;
 
@@ -436,7 +474,48 @@ export function CircuitAnalyzer({
             >
               Output
             </button>
-            {!hasScopeData && (
+            {sweepResults.length > 0 && (
+              <>
+                <div className="w-px h-4 bg-[#1a2e1a]" />
+                <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+                  {sweepPotLabel ?? 'Sweep'}
+                </span>
+                {sweepResults.map((sr, i) => {
+                  const pct = `${Math.round(sr.position * 100)}%`;
+                  const on = !!showSweepTraces[i];
+                  const color = SWEEP_COLORS[i % SWEEP_COLORS.length];
+                  return (
+                    <button
+                      key={sr.position}
+                      type="button"
+                      onClick={() =>
+                        setShowSweepTraces((prev) => ({
+                          ...prev,
+                          [i]: !prev[i],
+                        }))
+                      }
+                      className={`text-xs font-mono px-2 py-0.5 rounded transition-colors border ${
+                        on
+                          ? 'border-opacity-60 bg-opacity-20'
+                          : 'text-gray-600 border-gray-700 hover:text-gray-400'
+                      }`}
+                      style={
+                        on
+                          ? {
+                              color,
+                              borderColor: color,
+                              backgroundColor: `${color}20`,
+                            }
+                          : undefined
+                      }
+                    >
+                      {pct}
+                    </button>
+                  );
+                })}
+              </>
+            )}
+            {!hasScopeData && sweepResults.length === 0 && (
               <span className="text-[10px] text-[#4a7a4a] font-mono">
                 Run a simulation first
               </span>

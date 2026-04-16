@@ -1119,3 +1119,363 @@ describe('compileNetlist pot taper', () => {
     expect(lin).toEqual(anti);
   });
 });
+
+// ── Transistor tests ──
+
+/** Minimal circuit with a single transistor wired between IN and OUT */
+function makeTransistorCircuit(
+  transistor: ComponentNode,
+): { nodes: Array<ComponentNode>; edges: Array<Edge> } {
+  const nodes: Array<ComponentNode> = [
+    {
+      id: 'in1',
+      type: 'audiin',
+      position: { x: 0, y: 0 },
+      data: { label: 'INPUT' },
+    },
+    transistor,
+    {
+      id: 'out1',
+      type: 'audiout',
+      position: { x: 200, y: 0 },
+      data: { label: 'OUTPUT' },
+    },
+  ];
+  return { nodes, edges: [] };
+}
+
+describe('compileNetlist BJT', () => {
+  it('emits Q-prefixed element with collector, base, emitter order', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'q1',
+      type: 'bjt',
+      position: { x: 100, y: 0 },
+      data: { label: 'Q1', polarity: 'NPN', model: '2N3904' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    // Format: QQ1 <collector> <base> <emitter> 2N3904
+    expect(netlist).toMatch(/^QQ1 \S+ \S+ \S+ 2N3904$/m);
+  });
+
+  it('inlines 2N3904 NPN model when present', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'q1',
+      type: 'bjt',
+      position: { x: 100, y: 0 },
+      data: { label: 'Q1', polarity: 'NPN', model: '2N3904' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model 2N3904 NPN(');
+  });
+
+  it('inlines 2N3906 PNP model when present', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'q1',
+      type: 'bjt',
+      position: { x: 100, y: 0 },
+      data: { label: 'Q1', polarity: 'PNP', model: '2N3906' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model 2N3906 PNP(');
+    expect(netlist).not.toContain('.model 2N3904');
+  });
+
+  it('inlines AC128 PNP germanium model when present', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'q1',
+      type: 'bjt',
+      position: { x: 100, y: 0 },
+      data: { label: 'Q1', polarity: 'PNP', model: 'AC128' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model AC128 PNP(');
+  });
+
+  it('deduplicates model when multiple BJTs share same model', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'q1',
+        type: 'bjt',
+        position: { x: 100, y: 0 },
+        data: { label: 'Q1', polarity: 'NPN', model: '2N3904' },
+      },
+      {
+        id: 'q2',
+        type: 'bjt',
+        position: { x: 150, y: 0 },
+        data: { label: 'Q2', polarity: 'NPN', model: '2N3904' },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    const modelLines = netlist
+      .split('\n')
+      .filter((l) => l.startsWith('.model 2N3904'));
+    expect(modelLines).toHaveLength(1);
+    // Both element lines emitted
+    expect(netlist).toMatch(/^QQ1 /m);
+    expect(netlist).toMatch(/^QQ2 /m);
+  });
+
+  it('inlines multiple different BJT models', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'audiin',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT' },
+      },
+      {
+        id: 'q1',
+        type: 'bjt',
+        position: { x: 100, y: 0 },
+        data: { label: 'Q1', polarity: 'NPN', model: '2N3904' },
+      },
+      {
+        id: 'q2',
+        type: 'bjt',
+        position: { x: 150, y: 0 },
+        data: { label: 'Q2', polarity: 'PNP', model: 'AC128' },
+      },
+      {
+        id: 'out1',
+        type: 'audiout',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUTPUT' },
+      },
+    ];
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model 2N3904 NPN(');
+    expect(netlist).toContain('.model AC128 PNP(');
+  });
+});
+
+describe('compileNetlist JFET', () => {
+  it('emits J-prefixed element with drain, gate, source order', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'j1',
+      type: 'jfet',
+      position: { x: 100, y: 0 },
+      data: { label: 'J1', polarity: 'N', model: '2N5457' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    // Format: JJ1 <drain> <gate> <source> 2N5457
+    expect(netlist).toMatch(/^JJ1 \S+ \S+ \S+ 2N5457$/m);
+  });
+
+  it('inlines 2N5457 N-channel model when present', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'j1',
+      type: 'jfet',
+      position: { x: 100, y: 0 },
+      data: { label: 'J1', polarity: 'N', model: '2N5457' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model 2N5457 NJF(');
+  });
+
+  it('inlines J201 N-channel model when present', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'j1',
+      type: 'jfet',
+      position: { x: 100, y: 0 },
+      data: { label: 'J1', polarity: 'N', model: 'J201' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model J201 NJF(');
+    expect(netlist).not.toContain('.model 2N5457');
+  });
+
+  it('inlines 2N5460 P-channel model when present', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'j1',
+      type: 'jfet',
+      position: { x: 100, y: 0 },
+      data: { label: 'J1', polarity: 'P', model: '2N5460' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model 2N5460 PJF(');
+  });
+});
+
+describe('compileNetlist MOSFET', () => {
+  it('emits M-prefixed element with drain, gate, source, bulk order', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'm1',
+      type: 'mosfet',
+      position: { x: 100, y: 0 },
+      data: { label: 'M1', polarity: 'N', model: 'BS170' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    // Format: MM1 <drain> <gate> <source> <source> BS170
+    // The 4th node (bulk) should equal the 3rd (source tied to bulk)
+    expect(netlist).toMatch(/^MM1 \S+ \S+ (\S+) \1 BS170$/m);
+  });
+
+  it('inlines BS170 N-channel model when present', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'm1',
+      type: 'mosfet',
+      position: { x: 100, y: 0 },
+      data: { label: 'M1', polarity: 'N', model: 'BS170' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model BS170 NMOS(');
+  });
+
+  it('inlines IRF510 N-channel model when present', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'm1',
+      type: 'mosfet',
+      position: { x: 100, y: 0 },
+      data: { label: 'M1', polarity: 'N', model: 'IRF510' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model IRF510 NMOS(');
+    expect(netlist).not.toContain('.model BS170');
+  });
+
+  it('inlines IRF9510 P-channel model when present', () => {
+    const { nodes } = makeTransistorCircuit({
+      id: 'm1',
+      type: 'mosfet',
+      position: { x: 100, y: 0 },
+      data: { label: 'M1', polarity: 'P', model: 'IRF9510' },
+    });
+    const netlist = compileNetlist(nodes, []);
+    expect(netlist).toContain('.model IRF9510 PMOS(');
+  });
+});
+
+describe('buildPortGroups with transistors', () => {
+  it('BJT base, collector, emitter get separate nets when unwired', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'q1',
+        type: 'bjt',
+        position: { x: 0, y: 0 },
+        data: { label: 'Q1', polarity: 'NPN', model: '2N3904' },
+      },
+    ];
+    const groups = buildPortGroups(nodes, []);
+    expect(groups.has('q1|b')).toBe(true);
+    expect(groups.has('q1|c')).toBe(true);
+    expect(groups.has('q1|e')).toBe(true);
+    // All three should be on different nets
+    const nets = new Set([
+      groups.get('q1|b'),
+      groups.get('q1|c'),
+      groups.get('q1|e'),
+    ]);
+    expect(nets.size).toBe(3);
+  });
+
+  it('JFET gate, drain, source get separate nets when unwired', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'j1',
+        type: 'jfet',
+        position: { x: 0, y: 0 },
+        data: { label: 'J1', polarity: 'N', model: '2N5457' },
+      },
+    ];
+    const groups = buildPortGroups(nodes, []);
+    expect(groups.has('j1|g')).toBe(true);
+    expect(groups.has('j1|d')).toBe(true);
+    expect(groups.has('j1|s')).toBe(true);
+    const nets = new Set([
+      groups.get('j1|g'),
+      groups.get('j1|d'),
+      groups.get('j1|s'),
+    ]);
+    expect(nets.size).toBe(3);
+  });
+
+  it('MOSFET gate, drain, source get separate nets when unwired', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'm1',
+        type: 'mosfet',
+        position: { x: 0, y: 0 },
+        data: { label: 'M1', polarity: 'N', model: 'BS170' },
+      },
+    ];
+    const groups = buildPortGroups(nodes, []);
+    expect(groups.has('m1|g')).toBe(true);
+    expect(groups.has('m1|d')).toBe(true);
+    expect(groups.has('m1|s')).toBe(true);
+    const nets = new Set([
+      groups.get('m1|g'),
+      groups.get('m1|d'),
+      groups.get('m1|s'),
+    ]);
+    expect(nets.size).toBe(3);
+  });
+
+  it('BJT emitter wired to ground maps to net 0', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'q1',
+        type: 'bjt',
+        position: { x: 0, y: 0 },
+        data: { label: 'Q1', polarity: 'NPN', model: '2N3904' },
+      },
+      {
+        id: 'gnd1',
+        type: 'ground',
+        position: { x: 0, y: 100 },
+        data: { label: 'GND' },
+      },
+    ];
+    const edges: Array<Edge> = [
+      {
+        id: 'e1',
+        source: 'q1',
+        sourceHandle: 'e',
+        target: 'gnd1',
+        targetHandle: 'gnd',
+      },
+    ];
+    const groups = buildPortGroups(nodes, edges);
+    expect(groups.get('q1|e')).toBe('0');
+  });
+
+  it('BJT collector wired to resistor shares net', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'q1',
+        type: 'bjt',
+        position: { x: 0, y: 0 },
+        data: { label: 'Q1', polarity: 'NPN', model: '2N3904' },
+      },
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 100, y: 0 },
+        data: { label: 'R1', ohms: 10000 },
+      },
+    ];
+    const edges: Array<Edge> = [
+      {
+        id: 'e1',
+        source: 'q1',
+        sourceHandle: 'c',
+        target: 'r1',
+        targetHandle: 'a',
+      },
+    ];
+    const groups = buildPortGroups(nodes, edges);
+    expect(groups.get('q1|c')).toBe(groups.get('r1|a'));
+  });
+});
