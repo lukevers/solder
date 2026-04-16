@@ -10,7 +10,7 @@ export type PowerData = { label: string; volts: number };
 export type GroundData = { label: string };
 export type InputData = { label: string };
 export type OutputData = { label: string };
-export type DiodeData = { label: string; model: '1N914' | '1N4001' };
+export type DiodeData = { label: string; model: '1N914' | '1N4001' | '1N270' };
 export type PotTaper = 'linear' | 'log' | 'antilog';
 export type PotData = {
   label: string;

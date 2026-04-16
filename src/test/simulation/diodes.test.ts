@@ -263,6 +263,89 @@ describe('diode forward voltage drop', () => {
 });
 
 // ┌────────────────────────────────────────────────────────────────────┐
+// │  1N270 GERMANIUM FORWARD VOLTAGE DROP                              │
+// │                                                                    │
+// │  Same test circuit as 1N914 but with a germanium diode.            │
+// │  Germanium diodes have a lower forward voltage (~0.2-0.35V)        │
+// │  compared to silicon (~0.6V). The MXR Distortion+ uses 1N270      │
+// │  diodes for softer, lower-threshold clipping.                     │
+// │                                                                    │
+// │  Schematic:  1V DC ──┤D1├──┤R1 (1kΩ)├── GND                        │
+// │                            │                                       │
+// │                           Vout                                     │
+// └────────────────────────────────────────────────────────────────────┘
+describe('1N270 germanium forward voltage drop', () => {
+  it('forward drop is between 0.15V and 0.40V (lower than silicon)', async () => {
+    const components: Array<ComponentNode> = [
+      {
+        id: 'vcc',
+        type: 'power',
+        position: { x: 50, y: 0 },
+        data: { label: 'VCC', volts: 1 },
+      },
+      {
+        id: 'd1',
+        type: 'diode',
+        position: { x: 100, y: 0 },
+        data: { label: 'D1', model: '1N270' },
+      },
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 200, y: 0 },
+        data: { label: 'R1', ohms: 1000 },
+      },
+      {
+        id: 'g1',
+        type: 'ground',
+        position: { x: 300, y: 0 },
+        data: { label: 'GND' },
+      },
+    ];
+    const edges: Array<Edge> = [
+      {
+        id: 'e1',
+        source: 'vcc',
+        sourceHandle: 'pos',
+        target: 'd1',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e2',
+        source: 'd1',
+        sourceHandle: 'k',
+        target: 'r1',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e3',
+        source: 'd1',
+        sourceHandle: 'k',
+        target: 'out',
+        targetHandle: 'pos',
+      },
+      {
+        id: 'e4',
+        source: 'r1',
+        sourceHandle: 'b',
+        target: 'g1',
+        targetHandle: 'gnd',
+      },
+    ];
+    const { nodes, edges: e } = makeCircuit(components, edges);
+    const netlist = compileNetlist(nodes, e, 0.001, 1000, 0.0);
+    const output = await engine.run(netlist);
+
+    const vOut = output.voltageValues[output.voltageValues.length - 1];
+    const vDiode = 1.0 - vOut;
+
+    // Germanium forward voltage is significantly lower than silicon
+    expect(vDiode).toBeGreaterThan(0.15);
+    expect(vDiode).toBeLessThan(0.4);
+  });
+});
+
+// ┌────────────────────────────────────────────────────────────────────┐
 // │  ANTI-PARALLEL DIODE SYMMETRY                                      │
 // │                                                                    │
 // │  Two 1N914 diodes in anti-parallel (like the RAT's clipping        │

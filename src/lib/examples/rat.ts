@@ -1,6 +1,7 @@
 // src/lib/examples/rat.ts
 import type { Edge } from '@xyflow/react';
 import type { ComponentNode } from '../types';
+import { distortionPlusNodes, distortionPlusEdges } from './distortion-plus';
 import { fuzzFaceNodes, fuzzFaceEdges } from './fuzz-face';
 
 export type ExampleCircuit = {
@@ -397,5 +398,14 @@ export const EXAMPLES: Array<ExampleCircuit> = [
     tags: ['fuzz', 'guitar', 'vintage'],
     nodes: fuzzFaceNodes,
     edges: fuzzFaceEdges,
+  },
+  {
+    id: 'distortionplus',
+    name: 'MXR Distortion+',
+    description:
+      'Non-inverting LM741 gain stage with 1N270 germanium soft clipping. Variable gain via DIST pot in the feedback network.',
+    tags: ['distortion', 'overdrive', 'guitar'],
+    nodes: distortionPlusNodes,
+    edges: distortionPlusEdges,
   },
 ];

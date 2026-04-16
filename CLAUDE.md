@@ -92,6 +92,9 @@ If simulation hangs without error, check `typeof SharedArrayBuffer !== 'undefine
 ### Open circuits cause a hang
 A netlist with only a voltage source and no passive load hangs `runSim()`. Always include `Rprobe ${outputNode} 0 1000Meg` in compiled netlists.
 
+### Floating audiin/audiout neg handles cause singular matrix
+The `Vin` source connects `inputPos` to `inputNeg`, and `Rprobe` connects `outputPos` to `outputNeg`. If neither neg handle is wired to ground, those nets have no DC path to net 0 and ngspice fails with "singular matrix". This especially happens when a coupling capacitor (DC-blocking) sits between the input and the rest of the circuit. Always wire audiin/audiout neg handles to a ground node. The `makeCircuit` test helper in `src/test/simulation/setup.ts` does this automatically.
+
 ### SPICE element naming
 The first letter of an element name determines its type (D=diode, R=resistor, C=capacitor, etc.). Pot labels like `DIST` produce element names `DISTa`/`DISTb` — ngspice reads the leading `D` as a diode and fails. The netlist compiler always prefixes pot split-resistors with `R`.
 

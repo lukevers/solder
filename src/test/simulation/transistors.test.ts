@@ -688,3 +688,30 @@ describe('Fuzz Face preset (AC128 PNP)', () => {
     expect(swing).toBeGreaterThan(0.01);
   });
 });
+
+// ┌────────────────────────────────────────────────────────────────────┐
+// │  MXR DISTORTION+ PRESET — LM741 + 1N270 germanium clipping        │
+// │                                                                    │
+// │  Runs the MXR Distortion+ example through the simulator to         │
+// │  verify the LM741 op-amp and 1N270 germanium diode models work    │
+// │  together in a real pedal circuit.                                │
+// └────────────────────────────────────────────────────────────────────┘
+describe('MXR Distortion+ preset (LM741 + 1N270)', () => {
+  it('produces clipped output signal', async () => {
+    const { distortionPlusNodes, distortionPlusEdges } = await import(
+      '../../lib/examples/distortion-plus'
+    );
+    const { nodes, edges } = makeCircuit(
+      distortionPlusNodes,
+      distortionPlusEdges,
+    );
+    const netlist = compileNetlist(nodes, edges, 0.01, 1000, 0.05);
+    const output = await engine.run(netlist);
+
+    const outputPeak = peak(output.voltageValues, 0.2);
+    expect(outputPeak).toBeGreaterThan(0);
+
+    const swing = acSwing(output.voltageValues, 0.2);
+    expect(swing).toBeGreaterThan(0.01);
+  });
+});

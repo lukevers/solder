@@ -458,7 +458,7 @@ export function Toolbar({
         <div className="flex-1" />
 
         {/* Input / Output button group */}
-        <div className="flex rounded border border-gray-700 overflow-hidden">
+        <div className="flex rounded border border-gray-700 flex-shrink-0">
           {/* Input play/stop */}
           {hasSourceBuffer &&
             (playingOriginal ? (
@@ -489,7 +489,7 @@ export function Toolbar({
             <button
               type="button"
               disabled
-              className="flex items-center gap-1 bg-gray-800 disabled:opacity-50 text-amber-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-gray-800 disabled:opacity-50 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
             >
               <Hourglass size={10} />{' '}
               {sweepStatus === 'running' ? 'Sweeping…' : 'Simulating…'}
@@ -498,7 +498,7 @@ export function Toolbar({
             <button
               type="button"
               onClick={onStop}
-              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
             >
               <Square size={10} /> Stop
             </button>
@@ -506,7 +506,7 @@ export function Toolbar({
             <button
               type="button"
               onClick={onPlayOutput}
-              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-green-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-green-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
             >
               <Play size={10} /> Output
             </button>
@@ -514,7 +514,7 @@ export function Toolbar({
             <button
               type="button"
               onClick={onSimulate}
-              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-amber-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
+              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
             >
               <Play size={10} /> Simulate
             </button>

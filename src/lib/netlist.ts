@@ -264,6 +264,10 @@ function buildCircuitBody(
     lines.push(
       '.model 1N4001 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u)',
     );
+  if (usedDiodeModels.has('1N270'))
+    lines.push(
+      '.model 1N270 D(Is=200n Rs=2 N=1.1 Cjo=1p M=.5 tt=50n BV=100)',
+    );
 
   // BJT model statements
   const usedBJTModels = new Set(

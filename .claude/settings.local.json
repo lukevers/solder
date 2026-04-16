@@ -77,7 +77,8 @@
       "Bash(timeout 8 pnpm dev)",
       "WebFetch(domain:www.electrosmash.com)",
       "WebFetch(domain:en.wikipedia.org)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(curl -s -L --max-time 30 \"https://www.electrosmash.com/mxr-distortion-plus-analysis\")"
     ]
   }
 }
