@@ -1,5 +1,5 @@
 // src/lib/audio-convert.ts
-import type { SimulationOutput } from './spice-engine';
+import type { MultiNodeOutput, SimulationOutput } from './spice-engine';
 
 /**
  * Resamples a variable-step ngspice voltage time series to a fixed-rate
@@ -41,5 +41,51 @@ export function voltageToAudioBuffer(
   const scale = 1 / Math.max(peak, 0.01);
   for (let i = 0; i < n; i++) result[i] *= scale;
 
+  return result;
+}
+
+/**
+ * Resamples a single SPICE voltage trace to a fixed-rate Float32Array.
+ * Unlike voltageToAudioBuffer, does NOT normalise — preserves actual voltages.
+ */
+function resampleTrace(
+  timeValues: Float64Array,
+  voltageValues: Float64Array,
+  sampleRate: number,
+): Float32Array {
+  if (timeValues.length === 0) return new Float32Array(0);
+  const maxTime = timeValues[timeValues.length - 1];
+  const n = Math.max(1, Math.round(maxTime * sampleRate));
+  const result = new Float32Array(n);
+  let j = 0;
+  for (let i = 0; i < n; i++) {
+    const t = i / sampleRate;
+    while (j < timeValues.length - 2 && timeValues[j + 1] <= t) j++;
+    const t0 = timeValues[j];
+    const t1 = timeValues[j + 1] ?? t0;
+    const v0 = voltageValues[j];
+    const v1 = voltageValues[j + 1] ?? v0;
+    if (t1 === t0) {
+      result[i] = v0;
+    } else {
+      const alpha = Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
+      result[i] = v0 + alpha * (v1 - v0);
+    }
+  }
+  return result;
+}
+
+/**
+ * Resamples all traces in a MultiNodeOutput to fixed-rate Float32Arrays.
+ * Returns a map of node name → resampled voltage values (not normalised).
+ */
+export function resampleAllTraces(
+  output: MultiNodeOutput,
+  sampleRate: number,
+): Map<string, Float32Array> {
+  const result = new Map<string, Float32Array>();
+  for (const [name, values] of output.traces) {
+    result.set(name, resampleTrace(output.timeValues, values, sampleRate));
+  }
   return result;
 }

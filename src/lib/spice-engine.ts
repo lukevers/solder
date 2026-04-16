@@ -5,6 +5,11 @@ export type SimulationOutput = {
   voltageValues: Float64Array; // volts at the probed output node, same length
 };
 
+export type MultiNodeOutput = {
+  timeValues: Float64Array;
+  traces: Map<string, Float64Array>; // SPICE node name → voltage values
+};
+
 export interface SpiceEngine {
   /** Initialise the engine. Safe to call multiple times; no-op after first. */
   init(): Promise<void>;

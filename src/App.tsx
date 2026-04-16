@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { AudioPipeline } from './audio/pipeline';
 import { AudioControls } from './components/AudioControls';
+import { CircuitAnalyzer } from './components/CircuitAnalyzer';
 import { ExamplesPanel } from './components/ExamplesPanel';
 import { Inspector } from './components/Inspector';
 import { PedalPanel } from './components/PedalPanel';
@@ -82,6 +83,7 @@ export default function App() {
 
   const [showExamples, setShowExamples] = useState(false);
   const [showWaveformModal, setShowWaveformModal] = useState(false);
+  const [showAnalyzer, setShowAnalyzer] = useState(false);
   const [sourceBuffer, setSourceBuffer] = useState<Float32Array | null>(null);
   const [playingOriginal, setPlayingOriginal] = useState(false);
   const [selection, setSelection] = useState<WaveformSelection | null>(null);
@@ -454,6 +456,8 @@ export default function App() {
         onStop={handleStop}
         playingOriginal={playingOriginal}
         hasSourceBuffer={sourceBuffer !== null}
+        onToggleAnalyzer={() => setShowAnalyzer((v) => !v)}
+        showAnalyzer={showAnalyzer}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -540,6 +544,13 @@ export default function App() {
         </div>
       </div>
 
+      {showAnalyzer && (
+        <CircuitAnalyzer
+          outputBuffer={outputBuffer}
+          simulatedInput={simulatedInput}
+          onClose={() => setShowAnalyzer(false)}
+        />
+      )}
       <StatusBar />
       {showWaveformModal && (
         <WaveformModal

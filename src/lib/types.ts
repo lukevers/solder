@@ -69,6 +69,28 @@ export type SweepResult = {
 // Audio source
 export type AudioSource = { type: 'sample'; name: string } | { type: 'live' };
 
+// Circuit analysis
+export type WaveformType = 'sine' | 'square' | 'triangle' | 'sawtooth';
+
+export type AnalyzeRequest = {
+  type: 'analyze';
+  nodes: Array<ComponentNode>;
+  edges: Array<Edge>;
+  duration: number;
+  frequency: number;
+  amplitude: number;
+  waveform: WaveformType;
+};
+
+export type AnalyzeTraceData = {
+  node: string;
+  values: Float32Array;
+};
+
+export type AnalyzeResponse =
+  | { type: 'result'; traces: Array<AnalyzeTraceData>; sampleRate: number }
+  | { type: 'error'; message: string };
+
 export function isEdgeDC(
   srcType?: ComponentNode['type'],
   tgtType?: ComponentNode['type'],

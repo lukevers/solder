@@ -6,6 +6,7 @@ import {
   Hourglass,
   Play,
   Plus,
+  ScanLine,
   Square,
   Upload,
   X,
@@ -102,6 +103,8 @@ type ToolbarProps = {
   onStop: () => void;
   playingOriginal: boolean;
   hasSourceBuffer: boolean;
+  onToggleAnalyzer: () => void;
+  showAnalyzer: boolean;
 };
 
 export function Toolbar({
@@ -113,6 +116,8 @@ export function Toolbar({
   onStop,
   playingOriginal,
   hasSourceBuffer,
+  onToggleAnalyzer,
+  showAnalyzer,
 }: ToolbarProps) {
   const {
     addNode,
@@ -420,6 +425,20 @@ export function Toolbar({
             </button>
           )}
         </div>
+
+        {/* Analyzer toggle */}
+        <button
+          type="button"
+          onClick={onToggleAnalyzer}
+          className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded font-mono transition-colors flex-shrink-0 ${
+            showAnalyzer
+              ? 'bg-green-950 border border-green-800 text-green-400'
+              : 'bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200'
+          }`}
+        >
+          <ScanLine size={12} />
+          Oscilloscope
+        </button>
       </div>
     </div>
   );

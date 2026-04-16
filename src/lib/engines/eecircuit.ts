@@ -1,6 +1,10 @@
 // src/lib/engines/eecircuit.ts
 import type { ResultType, Simulation } from 'eecircuit-engine';
-import type { SimulationOutput, SpiceEngine } from '../spice-engine';
+import type {
+  MultiNodeOutput,
+  SimulationOutput,
+  SpiceEngine,
+} from '../spice-engine';
 
 /**
  * Extracts time and voltage arrays from an eecircuit-engine ResultType.
@@ -20,6 +24,33 @@ export function extractSimulationOutput(result: ResultType): SimulationOutput {
   };
 }
 
+/**
+ * Extracts time and ALL voltage traces from an eecircuit-engine ResultType.
+ * Used by circuit analysis to probe multiple nodes simultaneously.
+ */
+export function extractMultiNodeOutput(result: ResultType): MultiNodeOutput {
+  if (result.dataType !== 'real') {
+    throw new Error('Expected real (transient) simulation result');
+  }
+  const timeEntry = result.data.find((d) => d.type === 'time');
+  if (!timeEntry) throw new Error('Simulation output missing time axis');
+
+  const traces = new Map<string, Float64Array>();
+  for (const d of result.data) {
+    if (d.type === 'voltage') {
+      // d.name is like "v(n1)" — extract the node name
+      const match = d.name.match(/^v\((.+)\)$/i);
+      const nodeName = match ? match[1] : d.name;
+      traces.set(nodeName, new Float64Array(d.values));
+    }
+  }
+
+  return {
+    timeValues: new Float64Array(timeEntry.values),
+    traces,
+  };
+}
+
 export class EECircuitEngine implements SpiceEngine {
   private sim: Simulation | null = null;
 
@@ -36,5 +67,13 @@ export class EECircuitEngine implements SpiceEngine {
     this.sim.setNetList(netlist);
     const result = await this.sim.runSim();
     return extractSimulationOutput(result);
+  }
+
+  async runAnalysis(netlist: string): Promise<MultiNodeOutput> {
+    if (!this.sim)
+      throw new Error('EECircuitEngine not initialised — call init() first');
+    this.sim.setNetList(netlist);
+    const result = await this.sim.runSim();
+    return extractMultiNodeOutput(result);
   }
 }

@@ -1,7 +1,7 @@
 // src/lib/netlist.ts
 import type { Edge } from '@xyflow/react';
 import { LM741_SUBCKT, TL072_SUBCKT } from './spice-models';
-import type { ComponentNode, PotTaper } from './types';
+import type { ComponentNode, PotTaper, WaveformType } from './types';
 
 /**
  * Time-step rate used for SPICE transient analysis.
@@ -210,15 +210,21 @@ export function applyTaper(
   }
 }
 
-export function compileNetlist(
+/**
+ * Internal helper: builds the shared circuit body (models, components, probe)
+ * used by both compileNetlist and compileAnalysisNetlist.
+ */
+function buildCircuitBody(
   nodes: Array<ComponentNode>,
   edges: Array<Edge>,
-  duration = 1.0,
-  frequency = 1000,
-  amplitude = 1.0,
-  inputBuffer?: Float32Array,
-  inputSampleRate = 44100,
-): string {
+): {
+  lines: Array<string>;
+  portToNode: Map<string, string>;
+  inputPos: string;
+  inputNeg: string;
+  outputPos: string;
+  outputNeg: string;
+} {
   const portToNode = buildPortGroups(nodes, edges);
 
   const getNode = (nodeId: string, handle: string): string =>
@@ -255,24 +261,6 @@ export function compileNetlist(
   const inputNeg = getNode(inputNode.id, 'neg');
   const outputPos = getNode(outputNode.id, 'pos');
   const outputNeg = getNode(outputNode.id, 'neg');
-
-  // Input source: PWL from real audio if provided, otherwise SIN test tone
-  if (inputBuffer && inputBuffer.length > 0) {
-    lines.push(
-      buildPwlSource(
-        inputPos,
-        inputNeg,
-        inputBuffer,
-        inputSampleRate,
-        amplitude,
-        duration,
-      ),
-    );
-  } else {
-    lines.push(
-      `Vin ${inputPos} ${inputNeg} SIN(0 ${amplitude} ${frequency})`,
-    );
-  }
 
   // Track emitted power sources to deduplicate (multiple VCC symbols = one source)
   const emittedPower = new Set<string>();
@@ -338,6 +326,39 @@ export function compileNetlist(
   // and has negligible effect on real circuits
   lines.push(`Rprobe ${outputPos} ${outputNeg} 1000Meg`);
 
+  return { lines, portToNode, inputPos, inputNeg, outputPos, outputNeg };
+}
+
+export function compileNetlist(
+  nodes: Array<ComponentNode>,
+  edges: Array<Edge>,
+  duration = 1.0,
+  frequency = 1000,
+  amplitude = 1.0,
+  inputBuffer?: Float32Array,
+  inputSampleRate = 44100,
+): string {
+  const { lines, inputPos, inputNeg, outputPos } = buildCircuitBody(
+    nodes,
+    edges,
+  );
+
+  // Input source: PWL from real audio if provided, otherwise SIN test tone
+  if (inputBuffer && inputBuffer.length > 0) {
+    lines.push(
+      buildPwlSource(
+        inputPos,
+        inputNeg,
+        inputBuffer,
+        inputSampleRate,
+        amplitude,
+        duration,
+      ),
+    );
+  } else {
+    lines.push(`Vin ${inputPos} ${inputNeg} SIN(0 ${amplitude} ${frequency})`);
+  }
+
   // Save only the output voltage; without this ngspice may save all internal nodes
   lines.push(`.save V(${outputPos})`);
 
@@ -345,8 +366,121 @@ export function compileNetlist(
   const step = (1 / SPICE_SAMPLE_RATE).toExponential(6);
   const stop = duration.toExponential(6);
   lines.push(`.tran ${step} ${stop}`);
-
   lines.push('.end');
 
   return lines.join('\n');
+}
+
+/** Builds a SPICE voltage source line for a given waveform type. */
+function buildWaveformSource(
+  nodePos: string,
+  nodeNeg: string,
+  waveform: WaveformType,
+  frequency: number,
+  amplitude: number,
+): string {
+  const period = 1 / frequency;
+  switch (waveform) {
+    case 'square':
+      return `Vin ${nodePos} ${nodeNeg} PULSE(${-amplitude} ${amplitude} 0 1n 1n ${period / 2} ${period})`;
+    case 'triangle':
+      return `Vin ${nodePos} ${nodeNeg} PULSE(${-amplitude} ${amplitude} 0 ${period / 2} ${period / 2} 1n ${period})`;
+    case 'sawtooth':
+      return `Vin ${nodePos} ${nodeNeg} PULSE(${-amplitude} ${amplitude} 0 ${period} 1n 1n ${period})`;
+    default:
+      return `Vin ${nodePos} ${nodeNeg} SIN(0 ${amplitude} ${frequency})`;
+  }
+}
+
+/**
+ * Compiles a circuit for analysis: saves ALL node voltages and uses a
+ * configurable test waveform instead of audio input.
+ */
+export function compileAnalysisNetlist(
+  nodes: Array<ComponentNode>,
+  edges: Array<Edge>,
+  duration: number,
+  frequency: number,
+  amplitude: number,
+  waveform: WaveformType,
+): { netlist: string; nodeNames: Array<string> } {
+  const { lines, portToNode, inputPos, inputNeg } = buildCircuitBody(
+    nodes,
+    edges,
+  );
+
+  // Configurable waveform source
+  lines.push(
+    buildWaveformSource(inputPos, inputNeg, waveform, frequency, amplitude),
+  );
+
+  // Save all non-ground, non-unconnected node voltages
+  const allNodes = [...new Set(portToNode.values())].filter(
+    (n) => n !== '0' && n !== 'UNCONNECTED',
+  );
+  if (allNodes.length > 0) {
+    lines.push(`.save ${allNodes.map((n) => `V(${n})`).join(' ')}`);
+  }
+
+  const step = (1 / SPICE_SAMPLE_RATE).toExponential(6);
+  const stop = duration.toExponential(6);
+  lines.push(`.tran ${step} ${stop}`);
+  lines.push('.end');
+
+  return { netlist: lines.join('\n'), nodeNames: allNodes };
+}
+
+/**
+ * Returns human-readable labels for each SPICE node by listing the component
+ * ports connected to it. Also flags input/output nodes.
+ */
+export function getNodeLabels(
+  nodes: Array<ComponentNode>,
+  edges: Array<Edge>,
+): Map<string, string> {
+  const portToNode = buildPortGroups(nodes, edges);
+  const nodeToLabels = new Map<string, Array<string>>();
+
+  for (const [port, spiceNode] of portToNode) {
+    if (spiceNode === '0' || spiceNode === 'UNCONNECTED') continue;
+    const [nodeId] = port.split('|');
+    const component = nodes.find((n) => n.id === nodeId);
+    if (!component) continue;
+    // Skip types that don't contribute useful labels
+    if (
+      component.type === 'ground' ||
+      component.type === 'audiin' ||
+      component.type === 'audiout'
+    )
+      continue;
+    const label = component.data.label;
+    if (!nodeToLabels.has(spiceNode)) nodeToLabels.set(spiceNode, []);
+    nodeToLabels.get(spiceNode)!.push(label);
+  }
+
+  const result = new Map<string, string>();
+  for (const [spiceNode, labels] of nodeToLabels) {
+    const unique = [...new Set(labels)];
+    result.set(spiceNode, unique.slice(0, 3).join(' / '));
+  }
+
+  // Mark input/output nodes
+  const inputNode = nodes.find((n) => n.type === 'audiin');
+  const outputNode = nodes.find((n) => n.type === 'audiout');
+  if (inputNode) {
+    const pos = portToNode.get(`${inputNode.id}|pos`);
+    if (pos && pos !== '0') {
+      const existing = result.get(pos);
+      result.set(pos, existing ? `${existing} [IN]` : 'Input');
+    }
+  }
+  if (outputNode) {
+    const pos = portToNode.get(`${outputNode.id}|pos`);
+    if (pos && pos !== '0') {
+      const existing = result.get(pos);
+      result.set(pos, existing ? `${existing} [OUT]` : 'Output');
+    }
+  }
+
+  return result;
 }
