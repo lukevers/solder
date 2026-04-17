@@ -42,7 +42,7 @@ export function PotNode({ id, data, selected }: NodeProps) {
         style={{ left: '50%', background: '#a78bfa' }}
       />
 
-      <svg width="80" height="60" viewBox="0 0 80 60">
+      <svg width="80" height="60" viewBox="0 0 80 60" overflow="visible">
         {/* Leads at y=20 to match handle position */}
         <line
           x1="0"

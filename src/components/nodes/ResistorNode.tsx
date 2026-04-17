@@ -14,7 +14,7 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
         id="a"
         style={HANDLE_STYLE}
       />
-      <svg width="80" height="40" viewBox="0 0 80 40">
+      <svg width="80" height="40" viewBox="0 0 80 40" overflow="visible">
         <line
           x1="0"
           y1="20"

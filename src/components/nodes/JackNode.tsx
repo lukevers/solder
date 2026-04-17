@@ -13,7 +13,7 @@ export function JackNode({ id, data, selected }: NodeProps) {
     <NodeShell id={id} width={80} height={60}>
       {isIn ? (
         <>
-          <svg width="80" height="60" viewBox="0 0 80 60">
+          <svg width="80" height="60" viewBox="0 0 80 60" overflow="visible">
             <rect
               x="2"
               y="4"
@@ -86,7 +86,7 @@ export function JackNode({ id, data, selected }: NodeProps) {
             id="neg"
             style={{ top: 44, background: '#4b5563' }}
           />
-          <svg width="80" height="60" viewBox="0 0 80 60">
+          <svg width="80" height="60" viewBox="0 0 80 60" overflow="visible">
             <rect
               x="2"
               y="4"

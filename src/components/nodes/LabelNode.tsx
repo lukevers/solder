@@ -10,7 +10,7 @@ export function LabelNode({ id, data, selected }: NodeProps) {
 
   return (
     <NodeShell id={id} width={80} height={28}>
-      <svg width="80" height="28" viewBox="0 0 80 28">
+      <svg width="80" height="28" viewBox="0 0 80 28" overflow="visible">
         {/* Flag shape: rectangle with a triangular notch on the right */}
         <path
           d="M2 2 H68 L78 14 L68 26 H2 Z"

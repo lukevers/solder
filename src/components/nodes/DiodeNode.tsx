@@ -15,7 +15,7 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
         id="a"
         style={HANDLE_STYLE}
       />
-      <svg width="60" height="40" viewBox="0 0 60 40">
+      <svg width="60" height="40" viewBox="0 0 60 40" overflow="visible">
         <line
           x1="0"
           y1="20"

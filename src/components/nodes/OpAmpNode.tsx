@@ -45,7 +45,7 @@ export function OpAmpNode({ id, data, selected }: NodeProps) {
         style={HANDLE_STYLE}
       />
 
-      <svg width="80" height="80" viewBox="0 0 80 80">
+      <svg width="80" height="80" viewBox="0 0 80 80" overflow="visible">
         <polygon
           points="10,5 10,75 70,40"
           fill="#1f2937"

@@ -24,7 +24,7 @@ export function CapPolarNode({ id, data, selected }: NodeProps) {
         id="pos"
         style={HANDLE_STYLE}
       />
-      <svg width="60" height="40" viewBox="0 0 60 40">
+      <svg width="60" height="40" viewBox="0 0 60 40" overflow="visible">
         {/* Left wire */}
         <line x1="0" y1="20" x2="22" y2="20" stroke={wire} strokeWidth="1.5" />
         {/* Flat plate (positive side) */}

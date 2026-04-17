@@ -32,7 +32,7 @@ export function BJTNode({ id, data, selected }: NodeProps) {
         style={{ top: 45, background: '#4b5563' }}
       />
 
-      <svg width="60" height="60" viewBox="0 0 60 60">
+      <svg width="60" height="60" viewBox="0 0 60 60" overflow="visible">
         {/* Base wire */}
         <line
           x1="0"

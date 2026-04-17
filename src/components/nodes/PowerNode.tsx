@@ -8,7 +8,7 @@ export function PowerNode({ id, data, selected }: NodeProps) {
 
   return (
     <NodeShell id={id} width={40} height={40}>
-      <svg width="40" height="40" viewBox="0 0 40 40">
+      <svg width="40" height="40" viewBox="0 0 40 40" overflow="visible">
         <circle
           cx="20"
           cy="20"
