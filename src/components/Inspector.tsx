@@ -679,13 +679,14 @@ function RotationControl({
 }
 
 export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
-  const { nodes, edges, selectedNodeId, selectedEdgeId, deleteNode } = useStore(
+  const { nodes, edges, selectedNodeId, selectedEdgeId, deleteNode, deleteEdge } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
       edges: s.edges,
       selectedNodeId: s.selectedNodeId,
       selectedEdgeId: s.selectedEdgeId,
       deleteNode: s.deleteNode,
+      deleteEdge: s.deleteEdge,
     })),
   );
 
@@ -698,6 +699,14 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
           Inspector · trace
         </div>
         <EdgeInspector edgeId={selectedEdgeId} nodes={nodes} edges={edges} />
+        <button
+          type="button"
+          onClick={() => deleteEdge(selectedEdgeId)}
+          className="flex items-center justify-center gap-1.5 w-full mt-2 text-xs py-1.5 rounded font-mono transition-colors bg-red-950 border border-red-800 text-red-400 hover:bg-red-900 hover:text-red-300"
+        >
+          <Trash2 size={11} />
+          Delete
+        </button>
       </div>
     );
   }
