@@ -73,7 +73,7 @@ export function ExamplesPanel() {
             className={`flex-1 text-xs font-mono py-2 transition-colors ${
               activeTab === tab.id
                 ? 'text-gray-200 border-b-2 border-blue-500'
-                : 'text-gray-500 hover:text-gray-400'
+                : 'text-gray-500 hover:text-gray-400 border-b-2 border-transparent'
             }`}
           >
             {tab.label}

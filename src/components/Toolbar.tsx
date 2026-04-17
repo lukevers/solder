@@ -397,7 +397,7 @@ export function Toolbar({
                 className={`flex items-center gap-1.5 px-3 cursor-pointer text-xs font-sans transition-colors flex-shrink-0 ${
                   isActive
                     ? 'bg-gray-800 text-gray-100 border-b-2 border-blue-500 -mb-px'
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800 border-b-2 border-transparent -mb-px'
                 }`}
               >
                 {editingTabId === tab.id ? (
