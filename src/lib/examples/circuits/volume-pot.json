@@ -3,7 +3,7 @@
   "id": "volumepot",
   "name": "Volume Pot",
   "description": "Simple voltage divider using a logarithmic potentiometer. The wiper taps a fraction of the input signal — turn the knob to attenuate.",
-  "tags": ["volume", "attenuator", "basic"],
+  "tags": ["volume", "attenuator"],
   "category": "circuits",
   "nodes": [
     {
@@ -113,6 +113,26 @@
       },
       "selected": false,
       "dragging": false
+    },
+    {
+      "id": "vp-note-1",
+      "type": "stickynote",
+      "position": { "x": 60, "y": 100 },
+      "data": {
+        "label": "What does this do?",
+        "text": "A volume pot is a voltage divider — it splits the signal between the output and ground. Turn it down and more signal goes to ground instead.",
+        "color": "blue"
+      }
+    },
+    {
+      "id": "vp-note-2",
+      "type": "stickynote",
+      "position": { "x": 260, "y": 100 },
+      "data": {
+        "label": "Log taper",
+        "text": "This pot uses a logarithmic taper, which matches how our ears perceive loudness. A linear pot would feel like most of the change happens at one end.",
+        "color": "green"
+      }
     }
   ],
   "edges": [

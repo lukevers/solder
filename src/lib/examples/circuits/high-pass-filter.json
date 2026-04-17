@@ -3,7 +3,7 @@
   "id": "highpassfilter",
   "name": "High Pass Filter",
   "description": "First-order CR high-pass filter. The series capacitor blocks DC and low frequencies. The CUTOFF pot shunts the signal to ground, controlling how much bass passes through.",
-  "tags": ["filter", "basic"],
+  "tags": ["filter"],
   "category": "circuits",
   "nodes": [
     {
@@ -33,7 +33,7 @@
     {
       "id": "hpf-pot",
       "type": "pot",
-      "position": { "x": 260, "y": 290 },
+      "position": { "x": 260, "y": 300 },
       "rotation": 90,
       "data": { "label": "CUTOFF", "ohms": 100000, "position": 0.5, "taper": "linear" }
     },
@@ -46,14 +46,44 @@
     {
       "id": "hpf-out",
       "type": "jack",
-      "position": { "x": 430, "y": 200 },
+      "position": { "x": 480, "y": 200 },
       "data": { "label": "OUTPUT", "direction": "out" }
     },
     {
       "id": "hpf-gnd-out",
       "type": "ground",
-      "position": { "x": 380, "y": 430 },
+      "position": { "x": 410, "y": 440 },
       "data": { "label": "GND" }
+    },
+    {
+      "id": "hpf-note-1",
+      "type": "stickynote",
+      "position": { "x": 40, "y": 90 },
+      "data": {
+        "label": "What does this do?",
+        "text": "A high-pass filter cuts bass and lets treble through. Useful for removing low-end rumble or tightening up a signal.",
+        "color": "blue"
+      }
+    },
+    {
+      "id": "hpf-note-2",
+      "type": "stickynote",
+      "position": { "x": 220, "y": 90 },
+      "data": {
+        "label": "How it works",
+        "text": "The capacitor blocks DC and low frequencies. The pot shunts remaining signal to ground — it controls the cutoff point.",
+        "color": "green"
+      }
+    },
+    {
+      "id": "hpf-note-3",
+      "type": "stickynote",
+      "position": { "x": 400, "y": 90 },
+      "data": {
+        "label": "LPF vs HPF",
+        "text": "Compare this to the Low Pass Filter example. They use the same parts (R + C) but swapped — the order determines what gets cut!",
+        "color": "purple"
+      }
     }
   ],
   "edges": [

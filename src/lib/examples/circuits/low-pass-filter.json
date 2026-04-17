@@ -3,7 +3,7 @@
   "id": "lowpassfilter",
   "name": "Low Pass Filter",
   "description": "First-order RC low-pass filter. The CUTOFF pot acts as a variable series resistor — turning it up raises the cutoff frequency, letting more treble through.",
-  "tags": ["filter", "basic"],
+  "tags": ["filter"],
   "category": "circuits",
   "nodes": [
     {
@@ -54,6 +54,36 @@
       "type": "ground",
       "position": { "x": 380, "y": 430 },
       "data": { "label": "GND" }
+    },
+    {
+      "id": "lpf-note-1",
+      "type": "stickynote",
+      "position": { "x": 140, "y": 70 },
+      "data": {
+        "label": "What does this do?",
+        "text": "A low-pass filter lets bass and mids through but cuts treble. Like turning the tone knob down on a guitar.",
+        "color": "blue"
+      }
+    },
+    {
+      "id": "lpf-note-2",
+      "type": "stickynote",
+      "position": { "x": 320, "y": 70 },
+      "data": {
+        "label": "How it works",
+        "text": "The resistor (pot) and capacitor form a voltage divider. High frequencies see the cap as a short to ground, so they get cut.",
+        "color": "green"
+      }
+    },
+    {
+      "id": "lpf-note-3",
+      "type": "stickynote",
+      "position": { "x": 320, "y": 170 },
+      "data": {
+        "label": "Try it",
+        "text": "Turn the CUTOFF pot up to raise the cutoff frequency and let more treble through. Lower values = darker tone.",
+        "color": "yellow"
+      }
     }
   ],
   "edges": [

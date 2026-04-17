@@ -3,7 +3,7 @@
   "id": "gainstage",
   "name": "Gain Stage",
   "description": "Inverting op-amp gain stage with TL072. Gain is set by the GAIN pot / R1 ratio (up to 100k/10k = 10x). Includes bias network for single-supply operation.",
-  "tags": ["amplifier", "op-amp", "basic"],
+  "tags": ["amplifier", "op-amp"],
   "category": "circuits",
   "nodes": [
     {
@@ -363,6 +363,46 @@
       },
       "selected": false,
       "dragging": false
+    },
+    {
+      "id": "gs-note-1",
+      "type": "stickynote",
+      "position": { "x": 40, "y": 300 },
+      "data": {
+        "label": "What does this do?",
+        "text": "An inverting gain stage amplifies your signal using an op-amp. The GAIN pot controls how much louder the output is compared to the input.",
+        "color": "blue"
+      }
+    },
+    {
+      "id": "gs-note-2",
+      "type": "stickynote",
+      "position": { "x": 710, "y": 620 },
+      "data": {
+        "label": "Gain = Rf / Ri",
+        "text": "The gain is the feedback resistor (GAIN pot) divided by the input resistor (R1). At max, that's 100k/10k = 10x amplification.",
+        "color": "green"
+      }
+    },
+    {
+      "id": "gs-note-3",
+      "type": "stickynote",
+      "position": { "x": 560, "y": 70 },
+      "data": {
+        "label": "Bias network",
+        "text": "RB1, RB2, and CB set the op-amp's + input to half the supply voltage (4.5V). This lets the signal swing both positive and negative around that midpoint.",
+        "color": "yellow"
+      }
+    },
+    {
+      "id": "gs-note-4",
+      "type": "stickynote",
+      "position": { "x": 220, "y": 300 },
+      "data": {
+        "label": "Coupling caps",
+        "text": "C1 and C2 block DC so only the audio signal passes. Without them, the bias voltage would leak into the input and output.",
+        "color": "orange"
+      }
     }
   ],
   "edges": [

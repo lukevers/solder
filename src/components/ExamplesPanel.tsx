@@ -12,6 +12,7 @@ function snapNodes(nodes: Array<ComponentNode>): Array<ComponentNode> {
   return nodes.map((n) => {
     // Junctions are 20×20 with handles at 10px offsets, so they need
     // half-grid precision to align their handles with the main grid.
+    if (n.type === 'stickynote') return n;
     const g = n.type === 'junction' ? GRID / 2 : GRID;
     return {
       ...n,

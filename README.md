@@ -5,13 +5,14 @@ A visual circuit editor and audio effects simulator. Place and connect circuit c
 ## Features
 
 **Circuit Editor**
-- Drag-and-drop component palette: resistors, capacitors, op-amps (TL072, LM741), diodes (1N914, 1N4001), potentiometers, power supplies, ground
+- Drag-and-drop component palette: resistors, capacitors, op-amps (TL072, LM741), diodes (1N914, 1N4001, 1N270), BJTs, JFETs, MOSFETs, potentiometers, power supplies, ground
 - Net labels for KiCad-style global connections (place multiple labels with the same name and they share a net automatically)
 - KiCad-style power pins (multiple GND/VCC symbols share the same net without explicit wires)
 - Drop connections onto existing wires to join a net
 - Undo/redo (`Cmd/Ctrl+Z`, `Cmd/Ctrl+Shift+Z`), multi-tab circuits, JSON import/export
 - Click traces or components to inspect and edit values in the sidebar
 - Potentiometers have visual knob controls with animated SVG wiper
+- Sticky notes with configurable color, text size, and width for annotating circuits
 - Circuit state persists across browser sessions via local storage
 
 **Simulation**
@@ -25,8 +26,10 @@ A visual circuit editor and audio effects simulator. Place and connect circuit c
 - Expandable modal with seek (click), scrub (drag), and region selection
 - Animated playback cursor tied to audio position
 
-**Presets**
-- ProCo RAT distortion pedal example circuit
+**Example Circuits**
+- Pedals: ProCo RAT, Fuzz Face, MXR Distortion+
+- Circuits: low-pass filter, high-pass filter, gain stage, soft clipping, hard clipping, volume pot
+- Circuit examples include beginner-friendly sticky notes explaining how each circuit works
 
 ## Getting Started
 

@@ -57,7 +57,7 @@ Ground and Power nodes act as global net labels (like KiCad power flags). Users 
 Connections can also be dropped directly onto existing wires (edges) to join that net without targeting a specific handle.
 
 ### Component nodes (`src/components/nodes/`)
-One renderer per circuit element type: `ResistorNode`, `CapacitorNode`, `OpAmpNode`, `DiodeNode`, `PotentiometerNode`, `PowerNode`, `GroundNode`, `AudioInNode`, `AudioOutNode`.
+One renderer per circuit element type: `ResistorNode`, `CapacitorNode`, `OpAmpNode`, `DiodeNode`, `PotentiometerNode`, `PowerNode`, `GroundNode`, `AudioInNode`, `AudioOutNode`, `StickyNoteNode`.
 
 ### Audio pipeline (`src/audio/pipeline.ts`)
 Web Audio API integration: loads `.wav` samples from `/public/samples/`, exposes `getSampleData(name)` to get raw `Float32Array`, uses `ScriptProcessorNode` for live input buffer callbacks.

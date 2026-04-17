@@ -17,6 +17,8 @@ import {
   type MOSFETModel,
   type PotData,
   type StickyNoteColor,
+  type StickyNoteSize,
+  type StickyNoteWidth,
 } from '../lib/types';
 import {
   CAP_MULTIPLIERS,
@@ -633,8 +635,10 @@ function StickyNoteInspector({
   node: Extract<ComponentNode, { type: 'stickynote' }>;
 }) {
   const updateNodeData = useStore((s) => s.updateNodeData);
-  const { label, text, color } = node.data;
+  const { label, text, color, size, width } = node.data;
   const current = color ?? 'yellow';
+  const currentSize = size ?? 'sm';
+  const currentWidth = width ?? 'normal';
 
   return (
     <>
@@ -647,6 +651,8 @@ function StickyNoteInspector({
               label: e.target.value,
               text,
               color: current,
+              size: currentSize,
+              width: currentWidth,
             })
           }
         />
@@ -661,9 +667,63 @@ function StickyNoteInspector({
               label,
               text: e.target.value,
               color: current,
+              size: currentSize,
+              width: currentWidth,
             })
           }
         />
+      </Field>
+      <Field label="Size">
+        <div className="flex gap-1">
+          {(['xs', 'sm', 'md'] as Array<StickyNoteSize>).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() =>
+                updateNodeData(node.id, {
+                  label,
+                  text,
+                  color: current,
+                  size: s,
+                  width: currentWidth,
+                })
+              }
+              className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase transition-colors ${
+                currentSize === s
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </Field>
+      <Field label="Width">
+        <div className="flex gap-1">
+          {(['slim', 'normal'] as Array<StickyNoteWidth>).map((w) => (
+            <button
+              key={w}
+              type="button"
+              onClick={() =>
+                updateNodeData(node.id, {
+                  label,
+                  text,
+                  color: current,
+                  size: currentSize,
+                  width: w,
+                })
+              }
+              className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase transition-colors ${
+                currentWidth === w
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+              }`}
+            >
+              {w}
+            </button>
+          ))}
+        </div>
       </Field>
       <Field label="Color">
         <div className="flex gap-1.5">
@@ -672,7 +732,13 @@ function StickyNoteInspector({
               key={opt.id}
               type="button"
               onClick={() =>
-                updateNodeData(node.id, { label, text, color: opt.id })
+                updateNodeData(node.id, {
+                  label,
+                  text,
+                  color: opt.id,
+                  size: currentSize,
+                  width: currentWidth,
+                })
               }
               className={`w-5 h-5 rounded-full border-2 transition-colors ${
                 current === opt.id
@@ -849,6 +915,19 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
         <Trash2 size={11} />
         Delete
       </button>
+      <div className="mt-2 text-[10px] text-gray-600 font-mono flex justify-between">
+        <span>
+          X: {Math.round(selected.position.x)}, Y:{' '}
+          {Math.round(selected.position.y)}
+        </span>
+        <span
+          className="cursor-pointer hover:text-gray-400 transition-colors"
+          title="Click to copy"
+          onClick={() => navigator.clipboard.writeText(selected.id)}
+        >
+          ID: {selected.id}
+        </span>
+      </div>
     </div>
   );
 }

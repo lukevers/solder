@@ -25,10 +25,14 @@ export type StickyNoteColor =
   | 'pink'
   | 'purple'
   | 'orange';
+export type StickyNoteSize = 'xs' | 'sm' | 'md';
+export type StickyNoteWidth = 'slim' | 'normal';
 export type StickyNoteData = {
   label: string;
   text: string;
   color?: StickyNoteColor;
+  size?: StickyNoteSize;
+  width?: StickyNoteWidth;
 };
 export type JunctionData = { label: string };
 export type BJTModel = '2N3904' | '2N3906' | 'AC128';

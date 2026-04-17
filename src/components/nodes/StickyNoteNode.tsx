@@ -1,6 +1,10 @@
 // src/components/nodes/StickyNoteNode.tsx
 import type { NodeProps } from '@xyflow/react';
-import type { StickyNoteColor, StickyNoteData } from '../../lib/types';
+import type {
+  StickyNoteColor,
+  StickyNoteData,
+  StickyNoteSize,
+} from '../../lib/types';
 import { useStore } from '../../store';
 
 export const STICKY_COLORS: Record<
@@ -64,21 +68,29 @@ export const STICKY_COLORS: Record<
   },
 };
 
+const SIZE_CLASSES: Record<StickyNoteSize, string> = {
+  xs: 'text-[5px] leading-tight',
+  sm: 'text-[7px] leading-snug',
+  md: 'text-[10px] leading-snug',
+};
+
 export function StickyNoteNode({ id, data, selected }: NodeProps) {
   const d = data as StickyNoteData;
   const selectNode = useStore((s) => s.selectNode);
   const c = STICKY_COLORS[d.color ?? 'yellow'];
+  const sizeClass = SIZE_CLASSES[d.size ?? 'sm'];
+  const w = d.width === 'slim' ? 80 : 160;
 
   return (
     <div
       onClick={() => selectNode(id)}
       className="cursor-pointer"
-      style={{ width: 160, minHeight: 80 }}
+      style={{ width: w, minHeight: 80 }}
     >
       <div
         className="rounded overflow-hidden"
         style={{
-          width: 160,
+          width: w,
           minHeight: 80,
           background: selected ? c.bgSelected : c.bg,
           border: selected
@@ -97,7 +109,7 @@ export function StickyNoteNode({ id, data, selected }: NodeProps) {
           {d.label}
         </div>
         <div
-          className="px-2 py-1.5 text-xs font-sans leading-snug whitespace-pre-wrap break-words"
+          className={`px-2 py-1.5 font-sans whitespace-pre-wrap break-words ${sizeClass}`}
           style={{ color: c.text }}
         >
           {d.text}
