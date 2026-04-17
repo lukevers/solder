@@ -556,7 +556,7 @@ function SweepButton({
       type="button"
       onClick={() => onSweep(nodeId)}
       disabled={busy}
-      className="w-full mt-1 text-xs py-1.5 rounded font-mono transition-colors bg-amber-950 border border-amber-700 text-amber-300 hover:bg-amber-900 disabled:opacity-40 disabled:cursor-not-allowed"
+      className="w-full -mt-2 mb-3 text-xs py-1.5 rounded font-mono transition-colors bg-amber-950 border border-amber-700 text-amber-300 hover:bg-amber-900 disabled:opacity-40 disabled:cursor-not-allowed"
     >
       {sweepStatus === 'running'
         ? 'Sweeping…'

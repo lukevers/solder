@@ -6,6 +6,9 @@ import { EECircuitEngine } from '../lib/engines/eecircuit';
 import { compileAnalysisNetlist } from '../lib/netlist';
 import type { AnalyzeRequest, AnalyzeResponse } from '../lib/types';
 
+/** Maximum total bytes we allow the resampled trace set to occupy (~128 MB). */
+const MAX_TRACE_BYTES = 128 * 1024 * 1024;
+
 const engine = new EECircuitEngine();
 
 self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
@@ -22,6 +25,17 @@ self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
       waveform,
     );
     const output = await engine.runAnalysis(netlist);
+
+    // Pre-flight memory estimate: traceCount * samplesPerTrace * 4 bytes
+    const maxTime = output.timeValues[output.timeValues.length - 1] ?? 0;
+    const samplesPerTrace = Math.round(maxTime * SAMPLE_RATE);
+    const estimatedBytes = output.traces.size * samplesPerTrace * 4;
+    if (estimatedBytes > MAX_TRACE_BYTES) {
+      throw new Error(
+        `Analysis would allocate ~${Math.round(estimatedBytes / 1024 / 1024)} MB for ${output.traces.size} traces. Reduce circuit complexity or duration.`,
+      );
+    }
+
     const resampled = resampleAllTraces(output, SAMPLE_RATE);
 
     const traces = [...resampled.entries()].map(([node, values]) => ({

@@ -1,6 +1,12 @@
 // src/lib/audio-convert.ts
 import type { MultiNodeOutput, SimulationOutput } from './spice-engine';
 
+/** Maximum resampled samples per trace (≈45 seconds at 44.1 kHz, ~8 MB). */
+const MAX_RESAMPLE_SAMPLES = 2_000_000;
+
+/** Maximum number of node traces to resample in a single analysis run. */
+const MAX_TRACES = 64;
+
 /**
  * Resamples a variable-step ngspice voltage time series to a fixed-rate
  * Float32Array at `sampleRate` Hz, then normalises to [-1, 1].
@@ -13,7 +19,10 @@ export function voltageToAudioBuffer(
   if (timeValues.length === 0) return new Float32Array(0);
 
   const maxTime = timeValues[timeValues.length - 1];
-  const n = Math.max(1, Math.round(maxTime * sampleRate));
+  const n = Math.min(
+    Math.max(1, Math.round(maxTime * sampleRate)),
+    MAX_RESAMPLE_SAMPLES,
+  );
   const result = new Float32Array(n);
 
   let j = 0;
@@ -55,7 +64,10 @@ function resampleTrace(
 ): Float32Array {
   if (timeValues.length === 0) return new Float32Array(0);
   const maxTime = timeValues[timeValues.length - 1];
-  const n = Math.max(1, Math.round(maxTime * sampleRate));
+  const n = Math.min(
+    Math.max(1, Math.round(maxTime * sampleRate)),
+    MAX_RESAMPLE_SAMPLES,
+  );
   const result = new Float32Array(n);
   let j = 0;
   for (let i = 0; i < n; i++) {
@@ -84,8 +96,11 @@ export function resampleAllTraces(
   sampleRate: number,
 ): Map<string, Float32Array> {
   const result = new Map<string, Float32Array>();
+  let count = 0;
   for (const [name, values] of output.traces) {
+    if (count >= MAX_TRACES) break;
     result.set(name, resampleTrace(output.timeValues, values, sampleRate));
+    count++;
   }
   return result;
 }

@@ -6,6 +6,12 @@ import type {
   SpiceEngine,
 } from '../spice-engine';
 
+/** Maximum time (ms) a single simulation is allowed to run before we abort. */
+const SIM_TIMEOUT_MS = 60_000;
+
+/** Maximum number of data points allowed in a single SPICE output vector. */
+const MAX_SPICE_POINTS = 5_000_000;
+
 /**
  * Extracts time and voltage arrays from an eecircuit-engine ResultType.
  * Exported for unit testing without loading the WASM binary.
@@ -18,6 +24,11 @@ export function extractSimulationOutput(result: ResultType): SimulationOutput {
   const voltageEntry = result.data.find((d) => d.type === 'voltage');
   if (!timeEntry) throw new Error('Simulation output missing time axis');
   if (!voltageEntry) throw new Error('Simulation output missing voltage data');
+  if (timeEntry.values.length > MAX_SPICE_POINTS) {
+    throw new Error(
+      `Simulation produced ${timeEntry.values.length.toLocaleString()} data points (limit ${MAX_SPICE_POINTS.toLocaleString()}). The circuit may be unstable or too complex.`,
+    );
+  }
   return {
     timeValues: new Float64Array(timeEntry.values),
     voltageValues: new Float64Array(voltageEntry.values),
@@ -34,6 +45,11 @@ export function extractMultiNodeOutput(result: ResultType): MultiNodeOutput {
   }
   const timeEntry = result.data.find((d) => d.type === 'time');
   if (!timeEntry) throw new Error('Simulation output missing time axis');
+  if (timeEntry.values.length > MAX_SPICE_POINTS) {
+    throw new Error(
+      `Simulation produced ${timeEntry.values.length.toLocaleString()} data points (limit ${MAX_SPICE_POINTS.toLocaleString()}). The circuit may be unstable or too complex.`,
+    );
+  }
 
   const traces = new Map<string, Float64Array>();
   for (const d of result.data) {
@@ -65,7 +81,7 @@ export class EECircuitEngine implements SpiceEngine {
     if (!this.sim)
       throw new Error('EECircuitEngine not initialised — call init() first');
     this.sim.setNetList(netlist);
-    const result = await this.sim.runSim();
+    const result = await this.runWithTimeout();
     return extractSimulationOutput(result);
   }
 
@@ -73,7 +89,31 @@ export class EECircuitEngine implements SpiceEngine {
     if (!this.sim)
       throw new Error('EECircuitEngine not initialised — call init() first');
     this.sim.setNetList(netlist);
-    const result = await this.sim.runSim();
+    const result = await this.runWithTimeout();
     return extractMultiNodeOutput(result);
+  }
+
+  private runWithTimeout(): Promise<ResultType> {
+    return new Promise<ResultType>((resolve, reject) => {
+      const timer = setTimeout(
+        () =>
+          reject(
+            new Error(
+              `Simulation timed out after ${SIM_TIMEOUT_MS / 1000}s. The circuit may have convergence issues or be too complex.`,
+            ),
+          ),
+        SIM_TIMEOUT_MS,
+      );
+      this.sim!.runSim().then(
+        (r) => {
+          clearTimeout(timer);
+          resolve(r);
+        },
+        (err) => {
+          clearTimeout(timer);
+          reject(err);
+        },
+      );
+    });
   }
 }

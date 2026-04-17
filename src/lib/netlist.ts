@@ -22,6 +22,12 @@ import type { ComponentNode, PotTaper, WaveformType } from './types';
  */
 export const SPICE_SAMPLE_RATE = 10000;
 
+/** Maximum PWL points in a single source (10 seconds at SPICE_SAMPLE_RATE). */
+const MAX_PWL_POINTS = 100_001;
+
+/** Maximum SPICE nodes to save in analysis mode. */
+const MAX_ANALYSIS_NODES = 64;
+
 /**
  * Builds a PWL (piecewise-linear) voltage source line by downsampling
  * inputBuffer from inputSampleRate to SPICE_SAMPLE_RATE.
@@ -34,7 +40,10 @@ function buildPwlSource(
   amplitude: number,
   duration: number,
 ): string {
-  const numPoints = Math.round(duration * SPICE_SAMPLE_RATE) + 1;
+  const numPoints = Math.min(
+    Math.round(duration * SPICE_SAMPLE_RATE) + 1,
+    MAX_PWL_POINTS,
+  );
   const ratio = inputSampleRate / SPICE_SAMPLE_RATE;
   const pairs: Array<string> = [];
   for (let i = 0; i < numPoints; i++) {
@@ -479,10 +488,10 @@ export function compileAnalysisNetlist(
     buildWaveformSource(inputPos, inputNeg, waveform, frequency, amplitude),
   );
 
-  // Save all non-ground, non-unconnected node voltages
-  const allNodes = [...new Set(portToNode.values())].filter(
-    (n) => n !== '0' && n !== 'UNCONNECTED',
-  );
+  // Save all non-ground, non-unconnected node voltages (capped to limit memory)
+  const allNodes = [...new Set(portToNode.values())]
+    .filter((n) => n !== '0' && n !== 'UNCONNECTED')
+    .slice(0, MAX_ANALYSIS_NODES);
   if (allNodes.length > 0) {
     lines.push(`.save ${allNodes.map((n) => `V(${n})`).join(' ')}`);
   }

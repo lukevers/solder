@@ -158,28 +158,41 @@ export function CircuitAnalyzer({
 
   // Worker management
   const workerRef = useRef<Worker | null>(null);
+  /** Incremented on every analysis request; stale results are discarded. */
+  const analysisGenRef = useRef(0);
 
-  useEffect(() => {
+  const createWorker = useCallback(() => {
+    workerRef.current?.terminate();
     workerRef.current = new Worker(
       new URL('../workers/analysis.worker.ts', import.meta.url),
       { type: 'module' },
     );
+  }, []);
+
+  useEffect(() => {
+    createWorker();
     return () => {
       workerRef.current?.terminate();
     };
-  }, []);
+  }, [createWorker]);
 
   // Node labels for display
   const nodeLabels = useMemo(() => getNodeLabels(nodes, edges), [nodes, edges]);
 
   const handleAnalyze = useCallback(() => {
+    // Terminate the previous worker to free any in-flight WASM allocations,
+    // then create a fresh one. This prevents stale results from arriving.
+    createWorker();
     const worker = workerRef.current;
     if (!worker) return;
 
+    const gen = ++analysisGenRef.current;
     setStatus('running');
     setError(null);
 
     worker.onmessage = (e: MessageEvent<AnalyzeResponse>) => {
+      // Discard results from a superseded analysis run
+      if (gen !== analysisGenRef.current) return;
       const msg = e.data;
       if (msg.type === 'result') {
         setStatus('idle');
@@ -210,6 +223,7 @@ export function CircuitAnalyzer({
     };
 
     worker.onerror = (e: ErrorEvent) => {
+      if (gen !== analysisGenRef.current) return;
       setStatus('error');
       setError(e.message ?? 'Worker crashed');
     };
@@ -224,15 +238,25 @@ export function CircuitAnalyzer({
       waveform,
     };
     worker.postMessage(request);
-  }, [nodes, edges, duration, frequency, amplitude, waveform, nodeLabels]);
+  }, [
+    nodes,
+    edges,
+    duration,
+    frequency,
+    amplitude,
+    waveform,
+    nodeLabels,
+    createWorker,
+  ]);
 
   const handleAnalyzeRef = useRef(handleAnalyze);
   handleAnalyzeRef.current = handleAnalyze;
 
-  // Auto-run on mount and whenever circuit or signal settings change
+  // Auto-run on mount and whenever circuit or signal settings change (debounced)
   // biome-ignore lint/correctness/useExhaustiveDependencies: ref avoids stale closure
   useEffect(() => {
-    handleAnalyzeRef.current();
+    const timer = setTimeout(() => handleAnalyzeRef.current(), 250);
+    return () => clearTimeout(timer);
   }, [waveform, frequency, amplitude, duration, nodes, edges]);
 
   const toggleTrace = useCallback((node: string) => {

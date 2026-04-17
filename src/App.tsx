@@ -482,7 +482,7 @@ export default function App() {
 
         {sidebarOpen && (
           <div className="w-52 bg-gray-900 border-l border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
-            <PedalPanel />
+            <PedalPanel onSweep={handleSweep} />
             <Inspector onSweep={handleSweep} />
             <div className="border-t border-gray-800" />
             {sweepResults.length > 0 || sweepStatus === 'running' ? (

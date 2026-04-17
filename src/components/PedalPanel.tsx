@@ -1,5 +1,6 @@
 // src/components/PedalPanel.tsx
 
+import { Activity } from 'lucide-react';
 import { useCallback, useId, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { PotData } from '../lib/types';
@@ -46,8 +47,23 @@ const TOTAL_DEG = 270; // 270° travel
 
 // ─── Single knob ─────────────────────────────────────────────────────────────
 
-function PotKnob({ nodeId, data }: { nodeId: string; data: PotData }) {
+function PotKnob({
+  nodeId,
+  data,
+  onSweep,
+}: {
+  nodeId: string;
+  data: PotData;
+  onSweep?: (nodeId: string) => void;
+}) {
   const updateNodeData = useStore((s) => s.updateNodeData);
+  const { sweepStatus, simulationStatus } = useStore(
+    useShallow((s) => ({
+      sweepStatus: s.sweepStatus,
+      simulationStatus: s.simulationStatus,
+    })),
+  );
+  const busy = sweepStatus === 'running' || simulationStatus === 'running';
   const dragRef = useRef<{ startY: number; startPos: number } | null>(null);
   const uid = useId();
   const skirtGradId = `knob-skirt-${uid}`;
@@ -204,13 +220,29 @@ function PotKnob({ nodeId, data }: { nodeId: string; data: PotData }) {
         </div>
         <div className="text-gray-500 text-[10px] font-mono">{pct}%</div>
       </div>
+      {onSweep && (
+        <button
+          type="button"
+          onClick={() => onSweep(nodeId)}
+          disabled={busy}
+          className="flex items-center justify-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded transition-colors bg-amber-950/60 border border-amber-800/50 text-amber-400 hover:bg-amber-900/60 hover:border-amber-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          title="Sweep 0–100%"
+        >
+          <Activity size={10} />
+          Sweep
+        </button>
+      )}
     </div>
   );
 }
 
 // ─── Panel ────────────────────────────────────────────────────────────────────
 
-export function PedalPanel() {
+export function PedalPanel({
+  onSweep,
+}: {
+  onSweep?: (nodeId: string) => void;
+}) {
   const nodes = useStore(useShallow((s) => s.nodes));
   const pots = nodes.filter((n) => n.type === 'pot') as Array<
     Extract<(typeof nodes)[number], { type: 'pot' }>
@@ -250,14 +282,20 @@ export function PedalPanel() {
         /* Pedal enclosure */
         <div className="mx-3 mb-3 rounded-lg bg-gray-950 border border-gray-700 p-3 shadow-inner">
           {/* Decorative screws top */}
-          <div className="flex justify-end mb-3">
+          <div className="flex justify-between mb-3">
+            <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
             <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
           </div>
 
           {/* Knob grid */}
           <div className="flex flex-wrap justify-around gap-x-2 gap-y-4">
             {pots.map((n) => (
-              <PotKnob key={n.id} nodeId={n.id} data={n.data} />
+              <PotKnob
+                key={n.id}
+                nodeId={n.id}
+                data={n.data}
+                onSweep={onSweep}
+              />
             ))}
           </div>
 
