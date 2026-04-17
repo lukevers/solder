@@ -1,5 +1,5 @@
 // src/App.tsx
-import { Maximize2, Repeat, RotateCcw } from 'lucide-react';
+import { ChevronRight, Maximize2, Repeat, RotateCcw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { AudioPipeline } from './audio/pipeline';
@@ -81,6 +81,7 @@ export default function App() {
     })),
   );
 
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showExamples, setShowExamples] = useState(false);
   const [showWaveformModal, setShowWaveformModal] = useState(false);
   const [showAnalyzer, setShowAnalyzer] = useState(false);
@@ -88,6 +89,7 @@ export default function App() {
   const [playingOriginal, setPlayingOriginal] = useState(false);
   const [selection, setSelection] = useState<WaveformSelection | null>(null);
   const [looping, setLooping] = useState(false);
+  const [waveformOpen, setWaveformOpen] = useState(true);
   const loopingRef = useRef(false);
   const [simulatedInput, setSimulatedInput] = useState<Float32Array | null>(
     null,
@@ -464,6 +466,21 @@ export default function App() {
         {showExamples && <ExamplesPanel />}
         <SchematicCanvas />
 
+        <div className="relative flex-shrink-0 self-stretch">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen((o) => !o)}
+            className="absolute -left-5 top-3 z-10 w-5 h-8 bg-gray-900 border border-gray-800 border-r-0 rounded-l flex items-center justify-center text-gray-500 hover:text-gray-300 transition-colors"
+            aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+          >
+            <ChevronRight
+              size={12}
+              className={`transition-transform duration-150 ${sidebarOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+        </div>
+
+        {sidebarOpen && (
         <div className="w-52 bg-gray-900 border-l border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
           <PedalPanel />
           <Inspector onSweep={handleSweep} />
@@ -486,12 +503,24 @@ export default function App() {
               onClear={clearSweep}
             />
           ) : (
-            <div className="p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-gray-500 uppercase tracking-wider">
+            <div>
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setWaveformOpen((o) => !o)}
+                  className="flex items-center gap-1.5 px-3 py-2 text-xs text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
+                >
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    className={`transition-transform duration-150 ${waveformOpen ? '' : '-rotate-90'}`}
+                  >
+                    <path d="M1 3 L5 7 L9 3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                   Waveform
-                </span>
-                {(sourceBuffer || outputBuffer) && (
+                </button>
+                {waveformOpen && (sourceBuffer || outputBuffer) && (
                   <button
                     type="button"
                     onClick={() => {
@@ -499,42 +528,46 @@ export default function App() {
                       setPlayingOriginal(false);
                       setShowWaveformModal(true);
                     }}
-                    className="text-gray-500 hover:text-gray-200 transition-colors"
+                    className="px-3 text-gray-500 hover:text-gray-200 transition-colors"
                     aria-label="Expand waveform"
                   >
                     <Maximize2 size={13} />
                   </button>
                 )}
               </div>
-              <WaveformDisplay
-                inputBuffer={outputBuffer ? simulatedInput : sourceBuffer}
-                outputBuffer={outputBuffer}
-                selection={outputBuffer ? null : selection}
-                onSelectionChange={outputBuffer ? undefined : setSelection}
-              />
-              {(sourceBuffer || outputBuffer) && (
-                <div className="flex mt-2 rounded border border-gray-700 overflow-hidden">
-                  <button
-                    type="button"
-                    onClick={() => setLooping((v) => !v)}
-                    className={`flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono transition-colors ${
-                      looping
-                        ? 'bg-blue-950 text-blue-400'
-                        : 'bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300'
-                    }`}
-                    aria-label={looping ? 'Disable loop' : 'Enable loop'}
-                  >
-                    <Repeat size={10} /> Loop
-                  </button>
-                  <div className="w-px bg-gray-700" />
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    disabled={!outputBuffer && !selection}
-                    className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 text-gray-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-gray-700 hover:enabled:text-gray-300"
-                  >
-                    <RotateCcw size={10} /> Reset
-                  </button>
+              {waveformOpen && (
+                <div className="px-3 pb-3">
+                  <WaveformDisplay
+                    inputBuffer={outputBuffer ? simulatedInput : sourceBuffer}
+                    outputBuffer={outputBuffer}
+                    selection={outputBuffer ? null : selection}
+                    onSelectionChange={outputBuffer ? undefined : setSelection}
+                  />
+                  {(sourceBuffer || outputBuffer) && (
+                    <div className="flex mt-2 rounded border border-gray-700 overflow-hidden">
+                      <button
+                        type="button"
+                        onClick={() => setLooping((v) => !v)}
+                        className={`flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono transition-colors ${
+                          looping
+                            ? 'bg-blue-950 text-blue-400'
+                            : 'bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300'
+                        }`}
+                        aria-label={looping ? 'Disable loop' : 'Enable loop'}
+                      >
+                        <Repeat size={10} /> Loop
+                      </button>
+                      <div className="w-px bg-gray-700" />
+                      <button
+                        type="button"
+                        onClick={handleReset}
+                        disabled={!outputBuffer && !selection}
+                        className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 text-gray-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-gray-700 hover:enabled:text-gray-300"
+                      >
+                        <RotateCcw size={10} /> Reset
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -542,6 +575,7 @@ export default function App() {
           <div className="border-t border-gray-800" />
           <AudioControls />
         </div>
+        )}
       </div>
 
       {showAnalyzer && (

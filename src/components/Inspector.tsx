@@ -1,6 +1,7 @@
 // src/components/Inspector.tsx
 
 import type { Edge } from '@xyflow/react';
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import {
@@ -441,8 +442,10 @@ function MOSFETInspector({
 
 function PotInspector({
   node,
+  onSweep,
 }: {
   node: Extract<ComponentNode, { type: 'pot' }>;
+  onSweep?: (nodeId: string) => void;
 }) {
   const updateNodeData = useStore((s) => s.updateNodeData);
   const { label, ohms, position, taper = 'linear' } = node.data;
@@ -518,6 +521,7 @@ function PotInspector({
           onChange={(e) => update({ position: Number(e.target.value) })}
         />
       </Field>
+      {onSweep && <SweepButton nodeId={node.id} onSweep={onSweep} />}
     </>
   );
 }
@@ -675,12 +679,13 @@ function RotationControl({
 }
 
 export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
-  const { nodes, edges, selectedNodeId, selectedEdgeId } = useStore(
+  const { nodes, edges, selectedNodeId, selectedEdgeId, deleteNode } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
       edges: s.edges,
       selectedNodeId: s.selectedNodeId,
       selectedEdgeId: s.selectedEdgeId,
+      deleteNode: s.deleteNode,
     })),
   );
 
@@ -722,13 +727,20 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
       {selected.type === 'bjt' && <BJTInspector node={selected} />}
       {selected.type === 'jfet' && <JFETInspector node={selected} />}
       {selected.type === 'mosfet' && <MOSFETInspector node={selected} />}
-      {selected.type === 'pot' && <PotInspector node={selected} />}
+      {selected.type === 'pot' && (
+        <PotInspector node={selected} onSweep={onSweep} />
+      )}
       {selected.type === 'jack' && <JackInspector node={selected} />}
       {selected.type === 'label' && <LabelInspector node={selected} />}
       <RotationControl nodeId={selected.id} rotation={selected.rotation ?? 0} />
-      {selected.type === 'pot' && onSweep && (
-        <SweepButton nodeId={selected.id} onSweep={onSweep} />
-      )}
+      <button
+        type="button"
+        onClick={() => deleteNode(selected.id)}
+        className="flex items-center justify-center gap-1.5 w-full mt-2 text-xs py-1.5 rounded font-mono transition-colors bg-red-950 border border-red-800 text-red-400 hover:bg-red-900 hover:text-red-300"
+      >
+        <Trash2 size={11} />
+        Delete
+      </button>
     </div>
   );
 }

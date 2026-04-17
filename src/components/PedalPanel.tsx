@@ -1,6 +1,6 @@
 // src/components/PedalPanel.tsx
 
-import { useCallback, useId, useRef } from 'react';
+import { useCallback, useId, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { PotData } from '../lib/types';
 import { useStore } from '../store';
@@ -217,36 +217,51 @@ export function PedalPanel() {
     Extract<(typeof nodes)[number], { type: 'pot' }>
   >;
 
+  const [open, setOpen] = useState(true);
+
   if (pots.length === 0) return null;
 
   return (
     <div className="border-b border-gray-800">
-      {/* Pedal enclosure */}
-      <div className="m-3 rounded-lg bg-gray-950 border border-gray-700 p-3 shadow-inner">
-        {/* Enclosure header */}
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest">
-            Controls
-          </span>
-          {/* Decorative screws */}
-          <div className="flex gap-1">
+      {/* Collapse toggle */}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-1.5 w-full px-3 py-2 text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest hover:text-gray-300 transition-colors"
+      >
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          className={`transition-transform duration-150 ${open ? '' : '-rotate-90'}`}
+        >
+          <path d="M1 3 L5 7 L9 3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        Controls
+      </button>
+
+      {open && (
+        /* Pedal enclosure */
+        <div className="mx-3 mb-3 rounded-lg bg-gray-950 border border-gray-700 p-3 shadow-inner">
+          {/* Decorative screws top */}
+          <div className="flex justify-end mb-3">
+            <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
+          </div>
+
+          {/* Knob grid */}
+          <div className="flex flex-wrap justify-around gap-x-2 gap-y-4">
+            {pots.map((n) => (
+              <PotKnob key={n.id} nodeId={n.id} data={n.data} />
+            ))}
+          </div>
+
+          {/* Bottom screws */}
+          <div className="flex justify-between mt-3">
+            <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
             <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
           </div>
         </div>
-
-        {/* Knob grid */}
-        <div className="flex flex-wrap justify-around gap-x-2 gap-y-4">
-          {pots.map((n) => (
-            <PotKnob key={n.id} nodeId={n.id} data={n.data} />
-          ))}
-        </div>
-
-        {/* Bottom screws */}
-        <div className="flex justify-between mt-3">
-          <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
-          <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
-        </div>
-      </div>
+      )}
     </div>
   );
 }

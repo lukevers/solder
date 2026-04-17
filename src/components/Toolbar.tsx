@@ -152,7 +152,6 @@ export function Toolbar({
     addNode,
     simulationStatus,
     sweepStatus,
-    nodes,
     tabs,
     activeTabId,
     addTab,
@@ -168,7 +167,6 @@ export function Toolbar({
       addNode: s.addNode,
       simulationStatus: s.simulationStatus,
       sweepStatus: s.sweepStatus,
-      nodes: s.nodes,
       tabs: s.tabs,
       activeTabId: s.activeTabId,
       addTab: s.addTab,
@@ -290,7 +288,7 @@ export function Toolbar({
         </div>
 
         {/* Tab strip */}
-        <div className="flex items-stretch flex-1 overflow-x-auto">
+        <div className="flex items-stretch flex-1 min-w-0 overflow-x-auto overflow-y-hidden">
           {tabs.map((tab) => {
             const isActive = tab.id === activeTabId;
             return (
@@ -349,245 +347,244 @@ export function Toolbar({
             <Plus size={14} />
           </button>
         </div>
-      </div>
 
-      {/* Palette row: Examples + divider + components + Simulate */}
-      <div className="flex items-center gap-2 px-3 py-1.5 overflow-hidden overflow-x-auto">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json"
-          onChange={handleImport}
-          style={{ display: 'none' }}
-        />
-
-        {/* Examples button */}
-        <button
-          type="button"
-          onClick={onToggleExamples}
-          className={`h-full flex items-center gap-1.5 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 ${
-            showExamples
-              ? 'bg-indigo-950 border border-indigo-700 text-indigo-300'
-              : 'bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200'
-          }`}
-        >
-          <FolderOpen size={10} className="h-full" />
-          <span className="hidden sm:block">Examples</span>
-        </button>
-
-        {/* Export button */}
-        <button
-          type="button"
-          onClick={handleExport}
-          className="h-full flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
-        >
-          <Download size={10} className="h-full" />
-          <span className="hidden sm:block">Export</span>
-        </button>
-
-        {/* Import button */}
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="h-full flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
-        >
-          <Upload size={10} className="h-full" />
-          <span className="hidden sm:block">Import</span>
-        </button>
-
-        {/* Divider */}
-        <div className="w-px h-5 bg-gray-700 flex-shrink-0" />
-
-        {/* Component palette */}
-        {/* JACK flyout */}
-        <div ref={jackRef} className="relative group flex-shrink-0">
+        {/* Examples / Export / Import — top-right of top bar */}
+        <div className="flex items-stretch border-l border-gray-800 flex-shrink-0">
           <button
             type="button"
-            onClick={() => setJackOpen((o) => !o)}
-            className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
-              jackOpen
-                ? 'border-blue-500 text-blue-300'
-                : 'border-gray-700 text-gray-300'
+            onClick={onToggleExamples}
+            className={`flex items-center gap-1 text-xs px-2.5 transition-colors font-sans ${
+              showExamples
+                ? 'bg-indigo-950 text-indigo-300'
+                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
             }`}
           >
-            JACK
+            <FolderOpen size={12} />
+            <span className="hidden sm:inline">Examples</span>
           </button>
-          {!jackOpen && (
-            <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-              Audio Jack
-            </div>
-          )}
-          {jackOpen && (
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 flex flex-col gap-1 z-50">
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-              {JACK_ITEMS.map((sub) => (
+          <button
+            type="button"
+            onClick={handleExport}
+            className="flex items-center gap-1 text-xs px-2.5 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors font-sans"
+          >
+            <Download size={12} />
+            <span className="hidden sm:inline">Export</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1 text-xs px-2.5 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors font-sans"
+          >
+            <Upload size={12} />
+            <span className="hidden sm:inline">Import</span>
+          </button>
+        </div>
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json"
+        onChange={handleImport}
+        style={{ display: 'none' }}
+      />
+
+      {/* On mobile: two rows (actions middle, palette bottom). On sm+: one row. */}
+      <div className="flex flex-col sm:flex-row sm:items-center border-b border-gray-800 sm:border-b-0">
+        {/* ── Actions row (middle on mobile, right on desktop) ── */}
+        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-gray-800 sm:border-b-0 sm:order-last sm:ml-auto flex-shrink-0 flex-row-reverse">
+          {/* Input / Output button group */}
+          <div className="flex rounded border border-gray-700 flex-shrink-0">
+            {/* Input play/stop */}
+            {hasSourceBuffer &&
+              (playingOriginal ? (
                 <button
-                  key={sub.label}
                   type="button"
-                  onClick={() => {
-                    handleAdd(sub);
-                    setJackOpen(false);
-                  }}
-                  className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
+                  onClick={onStop}
+                  className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
                 >
-                  {sub.label}
+                  <Square size={10} /> Input
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onPlayOriginal}
+                  disabled={
+                    simulationStatus === 'running' || sweepStatus === 'running'
+                  }
+                  className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-blue-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
+                >
+                  <Play size={10} /> Input
                 </button>
               ))}
-            </div>
-          )}
-        </div>
 
-        {PALETTE.map((item) => {
-          const disabled = false;
+            {hasSourceBuffer && <div className="w-px bg-gray-700" />}
 
-          // Insert transistor flyout after diode
-          const transistorButton = item.type === 'diode' && (
-            <div
-              key="transistor"
-              ref={transistorRef}
-              className="relative group flex-shrink-0"
-            >
+            {/* Simulate / Output play / Stop */}
+            {simulationStatus === 'running' || sweepStatus === 'running' ? (
               <button
                 type="button"
-                onClick={() => setTransistorOpen((o) => !o)}
-                className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
-                  transistorOpen
-                    ? 'border-blue-500 text-blue-300'
-                    : 'border-gray-700 text-gray-300'
-                }`}
+                disabled
+                className="flex items-center gap-1 bg-gray-800 disabled:opacity-50 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
               >
-                Q
+                <Hourglass size={10} />{' '}
+                {sweepStatus === 'running' ? 'Sweeping…' : 'Simulating…'}
               </button>
-              {/* Tooltip (hidden when flyout is open) */}
-              {!transistorOpen && (
-                <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-                  Transistor
-                </div>
-              )}
-              {/* Flyout sub-menu */}
-              {transistorOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 flex flex-col gap-1 z-50">
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-                  {TRANSISTOR_ITEMS.map((sub) => (
-                    <button
-                      key={sub.type}
-                      type="button"
-                      onClick={() => {
-                        handleAdd(sub);
-                        setTransistorOpen(false);
-                      }}
-                      className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
-                    >
-                      {sub.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-
-          return (
-            <Fragment key={item.type}>
-              <div className="relative group flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={() => handleAdd(item)}
-                  className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs px-2 py-1 rounded font-mono transition-colors"
-                >
-                  {item.label}
-                </button>
-                <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-                  {item.tooltip}
-                </div>
-              </div>
-              {transistorButton}
-            </Fragment>
-          );
-        })}
-
-        <div className="flex-1" />
-
-        {/* Input / Output button group */}
-        <div className="flex rounded border border-gray-700 flex-shrink-0">
-          {/* Input play/stop */}
-          {hasSourceBuffer &&
-            (playingOriginal ? (
+            ) : outputBuffer && playing ? (
               <button
                 type="button"
                 onClick={onStop}
-                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
+                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
               >
-                <Square size={10} /> Input
+                <Square size={10} /> Stop
+              </button>
+            ) : outputBuffer ? (
+              <button
+                type="button"
+                onClick={onPlayOutput}
+                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-green-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
+              >
+                <Play size={10} /> Output
               </button>
             ) : (
               <button
                 type="button"
-                onClick={onPlayOriginal}
-                disabled={
-                  simulationStatus === 'running' || sweepStatus === 'running'
-                }
-                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-blue-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
+                onClick={onSimulate}
+                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
               >
-                <Play size={10} /> Input
+                <Play size={10} /> Simulate
               </button>
-            ))}
+            )}
+          </div>
 
-          {hasSourceBuffer && <div className="w-px bg-gray-700" />}
-
-          {/* Simulate / Output play / Stop */}
-          {simulationStatus === 'running' || sweepStatus === 'running' ? (
-            <button
-              type="button"
-              disabled
-              className="flex items-center gap-1 bg-gray-800 disabled:opacity-50 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
-            >
-              <Hourglass size={10} />{' '}
-              {sweepStatus === 'running' ? 'Sweeping…' : 'Simulating…'}
-            </button>
-          ) : outputBuffer && playing ? (
-            <button
-              type="button"
-              onClick={onStop}
-              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
-            >
-              <Square size={10} /> Stop
-            </button>
-          ) : outputBuffer ? (
-            <button
-              type="button"
-              onClick={onPlayOutput}
-              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-green-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
-            >
-              <Play size={10} /> Output
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onSimulate}
-              className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
-            >
-              <Play size={10} /> Simulate
-            </button>
-          )}
+          {/* Analyzer toggle */}
+          <button
+            type="button"
+            onClick={onToggleAnalyzer}
+            className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded font-mono transition-colors flex-shrink-0 ${
+              showAnalyzer
+                ? 'bg-green-950 border border-green-800 text-green-400'
+                : 'bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <ScanLine size={12} />
+            Oscilloscope
+          </button>
         </div>
 
-        {/* Analyzer toggle */}
-        <button
-          type="button"
-          onClick={onToggleAnalyzer}
-          className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded font-mono transition-colors flex-shrink-0 ${
-            showAnalyzer
-              ? 'bg-green-950 border border-green-800 text-green-400'
-              : 'bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200'
-          }`}
-        >
-          <ScanLine size={12} />
-          Oscilloscope
-        </button>
+        {/* ── Palette row (bottom on mobile, left on desktop) ── */}
+        <div className="flex items-center gap-2 px-3 py-1.5 overflow-x-auto sm:order-first sm:flex-1 overflow-y-hidden">
+          {/* Component palette */}
+          {/* JACK flyout */}
+          <div ref={jackRef} className="relative group flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => setJackOpen((o) => !o)}
+              className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
+                jackOpen
+                  ? 'border-blue-500 text-blue-300'
+                  : 'border-gray-700 text-gray-300'
+              }`}
+            >
+              JACK
+            </button>
+            {!jackOpen && (
+              <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+                Audio Jack
+              </div>
+            )}
+            {jackOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 flex flex-col gap-1 z-50">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+                {JACK_ITEMS.map((sub) => (
+                  <button
+                    key={sub.label}
+                    type="button"
+                    onClick={() => {
+                      handleAdd(sub);
+                      setJackOpen(false);
+                    }}
+                    className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
+                  >
+                    {sub.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {PALETTE.map((item) => {
+            // Insert transistor flyout after diode
+            const transistorButton = item.type === 'diode' && (
+              <div
+                key="transistor"
+                ref={transistorRef}
+                className="relative group flex-shrink-0"
+              >
+                <button
+                  type="button"
+                  onClick={() => setTransistorOpen((o) => !o)}
+                  className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
+                    transistorOpen
+                      ? 'border-blue-500 text-blue-300'
+                      : 'border-gray-700 text-gray-300'
+                  }`}
+                >
+                  Q
+                </button>
+                {/* Tooltip (hidden when flyout is open) */}
+                {!transistorOpen && (
+                  <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+                    Transistor
+                  </div>
+                )}
+                {/* Flyout sub-menu */}
+                {transistorOpen && (
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 flex flex-col gap-1 z-50">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+                    {TRANSISTOR_ITEMS.map((sub) => (
+                      <button
+                        key={sub.type}
+                        type="button"
+                        onClick={() => {
+                          handleAdd(sub);
+                          setTransistorOpen(false);
+                        }}
+                        className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
+                      >
+                        {sub.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+
+            return (
+              <Fragment key={item.type}>
+                <div className="relative group flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleAdd(item)}
+                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs px-2 py-1 rounded font-mono transition-colors"
+                  >
+                    {item.label}
+                  </button>
+                  <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+                    {item.tooltip}
+                  </div>
+                </div>
+                {transistorButton}
+              </Fragment>
+            );
+          })}
+        </div>
+        {/* end palette row */}
       </div>
+      {/* end flex col/row wrapper */}
     </div>
   );
 }
