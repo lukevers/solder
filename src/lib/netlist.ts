@@ -57,8 +57,7 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   opamp: ['in_pos', 'in_neg', 'out', 'vcc', 'gnd'],
   power: ['pos'],
   ground: ['gnd'],
-  audiin: ['pos', 'neg'],
-  audiout: ['pos', 'neg'],
+  jack: ['pos', 'neg'],
   diode: ['a', 'k'],
   pot: ['ccw', 'wiper', 'cw'],
   cap_polar: ['pos', 'neg'],
@@ -293,12 +292,12 @@ function buildCircuitBody(
   if (usedMOSFETModels.has('IRF510')) lines.push(MOSFET_IRF510);
   if (usedMOSFETModels.has('IRF9510')) lines.push(MOSFET_IRF9510);
 
-  // Find input and output nodes
-  const inputNode = nodes.find((n) => n.type === 'audiin');
-  const outputNode = nodes.find((n) => n.type === 'audiout');
+  // Find input and output jack nodes
+  const inputNode = nodes.find((n) => n.type === 'jack' && n.data.direction === 'in');
+  const outputNode = nodes.find((n) => n.type === 'jack' && n.data.direction === 'out');
 
-  if (!inputNode) throw new Error('Circuit has no input node');
-  if (!outputNode) throw new Error('Circuit has no output node');
+  if (!inputNode) throw new Error('Circuit has no input jack');
+  if (!outputNode) throw new Error('Circuit has no output jack');
 
   const inputPos = getNode(inputNode.id, 'pos');
   const inputNeg = getNode(inputNode.id, 'neg');
@@ -382,7 +381,7 @@ function buildCircuitBody(
         `M${node.data.label} ${nd} ${ng} ${ns} ${ns} ${node.data.model}`,
       );
     }
-    // ground, audiin, audiout: no SPICE component line needed
+    // ground, jack: no SPICE component line needed
   }
 
   // High-impedance probe at output: prevents degenerate floating-node circuits
@@ -510,12 +509,7 @@ export function getNodeLabels(
     const component = nodes.find((n) => n.id === nodeId);
     if (!component) continue;
     // Skip types that don't contribute useful labels
-    if (
-      component.type === 'ground' ||
-      component.type === 'audiin' ||
-      component.type === 'audiout'
-    )
-      continue;
+    if (component.type === 'ground' || component.type === 'jack') continue;
     const label = component.data.label;
     if (!nodeToLabels.has(spiceNode)) nodeToLabels.set(spiceNode, []);
     nodeToLabels.get(spiceNode)!.push(label);
@@ -528,8 +522,8 @@ export function getNodeLabels(
   }
 
   // Mark input/output nodes
-  const inputNode = nodes.find((n) => n.type === 'audiin');
-  const outputNode = nodes.find((n) => n.type === 'audiout');
+  const inputNode = nodes.find((n) => n.type === 'jack' && n.data.direction === 'in');
+  const outputNode = nodes.find((n) => n.type === 'jack' && n.data.direction === 'out');
   if (inputNode) {
     const pos = portToNode.get(`${inputNode.id}|pos`);
     if (pos && pos !== '0') {

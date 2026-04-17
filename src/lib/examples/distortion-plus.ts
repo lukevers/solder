@@ -6,9 +6,9 @@ export const distortionPlusNodes: Array<ComponentNode> = [
   // ── Input chain ──
   {
     id: 'mxr-in',
-    type: 'audiin',
+    type: 'jack',
     position: { x: 40, y: 340 },
-    data: { label: 'INPUT' },
+    data: { label: 'INPUT', direction: 'in' },
   },
   {
     id: 'mxr-gnd_in',
@@ -194,9 +194,9 @@ export const distortionPlusNodes: Array<ComponentNode> = [
   },
   {
     id: 'mxr-out',
-    type: 'audiout',
+    type: 'jack',
     position: { x: 1800, y: 340 },
-    data: { label: 'OUTPUT' },
+    data: { label: 'OUTPUT', direction: 'out' },
   },
   {
     id: 'mxr-gnd_out',

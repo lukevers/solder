@@ -14,6 +14,7 @@ import {
   type MOSFETModel,
   isEdgeDC,
   type PotData,
+  type JackData,
 } from '../lib/types';
 import {
   CAP_MULTIPLIERS,
@@ -553,6 +554,34 @@ function SweepButton({
   );
 }
 
+function JackInspector({
+  node,
+}: {
+  node: Extract<ComponentNode, { type: 'jack' }>;
+}) {
+  const updateNodeData = useStore((s) => s.updateNodeData);
+  const { label, direction } = node.data;
+
+  return (
+    <>
+      <Field label="Label">
+        <input
+          className={INPUT_CLASS}
+          value={label}
+          onChange={(e) =>
+            updateNodeData(node.id, { label: e.target.value, direction } as JackData)
+          }
+        />
+      </Field>
+      <Field label="Direction">
+        <div className="text-xs font-mono text-gray-200">
+          {direction === 'in' ? 'Input' : 'Output'}
+        </div>
+      </Field>
+    </>
+  );
+}
+
 function LabelInspector({
   node,
 }: {
@@ -694,6 +723,7 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
       {selected.type === 'jfet' && <JFETInspector node={selected} />}
       {selected.type === 'mosfet' && <MOSFETInspector node={selected} />}
       {selected.type === 'pot' && <PotInspector node={selected} />}
+      {selected.type === 'jack' && <JackInspector node={selected} />}
       {selected.type === 'label' && <LabelInspector node={selected} />}
       <RotationControl nodeId={selected.id} rotation={selected.rotation ?? 0} />
       {selected.type === 'pot' && onSweep && (

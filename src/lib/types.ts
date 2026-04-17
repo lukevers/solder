@@ -8,8 +8,7 @@ export type CapacitorData = { label: string; farads: number };
 export type OpAmpData = { label: string; model: 'TL072' | 'LM741' };
 export type PowerData = { label: string; volts: number };
 export type GroundData = { label: string };
-export type InputData = { label: string };
-export type OutputData = { label: string };
+export type JackData = { label: string; direction: 'in' | 'out' };
 export type DiodeData = { label: string; model: '1N914' | '1N4001' | '1N270' };
 export type PotTaper = 'linear' | 'log' | 'antilog';
 export type PotData = {
@@ -46,8 +45,7 @@ export type ComponentNode =
   | (NodeBase & { type: 'opamp'; data: OpAmpData })
   | (NodeBase & { type: 'power'; data: PowerData })
   | (NodeBase & { type: 'ground'; data: GroundData })
-  | (NodeBase & { type: 'audiin'; data: InputData })
-  | (NodeBase & { type: 'audiout'; data: OutputData })
+  | (NodeBase & { type: 'jack'; data: JackData })
   | (NodeBase & { type: 'diode'; data: DiodeData })
   | (NodeBase & { type: 'pot'; data: PotData })
   | (NodeBase & { type: 'cap_polar'; data: CapacitorData })

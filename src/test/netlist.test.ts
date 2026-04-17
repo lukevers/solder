@@ -46,9 +46,9 @@ describe('buildPortGroups', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'r1',
@@ -120,9 +120,9 @@ describe('compileNetlist', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'r1',
@@ -138,9 +138,9 @@ describe('compileNetlist', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 300, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
       {
         id: 'gnd1',
@@ -235,9 +235,9 @@ describe('compileNetlist', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'u1',
@@ -247,9 +247,9 @@ describe('compileNetlist', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -261,9 +261,9 @@ describe('compileNetlist', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'u1',
@@ -273,9 +273,9 @@ describe('compileNetlist', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -287,33 +287,33 @@ describe('compileNetlist', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
-    expect(() => compileNetlist(nodes, [])).toThrow('no input node');
+    expect(() => compileNetlist(nodes, [])).toThrow('no input jack');
   });
 
   it('throws when circuit has no AudioOut node', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
     ];
-    expect(() => compileNetlist(nodes, [])).toThrow('no output node');
+    expect(() => compileNetlist(nodes, [])).toThrow('no output jack');
   });
 
   it('emits diode model and element line', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'd1',
@@ -323,9 +323,9 @@ describe('compileNetlist', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -337,9 +337,9 @@ describe('compileNetlist', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'pot1',
@@ -349,9 +349,9 @@ describe('compileNetlist', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -363,9 +363,9 @@ describe('compileNetlist', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'pwr1',
@@ -375,9 +375,9 @@ describe('compileNetlist', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -388,9 +388,9 @@ describe('compileNetlist', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'pwr1',
@@ -406,9 +406,9 @@ describe('compileNetlist', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 300, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -420,15 +420,15 @@ describe('compileNetlist', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 100, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -439,9 +439,9 @@ describe('compileNetlist', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'lbl1',
@@ -451,9 +451,9 @@ describe('compileNetlist', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -605,15 +605,15 @@ describe('compileNetlist with PWL input buffer', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 100, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const buf = new Float32Array([0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5]);
@@ -626,15 +626,15 @@ describe('compileNetlist with PWL input buffer', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 100, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     // 441 samples at 44100 Hz = 0.01s → at 10kHz SPICE rate = ~100 points + 1
@@ -653,9 +653,9 @@ describe('compileNetlist with connected circuit', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'r1',
@@ -665,9 +665,9 @@ describe('compileNetlist with connected circuit', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const edges: Array<Edge> = [
@@ -697,9 +697,9 @@ describe('compileNetlist with connected circuit', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'r1',
@@ -709,9 +709,9 @@ describe('compileNetlist with connected circuit', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     // No edges — R1's ports are isolated, should get unique node IDs
@@ -729,9 +729,9 @@ describe('compileNetlist op-amp models', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'u1',
@@ -741,9 +741,9 @@ describe('compileNetlist op-amp models', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -756,15 +756,15 @@ describe('compileNetlist op-amp models', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -777,9 +777,9 @@ describe('compileNetlist potentiometer edge cases', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'pot1',
@@ -789,9 +789,9 @@ describe('compileNetlist potentiometer edge cases', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -807,9 +807,9 @@ describe('compileNetlist potentiometer edge cases', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'pot1',
@@ -819,9 +819,9 @@ describe('compileNetlist potentiometer edge cases', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -897,9 +897,9 @@ describe('compileNetlist 1N4001 diode model', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'd1',
@@ -909,9 +909,9 @@ describe('compileNetlist 1N4001 diode model', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -957,9 +957,9 @@ describe('compileNetlist with capacitance formatting', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'c1',
@@ -969,9 +969,9 @@ describe('compileNetlist with capacitance formatting', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -1045,9 +1045,9 @@ describe('compileNetlist pot taper', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'pot1',
@@ -1057,9 +1057,9 @@ describe('compileNetlist pot taper', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     return compileNetlist(nodes, []);
@@ -1129,16 +1129,16 @@ function makeTransistorCircuit(
   const nodes: Array<ComponentNode> = [
     {
       id: 'in1',
-      type: 'audiin',
+      type: 'jack',
       position: { x: 0, y: 0 },
-      data: { label: 'INPUT' },
+      data: { label: 'INPUT', direction: 'in' },
     },
     transistor,
     {
       id: 'out1',
-      type: 'audiout',
+      type: 'jack',
       position: { x: 200, y: 0 },
-      data: { label: 'OUTPUT' },
+      data: { label: 'OUTPUT', direction: 'out' },
     },
   ];
   return { nodes, edges: [] };
@@ -1195,9 +1195,9 @@ describe('compileNetlist BJT', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'q1',
@@ -1213,9 +1213,9 @@ describe('compileNetlist BJT', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);
@@ -1232,9 +1232,9 @@ describe('compileNetlist BJT', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'q1',
@@ -1250,9 +1250,9 @@ describe('compileNetlist BJT', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);

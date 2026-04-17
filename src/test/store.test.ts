@@ -114,10 +114,10 @@ describe('tabsSlice', () => {
     const { tabs, activeTabId, nodes, edges } = useStore.getState();
     expect(tabs).toHaveLength(2);
     expect(activeTabId).toBe(tabs[1].id);
-    // new tab starts with default in/out nodes + ground nodes
+    // new tab starts with default jack in/out nodes + ground nodes
     expect(nodes).toHaveLength(4);
-    expect(nodes.some((n) => n.type === 'audiin')).toBe(true);
-    expect(nodes.some((n) => n.type === 'audiout')).toBe(true);
+    expect(nodes.some((n) => n.type === 'jack' && n.data.direction === 'in')).toBe(true);
+    expect(nodes.some((n) => n.type === 'jack' && n.data.direction === 'out')).toBe(true);
     expect(nodes.filter((n) => n.type === 'ground')).toHaveLength(2);
     expect(edges).toHaveLength(3);
   });
@@ -362,12 +362,25 @@ describe('clearOutputBuffer', () => {
 });
 
 describe('setEdges invalidation', () => {
-  it('setEdges clears outputBuffer and resets simulationStatus', () => {
+  it('setEdges clears outputBuffer when topology changes (edge added)', () => {
     useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]));
     useStore.getState().setSimulationStatus('running');
-    useStore.getState().setEdges([]);
+    // Adding a new edge is a topology change → should clear sim
+    useStore.getState().setEdges([
+      { id: 'e1', source: 'a', target: 'b', type: 'default' },
+    ]);
     expect(useStore.getState().outputBuffer).toBeNull();
     expect(useStore.getState().simulationStatus).toBe('idle');
+  });
+
+  it('setEdges does NOT clear outputBuffer for selection-only changes', () => {
+    const buf = new Float32Array([1, 2, 3]);
+    const edge = { id: 'e1', source: 'a', target: 'b', type: 'default' };
+    useStore.getState().setEdges([edge]);
+    useStore.getState().setOutputBuffer(buf);
+    // Updating only the selected property is not a topology change
+    useStore.getState().setEdges([{ ...edge, selected: true }]);
+    expect(useStore.getState().outputBuffer).toBe(buf);
   });
 });
 

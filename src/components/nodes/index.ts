@@ -5,12 +5,11 @@ import { CapacitorNode } from './CapacitorNode';
 import { CapPolarNode } from './CapPolarNode';
 import { DiodeNode } from './DiodeNode';
 import { GroundNode } from './GroundNode';
-import { InputNode } from './InputNode';
+import { JackNode } from './JackNode';
 import { JFETNode } from './JFETNode';
 import { LabelNode } from './LabelNode';
 import { MOSFETNode } from './MOSFETNode';
 import { OpAmpNode } from './OpAmpNode';
-import { OutputNode } from './OutputNode';
 import { PotNode } from './PotNode';
 import { PowerNode } from './PowerNode';
 import { ResistorNode } from './ResistorNode';
@@ -25,8 +24,7 @@ export const nodeTypes = {
   opamp: OpAmpNode,
   power: PowerNode,
   ground: GroundNode,
-  audiin: InputNode,
-  audiout: OutputNode,
+  jack: JackNode,
   diode: DiodeNode,
   pot: PotNode,
   label: LabelNode,

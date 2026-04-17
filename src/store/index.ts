@@ -29,9 +29,9 @@ function defaultTab(name: string): Tab {
     nodes: [
       {
         id: `${id}-in`,
-        type: 'audiin',
+        type: 'jack',
         position: { x: 100, y: 200 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: `${id}-gnd-in`,
@@ -41,9 +41,9 @@ function defaultTab(name: string): Tab {
       },
       {
         id: `${id}-out`,
-        type: 'audiout',
+        type: 'jack',
         position: { x: 400, y: 200 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
       {
         id: `${id}-gnd-out`,
@@ -320,9 +320,26 @@ export const useStore = create<StoreState>()(
           };
         }),
       setEdges: (edges) =>
-        set({
-          edges,
-          ...clearSim,
+        set((s) => {
+          const prevIds = new Set(s.edges.map((e) => e.id));
+          const nextIds = new Set(edges.map((e) => e.id));
+          const topologyChanged =
+            prevIds.size !== nextIds.size ||
+            [...nextIds].some((id) => !prevIds.has(id)) ||
+            edges.some((e) => {
+              const prev = s.edges.find((pe) => pe.id === e.id);
+              return (
+                prev &&
+                (prev.source !== e.source ||
+                  prev.target !== e.target ||
+                  prev.sourceHandle !== e.sourceHandle ||
+                  prev.targetHandle !== e.targetHandle)
+              );
+            });
+          return {
+            edges,
+            ...(topologyChanged ? clearSim : {}),
+          };
         }),
       selectNode: (selectedNodeId) =>
         set({ selectedNodeId, selectedEdgeId: null }),

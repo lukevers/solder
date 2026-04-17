@@ -38,13 +38,13 @@ export function makeCircuit(
   components: Array<ComponentNode>,
   edges: Array<Edge>,
 ): { nodes: Array<ComponentNode>; edges: Array<Edge> } {
-  const hasIn = components.some((n) => n.type === 'audiin');
-  const hasOut = components.some((n) => n.type === 'audiout');
+  const hasIn = components.some((n) => n.type === 'jack' && n.data.direction === 'in');
+  const hasOut = components.some((n) => n.type === 'jack' && n.data.direction === 'out');
   const inId = hasIn
-    ? components.find((n) => n.type === 'audiin')!.id
+    ? components.find((n) => n.type === 'jack' && n.data.direction === 'in')!.id
     : 'in';
   const outId = hasOut
-    ? components.find((n) => n.type === 'audiout')!.id
+    ? components.find((n) => n.type === 'jack' && n.data.direction === 'out')!.id
     : 'out';
 
   const nodes: Array<ComponentNode> = [
@@ -52,9 +52,9 @@ export function makeCircuit(
       ? [
           {
             id: 'in',
-            type: 'audiin' as const,
+            type: 'jack' as const,
             position: { x: 0, y: 0 },
-            data: { label: 'INPUT' },
+            data: { label: 'INPUT', direction: 'in' as const },
           },
         ]
       : []),
@@ -63,9 +63,9 @@ export function makeCircuit(
       ? [
           {
             id: 'out',
-            type: 'audiout' as const,
+            type: 'jack' as const,
             position: { x: 500, y: 0 },
-            data: { label: 'OUTPUT' },
+            data: { label: 'OUTPUT', direction: 'out' as const },
           },
         ]
       : []),

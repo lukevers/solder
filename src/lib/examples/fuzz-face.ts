@@ -6,9 +6,9 @@ export const fuzzFaceNodes: Array<ComponentNode> = [
   // ── Input chain ──
   {
     id: 'ff-in',
-    type: 'audiin',
+    type: 'jack',
     position: { x: 40, y: 340 },
-    data: { label: 'INPUT' },
+    data: { label: 'INPUT', direction: 'in' },
   },
   {
     id: 'ff-gnd_in',
@@ -122,9 +122,9 @@ export const fuzzFaceNodes: Array<ComponentNode> = [
   },
   {
     id: 'ff-out',
-    type: 'audiout',
+    type: 'jack',
     position: { x: 1300, y: 340 },
-    data: { label: 'OUTPUT' },
+    data: { label: 'OUTPUT', direction: 'out' },
   },
   {
     id: 'ff-gnd_out',

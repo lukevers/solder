@@ -25,20 +25,6 @@ const PALETTE: Array<{
   unique?: boolean;
 }> = [
   {
-    label: 'INPUT',
-    tooltip: 'Audio Input',
-    type: 'audiin',
-    defaultData: { label: 'INPUT' },
-    unique: true,
-  },
-  {
-    label: 'OUTPUT',
-    tooltip: 'Audio Output',
-    type: 'audiout',
-    defaultData: { label: 'OUTPUT' },
-    unique: true,
-  },
-  {
     label: 'V+',
     tooltip: 'Power Supply',
     type: 'power',
@@ -95,6 +81,26 @@ const PALETTE: Array<{
 ];
 
 type PaletteItem = (typeof PALETTE)[number];
+
+const JACK_ITEMS: Array<{
+  label: string;
+  tooltip: string;
+  type: ComponentNode['type'];
+  defaultData: ComponentNode['data'];
+}> = [
+  {
+    label: 'IN',
+    tooltip: 'Audio Input Jack',
+    type: 'jack',
+    defaultData: { label: 'INPUT', direction: 'in' },
+  },
+  {
+    label: 'OUT',
+    tooltip: 'Audio Output Jack',
+    type: 'jack',
+    defaultData: { label: 'OUTPUT', direction: 'out' },
+  },
+];
 
 const TRANSISTOR_ITEMS: Array<PaletteItem> = [
   {
@@ -179,7 +185,9 @@ export function Toolbar({
   const [editingTabId, setEditingTabId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
   const [transistorOpen, setTransistorOpen] = useState(false);
+  const [jackOpen, setJackOpen] = useState(false);
   const transistorRef = useRef<HTMLDivElement>(null);
+  const jackRef = useRef<HTMLDivElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -200,10 +208,20 @@ export function Toolbar({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [transistorOpen]);
 
-  const hasAudiin = nodes.some((n) => n.type === 'audiin');
-  const hasAudiout = nodes.some((n) => n.type === 'audiout');
+  useEffect(() => {
+    if (!jackOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (jackRef.current && !jackRef.current.contains(e.target as Node)) {
+        setJackOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [jackOpen]);
 
-  function handleAdd(item: (typeof PALETTE)[number]) {
+  function handleAdd(
+    item: (typeof PALETTE)[number] | (typeof JACK_ITEMS)[number],
+  ) {
     const offset = Math.random() * 100;
     addNode({
       id: crypto.randomUUID(),
@@ -263,9 +281,9 @@ export function Toolbar({
   }
 
   return (
-    <div className="flex flex-col flex-shrink-0 bg-gray-900 border-b border-gray-800">
+    <div className="flex flex-col flex-shrink-0 bg-gray-900 border-b border-gray-800 overflow-hidden">
       {/* Logo row: logo + tab strip */}
-      <div className="flex items-stretch h-8 border-b border-gray-800">
+      <div className="flex items-stretch h-8 border-b border-gray-800 overflow-hidden overflow-x-auto">
         {/* Logo */}
         <div className="flex items-center px-3 border-r border-gray-800 flex-shrink-0">
           <span className="text-blue-400 font-bold text-sm">⚡ solder</span>
@@ -334,7 +352,7 @@ export function Toolbar({
       </div>
 
       {/* Palette row: Examples + divider + components + Simulate */}
-      <div className="flex items-center gap-2 px-3 py-1.5">
+      <div className="flex items-center gap-2 px-3 py-1.5 overflow-hidden overflow-x-auto">
         <input
           ref={fileInputRef}
           type="file"
@@ -347,45 +365,81 @@ export function Toolbar({
         <button
           type="button"
           onClick={onToggleExamples}
-          className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 ${
+          className={`h-full flex items-center gap-1.5 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 ${
             showExamples
               ? 'bg-indigo-950 border border-indigo-700 text-indigo-300'
               : 'bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200'
           }`}
         >
-          <FolderOpen size={12} />
-          Examples
+          <FolderOpen size={10} className="h-full" />
+          <span className="hidden sm:block">Examples</span>
         </button>
 
         {/* Export button */}
         <button
           type="button"
           onClick={handleExport}
-          className="flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
+          className="h-full flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
         >
-          <Download size={10} />
-          Export
+          <Download size={10} className="h-full" />
+          <span className="hidden sm:block">Export</span>
         </button>
 
         {/* Import button */}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
+          className="h-full flex items-center gap-1 text-xs px-2.5 py-1 rounded transition-colors font-sans flex-shrink-0 bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200"
         >
-          <Upload size={10} />
-          Import
+          <Upload size={10} className="h-full" />
+          <span className="hidden sm:block">Import</span>
         </button>
 
         {/* Divider */}
         <div className="w-px h-5 bg-gray-700 flex-shrink-0" />
 
         {/* Component palette */}
+        {/* JACK flyout */}
+        <div ref={jackRef} className="relative group flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => setJackOpen((o) => !o)}
+            className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
+              jackOpen
+                ? 'border-blue-500 text-blue-300'
+                : 'border-gray-700 text-gray-300'
+            }`}
+          >
+            JACK
+          </button>
+          {!jackOpen && (
+            <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+              Audio Jack
+            </div>
+          )}
+          {jackOpen && (
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 flex flex-col gap-1 z-50">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+              {JACK_ITEMS.map((sub) => (
+                <button
+                  key={sub.label}
+                  type="button"
+                  onClick={() => {
+                    handleAdd(sub);
+                    setJackOpen(false);
+                  }}
+                  className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {PALETTE.map((item) => {
-          const disabled =
-            item.unique &&
-            ((item.type === 'audiin' && hasAudiin) ||
-              (item.type === 'audiout' && hasAudiout));
+          const disabled = false;
 
           // Insert transistor flyout after diode
           const transistorButton = item.type === 'diode' && (
@@ -440,14 +494,13 @@ export function Toolbar({
                 <button
                   type="button"
                   onClick={() => handleAdd(item)}
-                  disabled={disabled}
-                  className="bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed border border-gray-700 text-gray-300 text-xs px-2 py-1 rounded font-mono transition-colors"
+                  className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs px-2 py-1 rounded font-mono transition-colors"
                 >
                   {item.label}
                 </button>
                 <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-                  {disabled ? `${item.tooltip} already placed` : item.tooltip}
+                  {item.tooltip}
                 </div>
               </div>
               {transistorButton}

@@ -29,9 +29,9 @@ describe('cap_polar netlist compilation', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'cp1',
@@ -41,9 +41,9 @@ describe('cap_polar netlist compilation', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const edges: Array<Edge> = [
@@ -71,9 +71,9 @@ describe('cap_polar netlist compilation', () => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
-        type: 'audiin',
+        type: 'jack',
         position: { x: 0, y: 0 },
-        data: { label: 'INPUT' },
+        data: { label: 'INPUT', direction: 'in' },
       },
       {
         id: 'cp1',
@@ -83,9 +83,9 @@ describe('cap_polar netlist compilation', () => {
       },
       {
         id: 'out1',
-        type: 'audiout',
+        type: 'jack',
         position: { x: 200, y: 0 },
-        data: { label: 'OUTPUT' },
+        data: { label: 'OUTPUT', direction: 'out' },
       },
     ];
     const netlist = compileNetlist(nodes, []);

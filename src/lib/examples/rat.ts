@@ -17,9 +17,9 @@ const ratNodes: Array<ComponentNode> = [
   // ── Input chain (y=340) ──
   {
     id: 'rat-in',
-    type: 'audiin',
+    type: 'jack',
     position: { x: 40, y: 340 },
-    data: { label: 'INPUT' },
+    data: { label: 'INPUT', direction: 'in' },
   },
   {
     id: 'rat-gnd_in',
@@ -169,9 +169,9 @@ const ratNodes: Array<ComponentNode> = [
   },
   {
     id: 'rat-out',
-    type: 'audiout',
+    type: 'jack',
     position: { x: 1600, y: 340 },
-    data: { label: 'OUTPUT' },
+    data: { label: 'OUTPUT', direction: 'out' },
   },
   {
     id: 'rat-gnd_out',
