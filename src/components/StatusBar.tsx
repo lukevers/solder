@@ -36,7 +36,7 @@ export function StatusBar() {
           : '● ready';
 
   return (
-    <div className="flex gap-3 px-3 py-1 bg-gray-900 border-t border-gray-800 text-[10px] sm:text-xs font-mono text-gray-500 flex-shrink-0">
+    <div className="flex gap-3 px-3 py-1 bg-gray-900 border-t border-gray-800 text-xs font-mono text-gray-500 flex-shrink-0">
       <span className={statusColor}>{statusLabel}</span>
       <span className="hidden sm:inline">components: {nodes.length}</span>
       <span className="hidden sm:inline">ngspice · WASM</span>

@@ -91,10 +91,9 @@ export function SignalEdge({
               cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
             }}
-            onClick={() => deleteEdge(id)}
+            onClick={(e) => { e.stopPropagation(); deleteEdge(id); }}
           >
             <Trash2 size={11} />
-            Delete
           </button>
         </EdgeLabelRenderer>
       )}

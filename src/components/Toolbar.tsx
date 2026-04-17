@@ -78,7 +78,13 @@ function FlyoutButton({
         createPortal(
           <div
             ref={flyRef}
-            style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 9999, transform: 'translateX(-50%)' }}
+            style={{
+              position: 'fixed',
+              top: pos.top,
+              left: pos.left,
+              zIndex: 9999,
+              transform: 'translateX(-50%)',
+            }}
             className="flex flex-col gap-1"
           >
             {items.map((item) => (
@@ -334,7 +340,7 @@ export function Toolbar({
   }
 
   return (
-    <div className="flex flex-col flex-shrink-0 bg-gray-900 border-b border-gray-800 overflow-hidden">
+    <div className="flex flex-col flex-shrink-0 bg-gray-900 border-b border-gray-800">
       {/* Logo row: logo + tab strip */}
       <div className="flex items-stretch h-8 border-b border-gray-800 overflow-hidden overflow-x-auto">
         {/* Logo */}
@@ -407,18 +413,6 @@ export function Toolbar({
         <div className="flex items-stretch border-l border-gray-800 flex-shrink-0">
           <button
             type="button"
-            onClick={onToggleExamples}
-            className={`flex items-center gap-1 text-xs px-2.5 transition-colors font-sans ${
-              showExamples
-                ? 'bg-indigo-950 text-indigo-300'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
-            }`}
-          >
-            <FolderOpen size={12} />
-            <span className="hidden sm:inline">Examples</span>
-          </button>
-          <button
-            type="button"
             onClick={handleExport}
             className="flex items-center gap-1 text-xs px-2.5 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors font-sans"
           >
@@ -432,6 +426,18 @@ export function Toolbar({
           >
             <Upload size={12} />
             <span className="hidden sm:inline">Import</span>
+          </button>
+          <button
+            type="button"
+            onClick={onToggleExamples}
+            className={`flex items-center gap-1 text-xs px-2.5 transition-colors font-sans ${
+              showExamples
+                ? 'bg-indigo-950 text-indigo-300'
+                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+            }`}
+          >
+            <FolderOpen size={12} />
+            <span className="hidden sm:inline">Examples</span>
           </button>
         </div>
       </div>
@@ -447,7 +453,7 @@ export function Toolbar({
       {/* On mobile: two rows (actions middle, palette bottom). On sm+: one row. */}
       <div className="flex flex-col sm:flex-row sm:items-center border-b border-gray-800 sm:border-b-0">
         {/* ── Actions row (middle on mobile, right on desktop) ── */}
-        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-gray-800 sm:border-b-0 sm:order-last sm:ml-auto flex-shrink-0 flex-row-reverse">
+        <div className="flex items-center gap-2 px-2 py-1.5 border-b border-gray-800 sm:border-b-0 sm:order-last sm:ml-auto flex-shrink-0 justify-between">
           {/* Input / Output button group */}
           <div className="flex rounded border border-gray-700 flex-shrink-0">
             {/* Input play/stop */}
@@ -456,9 +462,10 @@ export function Toolbar({
                 <button
                   type="button"
                   onClick={onStop}
-                  className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
+                  className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
                 >
-                  <Square size={10} /> Input
+                  <Square size={10} />
+                  <span>Input</span>
                 </button>
               ) : (
                 <button
@@ -467,9 +474,10 @@ export function Toolbar({
                   disabled={
                     simulationStatus === 'running' || sweepStatus === 'running'
                   }
-                  className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-blue-400 text-xs px-3 py-1 font-mono font-bold transition-colors"
+                  className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-blue-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
                 >
-                  <Play size={10} /> Input
+                  <Play size={10} />
+                  <span>Input</span>
                 </button>
               ))}
 
@@ -482,8 +490,10 @@ export function Toolbar({
                 disabled
                 className="flex items-center gap-1 bg-gray-800 disabled:opacity-50 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
               >
-                <Hourglass size={10} />{' '}
-                {sweepStatus === 'running' ? 'Sweeping…' : 'Simulating…'}
+                <Hourglass size={10} />
+                <span>
+                  {sweepStatus === 'running' ? 'Sweeping…' : 'Simulating…'}
+                </span>
               </button>
             ) : outputBuffer && playing ? (
               <button
@@ -491,7 +501,8 @@ export function Toolbar({
                 onClick={onStop}
                 className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
               >
-                <Square size={10} /> Stop
+                <Square size={10} />
+                <span>Stop</span>
               </button>
             ) : outputBuffer ? (
               <button
@@ -499,7 +510,8 @@ export function Toolbar({
                 onClick={onPlayOutput}
                 className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-green-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
               >
-                <Play size={10} /> Output
+                <Play size={10} />
+                <span>Output</span>
               </button>
             ) : (
               <button
@@ -507,7 +519,8 @@ export function Toolbar({
                 onClick={onSimulate}
                 className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
               >
-                <Play size={10} /> Simulate
+                <Play size={10} />
+                <span>Simulate</span>
               </button>
             )}
           </div>
@@ -523,19 +536,21 @@ export function Toolbar({
             }`}
           >
             <ScanLine size={12} />
-            Oscilloscope
+            <span>Oscilloscope</span>
           </button>
         </div>
 
         {/* ── Palette row (bottom on mobile, left on desktop) ── */}
-        <div className="flex items-center gap-2 px-3 py-1.5 overflow-x-auto sm:order-first sm:flex-1 overflow-y-hidden">
+        <div className="flex items-center gap-2 px-2 py-1.5 overflow-x-auto sm:order-first sm:flex-1 overflow-y-hidden">
           {/* Component palette */}
           <FlyoutButton
             label="JACK"
             tooltip="Audio Jack"
             active={false}
             items={JACK_ITEMS}
-            onSelect={(lbl) => handleAdd(JACK_ITEMS.find((i) => i.label === lbl)!)}
+            onSelect={(lbl) =>
+              handleAdd(JACK_ITEMS.find((i) => i.label === lbl)!)
+            }
           />
 
           {PALETTE.map((item) => {
@@ -546,7 +561,9 @@ export function Toolbar({
                 tooltip="Transistor"
                 active={false}
                 items={TRANSISTOR_ITEMS}
-                onSelect={(lbl) => handleAdd(TRANSISTOR_ITEMS.find((i) => i.label === lbl)!)}
+                onSelect={(lbl) =>
+                  handleAdd(TRANSISTOR_ITEMS.find((i) => i.label === lbl)!)
+                }
               />
             );
 

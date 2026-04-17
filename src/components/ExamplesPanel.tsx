@@ -1,5 +1,6 @@
 // src/components/ExamplesPanel.tsx
 
+import { useShallow } from 'zustand/react/shallow';
 import { EXAMPLES } from '../lib/examples/rat';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
@@ -17,7 +18,12 @@ function snapNodes(nodes: Array<ComponentNode>): Array<ComponentNode> {
 }
 
 export function ExamplesPanel() {
-  const loadCircuit = useStore((s) => s.loadCircuit);
+  const { loadCircuit, renameTab, activeTabId, tabs } = useStore(useShallow((s) => ({
+    loadCircuit: s.loadCircuit,
+    renameTab: s.renameTab,
+    activeTabId: s.activeTabId,
+    tabs: s.tabs,
+  })));
 
   return (
     <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
@@ -50,7 +56,13 @@ export function ExamplesPanel() {
             </div>
             <button
               type="button"
-              onClick={() => loadCircuit(snapNodes(ex.nodes), ex.edges)}
+              onClick={() => {
+                loadCircuit(snapNodes(ex.nodes), ex.edges);
+                const activeTab = tabs.find((t) => t.id === activeTabId);
+                if (activeTab && /^Circuit \d+$/.test(activeTab.name)) {
+                  renameTab(activeTabId, ex.name);
+                }
+              }}
               className="w-full bg-blue-900 hover:bg-blue-800 border border-blue-700 text-blue-200 text-xs px-2 py-1.5 rounded font-mono transition-colors"
             >
               Load circuit
