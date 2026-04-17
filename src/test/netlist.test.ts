@@ -1041,7 +1041,10 @@ describe('applyTaper', () => {
 });
 
 describe('compileNetlist pot taper', () => {
-  const makePotCircuit = (position: number, taper: 'linear' | 'log' | 'antilog') => {
+  const makePotCircuit = (
+    position: number,
+    taper: 'linear' | 'log' | 'antilog',
+  ) => {
     const nodes: Array<ComponentNode> = [
       {
         id: 'in1',
@@ -1123,9 +1126,10 @@ describe('compileNetlist pot taper', () => {
 // ── Transistor tests ──
 
 /** Minimal circuit with a single transistor wired between IN and OUT */
-function makeTransistorCircuit(
-  transistor: ComponentNode,
-): { nodes: Array<ComponentNode>; edges: Array<Edge> } {
+function makeTransistorCircuit(transistor: ComponentNode): {
+  nodes: Array<ComponentNode>;
+  edges: Array<Edge>;
+} {
   const nodes: Array<ComponentNode> = [
     {
       id: 'in1',

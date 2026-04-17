@@ -1,7 +1,7 @@
 // src/components/nodes/LabelNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { LabelData } from '../../lib/types';
-import { NodeShell, NodeText } from './NodeShell';
+import { NodeShell, NodeSvg, NodeText, RotatedHandle } from './NodeShell';
 
 export function LabelNode({ id, data, selected }: NodeProps) {
   const d = data as LabelData;
@@ -10,7 +10,7 @@ export function LabelNode({ id, data, selected }: NodeProps) {
 
   return (
     <NodeShell id={id} width={80} height={28}>
-      <svg width="80" height="28" viewBox="0 0 80 28" overflow="visible">
+      <NodeSvg width={80} height={28}>
         {/* Flag shape: rectangle with a triangular notch on the right */}
         <path
           d="M2 2 H68 L78 14 L68 26 H2 Z"
@@ -29,8 +29,8 @@ export function LabelNode({ id, data, selected }: NodeProps) {
         >
           {d.label}
         </NodeText>
-      </svg>
-      <Handle
+      </NodeSvg>
+      <RotatedHandle
         type="source"
         position={Position.Left}
         id="net"

@@ -1,7 +1,13 @@
 // src/components/nodes/OpAmpNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { OpAmpData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
+import {
+  HANDLE_STYLE,
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from './NodeShell';
 
 export function OpAmpNode({ id, data, selected }: NodeProps) {
   const d = data as OpAmpData;
@@ -10,52 +16,64 @@ export function OpAmpNode({ id, data, selected }: NodeProps) {
   return (
     <NodeShell id={id} width={80} height={80}>
       {/* +in — non-inverting, top-left at y=20 (25% of 80) */}
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Left}
         id="in_pos"
         style={{ top: 20, background: '#4b5563' }}
       />
       {/* -in — inverting, bottom-left at y=60 (75% of 80) */}
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Left}
         id="in_neg"
         style={{ top: 60, background: '#4b5563' }}
       />
       {/* vcc — top center at x=40 (50% of 80) */}
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Top}
         id="vcc"
         style={{ left: '50%', background: '#4b5563' }}
       />
       {/* gnd — bottom center at x=40 (50% of 80) */}
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Bottom}
         id="gnd"
         style={{ left: '50%', background: '#4b5563' }}
       />
       {/* out — right center at y=40 */}
-      <Handle
+      <RotatedHandle
         type="source"
         position={Position.Right}
         id="out"
         style={HANDLE_STYLE}
       />
 
-      <svg width="80" height="80" viewBox="0 0 80 80" overflow="visible">
+      <NodeSvg width={80} height={80}>
         <polygon
           points="10,5 10,75 70,40"
           fill="#1f2937"
           stroke={stroke}
           strokeWidth="1.5"
         />
-        <NodeText x={20} y={28} fill="#e5e7eb" fontSize="10" fontFamily="monospace">
+        <NodeText
+          x={20}
+          y={28}
+          fill="#e5e7eb"
+          fontSize="10"
+          fontFamily="monospace"
+        >
           +
         </NodeText>
-        <NodeText x={20} y={58} fill="#e5e7eb" fontSize="10" fontFamily="monospace">
+        <NodeText
+          x={20}
+          y={58}
+          fill="#e5e7eb"
+          fontSize="10"
+          fontFamily="monospace"
+        >
           −
         </NodeText>
         <NodeText
@@ -78,7 +96,7 @@ export function OpAmpNode({ id, data, selected }: NodeProps) {
         >
           {d.model}
         </NodeText>
-      </svg>
+      </NodeSvg>
     </NodeShell>
   );
 }

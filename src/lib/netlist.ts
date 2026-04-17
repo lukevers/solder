@@ -36,7 +36,7 @@ function buildPwlSource(
 ): string {
   const numPoints = Math.round(duration * SPICE_SAMPLE_RATE) + 1;
   const ratio = inputSampleRate / SPICE_SAMPLE_RATE;
-  const pairs: string[] = [];
+  const pairs: Array<string> = [];
   for (let i = 0; i < numPoints; i++) {
     const t = i / SPICE_SAMPLE_RATE;
     const srcIdx = i * ratio;
@@ -62,6 +62,7 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   pot: ['ccw', 'wiper', 'cw'],
   cap_polar: ['pos', 'neg'],
   label: ['net'],
+  junction: ['st', 'sr', 'sb', 'sl', 'tt', 'tr', 'tb', 'tl'],
   bjt: ['b', 'c', 'e'],
   jfet: ['g', 'd', 's'],
   mosfet: ['g', 'd', 's'],
@@ -264,9 +265,7 @@ function buildCircuitBody(
       '.model 1N4001 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u)',
     );
   if (usedDiodeModels.has('1N270'))
-    lines.push(
-      '.model 1N270 D(Is=200n Rs=2 N=1.1 Cjo=1p M=.5 tt=50n BV=100)',
-    );
+    lines.push('.model 1N270 D(Is=200n Rs=2 N=1.1 Cjo=1p M=.5 tt=50n BV=100)');
 
   // BJT model statements
   const usedBJTModels = new Set(
@@ -293,8 +292,12 @@ function buildCircuitBody(
   if (usedMOSFETModels.has('IRF9510')) lines.push(MOSFET_IRF9510);
 
   // Find input and output jack nodes
-  const inputNode = nodes.find((n) => n.type === 'jack' && n.data.direction === 'in');
-  const outputNode = nodes.find((n) => n.type === 'jack' && n.data.direction === 'out');
+  const inputNode = nodes.find(
+    (n) => n.type === 'jack' && n.data.direction === 'in',
+  );
+  const outputNode = nodes.find(
+    (n) => n.type === 'jack' && n.data.direction === 'out',
+  );
 
   if (!inputNode) throw new Error('Circuit has no input jack');
   if (!outputNode) throw new Error('Circuit has no output jack');
@@ -522,8 +525,12 @@ export function getNodeLabels(
   }
 
   // Mark input/output nodes
-  const inputNode = nodes.find((n) => n.type === 'jack' && n.data.direction === 'in');
-  const outputNode = nodes.find((n) => n.type === 'jack' && n.data.direction === 'out');
+  const inputNode = nodes.find(
+    (n) => n.type === 'jack' && n.data.direction === 'in',
+  );
+  const outputNode = nodes.find(
+    (n) => n.type === 'jack' && n.data.direction === 'out',
+  );
   if (inputNode) {
     const pos = portToNode.get(`${inputNode.id}|pos`);
     if (pos && pos !== '0') {

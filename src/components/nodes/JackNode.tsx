@@ -1,7 +1,7 @@
 // src/components/nodes/JackNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { JackData } from '../../lib/types';
-import { NodeShell, NodeText } from './NodeShell';
+import { NodeShell, NodeSvg, NodeText, RotatedHandle } from './NodeShell';
 
 export function JackNode({ id, data, selected }: NodeProps) {
   const d = data as JackData;
@@ -13,7 +13,7 @@ export function JackNode({ id, data, selected }: NodeProps) {
     <NodeShell id={id} width={80} height={60}>
       {isIn ? (
         <>
-          <svg width="80" height="60" viewBox="0 0 80 60" overflow="visible">
+          <NodeSvg width={80} height={60}>
             <rect
               x="2"
               y="4"
@@ -58,14 +58,14 @@ export function JackNode({ id, data, selected }: NodeProps) {
             >
               −
             </NodeText>
-          </svg>
-          <Handle
+          </NodeSvg>
+          <RotatedHandle
             type="source"
             position={Position.Right}
             id="pos"
             style={{ top: 20, background: '#3b82f6' }}
           />
-          <Handle
+          <RotatedHandle
             type="source"
             position={Position.Right}
             id="neg"
@@ -74,19 +74,19 @@ export function JackNode({ id, data, selected }: NodeProps) {
         </>
       ) : (
         <>
-          <Handle
+          <RotatedHandle
             type="target"
             position={Position.Left}
             id="pos"
             style={{ top: 20, background: '#22c55e' }}
           />
-          <Handle
+          <RotatedHandle
             type="target"
             position={Position.Left}
             id="neg"
             style={{ top: 44, background: '#4b5563' }}
           />
-          <svg width="80" height="60" viewBox="0 0 80 60" overflow="visible">
+          <NodeSvg width={80} height={60}>
             <rect
               x="2"
               y="4"
@@ -131,7 +131,7 @@ export function JackNode({ id, data, selected }: NodeProps) {
             >
               −
             </NodeText>
-          </svg>
+          </NodeSvg>
         </>
       )}
     </NodeShell>

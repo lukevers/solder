@@ -1,7 +1,8 @@
 // src/components/ExamplesPanel.tsx
 
+import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { EXAMPLES } from '../lib/examples/rat';
+import { EXAMPLES, type ExampleCategory } from '../lib/examples/rat';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
 
@@ -17,13 +18,23 @@ function snapNodes(nodes: Array<ComponentNode>): Array<ComponentNode> {
   }));
 }
 
+const TABS: Array<{ id: ExampleCategory; label: string }> = [
+  { id: 'pedals', label: 'Pedals' },
+  { id: 'circuits', label: 'Circuits' },
+];
+
 export function ExamplesPanel() {
-  const { loadCircuit, renameTab, activeTabId, tabs } = useStore(useShallow((s) => ({
-    loadCircuit: s.loadCircuit,
-    renameTab: s.renameTab,
-    activeTabId: s.activeTabId,
-    tabs: s.tabs,
-  })));
+  const [activeTab, setActiveTab] = useState<ExampleCategory>('pedals');
+  const { loadCircuit, renameTab, activeTabId, tabs } = useStore(
+    useShallow((s) => ({
+      loadCircuit: s.loadCircuit,
+      renameTab: s.renameTab,
+      activeTabId: s.activeTabId,
+      tabs: s.tabs,
+    })),
+  );
+
+  const filtered = EXAMPLES.filter((ex) => ex.category === activeTab);
 
   return (
     <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
@@ -32,8 +43,24 @@ export function ExamplesPanel() {
           Examples
         </span>
       </div>
+      <div className="flex border-b border-gray-800">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 text-xs font-mono py-2 transition-colors ${
+              activeTab === tab.id
+                ? 'text-gray-200 border-b-2 border-blue-500'
+                : 'text-gray-500 hover:text-gray-400'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
       <div className="flex flex-col gap-2 p-3">
-        {EXAMPLES.map((ex) => (
+        {filtered.map((ex) => (
           <div
             key={ex.id}
             className="bg-gray-950 border border-gray-800 rounded p-3"

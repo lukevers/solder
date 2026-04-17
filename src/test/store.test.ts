@@ -116,8 +116,12 @@ describe('tabsSlice', () => {
     expect(activeTabId).toBe(tabs[1].id);
     // new tab starts with default jack in/out nodes + ground nodes
     expect(nodes).toHaveLength(4);
-    expect(nodes.some((n) => n.type === 'jack' && n.data.direction === 'in')).toBe(true);
-    expect(nodes.some((n) => n.type === 'jack' && n.data.direction === 'out')).toBe(true);
+    expect(
+      nodes.some((n) => n.type === 'jack' && n.data.direction === 'in'),
+    ).toBe(true);
+    expect(
+      nodes.some((n) => n.type === 'jack' && n.data.direction === 'out'),
+    ).toBe(true);
     expect(nodes.filter((n) => n.type === 'ground')).toHaveLength(2);
     expect(edges).toHaveLength(3);
   });
@@ -393,9 +397,9 @@ describe('setEdges invalidation', () => {
     useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]));
     useStore.getState().setSimulationStatus('running');
     // Adding a new edge is a topology change → should clear sim
-    useStore.getState().setEdges([
-      { id: 'e1', source: 'a', target: 'b', type: 'default' },
-    ]);
+    useStore
+      .getState()
+      .setEdges([{ id: 'e1', source: 'a', target: 'b', type: 'default' }]);
     expect(useStore.getState().outputBuffer).toBeNull();
     expect(useStore.getState().simulationStatus).toBe('idle');
   });

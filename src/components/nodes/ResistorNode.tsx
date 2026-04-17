@@ -1,20 +1,27 @@
 // src/components/nodes/ResistorNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { ResistorData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
+import { formatOhms } from '../../lib/units';
+import {
+  HANDLE_STYLE,
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from './NodeShell';
 
 export function ResistorNode({ id, data, selected }: NodeProps) {
   const d = data as ResistorData;
 
   return (
     <NodeShell id={id} width={80} height={40}>
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Left}
         id="a"
         style={HANDLE_STYLE}
       />
-      <svg width="80" height="40" viewBox="0 0 80 40" overflow="visible">
+      <NodeSvg width={80} height={40}>
         <line
           x1="0"
           y1="20"
@@ -55,10 +62,10 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
           fontSize="7"
           fontFamily="monospace"
         >
-          {d.ohms >= 1000 ? `${d.ohms / 1000}kΩ` : `${d.ohms}Ω`}
+          {formatOhms(d.ohms)}
         </NodeText>
-      </svg>
-      <Handle
+      </NodeSvg>
+      <RotatedHandle
         type="source"
         position={Position.Right}
         id="b"

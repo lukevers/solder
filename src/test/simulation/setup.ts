@@ -38,13 +38,18 @@ export function makeCircuit(
   components: Array<ComponentNode>,
   edges: Array<Edge>,
 ): { nodes: Array<ComponentNode>; edges: Array<Edge> } {
-  const hasIn = components.some((n) => n.type === 'jack' && n.data.direction === 'in');
-  const hasOut = components.some((n) => n.type === 'jack' && n.data.direction === 'out');
+  const hasIn = components.some(
+    (n) => n.type === 'jack' && n.data.direction === 'in',
+  );
+  const hasOut = components.some(
+    (n) => n.type === 'jack' && n.data.direction === 'out',
+  );
   const inId = hasIn
     ? components.find((n) => n.type === 'jack' && n.data.direction === 'in')!.id
     : 'in';
   const outId = hasOut
-    ? components.find((n) => n.type === 'jack' && n.data.direction === 'out')!.id
+    ? components.find((n) => n.type === 'jack' && n.data.direction === 'out')!
+        .id
     : 'out';
 
   const nodes: Array<ComponentNode> = [

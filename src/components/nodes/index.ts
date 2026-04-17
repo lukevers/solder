@@ -7,6 +7,7 @@ import { DiodeNode } from './DiodeNode';
 import { GroundNode } from './GroundNode';
 import { JackNode } from './JackNode';
 import { JFETNode } from './JFETNode';
+import { JunctionNode } from './JunctionNode';
 import { LabelNode } from './LabelNode';
 import { MOSFETNode } from './MOSFETNode';
 import { OpAmpNode } from './OpAmpNode';
@@ -25,6 +26,7 @@ export const nodeTypes = {
   power: PowerNode,
   ground: GroundNode,
   jack: JackNode,
+  junction: JunctionNode,
   diode: DiodeNode,
   pot: PotNode,
   label: LabelNode,

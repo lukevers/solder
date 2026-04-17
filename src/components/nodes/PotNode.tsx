@@ -1,7 +1,8 @@
 // src/components/nodes/PotNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { PotData } from '../../lib/types';
-import { NodeShell, NodeText } from './NodeShell';
+import { formatOhms } from '../../lib/units';
+import { NodeShell, NodeSvg, NodeText, RotatedHandle } from './NodeShell';
 
 export function PotNode({ id, data, selected }: NodeProps) {
   const d = data as PotData;
@@ -11,38 +12,33 @@ export function PotNode({ id, data, selected }: NodeProps) {
   // Wiper x position along the resistor body (body spans x 12–68)
   const wiperX = 12 + 56 * d.position;
   const pct = Math.round(d.position * 100);
-  const val =
-    d.ohms >= 1e6
-      ? `${(d.ohms / 1e6).toPrecision(3)}MΩ`
-      : d.ohms >= 1e3
-        ? `${(d.ohms / 1e3).toPrecision(3)}kΩ`
-        : `${d.ohms}Ω`;
+  const val = formatOhms(d.ohms);
 
   return (
     <NodeShell id={id} width={80} height={60}>
       {/* CCW end — left at y=20 (explicit px, on 20px grid) */}
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Left}
         id="ccw"
         style={{ top: 20, background: '#4b5563' }}
       />
       {/* CW end — right at y=20 */}
-      <Handle
+      <RotatedHandle
         type="source"
         position={Position.Right}
         id="cw"
         style={{ top: 20, background: '#4b5563' }}
       />
       {/* Wiper tap — bottom center (x=40, y=60, both multiples of 20) */}
-      <Handle
+      <RotatedHandle
         type="source"
         position={Position.Bottom}
         id="wiper"
         style={{ left: '50%', background: '#a78bfa' }}
       />
 
-      <svg width="80" height="60" viewBox="0 0 80 60" overflow="visible">
+      <NodeSvg width={80} height={60}>
         {/* Leads at y=20 to match handle position */}
         <line
           x1="0"
@@ -112,7 +108,7 @@ export function PotNode({ id, data, selected }: NodeProps) {
         >
           {val} {pct}%
         </NodeText>
-      </svg>
+      </NodeSvg>
     </NodeShell>
   );
 }

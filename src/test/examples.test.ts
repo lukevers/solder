@@ -23,8 +23,12 @@ describe('EXAMPLES', () => {
       });
 
       it('nodes include at least one input jack and one output jack', () => {
-        const hasAudioIn = ex.nodes.some((n) => n.type === 'jack' && n.data.direction === 'in');
-        const hasAudioOut = ex.nodes.some((n) => n.type === 'jack' && n.data.direction === 'out');
+        const hasAudioIn = ex.nodes.some(
+          (n) => n.type === 'jack' && n.data.direction === 'in',
+        );
+        const hasAudioOut = ex.nodes.some(
+          (n) => n.type === 'jack' && n.data.direction === 'out',
+        );
         expect(hasAudioIn).toBe(true);
         expect(hasAudioOut).toBe(true);
       });

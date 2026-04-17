@@ -9,13 +9,13 @@ import {
   type BJTModel,
   type ComponentNode,
   type DiodeData,
+  isEdgeDC,
+  type JackData,
   type JFETData,
   type JFETModel,
   type MOSFETData,
   type MOSFETModel,
-  isEdgeDC,
   type PotData,
-  type JackData,
 } from '../lib/types';
 import {
   CAP_MULTIPLIERS,
@@ -478,9 +478,7 @@ function PotInspector({
           unit={unit}
           units={RES_UNITS}
           min={0}
-          onValueChange={(v) =>
-            update({ ohms: v / RES_MULTIPLIERS[unit] })
-          }
+          onValueChange={(v) => update({ ohms: v / RES_MULTIPLIERS[unit] })}
           onUnitChange={setUnit}
         />
       </Field>
@@ -488,9 +486,21 @@ function PotInspector({
         <div className="flex rounded border border-gray-700 overflow-hidden">
           {(
             [
-              { value: 'log', label: 'A', tip: 'Logarithmic (audio) — slow start, fast finish' },
-              { value: 'linear', label: 'B', tip: 'Linear — even response across full range' },
-              { value: 'antilog', label: 'C', tip: 'Anti-log (reverse audio) — fast start, slow finish' },
+              {
+                value: 'log',
+                label: 'A',
+                tip: 'Logarithmic (audio) — slow start, fast finish',
+              },
+              {
+                value: 'linear',
+                label: 'B',
+                tip: 'Linear — even response across full range',
+              },
+              {
+                value: 'antilog',
+                label: 'C',
+                tip: 'Anti-log (reverse audio) — fast start, slow finish',
+              },
             ] as const
           ).map(({ value, label: lbl, tip }) => (
             <button
@@ -539,8 +549,7 @@ function SweepButton({
       simulationStatus: s.simulationStatus,
     })),
   );
-  const busy =
-    sweepStatus === 'running' || simulationStatus === 'running';
+  const busy = sweepStatus === 'running' || simulationStatus === 'running';
 
   return (
     <button
@@ -573,7 +582,10 @@ function JackInspector({
           className={INPUT_CLASS}
           value={label}
           onChange={(e) =>
-            updateNodeData(node.id, { label: e.target.value, direction } as JackData)
+            updateNodeData(node.id, {
+              label: e.target.value,
+              direction,
+            } as JackData)
           }
         />
       </Field>
@@ -679,7 +691,14 @@ function RotationControl({
 }
 
 export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
-  const { nodes, edges, selectedNodeId, selectedEdgeId, deleteNode, deleteEdge } = useStore(
+  const {
+    nodes,
+    edges,
+    selectedNodeId,
+    selectedEdgeId,
+    deleteNode,
+    deleteEdge,
+  } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
       edges: s.edges,

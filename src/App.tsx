@@ -481,100 +481,109 @@ export default function App() {
         </div>
 
         {sidebarOpen && (
-        <div className="w-52 bg-gray-900 border-l border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
-          <PedalPanel />
-          <Inspector onSweep={handleSweep} />
-          <div className="border-t border-gray-800" />
-          {sweepResults.length > 0 || sweepStatus === 'running' ? (
-            <SweepResults
-              results={sweepResults}
-              status={sweepStatus}
-              playingIndex={sweepPlayingIndex}
-              onPlay={(i) => {
-                setPlaying(false);
-                setPlayingOriginal(false);
-                pipelineRef.current?.stopPlayback();
-                setSweepPlayingIndex(i);
-              }}
-              onStop={() => {
-                pipelineRef.current?.stopPlayback();
-                setSweepPlayingIndex(null);
-              }}
-              onClear={clearSweep}
-            />
-          ) : (
-            <div>
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setWaveformOpen((o) => !o)}
-                  className="flex items-center gap-1.5 px-3 py-2 text-xs text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
-                >
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 10 10"
-                    className={`transition-transform duration-150 ${waveformOpen ? '' : '-rotate-90'}`}
-                  >
-                    <path d="M1 3 L5 7 L9 3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  Waveform
-                </button>
-                {waveformOpen && (sourceBuffer || outputBuffer) && (
+          <div className="w-52 bg-gray-900 border-l border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
+            <PedalPanel />
+            <Inspector onSweep={handleSweep} />
+            <div className="border-t border-gray-800" />
+            {sweepResults.length > 0 || sweepStatus === 'running' ? (
+              <SweepResults
+                results={sweepResults}
+                status={sweepStatus}
+                playingIndex={sweepPlayingIndex}
+                onPlay={(i) => {
+                  setPlaying(false);
+                  setPlayingOriginal(false);
+                  pipelineRef.current?.stopPlayback();
+                  setSweepPlayingIndex(i);
+                }}
+                onStop={() => {
+                  pipelineRef.current?.stopPlayback();
+                  setSweepPlayingIndex(null);
+                }}
+                onClear={clearSweep}
+              />
+            ) : (
+              <div>
+                <div className="flex items-center justify-between">
                   <button
                     type="button"
-                    onClick={() => {
-                      setPlaying(false);
-                      setPlayingOriginal(false);
-                      setShowWaveformModal(true);
-                    }}
-                    className="px-3 text-gray-500 hover:text-gray-200 transition-colors"
-                    aria-label="Expand waveform"
+                    onClick={() => setWaveformOpen((o) => !o)}
+                    className="flex items-center gap-1.5 px-3 py-2 text-xs text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
                   >
-                    <Maximize2 size={13} />
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 10 10"
+                      className={`transition-transform duration-150 ${waveformOpen ? '' : '-rotate-90'}`}
+                    >
+                      <path
+                        d="M1 3 L5 7 L9 3"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Waveform
                   </button>
-                )}
-              </div>
-              {waveformOpen && (
-                <div className="px-3 pb-3">
-                  <WaveformDisplay
-                    inputBuffer={outputBuffer ? simulatedInput : sourceBuffer}
-                    outputBuffer={outputBuffer}
-                    selection={outputBuffer ? null : selection}
-                    onSelectionChange={outputBuffer ? undefined : setSelection}
-                  />
-                  {(sourceBuffer || outputBuffer) && (
-                    <div className="flex mt-2 rounded border border-gray-700 overflow-hidden">
-                      <button
-                        type="button"
-                        onClick={() => setLooping((v) => !v)}
-                        className={`flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono transition-colors ${
-                          looping
-                            ? 'bg-blue-950 text-blue-400'
-                            : 'bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300'
-                        }`}
-                        aria-label={looping ? 'Disable loop' : 'Enable loop'}
-                      >
-                        <Repeat size={10} /> Loop
-                      </button>
-                      <div className="w-px bg-gray-700" />
-                      <button
-                        type="button"
-                        onClick={handleReset}
-                        disabled={!outputBuffer && !selection}
-                        className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 text-gray-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-gray-700 hover:enabled:text-gray-300"
-                      >
-                        <RotateCcw size={10} /> Reset
-                      </button>
-                    </div>
+                  {waveformOpen && (sourceBuffer || outputBuffer) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPlaying(false);
+                        setPlayingOriginal(false);
+                        setShowWaveformModal(true);
+                      }}
+                      className="px-3 text-gray-500 hover:text-gray-200 transition-colors"
+                      aria-label="Expand waveform"
+                    >
+                      <Maximize2 size={13} />
+                    </button>
                   )}
                 </div>
-              )}
-            </div>
-          )}
-          <div className="border-t border-gray-800" />
-          <AudioControls />
-        </div>
+                {waveformOpen && (
+                  <div className="px-3 pb-3">
+                    <WaveformDisplay
+                      inputBuffer={outputBuffer ? simulatedInput : sourceBuffer}
+                      outputBuffer={outputBuffer}
+                      selection={outputBuffer ? null : selection}
+                      onSelectionChange={
+                        outputBuffer ? undefined : setSelection
+                      }
+                    />
+                    {(sourceBuffer || outputBuffer) && (
+                      <div className="flex mt-2 rounded border border-gray-700 overflow-hidden">
+                        <button
+                          type="button"
+                          onClick={() => setLooping((v) => !v)}
+                          className={`flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono transition-colors ${
+                            looping
+                              ? 'bg-blue-950 text-blue-400'
+                              : 'bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300'
+                          }`}
+                          aria-label={looping ? 'Disable loop' : 'Enable loop'}
+                        >
+                          <Repeat size={10} /> Loop
+                        </button>
+                        <div className="w-px bg-gray-700" />
+                        <button
+                          type="button"
+                          onClick={handleReset}
+                          disabled={!outputBuffer && !selection}
+                          className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 text-gray-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-gray-700 hover:enabled:text-gray-300"
+                        >
+                          <RotateCcw size={10} /> Reset
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            <div className="border-t border-gray-800" />
+            <AudioControls />
+          </div>
         )}
       </div>
 

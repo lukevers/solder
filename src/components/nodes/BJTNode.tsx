@@ -1,7 +1,13 @@
 // src/components/nodes/BJTNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { BJTData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
+import {
+  HANDLE_STYLE,
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from './NodeShell';
 
 export function BJTNode({ id, data, selected }: NodeProps) {
   const d = data as BJTData;
@@ -11,28 +17,28 @@ export function BJTNode({ id, data, selected }: NodeProps) {
   return (
     <NodeShell id={id} width={60} height={60}>
       {/* Base — left center */}
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Left}
         id="b"
         style={HANDLE_STYLE}
       />
       {/* Collector — right top */}
-      <Handle
+      <RotatedHandle
         type="source"
         position={Position.Right}
         id="c"
         style={{ top: 15, background: '#4b5563' }}
       />
       {/* Emitter — right bottom */}
-      <Handle
+      <RotatedHandle
         type="source"
         position={Position.Right}
         id="e"
         style={{ top: 45, background: '#4b5563' }}
       />
 
-      <svg width="60" height="60" viewBox="0 0 60 60" overflow="visible">
+      <NodeSvg width={60} height={60}>
         {/* Base wire */}
         <line
           x1="0"
@@ -100,7 +106,7 @@ export function BJTNode({ id, data, selected }: NodeProps) {
         >
           {d.model}
         </NodeText>
-      </svg>
+      </NodeSvg>
     </NodeShell>
   );
 }

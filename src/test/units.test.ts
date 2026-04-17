@@ -40,18 +40,18 @@ describe('detectResUnit', () => {
 
 describe('CAP_MULTIPLIERS', () => {
   it('converts 100 nF in farads to 100 for display', () => {
-    expect(100e-9 * CAP_MULTIPLIERS['nF']).toBeCloseTo(100);
+    expect(100e-9 * CAP_MULTIPLIERS.nF).toBeCloseTo(100);
   });
   it('converts display value back to farads correctly', () => {
-    expect(100 / CAP_MULTIPLIERS['nF']).toBeCloseTo(100e-9);
+    expect(100 / CAP_MULTIPLIERS.nF).toBeCloseTo(100e-9);
   });
 });
 
 describe('RES_MULTIPLIERS', () => {
   it('converts 10 kΩ in ohms to 10 for display', () => {
-    expect(10_000 * RES_MULTIPLIERS['kΩ']).toBeCloseTo(10);
+    expect(10_000 * RES_MULTIPLIERS.kΩ).toBeCloseTo(10);
   });
   it('converts display value back to ohms correctly', () => {
-    expect(10 / RES_MULTIPLIERS['kΩ']).toBeCloseTo(10_000);
+    expect(10 / RES_MULTIPLIERS.kΩ).toBeCloseTo(10_000);
   });
 });

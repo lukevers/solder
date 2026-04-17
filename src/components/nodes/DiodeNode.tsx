@@ -1,7 +1,13 @@
 // src/components/nodes/DiodeNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { DiodeData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
+import {
+  HANDLE_STYLE,
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from './NodeShell';
 
 export function DiodeNode({ id, data, selected }: NodeProps) {
   const d = data as DiodeData;
@@ -9,13 +15,13 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
 
   return (
     <NodeShell id={id} width={60} height={40}>
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Left}
         id="a"
         style={HANDLE_STYLE}
       />
-      <svg width="60" height="40" viewBox="0 0 60 40" overflow="visible">
+      <NodeSvg width={60} height={40}>
         <line
           x1="0"
           y1="20"
@@ -59,8 +65,8 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
         >
           {d.model}
         </NodeText>
-      </svg>
-      <Handle
+      </NodeSvg>
+      <RotatedHandle
         type="source"
         position={Position.Right}
         id="k"

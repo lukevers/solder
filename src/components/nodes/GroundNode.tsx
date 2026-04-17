@@ -1,18 +1,18 @@
 // src/components/nodes/GroundNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
-import { HANDLE_STYLE, NodeShell } from './NodeShell';
+import { type NodeProps, Position } from '@xyflow/react';
+import { HANDLE_STYLE, NodeShell, NodeSvg, RotatedHandle } from './NodeShell';
 
 export function GroundNode({ id, selected }: NodeProps) {
   return (
     <NodeShell id={id} width={40} height={36}>
-      <Handle
+      <RotatedHandle
         type="source"
         position={Position.Top}
         id="gnd"
         isConnectableEnd={true}
         style={HANDLE_STYLE}
       />
-      <svg width="40" height="36" viewBox="0 0 40 36">
+      <NodeSvg width={40} height={36}>
         <line
           x1="20"
           y1="0"
@@ -45,7 +45,7 @@ export function GroundNode({ id, selected }: NodeProps) {
           stroke={selected ? '#60a5fa' : '#9ca3af'}
           strokeWidth="1"
         />
-      </svg>
+      </NodeSvg>
     </NodeShell>
   );
 }

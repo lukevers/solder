@@ -26,3 +26,15 @@ export function detectResUnit(ohms: number): ResUnit {
   if (ohms < 1_000_000) return 'kΩ';
   return 'MΩ';
 }
+
+export function formatOhms(ohms: number): string {
+  const unit = detectResUnit(ohms);
+  const display = +(ohms * RES_MULTIPLIERS[unit]).toPrecision(4);
+  return `${display}${unit}`;
+}
+
+export function formatFarads(farads: number): string {
+  const unit = detectCapUnit(farads);
+  const display = +(farads * CAP_MULTIPLIERS[unit]).toPrecision(4);
+  return `${display}${unit}`;
+}

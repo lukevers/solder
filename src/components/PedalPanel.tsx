@@ -151,7 +151,7 @@ function PotKnob({ nodeId, data }: { nodeId: string; data: PotData }) {
           const outer = polarToXY(CX, CY, SKIRT_R, angle);
           return (
             <line
-              key={i}
+              key={angle}
               x1={inner.x.toFixed(2)}
               y1={inner.y.toFixed(2)}
               x2={outer.x.toFixed(2)}
@@ -196,7 +196,6 @@ function PotKnob({ nodeId, data }: { nodeId: string; data: PotData }) {
           stroke="#52525b"
           strokeWidth="0.4"
         />
-
       </svg>
 
       <div className="text-center">
@@ -235,7 +234,14 @@ export function PedalPanel() {
           viewBox="0 0 10 10"
           className={`transition-transform duration-150 ${open ? '' : '-rotate-90'}`}
         >
-          <path d="M1 3 L5 7 L9 3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M1 3 L5 7 L9 3"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
         Controls
       </button>

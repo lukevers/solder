@@ -1,7 +1,13 @@
 // src/components/nodes/MOSFETNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { MOSFETData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
+import {
+  HANDLE_STYLE,
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from './NodeShell';
 
 export function MOSFETNode({ id, data, selected }: NodeProps) {
   const d = data as MOSFETData;
@@ -11,28 +17,28 @@ export function MOSFETNode({ id, data, selected }: NodeProps) {
   return (
     <NodeShell id={id} width={60} height={60}>
       {/* Gate — left center */}
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Left}
         id="g"
         style={HANDLE_STYLE}
       />
       {/* Drain — right top */}
-      <Handle
+      <RotatedHandle
         type="source"
         position={Position.Right}
         id="d"
         style={{ top: 15, background: '#4b5563' }}
       />
       {/* Source — right bottom */}
-      <Handle
+      <RotatedHandle
         type="source"
         position={Position.Right}
         id="s"
         style={{ top: 45, background: '#4b5563' }}
       />
 
-      <svg width="60" height="60" viewBox="0 0 60 60" overflow="visible">
+      <NodeSvg width={60} height={60}>
         {/* Gate wire */}
         <line
           x1="0"
@@ -142,7 +148,7 @@ export function MOSFETNode({ id, data, selected }: NodeProps) {
         >
           {d.model}
         </NodeText>
-      </svg>
+      </NodeSvg>
     </NodeShell>
   );
 }

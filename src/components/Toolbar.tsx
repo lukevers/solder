@@ -437,7 +437,7 @@ export function Toolbar({
             }`}
           >
             <FolderOpen size={12} />
-            <span className="hidden sm:inline">Examples</span>
+            Examples
           </button>
         </div>
       </div>

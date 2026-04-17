@@ -1,14 +1,20 @@
 // src/components/nodes/PowerNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { PowerData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
+import {
+  HANDLE_STYLE,
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from './NodeShell';
 
 export function PowerNode({ id, data, selected }: NodeProps) {
   const d = data as PowerData;
 
   return (
     <NodeShell id={id} width={40} height={40}>
-      <svg width="40" height="40" viewBox="0 0 40 40" overflow="visible">
+      <NodeSvg width={40} height={40}>
         <circle
           cx="20"
           cy="20"
@@ -38,8 +44,8 @@ export function PowerNode({ id, data, selected }: NodeProps) {
         >
           {d.volts}V
         </NodeText>
-      </svg>
-      <Handle
+      </NodeSvg>
+      <RotatedHandle
         type="source"
         position={Position.Bottom}
         id="pos"

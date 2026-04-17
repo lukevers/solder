@@ -1,30 +1,31 @@
 // src/components/nodes/CapPolarNode.tsx
-import { Handle, type NodeProps, Position } from '@xyflow/react';
+import { type NodeProps, Position } from '@xyflow/react';
 import type { CapacitorData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
+import { formatFarads } from '../../lib/units';
+import {
+  HANDLE_STYLE,
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from './NodeShell';
 
 export function CapPolarNode({ id, data, selected }: NodeProps) {
   const d = data as CapacitorData;
-
-  const faradsLabel =
-    d.farads >= 1e-6
-      ? `${+(d.farads * 1e6).toPrecision(4)}μF`
-      : d.farads >= 1e-9
-        ? `${+(d.farads * 1e9).toPrecision(4)}nF`
-        : `${+(d.farads * 1e12).toPrecision(4)}pF`;
+  const faradsLabel = formatFarads(d.farads);
 
   const wire = selected ? '#60a5fa' : '#9ca3af';
   const plate = selected ? '#60a5fa' : '#e5e7eb';
 
   return (
     <NodeShell id={id} width={60} height={40}>
-      <Handle
+      <RotatedHandle
         type="target"
         position={Position.Left}
         id="pos"
         style={HANDLE_STYLE}
       />
-      <svg width="60" height="40" viewBox="0 0 60 40" overflow="visible">
+      <NodeSvg width={60} height={40}>
         {/* Left wire */}
         <line x1="0" y1="20" x2="22" y2="20" stroke={wire} strokeWidth="1.5" />
         {/* Flat plate (positive side) */}
@@ -71,8 +72,8 @@ export function CapPolarNode({ id, data, selected }: NodeProps) {
         >
           {faradsLabel}
         </NodeText>
-      </svg>
-      <Handle
+      </NodeSvg>
+      <RotatedHandle
         type="source"
         position={Position.Right}
         id="neg"

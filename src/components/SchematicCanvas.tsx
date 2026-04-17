@@ -8,16 +8,18 @@ import {
   BackgroundVariant,
   ConnectionMode,
   Controls,
-  type OnNodeDrag,
   type OnConnect,
   type OnEdgesChange,
+  type OnNodeDrag,
   type OnNodesChange,
   ReactFlow,
+  ReactFlowProvider,
   useReactFlow,
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { type ComponentNode, isEdgeDC } from '../lib/types';
+import type { ComponentNode } from '../lib/types';
+import { isEdgeDC } from '../lib/types';
 import { useStore } from '../store';
 import { edgeTypes } from './edges';
 import { nodeTypes } from './nodes';
@@ -40,6 +42,15 @@ function FitViewOnChange() {
 }
 
 export function SchematicCanvas() {
+  return (
+    <ReactFlowProvider>
+      <SchematicCanvasInner />
+    </ReactFlowProvider>
+  );
+}
+
+function SchematicCanvasInner() {
+  const { screenToFlowPosition } = useReactFlow();
   const {
     nodes,
     edges,
@@ -86,18 +97,24 @@ export function SchematicCanvas() {
   const connectStartRef = useRef<{
     nodeId: string;
     handleId: string;
+    handleType: 'source' | 'target';
   } | null>(null);
 
   const onConnectStart = useCallback(
     (
       _event: MouseEvent | TouchEvent,
-      params: { nodeId: string | null; handleId: string | null },
+      params: {
+        nodeId: string | null;
+        handleId: string | null;
+        handleType: 'source' | 'target' | null;
+      },
     ) => {
       setIsConnecting(true);
-      if (params.nodeId && params.handleId) {
+      if (params.nodeId && params.handleId && params.handleType) {
         connectStartRef.current = {
           nodeId: params.nodeId,
           handleId: params.handleId,
+          handleType: params.handleType,
         };
       }
     },
@@ -143,20 +160,93 @@ export function SchematicCanvas() {
       // Don't connect to an edge that already involves this node
       if (edge.source === start.nodeId || edge.target === start.nodeId) return;
 
+      // Create a junction node at the drop point and splice it into the edge
+      const flowPos = screenToFlowPosition({ x: clientX, y: clientY });
+      // Snap to grid
+      const snapped = {
+        x: Math.round(flowPos.x / 20) * 20,
+        y: Math.round(flowPos.y / 20) * 20,
+      };
+      // Node is 20x20 (one grid cell); place so its center sits on the snap point
+      const junctionPos = { x: snapped.x - 10, y: snapped.y - 10 };
+
+      const junctionId = crypto.randomUUID();
+      const junctionNode: ComponentNode = {
+        id: junctionId,
+        type: 'junction',
+        position: junctionPos,
+        data: { label: '' },
+      };
+
       pushHistory();
-      setEdges(
-        addEdge(
+
+      // Insert junction node
+      const newNodes = [...nodes, junctionNode];
+
+      // Pick the best junction handle side based on the other node's position
+      const jCx = snapped.x;
+      const jCy = snapped.y;
+      const pickSide = (nodeId: string, type: 'source' | 'target') => {
+        const n = nodes.find((nd) => nd.id === nodeId);
+        if (!n) return type === 'source' ? 'sb' : 'tb';
+        const dx = n.position.x - jCx;
+        const dy = n.position.y - jCy;
+        let dir: string;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          dir = dx > 0 ? 'r' : 'l';
+        } else {
+          dir = dy > 0 ? 'b' : 't';
+        }
+        return (type === 'source' ? 's' : 't') + dir;
+      };
+
+      // Split the existing edge: source→junction, junction→target
+      const remainingEdges = edges.filter((e) => e.id !== edge.id);
+      let newEdges = addEdge(
+        {
+          source: edge.source,
+          sourceHandle: edge.sourceHandle ?? null,
+          target: junctionId,
+          targetHandle: pickSide(edge.source, 'target'),
+        },
+        remainingEdges,
+      );
+      newEdges = addEdge(
+        {
+          source: junctionId,
+          sourceHandle: pickSide(edge.target, 'source'),
+          target: edge.target,
+          targetHandle: edge.targetHandle ?? null,
+        },
+        newEdges,
+      );
+      // Connect the dragged handle to the junction, respecting handle type
+      if (start.handleType === 'source') {
+        newEdges = addEdge(
           {
             source: start.nodeId,
             sourceHandle: start.handleId,
-            target: edge.source,
-            targetHandle: edge.sourceHandle ?? null,
+            target: junctionId,
+            targetHandle: pickSide(start.nodeId, 'target'),
           },
-          edges,
-        ),
-      );
+          newEdges,
+        );
+      } else {
+        newEdges = addEdge(
+          {
+            source: junctionId,
+            sourceHandle: pickSide(start.nodeId, 'source'),
+            target: start.nodeId,
+            targetHandle: start.handleId,
+          },
+          newEdges,
+        );
+      }
+
+      setNodes(newNodes);
+      setEdges(newEdges);
     },
-    [edges, setEdges, pushHistory],
+    [edges, nodes, setEdges, setNodes, pushHistory, screenToFlowPosition],
   );
 
   const onNodeDragStart: OnNodeDrag = useCallback(() => {
@@ -220,9 +310,10 @@ export function SchematicCanvas() {
         nodesDraggable={isInteractive}
         nodesConnectable={isInteractive}
         elementsSelectable={isInteractive}
+        edgesReconnectable
         proOptions={{ hideAttribution: true }}
         snapToGrid
-        snapGrid={[20, 20]}
+        snapGrid={[10, 10]}
         fitView
       >
         <Background
