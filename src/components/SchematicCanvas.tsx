@@ -220,6 +220,7 @@ export function SchematicCanvas() {
         nodesDraggable={isInteractive}
         nodesConnectable={isInteractive}
         elementsSelectable={isInteractive}
+        proOptions={{ hideAttribution: true }}
         snapToGrid
         snapGrid={[20, 20]}
         fitView
