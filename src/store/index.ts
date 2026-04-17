@@ -135,6 +135,7 @@ type StoreState = {
   selectedEdgeId: string | null;
   addNode: (node: ComponentNode) => void;
   deleteNode: (id: string) => void;
+  deleteEdge: (id: string) => void;
   setNodes: (nodes: Array<ComponentNode>) => void;
   setEdges: (edges: Array<Edge>) => void;
   selectNode: (id: string | null) => void;
@@ -319,6 +320,17 @@ export const useStore = create<StoreState>()(
           nodes: s.nodes.filter((n) => n.id !== id),
           edges: s.edges.filter((e) => e.source !== id && e.target !== id),
           selectedNodeId: s.selectedNodeId === id ? null : s.selectedNodeId,
+          ...clearSim,
+        })),
+      deleteEdge: (id) =>
+        set((s) => ({
+          past: [
+            ...s.past.slice(-MAX_HISTORY),
+            { nodes: s.nodes, edges: s.edges },
+          ],
+          future: [],
+          edges: s.edges.filter((e) => e.id !== id),
+          selectedEdgeId: null,
           ...clearSim,
         })),
       setNodes: (nodes) =>

@@ -348,6 +348,33 @@ describe('edge selection', () => {
   });
 });
 
+describe('deleteEdge', () => {
+  it('deleteEdge removes the edge and clears selectedEdgeId', () => {
+    useStore.setState({
+      edges: [{ id: 'e1', source: 'r1', target: 'c1' }],
+      selectedEdgeId: 'e1',
+    });
+    useStore.getState().deleteEdge('e1');
+    expect(useStore.getState().edges).toHaveLength(0);
+    expect(useStore.getState().selectedEdgeId).toBeNull();
+  });
+
+  it('deleteEdge pushes history and clears sim', () => {
+    useStore.setState({
+      nodes: [],
+      edges: [{ id: 'e1', source: 'r1', target: 'c1' }],
+      outputBuffer: new Float32Array([1, 2, 3]),
+      simulationStatus: 'idle',
+      past: [],
+      future: [],
+    });
+    useStore.getState().deleteEdge('e1');
+    expect(useStore.getState().past).toHaveLength(1);
+    expect(useStore.getState().future).toHaveLength(0);
+    expect(useStore.getState().outputBuffer).toBeNull();
+  });
+});
+
 describe('clearOutputBuffer', () => {
   it('sets outputBuffer to null, simulationElapsed to null, simulationStatus to idle', () => {
     useStore.getState().setOutputBuffer(new Float32Array([1, 2, 3]), 1.5);
