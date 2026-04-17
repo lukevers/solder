@@ -132,7 +132,7 @@ export class AudioPipeline {
       outputBuffer.length,
       this.ctx.sampleRate,
     );
-    audioBuffer.copyToChannel(outputBuffer, 0);
+    audioBuffer.copyToChannel(outputBuffer as Float32Array<ArrayBuffer>, 0);
     const source = this.ctx.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(this.gainNode);
@@ -157,7 +157,7 @@ export class AudioPipeline {
       buffer.length,
       this.ctx.sampleRate,
     );
-    audioBuffer.copyToChannel(buffer, 0);
+    audioBuffer.copyToChannel(buffer as Float32Array<ArrayBuffer>, 0);
     this.activeSource = this.ctx.createBufferSource();
     this.activeSource.buffer = audioBuffer;
     this.activeSource.connect(this.gainNode);

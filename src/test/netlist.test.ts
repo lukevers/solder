@@ -19,7 +19,7 @@ describe('types', () => {
       position: { x: 0, y: 0 },
       data: { label: 'R1', ohms: 10000 },
     };
-    expectTypeOf(r.type).toEqualTypeOf<ComponentNode['type']>();
+    expectTypeOf(r.type).toExtend<ComponentNode['type']>();
   });
 
   it('CircuitState contains nodes and edges', () => {

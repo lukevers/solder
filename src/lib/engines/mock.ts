@@ -2,11 +2,15 @@
 import type { SimulationOutput, SpiceEngine } from '../spice-engine';
 
 export class MockSpiceEngine implements SpiceEngine {
-  constructor(
-    private readonly frequency = 1000,
-    private readonly amplitude = 1.0,
-    private readonly sampleRate = 44100,
-  ) {}
+  private frequency: number;
+  private amplitude: number;
+  private sampleRate: number;
+
+  constructor(frequency = 1000, amplitude = 1.0, sampleRate = 44100) {
+    this.frequency = frequency;
+    this.amplitude = amplitude;
+    this.sampleRate = sampleRate;
+  }
 
   async init(): Promise<void> {}
 

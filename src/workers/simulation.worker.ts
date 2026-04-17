@@ -39,7 +39,7 @@ self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
       type: 'result',
       outputBuffer: audioBuffer,
     };
-    self.postMessage(response, [audioBuffer.buffer]);
+    self.postMessage(response, { transfer: [audioBuffer.buffer] as Transferable[] });
   } catch (err) {
     const response: SimulateResponse = {
       type: 'error',

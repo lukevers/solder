@@ -35,7 +35,7 @@ self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
       traces,
       sampleRate: SAMPLE_RATE,
     };
-    self.postMessage(response, transferables);
+    self.postMessage(response, { transfer: transferables as Transferable[] });
   } catch (err) {
     const response: AnalyzeResponse = {
       type: 'error',

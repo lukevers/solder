@@ -8,7 +8,7 @@ import {
   BackgroundVariant,
   ConnectionMode,
   Controls,
-  type NodeDragHandler,
+  type OnNodeDrag,
   type OnConnect,
   type OnEdgesChange,
   type OnNodesChange,
@@ -159,7 +159,7 @@ export function SchematicCanvas() {
     [edges, setEdges, pushHistory],
   );
 
-  const onNodeDragStart: NodeDragHandler = useCallback(() => {
+  const onNodeDragStart: OnNodeDrag = useCallback(() => {
     pushHistory();
   }, [pushHistory]);
 

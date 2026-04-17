@@ -78,7 +78,8 @@
       "WebFetch(domain:www.electrosmash.com)",
       "WebFetch(domain:en.wikipedia.org)",
       "Bash(npm test:*)",
-      "Bash(curl -s -L --max-time 30 \"https://www.electrosmash.com/mxr-distortion-plus-analysis\")"
+      "Bash(curl -s -L --max-time 30 \"https://www.electrosmash.com/mxr-distortion-plus-analysis\")",
+      "Bash(grep -rn \"NodeDragHandler\\\\|NodeDrag\\\\b\" /Users/lukevers/Code/solder/node_modules/@xyflow/react/dist/esm/*.d.ts)"
     ]
   }
 }
