@@ -12,10 +12,94 @@ import {
   X,
 } from 'lucide-react';
 import { Fragment, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { exportCircuit, importCircuit } from '../lib/circuit-io';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
+
+function FlyoutButton({
+  label,
+  tooltip,
+  active,
+  items,
+  onSelect,
+}: {
+  label: string;
+  tooltip: string;
+  active: boolean;
+  items: Array<{ label: string }>;
+  onSelect: (label: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const flyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    if (btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 6, left: r.left + r.width / 2 });
+    }
+    function onDown(e: MouseEvent) {
+      if (
+        !btnRef.current?.contains(e.target as Node) &&
+        !flyRef.current?.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [open]);
+
+  return (
+    <div className="relative group flex-shrink-0">
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
+          active || open
+            ? 'border-blue-500 text-blue-300'
+            : 'border-gray-700 text-gray-300'
+        }`}
+      >
+        {label}
+      </button>
+      {!open && (
+        <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+          {tooltip}
+        </div>
+      )}
+      {open &&
+        createPortal(
+          <div
+            ref={flyRef}
+            style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 9999, transform: 'translateX(-50%)' }}
+            className="flex flex-col gap-1"
+          >
+            {items.map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => {
+                  onSelect(item.label);
+                  setOpen(false);
+                }}
+                className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
+    </div>
+  );
+}
 
 const PALETTE: Array<{
   label: string;
@@ -182,40 +266,11 @@ export function Toolbar({
 
   const [editingTabId, setEditingTabId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
-  const [transistorOpen, setTransistorOpen] = useState(false);
-  const [jackOpen, setJackOpen] = useState(false);
-  const transistorRef = useRef<HTMLDivElement>(null);
-  const jackRef = useRef<HTMLDivElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (editingTabId) renameInputRef.current?.focus();
   }, [editingTabId]);
-
-  useEffect(() => {
-    if (!transistorOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (
-        transistorRef.current &&
-        !transistorRef.current.contains(e.target as Node)
-      ) {
-        setTransistorOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [transistorOpen]);
-
-  useEffect(() => {
-    if (!jackOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (jackRef.current && !jackRef.current.contains(e.target as Node)) {
-        setJackOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [jackOpen]);
 
   function handleAdd(
     item: (typeof PALETTE)[number] | (typeof JACK_ITEMS)[number],
@@ -475,91 +530,24 @@ export function Toolbar({
         {/* ── Palette row (bottom on mobile, left on desktop) ── */}
         <div className="flex items-center gap-2 px-3 py-1.5 overflow-x-auto sm:order-first sm:flex-1 overflow-y-hidden">
           {/* Component palette */}
-          {/* JACK flyout */}
-          <div ref={jackRef} className="relative group flex-shrink-0">
-            <button
-              type="button"
-              onClick={() => setJackOpen((o) => !o)}
-              className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
-                jackOpen
-                  ? 'border-blue-500 text-blue-300'
-                  : 'border-gray-700 text-gray-300'
-              }`}
-            >
-              JACK
-            </button>
-            {!jackOpen && (
-              <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-                Audio Jack
-              </div>
-            )}
-            {jackOpen && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 flex flex-col gap-1 z-50">
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-                {JACK_ITEMS.map((sub) => (
-                  <button
-                    key={sub.label}
-                    type="button"
-                    onClick={() => {
-                      handleAdd(sub);
-                      setJackOpen(false);
-                    }}
-                    className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
-                  >
-                    {sub.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <FlyoutButton
+            label="JACK"
+            tooltip="Audio Jack"
+            active={false}
+            items={JACK_ITEMS}
+            onSelect={(lbl) => handleAdd(JACK_ITEMS.find((i) => i.label === lbl)!)}
+          />
 
           {PALETTE.map((item) => {
-            // Insert transistor flyout after diode
             const transistorButton = item.type === 'diode' && (
-              <div
+              <FlyoutButton
                 key="transistor"
-                ref={transistorRef}
-                className="relative group flex-shrink-0"
-              >
-                <button
-                  type="button"
-                  onClick={() => setTransistorOpen((o) => !o)}
-                  className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
-                    transistorOpen
-                      ? 'border-blue-500 text-blue-300'
-                      : 'border-gray-700 text-gray-300'
-                  }`}
-                >
-                  Q
-                </button>
-                {/* Tooltip (hidden when flyout is open) */}
-                {!transistorOpen && (
-                  <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-                    Transistor
-                  </div>
-                )}
-                {/* Flyout sub-menu */}
-                {transistorOpen && (
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 flex flex-col gap-1 z-50">
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
-                    {TRANSISTOR_ITEMS.map((sub) => (
-                      <button
-                        key={sub.type}
-                        type="button"
-                        onClick={() => {
-                          handleAdd(sub);
-                          setTransistorOpen(false);
-                        }}
-                        className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
-                      >
-                        {sub.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                label="Q"
+                tooltip="Transistor"
+                active={false}
+                items={TRANSISTOR_ITEMS}
+                onSelect={(lbl) => handleAdd(TRANSISTOR_ITEMS.find((i) => i.label === lbl)!)}
+              />
             );
 
             return (
