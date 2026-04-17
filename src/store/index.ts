@@ -243,6 +243,7 @@ export const useStore = create<StoreState>()(
             selectedNodeId: null,
             past: [],
             future: [],
+            ...clearSim,
           };
         }),
       switchTab: (id) =>
@@ -259,6 +260,7 @@ export const useStore = create<StoreState>()(
             selectedNodeId: target.selectedNodeId,
             past: target.past,
             future: target.future,
+            ...clearSim,
           };
         }),
       closeTab: (id) =>
@@ -276,6 +278,7 @@ export const useStore = create<StoreState>()(
               selectedNodeId: null,
               past: [],
               future: [],
+              ...clearSim,
             };
           }
           if (s.activeTabId === id) {
@@ -290,6 +293,7 @@ export const useStore = create<StoreState>()(
               selectedNodeId: next.selectedNodeId,
               past: next.past,
               future: next.future,
+              ...clearSim,
             };
           }
           return { tabs: remaining };

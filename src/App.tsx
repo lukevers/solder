@@ -101,6 +101,18 @@ export default function App() {
   );
   const pendingInputRef = useRef<Float32Array | null>(null);
 
+  const viewResetKey = useStore((s) => s.viewResetKey);
+  const viewResetKeyRef = useRef(viewResetKey);
+  useEffect(() => {
+    // Skip the initial render
+    if (viewResetKeyRef.current === viewResetKey) return;
+    viewResetKeyRef.current = viewResetKey;
+    setPlaying(false);
+    setPlayingOriginal(false);
+    setSimulatedInput(null);
+    setSelection(null);
+  }, [viewResetKey, setPlaying]);
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       // Skip when typing in an input/textarea

@@ -1,6 +1,8 @@
 // src/lib/examples/index.ts
 import type { Edge } from '@xyflow/react';
 import type { ComponentNode } from '../types';
+import { gainStageEdges, gainStageNodes } from './circuits/gain-stage';
+import { hardClippingEdges, hardClippingNodes } from './circuits/hard-clipping';
 import {
   highPassFilterEdges,
   highPassFilterNodes,
@@ -9,6 +11,8 @@ import {
   lowPassFilterEdges,
   lowPassFilterNodes,
 } from './circuits/low-pass-filter';
+import { softClippingEdges, softClippingNodes } from './circuits/soft-clipping';
+import { volumePotEdges, volumePotNodes } from './circuits/volume-pot';
 import {
   distortionPlusEdges,
   distortionPlusNodes,
@@ -80,5 +84,45 @@ export const EXAMPLES: Array<ExampleCircuit> = [
     category: 'circuits',
     nodes: highPassFilterNodes,
     edges: highPassFilterEdges,
+  },
+  {
+    id: 'softclipping',
+    name: 'Soft Clipping',
+    description:
+      'Anti-parallel germanium diodes (1N270) shunt signal to ground after a series resistor. Germanium diodes have a lower forward voltage (~0.3V), producing a gentle, rounded clipping.',
+    tags: ['clipping', 'distortion', 'basic'],
+    category: 'circuits',
+    nodes: softClippingNodes,
+    edges: softClippingEdges,
+  },
+  {
+    id: 'hardclipping',
+    name: 'Hard Clipping',
+    description:
+      'Anti-parallel silicon diodes (1N914) shunt signal to ground after a series resistor. Silicon diodes clip sharply at ~0.7V, producing an aggressive, squared-off waveform.',
+    tags: ['clipping', 'distortion', 'basic'],
+    category: 'circuits',
+    nodes: hardClippingNodes,
+    edges: hardClippingEdges,
+  },
+  {
+    id: 'gainstage',
+    name: 'Gain Stage',
+    description:
+      'Inverting op-amp gain stage with TL072. Gain is set by the ratio of R2/R1 (100k/10k = 10x). Includes bias network for single-supply operation.',
+    tags: ['amplifier', 'op-amp', 'basic'],
+    category: 'circuits',
+    nodes: gainStageNodes,
+    edges: gainStageEdges,
+  },
+  {
+    id: 'volumepot',
+    name: 'Volume Pot',
+    description:
+      'Simple voltage divider using a logarithmic potentiometer. The wiper taps a fraction of the input signal — turn the knob to attenuate.',
+    tags: ['volume', 'attenuator', 'basic'],
+    category: 'circuits',
+    nodes: volumePotNodes,
+    edges: volumePotEdges,
   },
 ];
