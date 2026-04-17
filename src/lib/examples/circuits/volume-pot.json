@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "id": "volumepot",
+  "name": "Volume Pot",
+  "description": "Simple voltage divider using a logarithmic potentiometer. The wiper taps a fraction of the input signal — turn the knob to attenuate.",
+  "tags": ["volume", "attenuator", "basic"],
+  "category": "circuits",
+  "nodes": [
+    {
+      "id": "vp-in",
+      "type": "jack",
+      "position": { "x": 40, "y": 200 },
+      "data": { "label": "INPUT", "direction": "in" }
+    },
+    {
+      "id": "vp-gnd-in",
+      "type": "ground",
+      "position": { "x": 100, "y": 430 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "vp-pot",
+      "type": "pot",
+      "position": { "x": 240, "y": 200 },
+      "data": { "label": "VOLUME", "ohms": 100000, "position": 0.7, "taper": "log" }
+    },
+    {
+      "id": "vp-gnd-pot",
+      "type": "ground",
+      "position": { "x": 280, "y": 340 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "vp-out",
+      "type": "jack",
+      "position": { "x": 420, "y": 280 },
+      "data": { "label": "OUTPUT", "direction": "out" }
+    },
+    {
+      "id": "vp-gnd-out",
+      "type": "ground",
+      "position": { "x": 380, "y": 430 },
+      "data": { "label": "GND" }
+    }
+  ],
+  "edges": [
+    {
+      "id": "vp-e1",
+      "source": "vp-in",
+      "sourceHandle": "pos",
+      "target": "vp-pot",
+      "targetHandle": "ccw"
+    },
+    {
+      "id": "vp-e2",
+      "source": "vp-in",
+      "sourceHandle": "neg",
+      "target": "vp-gnd-in",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "vp-e3",
+      "source": "vp-pot",
+      "sourceHandle": "cw",
+      "target": "vp-gnd-pot",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "vp-e4",
+      "source": "vp-pot",
+      "sourceHandle": "wiper",
+      "target": "vp-out",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "vp-e5",
+      "source": "vp-gnd-out",
+      "sourceHandle": "gnd",
+      "target": "vp-out",
+      "targetHandle": "neg"
+    }
+  ]
+}

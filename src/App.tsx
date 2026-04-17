@@ -52,6 +52,8 @@ export default function App() {
     failSweep,
     clearSweep,
     setSweepPlayingIndex,
+    simulatedInput,
+    setSimulatedInput,
   } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
@@ -79,6 +81,8 @@ export default function App() {
       failSweep: s.failSweep,
       clearSweep: s.clearSweep,
       setSweepPlayingIndex: s.setSweepPlayingIndex,
+      simulatedInput: s.simulatedInput,
+      setSimulatedInput: s.setSimulatedInput,
     })),
   );
 
@@ -96,9 +100,6 @@ export default function App() {
     y: number;
   } | null>(null);
   const loopingRef = useRef(false);
-  const [simulatedInput, setSimulatedInput] = useState<Float32Array | null>(
-    null,
-  );
   const pendingInputRef = useRef<Float32Array | null>(null);
 
   const viewResetKey = useStore((s) => s.viewResetKey);
@@ -109,7 +110,6 @@ export default function App() {
     viewResetKeyRef.current = viewResetKey;
     setPlaying(false);
     setPlayingOriginal(false);
-    setSimulatedInput(null);
     setSelection(null);
   }, [viewResetKey, setPlaying]);
 
@@ -197,7 +197,12 @@ export default function App() {
     return () => {
       workerRef.current?.terminate();
     };
-  }, [setSimulationStatus, setOutputBuffer, setSimulationError]);
+  }, [
+    setSimulationStatus,
+    setOutputBuffer,
+    setSimulationError,
+    setSimulatedInput,
+  ]);
 
   // Initialize audio pipeline
   // biome-ignore lint/correctness/useExhaustiveDependencies: init runs once on mount
@@ -292,7 +297,7 @@ export default function App() {
     clearOutputBuffer();
     setSimulatedInput(null);
     setSelection(null);
-  }, [setPlaying, clearOutputBuffer]);
+  }, [setPlaying, clearOutputBuffer, setSimulatedInput]);
 
   const handleSimulate = useCallback(() => {
     if (!workerRef.current) return;

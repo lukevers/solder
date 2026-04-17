@@ -19,6 +19,18 @@ export type Tab = {
   selectedNodeId: string | null;
   past: Array<Snapshot>;
   future: Array<Snapshot>;
+  // simulation state (per-tab, not persisted)
+  outputBuffer: Float32Array | null;
+  simulationStatus: SimulationStatus;
+  simulationError: string | null;
+  simulationElapsed: number | null;
+  simulatedInput: Float32Array | null;
+  // sweep state (per-tab, not persisted)
+  sweepNodeId: string | null;
+  sweepStatus: 'idle' | 'running' | 'done';
+  sweepResults: Array<SweepResult>;
+  sweepError: string | null;
+  sweepPlayingIndex: number | null;
 };
 
 function defaultTab(name: string): Tab {
@@ -78,6 +90,7 @@ function defaultTab(name: string): Tab {
     selectedNodeId: null,
     past: [],
     future: [],
+    ...defaultSimState,
   };
 }
 
@@ -90,16 +103,20 @@ function nextTabName(tabs: Array<Tab>): string {
   return `Circuit ${max + 1}`;
 }
 
-const clearSim = {
+const defaultSimState = {
   outputBuffer: null as Float32Array | null,
+  simulationStatus: 'idle' as SimulationStatus,
+  simulationError: null as string | null,
   simulationElapsed: null as number | null,
-  simulationStatus: 'idle' as const,
-  sweepResults: [] as Array<SweepResult>,
-  sweepStatus: 'idle' as 'idle' | 'running' | 'done',
+  simulatedInput: null as Float32Array | null,
   sweepNodeId: null as string | null,
-  sweepPlayingIndex: null as number | null,
+  sweepStatus: 'idle' as 'idle' | 'running' | 'done',
+  sweepResults: [] as Array<SweepResult>,
   sweepError: null as string | null,
+  sweepPlayingIndex: null as number | null,
 };
+
+const clearSim = { ...defaultSimState };
 
 function flushActive(s: StoreState): Array<Tab> {
   return s.tabs.map((t) =>
@@ -111,9 +128,34 @@ function flushActive(s: StoreState): Array<Tab> {
           selectedNodeId: s.selectedNodeId,
           past: s.past,
           future: s.future,
+          outputBuffer: s.outputBuffer,
+          simulationStatus: s.simulationStatus,
+          simulationError: s.simulationError,
+          simulationElapsed: s.simulationElapsed,
+          simulatedInput: s.simulatedInput,
+          sweepNodeId: s.sweepNodeId,
+          sweepStatus: s.sweepStatus,
+          sweepResults: s.sweepResults,
+          sweepError: s.sweepError,
+          sweepPlayingIndex: s.sweepPlayingIndex,
         }
       : t,
   );
+}
+
+function simStateFromTab(tab: Tab) {
+  return {
+    outputBuffer: tab.outputBuffer,
+    simulationStatus: tab.simulationStatus,
+    simulationError: tab.simulationError,
+    simulationElapsed: tab.simulationElapsed,
+    simulatedInput: tab.simulatedInput,
+    sweepNodeId: tab.sweepNodeId,
+    sweepStatus: tab.sweepStatus,
+    sweepResults: tab.sweepResults,
+    sweepError: tab.sweepError,
+    sweepPlayingIndex: tab.sweepPlayingIndex,
+  };
 }
 
 type StoreState = {
@@ -157,12 +199,14 @@ type StoreState = {
   simulationError: string | null;
   simulationDuration: number;
   simulationElapsed: number | null; // seconds the last simulation took
+  simulatedInput: Float32Array | null;
   inputFrequency: number;
   inputAmplitude: number;
   setSimulationStatus: (status: SimulationStatus) => void;
   setOutputBuffer: (buf: Float32Array, elapsed?: number) => void;
   clearOutputBuffer: () => void;
   setSimulationError: (msg: string) => void;
+  setSimulatedInput: (buf: Float32Array | null) => void;
 
   // sweep slice
   sweepNodeId: string | null;
@@ -208,6 +252,7 @@ const initialState = {
   simulationError: null as string | null,
   simulationDuration: 0.1,
   simulationElapsed: null as number | null,
+  simulatedInput: null as Float32Array | null,
   inputFrequency: 1000,
   inputAmplitude: 1.0,
 
@@ -260,7 +305,7 @@ export const useStore = create<StoreState>()(
             selectedNodeId: target.selectedNodeId,
             past: target.past,
             future: target.future,
-            ...clearSim,
+            ...simStateFromTab(target),
           };
         }),
       closeTab: (id) =>
@@ -278,7 +323,7 @@ export const useStore = create<StoreState>()(
               selectedNodeId: null,
               past: [],
               future: [],
-              ...clearSim,
+              ...defaultSimState,
             };
           }
           if (s.activeTabId === id) {
@@ -293,7 +338,7 @@ export const useStore = create<StoreState>()(
               selectedNodeId: next.selectedNodeId,
               past: next.past,
               future: next.future,
-              ...clearSim,
+              ...simStateFromTab(next),
             };
           }
           return { tabs: remaining };
@@ -468,6 +513,7 @@ export const useStore = create<StoreState>()(
         }),
       clearOutputBuffer: () => set(clearSim),
       setSimulationError: (simulationError) => set({ simulationError }),
+      setSimulatedInput: (simulatedInput) => set({ simulatedInput }),
 
       // sweep
       requestSweep: (nodeId) =>
@@ -504,11 +550,29 @@ export const useStore = create<StoreState>()(
     {
       name: 'solder-tabs',
       partialize: (state) => ({
-        tabs: flushActive(state),
+        tabs: flushActive(state).map(
+          ({
+            outputBuffer: _ob,
+            simulationStatus: _ss,
+            simulationError: _se,
+            simulationElapsed: _sel,
+            simulatedInput: _si,
+            sweepNodeId: _sn,
+            sweepStatus: _sst,
+            sweepResults: _sr,
+            sweepError: _swe,
+            sweepPlayingIndex: _sp,
+            ...rest
+          }) => rest,
+        ),
         activeTabId: state.activeTabId,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;
+        state.tabs = state.tabs.map((t) => ({
+          ...defaultSimState,
+          ...t,
+        }));
         const active = state.tabs.find((t) => t.id === state.activeTabId);
         if (!active) return;
         state.nodes = active.nodes;

@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "id": "gainstage",
+  "name": "Gain Stage",
+  "description": "Inverting op-amp gain stage with TL072. Gain is set by the ratio of R2/R1 (100k/10k = 10x). Includes bias network for single-supply operation.",
+  "tags": ["amplifier", "op-amp", "basic"],
+  "category": "circuits",
+  "nodes": [
+    {
+      "id": "gs-in",
+      "type": "jack",
+      "position": { "x": 40, "y": 300 },
+      "data": { "label": "INPUT", "direction": "in" }
+    },
+    {
+      "id": "gs-gnd-in",
+      "type": "ground",
+      "position": { "x": 100, "y": 430 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "gs-c1",
+      "type": "capacitor",
+      "position": { "x": 180, "y": 300 },
+      "data": { "label": "C1", "farads": 1e-7 }
+    },
+    {
+      "id": "gs-r1",
+      "type": "resistor",
+      "position": { "x": 320, "y": 300 },
+      "data": { "label": "R1", "ohms": 10000 }
+    },
+    {
+      "id": "gs-vcc",
+      "type": "power",
+      "position": { "x": 440, "y": 40 },
+      "data": { "label": "VCC", "volts": 9 }
+    },
+    {
+      "id": "gs-rb1",
+      "type": "resistor",
+      "position": { "x": 420, "y": 140 },
+      "data": { "label": "RB1", "ohms": 100000 }
+    },
+    {
+      "id": "gs-jct-bias",
+      "type": "junction",
+      "position": { "x": 520, "y": 140 },
+      "data": { "label": "J1" }
+    },
+    {
+      "id": "gs-rb2",
+      "type": "resistor",
+      "position": { "x": 580, "y": 140 },
+      "data": { "label": "RB2", "ohms": 100000 }
+    },
+    {
+      "id": "gs-gnd-bias",
+      "type": "ground",
+      "position": { "x": 680, "y": 180 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "gs-cb",
+      "type": "cap_polar",
+      "position": { "x": 500, "y": 220 },
+      "rotation": 90,
+      "data": { "label": "CB", "farads": 1e-5 }
+    },
+    {
+      "id": "gs-gnd-cb",
+      "type": "ground",
+      "position": { "x": 500, "y": 310 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "gs-u1",
+      "type": "opamp",
+      "position": { "x": 560, "y": 260 },
+      "data": { "label": "U1", "model": "TL072" }
+    },
+    {
+      "id": "gs-vcc2",
+      "type": "power",
+      "position": { "x": 580, "y": 180 },
+      "data": { "label": "VCC", "volts": 9 }
+    },
+    {
+      "id": "gs-gnd-u",
+      "type": "ground",
+      "position": { "x": 580, "y": 400 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "gs-r2",
+      "type": "resistor",
+      "position": { "x": 620, "y": 140 },
+      "data": { "label": "R2", "ohms": 100000 }
+    },
+    {
+      "id": "gs-jct-out",
+      "type": "junction",
+      "position": { "x": 680, "y": 280 },
+      "data": { "label": "J2" }
+    },
+    {
+      "id": "gs-c2",
+      "type": "cap_polar",
+      "position": { "x": 760, "y": 280 },
+      "data": { "label": "C2", "farads": 1e-6 }
+    },
+    {
+      "id": "gs-out",
+      "type": "jack",
+      "position": { "x": 900, "y": 280 },
+      "data": { "label": "OUTPUT", "direction": "out" }
+    },
+    {
+      "id": "gs-gnd-out",
+      "type": "ground",
+      "position": { "x": 860, "y": 430 },
+      "data": { "label": "GND" }
+    }
+  ],
+  "edges": [
+    {
+      "id": "gs-e1",
+      "source": "gs-in",
+      "sourceHandle": "pos",
+      "target": "gs-c1",
+      "targetHandle": "a"
+    },
+    {
+      "id": "gs-e2",
+      "source": "gs-in",
+      "sourceHandle": "neg",
+      "target": "gs-gnd-in",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "gs-e3",
+      "source": "gs-c1",
+      "sourceHandle": "b",
+      "target": "gs-r1",
+      "targetHandle": "a"
+    },
+    {
+      "id": "gs-e4",
+      "source": "gs-r1",
+      "sourceHandle": "b",
+      "target": "gs-u1",
+      "targetHandle": "in_neg"
+    },
+    {
+      "id": "gs-e5",
+      "source": "gs-vcc",
+      "sourceHandle": "pos",
+      "target": "gs-rb1",
+      "targetHandle": "a"
+    },
+    {
+      "id": "gs-e6",
+      "source": "gs-rb1",
+      "sourceHandle": "b",
+      "target": "gs-jct-bias",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "gs-e7",
+      "source": "gs-jct-bias",
+      "sourceHandle": "sr",
+      "target": "gs-rb2",
+      "targetHandle": "a"
+    },
+    {
+      "id": "gs-e8",
+      "source": "gs-rb2",
+      "sourceHandle": "b",
+      "target": "gs-gnd-bias",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "gs-e9",
+      "source": "gs-jct-bias",
+      "sourceHandle": "sb",
+      "target": "gs-cb",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "gs-e10",
+      "source": "gs-cb",
+      "sourceHandle": "neg",
+      "target": "gs-gnd-cb",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "gs-e11",
+      "source": "gs-jct-bias",
+      "sourceHandle": "sb",
+      "target": "gs-u1",
+      "targetHandle": "in_pos"
+    },
+    {
+      "id": "gs-e12",
+      "source": "gs-vcc2",
+      "sourceHandle": "pos",
+      "target": "gs-u1",
+      "targetHandle": "vcc"
+    },
+    {
+      "id": "gs-e13",
+      "source": "gs-gnd-u",
+      "sourceHandle": "gnd",
+      "target": "gs-u1",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "gs-e14",
+      "source": "gs-u1",
+      "sourceHandle": "out",
+      "target": "gs-jct-out",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "gs-e15",
+      "source": "gs-jct-out",
+      "sourceHandle": "st",
+      "target": "gs-r2",
+      "targetHandle": "b"
+    },
+    {
+      "id": "gs-e16",
+      "source": "gs-r2",
+      "sourceHandle": "a",
+      "target": "gs-u1",
+      "targetHandle": "in_neg"
+    },
+    {
+      "id": "gs-e17",
+      "source": "gs-jct-out",
+      "sourceHandle": "sr",
+      "target": "gs-c2",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "gs-e18",
+      "source": "gs-c2",
+      "sourceHandle": "neg",
+      "target": "gs-out",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "gs-e19",
+      "source": "gs-gnd-out",
+      "sourceHandle": "gnd",
+      "target": "gs-out",
+      "targetHandle": "neg"
+    }
+  ]
+}
