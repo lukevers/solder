@@ -15,32 +15,32 @@
     {
       "id": "mxr-gnd_in",
       "type": "ground",
-      "position": { "x": 100, "y": 440 },
+      "position": { "x": 100, "y": 460 },
       "data": { "label": "GND" }
     },
     {
       "id": "mxr-jct-in",
       "type": "junction",
-      "position": { "x": 160, "y": 340 },
+      "position": { "x": 170, "y": 350 },
       "data": { "label": "J1" }
     },
     {
       "id": "mxr-c1",
       "type": "capacitor",
-      "position": { "x": 140, "y": 440 },
+      "position": { "x": 150, "y": 440 },
       "rotation": 90,
       "data": { "label": "C1", "farads": 1e-9 }
     },
     {
       "id": "mxr-gnd_c1",
       "type": "ground",
-      "position": { "x": 140, "y": 500 },
+      "position": { "x": 150, "y": 540 },
       "data": { "label": "GND" }
     },
     {
       "id": "mxr-r1",
       "type": "resistor",
-      "position": { "x": 240, "y": 340 },
+      "position": { "x": 250, "y": 340 },
       "data": { "label": "R1", "ohms": 10000 }
     },
     {
@@ -50,172 +50,207 @@
       "data": { "label": "C2", "farads": 1e-8 }
     },
     {
+      "id": "mxr-jct-inpos",
+      "type": "junction",
+      "position": { "x": 520, "y": 320 },
+      "data": { "label": "J_inp" }
+    },
+    {
       "id": "mxr-vcc",
       "type": "power",
-      "position": { "x": 520, "y": 40 },
+      "position": { "x": 520, "y": 0 },
       "data": { "label": "VCC", "volts": 9 }
     },
     {
       "id": "mxr-r6",
       "type": "resistor",
-      "position": { "x": 500, "y": 140 },
+      "position": { "x": 500, "y": 60 },
+      "rotation": 90,
       "data": { "label": "R6", "ohms": 1000000 }
     },
     {
       "id": "mxr-jct-bias",
       "type": "junction",
-      "position": { "x": 600, "y": 140 },
-      "data": { "label": "J2" }
+      "position": { "x": 510, "y": 160 },
+      "data": { "label": "J_bias" }
     },
     {
       "id": "mxr-r7",
       "type": "resistor",
-      "position": { "x": 660, "y": 140 },
+      "position": { "x": 580, "y": 160 },
       "data": { "label": "R7", "ohms": 1000000 }
     },
     {
       "id": "mxr-gnd_bias",
       "type": "ground",
-      "position": { "x": 760, "y": 180 },
+      "position": { "x": 660, "y": 220 },
       "data": { "label": "GND" }
     },
     {
       "id": "mxr-c6",
       "type": "cap_polar",
-      "position": { "x": 580, "y": 240 },
+      "position": { "x": 440, "y": 200 },
+      "rotation": 90,
       "data": { "label": "C6", "farads": 1e-6 }
     },
     {
       "id": "mxr-gnd_c6",
       "type": "ground",
-      "position": { "x": 620, "y": 320 },
+      "position": { "x": 440, "y": 320 },
       "data": { "label": "GND" }
     },
     {
       "id": "mxr-r2",
       "type": "resistor",
-      "position": { "x": 580, "y": 380 },
+      "position": { "x": 500, "y": 240 },
+      "rotation": 90,
       "data": { "label": "R2", "ohms": 1000000 }
     },
     {
       "id": "mxr-u1",
       "type": "opamp",
-      "position": { "x": 740, "y": 300 },
+      "position": { "x": 660, "y": 300 },
       "data": { "label": "U1", "model": "LM741" }
     },
     {
       "id": "mxr-vcc2",
       "type": "power",
-      "position": { "x": 760, "y": 220 },
+      "position": { "x": 680, "y": 220 },
       "data": { "label": "VCC", "volts": 9 }
     },
     {
       "id": "mxr-gnd_u",
       "type": "ground",
-      "position": { "x": 760, "y": 440 },
+      "position": { "x": 680, "y": 440 },
       "data": { "label": "GND" }
+    },
+    {
+      "id": "mxr-jct-neg",
+      "type": "junction",
+      "position": { "x": 610, "y": 350 },
+      "data": { "label": "J_neg" }
     },
     {
       "id": "mxr-r4",
       "type": "resistor",
-      "position": { "x": 860, "y": 100 },
+      "position": { "x": 760, "y": 180 },
       "data": { "label": "R4", "ohms": 1000000 }
     },
     {
       "id": "mxr-c3",
       "type": "capacitor",
-      "position": { "x": 740, "y": 100 },
+      "position": { "x": 660, "y": 120 },
       "data": { "label": "C3", "farads": 4.7e-8 }
     },
     {
       "id": "mxr-r3",
       "type": "resistor",
-      "position": { "x": 600, "y": 100 },
+      "position": { "x": 540, "y": 120 },
       "data": { "label": "R3", "ohms": 4700 }
     },
     {
       "id": "mxr-dist",
       "type": "pot",
-      "position": { "x": 460, "y": 140 },
+      "position": { "x": 400, "y": 100 },
       "data": { "label": "DIST", "ohms": 1000000, "position": 0.5, "taper": "linear" }
     },
     {
-      "id": "mxr-gnd_dist",
+      "id": "mxr-gnd_dist_w",
       "type": "ground",
-      "position": { "x": 480, "y": 260 },
+      "position": { "x": 420, "y": 220 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "mxr-gnd_dist_ccw",
+      "type": "ground",
+      "position": { "x": 360, "y": 220 },
       "data": { "label": "GND" }
     },
     {
       "id": "mxr-jct-out",
       "type": "junction",
-      "position": { "x": 860, "y": 320 },
-      "data": { "label": "J3" }
+      "position": { "x": 810, "y": 330 },
+      "data": { "label": "J_out" }
     },
     {
       "id": "mxr-c4",
       "type": "cap_polar",
-      "position": { "x": 960, "y": 340 },
+      "position": { "x": 890, "y": 340 },
       "data": { "label": "C4", "farads": 1e-6 }
     },
     {
       "id": "mxr-r5",
       "type": "resistor",
-      "position": { "x": 1100, "y": 340 },
+      "position": { "x": 1020, "y": 340 },
       "data": { "label": "R5", "ohms": 10000 }
     },
     {
       "id": "mxr-jct-clip",
       "type": "junction",
-      "position": { "x": 1220, "y": 340 },
-      "data": { "label": "J4" }
+      "position": { "x": 1160, "y": 350 },
+      "data": { "label": "J_clip" }
+    },
+    {
+      "id": "mxr-jct-clip-lo",
+      "type": "junction",
+      "position": { "x": 1160, "y": 440 },
+      "data": { "label": "J_clip_lo" }
     },
     {
       "id": "mxr-d1",
       "type": "diode",
-      "position": { "x": 1200, "y": 440 },
+      "position": { "x": 1100, "y": 490 },
+      "rotation": 90,
       "data": { "label": "D1", "model": "1N270" }
     },
     {
       "id": "mxr-d2",
       "type": "diode",
-      "position": { "x": 1200, "y": 520 },
+      "position": { "x": 1180, "y": 490 },
+      "rotation": 270,
       "data": { "label": "D2", "model": "1N270" }
+    },
+    {
+      "id": "mxr-gnd_d",
+      "type": "ground",
+      "position": { "x": 1140, "y": 600 },
+      "data": { "label": "GND" }
     },
     {
       "id": "mxr-c5",
       "type": "capacitor",
-      "position": { "x": 1320, "y": 440 },
+      "position": { "x": 1240, "y": 460 },
       "rotation": 90,
       "data": { "label": "C5", "farads": 1e-9 }
     },
     {
-      "id": "mxr-gnd_clip",
+      "id": "mxr-gnd_c5",
       "type": "ground",
-      "position": { "x": 1260, "y": 600 },
+      "position": { "x": 1240, "y": 560 },
       "data": { "label": "GND" }
     },
     {
       "id": "mxr-vol",
       "type": "pot",
-      "position": { "x": 1400, "y": 340 },
+      "position": { "x": 1320, "y": 340 },
       "data": { "label": "OUTPUT", "ohms": 10000, "position": 0.8, "taper": "log" }
     },
     {
       "id": "mxr-gnd_vol",
       "type": "ground",
-      "position": { "x": 1440, "y": 440 },
+      "position": { "x": 1380, "y": 440 },
       "data": { "label": "GND" }
     },
     {
       "id": "mxr-out",
       "type": "jack",
-      "position": { "x": 1580, "y": 340 },
+      "position": { "x": 1500, "y": 340 },
       "data": { "label": "OUTPUT", "direction": "out" }
     },
     {
       "id": "mxr-gnd_out",
       "type": "ground",
-      "position": { "x": 1560, "y": 440 },
+      "position": { "x": 1480, "y": 440 },
       "data": { "label": "GND" }
     }
   ],
@@ -263,11 +298,11 @@
       "targetHandle": "a"
     },
     {
-      "id": "mxr-e_c2_u1",
+      "id": "mxr-e_c2_inpos",
       "source": "mxr-c2",
       "sourceHandle": "b",
-      "target": "mxr-u1",
-      "targetHandle": "in_pos"
+      "target": "mxr-jct-inpos",
+      "targetHandle": "tl"
     },
     {
       "id": "mxr-e_vcc_r6",
@@ -281,7 +316,7 @@
       "source": "mxr-r6",
       "sourceHandle": "b",
       "target": "mxr-jct-bias",
-      "targetHandle": "tl"
+      "targetHandle": "tt"
     },
     {
       "id": "mxr-e_jct_r7",
@@ -300,7 +335,7 @@
     {
       "id": "mxr-e_jct_c6",
       "source": "mxr-jct-bias",
-      "sourceHandle": "sb",
+      "sourceHandle": "sl",
       "target": "mxr-c6",
       "targetHandle": "pos"
     },
@@ -319,9 +354,16 @@
       "targetHandle": "a"
     },
     {
-      "id": "mxr-e_r2_u1",
+      "id": "mxr-e_r2_inpos",
       "source": "mxr-r2",
       "sourceHandle": "b",
+      "target": "mxr-jct-inpos",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "mxr-e_inpos_u1",
+      "source": "mxr-jct-inpos",
+      "sourceHandle": "sr",
       "target": "mxr-u1",
       "targetHandle": "in_pos"
     },
@@ -340,30 +382,37 @@
       "targetHandle": "gnd"
     },
     {
-      "id": "mxr-e_u1_jct",
+      "id": "mxr-e_neg_u1",
+      "source": "mxr-jct-neg",
+      "sourceHandle": "sr",
+      "target": "mxr-u1",
+      "targetHandle": "in_neg"
+    },
+    {
+      "id": "mxr-e_u1_out",
       "source": "mxr-u1",
       "sourceHandle": "out",
       "target": "mxr-jct-out",
       "targetHandle": "tl"
     },
     {
-      "id": "mxr-e_jct_r4",
+      "id": "mxr-e_out_r4",
       "source": "mxr-jct-out",
       "sourceHandle": "st",
       "target": "mxr-r4",
       "targetHandle": "b"
     },
     {
-      "id": "mxr-e_r4_inv",
+      "id": "mxr-e_r4_neg",
       "source": "mxr-r4",
       "sourceHandle": "a",
-      "target": "mxr-u1",
-      "targetHandle": "in_neg"
+      "target": "mxr-jct-neg",
+      "targetHandle": "tr"
     },
     {
-      "id": "mxr-e_inv_c3",
-      "source": "mxr-u1",
-      "sourceHandle": "in_neg",
+      "id": "mxr-e_neg_c3",
+      "source": "mxr-jct-neg",
+      "sourceHandle": "st",
       "target": "mxr-c3",
       "targetHandle": "b"
     },
@@ -385,18 +434,18 @@
       "id": "mxr-e_dist_wiper_gnd",
       "source": "mxr-dist",
       "sourceHandle": "wiper",
-      "target": "mxr-gnd_dist",
+      "target": "mxr-gnd_dist_w",
       "targetHandle": "gnd"
     },
     {
       "id": "mxr-e_dist_ccw_gnd",
       "source": "mxr-dist",
       "sourceHandle": "ccw",
-      "target": "mxr-gnd_dist",
+      "target": "mxr-gnd_dist_ccw",
       "targetHandle": "gnd"
     },
     {
-      "id": "mxr-e_jct_c4",
+      "id": "mxr-e_out_c4",
       "source": "mxr-jct-out",
       "sourceHandle": "sr",
       "target": "mxr-c4",
@@ -410,15 +459,22 @@
       "targetHandle": "a"
     },
     {
-      "id": "mxr-e_r5_jct",
+      "id": "mxr-e_r5_clip",
       "source": "mxr-r5",
       "sourceHandle": "b",
       "target": "mxr-jct-clip",
       "targetHandle": "tl"
     },
     {
-      "id": "mxr-e_jct_d1",
+      "id": "mxr-e_clip_lo",
       "source": "mxr-jct-clip",
+      "sourceHandle": "sb",
+      "target": "mxr-jct-clip-lo",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "mxr-e_lo_d1",
+      "source": "mxr-jct-clip-lo",
       "sourceHandle": "sb",
       "target": "mxr-d1",
       "targetHandle": "a"
@@ -427,27 +483,27 @@
       "id": "mxr-e_d1_gnd",
       "source": "mxr-d1",
       "sourceHandle": "k",
-      "target": "mxr-gnd_clip",
+      "target": "mxr-gnd_d",
       "targetHandle": "gnd"
     },
     {
       "id": "mxr-e_gnd_d2",
-      "source": "mxr-gnd_clip",
+      "source": "mxr-gnd_d",
       "sourceHandle": "gnd",
       "target": "mxr-d2",
       "targetHandle": "a"
     },
     {
-      "id": "mxr-e_d2_jct",
+      "id": "mxr-e_d2_lo",
       "source": "mxr-d2",
       "sourceHandle": "k",
-      "target": "mxr-jct-clip",
-      "targetHandle": "sb"
+      "target": "mxr-jct-clip-lo",
+      "targetHandle": "tb"
     },
     {
-      "id": "mxr-e_jct_c5",
-      "source": "mxr-jct-clip",
-      "sourceHandle": "sb",
+      "id": "mxr-e_lo_c5",
+      "source": "mxr-jct-clip-lo",
+      "sourceHandle": "sr",
       "target": "mxr-c5",
       "targetHandle": "a"
     },
@@ -455,11 +511,11 @@
       "id": "mxr-e_c5_gnd",
       "source": "mxr-c5",
       "sourceHandle": "b",
-      "target": "mxr-gnd_clip",
+      "target": "mxr-gnd_c5",
       "targetHandle": "gnd"
     },
     {
-      "id": "mxr-e_jct_vol",
+      "id": "mxr-e_clip_vol",
       "source": "mxr-jct-clip",
       "sourceHandle": "sr",
       "target": "mxr-vol",

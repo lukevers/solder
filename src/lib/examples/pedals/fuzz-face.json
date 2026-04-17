@@ -15,133 +15,155 @@
     {
       "id": "ff-gnd_in",
       "type": "ground",
-      "position": { "x": 100, "y": 380 },
+      "position": { "x": 100, "y": 400 },
       "data": { "label": "GND" }
     },
     {
       "id": "ff-c1",
       "type": "cap_polar",
-      "position": { "x": 220, "y": 280 },
+      "position": { "x": 200, "y": 280 },
       "data": { "label": "C1", "farads": 2.2e-6 }
+    },
+    {
+      "id": "ff-jct-q1b",
+      "type": "junction",
+      "position": { "x": 310, "y": 280 },
+      "data": { "label": "J0" }
     },
     {
       "id": "ff-q1",
       "type": "bjt",
-      "position": { "x": 380, "y": 260 },
+      "position": { "x": 350, "y": 260 },
       "data": { "label": "Q1", "polarity": "PNP", "model": "AC128" }
+    },
+    {
+      "id": "ff-gnd_q1",
+      "type": "ground",
+      "position": { "x": 390, "y": 380 },
+      "data": { "label": "GND" }
     },
     {
       "id": "ff-jct-q1c",
       "type": "junction",
-      "position": { "x": 460, "y": 240 },
+      "position": { "x": 460, "y": 265 },
       "data": { "label": "J1" }
     },
     {
       "id": "ff-r1",
       "type": "resistor",
-      "position": { "x": 440, "y": 120 },
+      "position": { "x": 450, "y": 140 },
+      "rotation": 90,
       "data": { "label": "R1", "ohms": 33000 }
     },
     {
       "id": "ff-vcc",
       "type": "power",
-      "position": { "x": 500, "y": 40 },
+      "position": { "x": 450, "y": 60 },
       "data": { "label": "VCC", "volts": -9 }
-    },
-    {
-      "id": "ff-gnd_q1",
-      "type": "ground",
-      "position": { "x": 420, "y": 380 },
-      "data": { "label": "GND" }
     },
     {
       "id": "ff-q2",
       "type": "bjt",
-      "position": { "x": 600, "y": 260 },
+      "position": { "x": 570, "y": 260 },
       "data": { "label": "Q2", "polarity": "PNP", "model": "AC128" }
     },
     {
       "id": "ff-jct-q2c",
       "type": "junction",
-      "position": { "x": 680, "y": 240 },
+      "position": { "x": 680, "y": 265 },
       "data": { "label": "J2" }
     },
     {
       "id": "ff-r2",
       "type": "resistor",
-      "position": { "x": 660, "y": 140 },
+      "position": { "x": 660, "y": 160 },
+      "rotation": 90,
       "data": { "label": "R2", "ohms": 470 }
     },
     {
       "id": "ff-r3",
       "type": "resistor",
-      "position": { "x": 660, "y": 60 },
+      "position": { "x": 660, "y": 40 },
+      "rotation": 90,
       "data": { "label": "R3", "ohms": 8200 }
     },
     {
       "id": "ff-vcc2",
       "type": "power",
-      "position": { "x": 720, "y": 0 },
+      "position": { "x": 660, "y": -40 },
       "data": { "label": "VCC", "volts": -9 }
     },
     {
       "id": "ff-jct-q2e",
       "type": "junction",
-      "position": { "x": 660, "y": 340 },
+      "position": { "x": 620, "y": 340 },
       "data": { "label": "J3" }
     },
     {
       "id": "ff-r4",
       "type": "resistor",
-      "position": { "x": 460, "y": 400 },
+      "position": { "x": 440, "y": 400 },
       "data": { "label": "R4", "ohms": 100000 }
     },
     {
       "id": "ff-fuzz",
       "type": "pot",
-      "position": { "x": 720, "y": 380 },
+      "position": { "x": 720, "y": 340 },
       "data": { "label": "FUZZ", "ohms": 1000, "position": 0.5, "taper": "linear" }
+    },
+    {
+      "id": "ff-gnd_fuzz_cw",
+      "type": "ground",
+      "position": { "x": 780, "y": 420 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "ff-gnd_fuzz_w",
+      "type": "ground",
+      "position": { "x": 740, "y": 460 },
+      "data": { "label": "GND" }
     },
     {
       "id": "ff-c2",
       "type": "cap_polar",
-      "position": { "x": 720, "y": 500 },
+      "position": { "x": 600, "y": 420 },
+      "rotation": 90,
       "data": { "label": "C2", "farads": 2e-5 }
     },
     {
-      "id": "ff-gnd_e",
+      "id": "ff-gnd_c2",
       "type": "ground",
-      "position": { "x": 760, "y": 600 },
+      "position": { "x": 600, "y": 540 },
       "data": { "label": "GND" }
     },
     {
       "id": "ff-c3",
       "type": "capacitor",
-      "position": { "x": 820, "y": 280 },
+      "position": { "x": 790, "y": 260 },
       "data": { "label": "C3", "farads": 1e-8 }
     },
     {
       "id": "ff-vol",
       "type": "pot",
-      "position": { "x": 960, "y": 280 },
+      "position": { "x": 930, "y": 260 },
       "data": { "label": "VOL", "ohms": 500000, "position": 0.8, "taper": "log" }
     },
     {
       "id": "ff-gnd_vol",
       "type": "ground",
-      "position": { "x": 1000, "y": 400 },
+      "position": { "x": 990, "y": 360 },
       "data": { "label": "GND" }
     },
     {
       "id": "ff-out",
       "type": "jack",
-      "position": { "x": 1140, "y": 280 },
+      "position": { "x": 1120, "y": 300 },
       "data": { "label": "OUTPUT", "direction": "out" }
     },
     {
       "id": "ff-gnd_out",
       "type": "ground",
-      "position": { "x": 1120, "y": 380 },
+      "position": { "x": 1100, "y": 400 },
       "data": { "label": "GND" }
     }
   ],
@@ -164,6 +186,13 @@
       "id": "ff-e3",
       "source": "ff-c1",
       "sourceHandle": "neg",
+      "target": "ff-jct-q1b",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "ff-e3b",
+      "source": "ff-jct-q1b",
+      "sourceHandle": "sr",
       "target": "ff-q1",
       "targetHandle": "b"
     },
@@ -189,18 +218,18 @@
       "targetHandle": "pos"
     },
     {
-      "id": "ff-e7",
-      "source": "ff-jct-q1c",
-      "sourceHandle": "sr",
-      "target": "ff-q2",
-      "targetHandle": "b"
-    },
-    {
       "id": "ff-e6",
       "source": "ff-q1",
       "sourceHandle": "e",
       "target": "ff-gnd_q1",
       "targetHandle": "gnd"
+    },
+    {
+      "id": "ff-e7",
+      "source": "ff-jct-q1c",
+      "sourceHandle": "sr",
+      "target": "ff-q2",
+      "targetHandle": "b"
     },
     {
       "id": "ff-e8",
@@ -231,18 +260,11 @@
       "targetHandle": "pos"
     },
     {
-      "id": "ff-e18",
-      "source": "ff-jct-q2c",
-      "sourceHandle": "sr",
-      "target": "ff-c3",
-      "targetHandle": "a"
-    },
-    {
       "id": "ff-e11a",
       "source": "ff-q2",
       "sourceHandle": "e",
       "target": "ff-jct-q2e",
-      "targetHandle": "tl"
+      "targetHandle": "tt"
     },
     {
       "id": "ff-e11",
@@ -255,14 +277,14 @@
       "id": "ff-e12",
       "source": "ff-fuzz",
       "sourceHandle": "cw",
-      "target": "ff-gnd_e",
+      "target": "ff-gnd_fuzz_cw",
       "targetHandle": "gnd"
     },
     {
       "id": "ff-e13",
       "source": "ff-fuzz",
       "sourceHandle": "wiper",
-      "target": "ff-gnd_e",
+      "target": "ff-gnd_fuzz_w",
       "targetHandle": "gnd"
     },
     {
@@ -276,7 +298,7 @@
       "id": "ff-e15",
       "source": "ff-c2",
       "sourceHandle": "neg",
-      "target": "ff-gnd_e",
+      "target": "ff-gnd_c2",
       "targetHandle": "gnd"
     },
     {
@@ -290,8 +312,15 @@
       "id": "ff-e17",
       "source": "ff-r4",
       "sourceHandle": "a",
-      "target": "ff-q1",
-      "targetHandle": "b"
+      "target": "ff-jct-q1b",
+      "targetHandle": "tb"
+    },
+    {
+      "id": "ff-e18",
+      "source": "ff-jct-q2c",
+      "sourceHandle": "sr",
+      "target": "ff-c3",
+      "targetHandle": "a"
     },
     {
       "id": "ff-e19",
