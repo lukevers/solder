@@ -72,7 +72,7 @@ type Port = string;
 
 function allPorts(nodes: Array<ComponentNode>): Array<Port> {
   return nodes.flatMap((n) =>
-    COMPONENT_HANDLES[n.type].map((h) => `${n.id}|${h}`),
+    (COMPONENT_HANDLES[n.type] ?? []).map((h) => `${n.id}|${h}`),
   );
 }
 
