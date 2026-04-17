@@ -1,5 +1,11 @@
 // src/components/edges/SignalEdge.tsx
-import { type EdgeProps, getSmoothStepPath } from '@xyflow/react';
+import {
+  EdgeLabelRenderer,
+  type EdgeProps,
+  getSmoothStepPath,
+} from '@xyflow/react';
+import { Trash2 } from 'lucide-react';
+import { useStore } from '../../store';
 
 type SignalEdgeData = {
   signalType?: string;
@@ -23,7 +29,7 @@ export function SignalEdge({
   data,
   selected,
 }: EdgeProps) {
-  const [edgePath] = getSmoothStepPath({
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -32,6 +38,7 @@ export function SignalEdge({
     targetPosition,
   });
 
+  const deleteEdge = useStore((s) => s.deleteEdge);
   const d = data as SignalEdgeData | undefined;
   const isDC = d?.signalType === 'dc';
   const color = selected
@@ -62,6 +69,35 @@ export function SignalEdge({
         strokeDasharray="6 5"
         className={isDC ? 'edge-anim-dc' : 'edge-anim-ac'}
       />
+      {selected && (
+        <EdgeLabelRenderer>
+          <button
+            type="button"
+            className="nodrag nopan"
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              pointerEvents: 'all',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              padding: '5px 12px',
+              background: '#1f2937',
+              border: '1px solid #ef4444',
+              borderRadius: '6px',
+              color: '#f87171',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+            }}
+            onClick={() => deleteEdge(id)}
+          >
+            <Trash2 size={11} />
+            Delete
+          </button>
+        </EdgeLabelRenderer>
+      )}
     </>
   );
 }
