@@ -11,6 +11,16 @@ const RESET_TAB: Tab = {
   selectedNodeId: null,
   past: [],
   future: [],
+  outputBuffer: null,
+  simulationStatus: 'idle',
+  simulationError: null,
+  simulationElapsed: null,
+  simulatedInput: null,
+  sweepNodeId: null,
+  sweepStatus: 'idle',
+  sweepResults: [],
+  sweepError: null,
+  sweepPlayingIndex: null,
 };
 
 beforeEach(() => {
