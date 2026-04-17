@@ -30,6 +30,7 @@ const TABS: Array<{ id: ExampleCategory; label: string }> = [
 
 export function ExamplesPanel() {
   const [activeTab, setActiveTab] = useState<ExampleCategory>('pedals');
+  const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
   const { loadCircuit, renameTab, activeTabId } = useStore(
     useShallow((s) => ({
       loadCircuit: s.loadCircuit,
@@ -38,21 +39,37 @@ export function ExamplesPanel() {
     })),
   );
 
-  const filtered = EXAMPLES.filter((ex) => ex.category === activeTab);
+  const categoryExamples = EXAMPLES.filter((ex) => ex.category === activeTab);
+
+  const allTags = Array.from(
+    new Set(categoryExamples.flatMap((ex) => ex.tags)),
+  ).sort();
+
+  const filtered =
+    activeTags.size === 0
+      ? categoryExamples
+      : categoryExamples.filter((ex) => ex.tags.some((t) => activeTags.has(t)));
+
+  const toggleTag = (tag: string) => {
+    setActiveTags((prev) => {
+      const next = new Set(prev);
+      if (next.has(tag)) next.delete(tag);
+      else next.add(tag);
+      return next;
+    });
+  };
 
   return (
     <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
-      <div className="px-3 py-2 border-b border-gray-800">
-        <span className="text-xs text-gray-500 uppercase tracking-wider">
-          Examples
-        </span>
-      </div>
       <div className="flex border-b border-gray-800">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id);
+              setActiveTags(new Set());
+            }}
             className={`flex-1 text-xs font-mono py-2 transition-colors ${
               activeTab === tab.id
                 ? 'text-gray-200 border-b-2 border-blue-500'
@@ -63,39 +80,45 @@ export function ExamplesPanel() {
           </button>
         ))}
       </div>
-      <div className="flex flex-col gap-2 p-3">
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap gap-1 px-3 py-2 border-b border-gray-800">
+          {allTags.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => toggleTag(tag)}
+              className={`text-[10px] font-mono px-1.5 py-0.5 rounded transition-colors ${
+                activeTags.has(tag)
+                  ? 'bg-blue-900 text-blue-300 border border-blue-700'
+                  : 'bg-gray-800 text-gray-500 border border-transparent hover:text-gray-400'
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="flex flex-col divide-y divide-gray-800">
         {filtered.map((ex) => (
-          <div
+          <button
             key={ex.id}
-            className="bg-gray-950 border border-gray-800 rounded p-3"
+            type="button"
+            onClick={() => {
+              loadCircuit(snapNodes(ex.nodes), ex.edges);
+              renameTab(activeTabId, ex.name);
+            }}
+            className="text-left px-3 py-2.5 hover:bg-gray-800/50 transition-colors group"
           >
-            <div className="text-sm text-gray-200 font-mono font-bold mb-1">
+            <div className="text-sm text-gray-200 font-mono font-bold truncate">
               {ex.name}
             </div>
-            <div className="flex flex-wrap gap-1 mb-2">
-              {ex.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded font-mono"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <div className="text-xs text-gray-500 mb-3 leading-relaxed">
+            <div className="text-xs text-gray-500 truncate mt-0.5">
               {ex.description}
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                loadCircuit(snapNodes(ex.nodes), ex.edges);
-                renameTab(activeTabId, ex.name);
-              }}
-              className="w-full bg-blue-900 hover:bg-blue-800 border border-blue-700 text-blue-200 text-xs px-2 py-1.5 rounded font-mono transition-colors"
-            >
-              Load circuit
-            </button>
-          </div>
+            <div className="text-[10px] text-gray-600 font-mono mt-1 truncate">
+              {ex.tags.join(' \u00b7 ')}
+            </div>
+          </button>
         ))}
       </div>
     </div>

@@ -18,6 +18,18 @@ export type PotData = {
   taper?: PotTaper;
 };
 export type LabelData = { label: string };
+export type StickyNoteColor =
+  | 'yellow'
+  | 'blue'
+  | 'green'
+  | 'pink'
+  | 'purple'
+  | 'orange';
+export type StickyNoteData = {
+  label: string;
+  text: string;
+  color?: StickyNoteColor;
+};
 export type JunctionData = { label: string };
 export type BJTModel = '2N3904' | '2N3906' | 'AC128';
 export type BJTData = {
@@ -54,7 +66,8 @@ export type ComponentNode =
   | (NodeBase & { type: 'junction'; data: JunctionData })
   | (NodeBase & { type: 'bjt'; data: BJTData })
   | (NodeBase & { type: 'jfet'; data: JFETData })
-  | (NodeBase & { type: 'mosfet'; data: MOSFETData });
+  | (NodeBase & { type: 'mosfet'; data: MOSFETData })
+  | (NodeBase & { type: 'stickynote'; data: StickyNoteData });
 
 export type CircuitState = {
   nodes: Array<ComponentNode>;

@@ -4,6 +4,7 @@ import {
   Download,
   FolderOpen,
   Hourglass,
+  MessageSquareText,
   Play,
   Plus,
   ScanLine,
@@ -350,8 +351,39 @@ export function Toolbar({
       {/* Logo row: logo + tab strip */}
       <div className="flex items-stretch h-8 border-b border-gray-800 overflow-hidden overflow-x-auto">
         {/* Logo */}
-        <div className="flex items-center px-3 border-r border-gray-800 flex-shrink-0">
-          <span className="text-blue-400 font-bold text-sm">⚡ solder</span>
+        <div className="flex items-center gap-1.5 px-3 border-r border-gray-800 flex-shrink-0">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="-1 -1 34 34"
+            className="flex-shrink-0"
+          >
+            <defs>
+              <linearGradient id="bolt-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#60a5fa" />
+                <stop offset="100%" stopColor="#2563eb" />
+              </linearGradient>
+            </defs>
+            <rect
+              width="32"
+              height="32"
+              rx="7"
+              fill="#030712"
+              stroke="#374151"
+              strokeWidth="1.5"
+            />
+            <g transform="rotate(45 16 16)">
+              <path
+                d="M18 5.5L11 17h4.5L13 26.5 21 15h-5L18 5.5z"
+                fill="url(#bolt-grad)"
+                stroke="#93c5fd"
+                strokeWidth="0.5"
+                strokeLinejoin="round"
+              />
+            </g>
+          </svg>
+          <span className="text-blue-400 font-bold text-sm">solder</span>
         </div>
 
         {/* Tab strip */}
@@ -592,6 +624,28 @@ export function Toolbar({
               </Fragment>
             );
           })}
+
+          {/* Sticky Note */}
+          <div className="relative group flex-shrink-0 self-stretch">
+            <button
+              type="button"
+              onClick={() =>
+                handleAdd({
+                  label: 'NOTE',
+                  tooltip: 'Sticky Note',
+                  type: 'stickynote',
+                  defaultData: { label: 'Note', text: '' },
+                })
+              }
+              className="h-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs px-2 py-1 rounded font-mono transition-colors flex items-center"
+            >
+              <MessageSquareText size={14} />
+            </button>
+            <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+              Sticky Note
+            </div>
+          </div>
         </div>
         {/* end palette row */}
       </div>

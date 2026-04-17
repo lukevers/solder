@@ -16,6 +16,7 @@ import {
   type MOSFETData,
   type MOSFETModel,
   type PotData,
+  type StickyNoteColor,
 } from '../lib/types';
 import {
   CAP_MULTIPLIERS,
@@ -617,6 +618,77 @@ function LabelInspector({
   );
 }
 
+const STICKY_COLOR_OPTIONS: Array<{ id: StickyNoteColor; swatch: string }> = [
+  { id: 'yellow', swatch: '#fde047' },
+  { id: 'blue', swatch: '#93c5fd' },
+  { id: 'green', swatch: '#86efac' },
+  { id: 'pink', swatch: '#f9a8d4' },
+  { id: 'purple', swatch: '#c4b5fd' },
+  { id: 'orange', swatch: '#fdba74' },
+];
+
+function StickyNoteInspector({
+  node,
+}: {
+  node: Extract<ComponentNode, { type: 'stickynote' }>;
+}) {
+  const updateNodeData = useStore((s) => s.updateNodeData);
+  const { label, text, color } = node.data;
+  const current = color ?? 'yellow';
+
+  return (
+    <>
+      <Field label="Title">
+        <input
+          className={INPUT_CLASS}
+          value={label}
+          onChange={(e) =>
+            updateNodeData(node.id, {
+              label: e.target.value,
+              text,
+              color: current,
+            })
+          }
+        />
+      </Field>
+      <Field label="Text">
+        <textarea
+          className={`${INPUT_CLASS} resize-y min-h-[60px]`}
+          rows={4}
+          value={text}
+          onChange={(e) =>
+            updateNodeData(node.id, {
+              label,
+              text: e.target.value,
+              color: current,
+            })
+          }
+        />
+      </Field>
+      <Field label="Color">
+        <div className="flex gap-1.5">
+          {STICKY_COLOR_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() =>
+                updateNodeData(node.id, { label, text, color: opt.id })
+              }
+              className={`w-5 h-5 rounded-full border-2 transition-colors ${
+                current === opt.id
+                  ? 'border-white scale-110'
+                  : 'border-gray-600 hover:border-gray-400'
+              }`}
+              style={{ background: opt.swatch }}
+              title={opt.id}
+            />
+          ))}
+        </div>
+      </Field>
+    </>
+  );
+}
+
 function EdgeInspector({
   edgeId,
   nodes: allNodes,
@@ -760,7 +832,15 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
       )}
       {selected.type === 'jack' && <JackInspector node={selected} />}
       {selected.type === 'label' && <LabelInspector node={selected} />}
-      <RotationControl nodeId={selected.id} rotation={selected.rotation ?? 0} />
+      {selected.type === 'stickynote' && (
+        <StickyNoteInspector node={selected} />
+      )}
+      {selected.type !== 'stickynote' && selected.type !== 'junction' && (
+        <RotationControl
+          nodeId={selected.id}
+          rotation={selected.rotation ?? 0}
+        />
+      )}
       <button
         type="button"
         onClick={() => deleteNode(selected.id)}

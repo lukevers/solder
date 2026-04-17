@@ -75,6 +75,7 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   bjt: ['b', 'c', 'e'],
   jfet: ['g', 'd', 's'],
   mosfet: ['g', 'd', 's'],
+  stickynote: [],
 };
 
 /** Port identifier: "${nodeId}|${handleId}" */

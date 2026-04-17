@@ -14,6 +14,7 @@ import { OpAmpNode } from './OpAmpNode';
 import { PotNode } from './PotNode';
 import { PowerNode } from './PowerNode';
 import { ResistorNode } from './ResistorNode';
+import { StickyNoteNode } from './StickyNoteNode';
 
 export const nodeTypes = {
   bjt: BJTNode,
@@ -30,4 +31,5 @@ export const nodeTypes = {
   diode: DiodeNode,
   pot: PotNode,
   label: LabelNode,
+  stickynote: StickyNoteNode,
 };
