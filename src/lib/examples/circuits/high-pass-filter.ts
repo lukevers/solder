@@ -29,7 +29,7 @@ export const highPassFilterNodes: Array<ComponentNode> = [
   {
     id: 'hpf-jct',
     type: 'junction',
-    position: { x: 300, y: 210 },
+    position: { x: 290, y: 210 },
     data: { label: 'J1' },
   },
 
@@ -37,7 +37,7 @@ export const highPassFilterNodes: Array<ComponentNode> = [
   {
     id: 'hpf-pot',
     type: 'pot',
-    position: { x: 270, y: 290 },
+    position: { x: 260, y: 290 },
     rotation: 90,
     data: { label: 'CUTOFF', ohms: 100000, position: 0.5, taper: 'linear' },
   },

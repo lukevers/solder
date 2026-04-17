@@ -30,12 +30,11 @@ const TABS: Array<{ id: ExampleCategory; label: string }> = [
 
 export function ExamplesPanel() {
   const [activeTab, setActiveTab] = useState<ExampleCategory>('pedals');
-  const { loadCircuit, renameTab, activeTabId, tabs } = useStore(
+  const { loadCircuit, renameTab, activeTabId } = useStore(
     useShallow((s) => ({
       loadCircuit: s.loadCircuit,
       renameTab: s.renameTab,
       activeTabId: s.activeTabId,
-      tabs: s.tabs,
     })),
   );
 
@@ -90,10 +89,7 @@ export function ExamplesPanel() {
               type="button"
               onClick={() => {
                 loadCircuit(snapNodes(ex.nodes), ex.edges);
-                const activeTab = tabs.find((t) => t.id === activeTabId);
-                if (activeTab && /^Circuit \d+$/.test(activeTab.name)) {
-                  renameTab(activeTabId, ex.name);
-                }
+                renameTab(activeTabId, ex.name);
               }}
               className="w-full bg-blue-900 hover:bg-blue-800 border border-blue-700 text-blue-200 text-xs px-2 py-1.5 rounded font-mono transition-colors"
             >
