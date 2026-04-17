@@ -11,7 +11,7 @@
 
 import type { Edge } from '@xyflow/react';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { EXAMPLES } from '../../lib/examples/rat';
+import { EXAMPLES } from '../../lib/examples';
 import { compileNetlist } from '../../lib/netlist';
 import type { ComponentNode } from '../../lib/types';
 import { engine, makeCircuit, peak } from './setup';

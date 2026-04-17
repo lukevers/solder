@@ -1,6 +1,7 @@
 // src/App.tsx
 import { ChevronRight, Maximize2, Repeat, RotateCcw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { AudioPipeline } from './audio/pipeline';
 import { AudioControls } from './components/AudioControls';
@@ -90,6 +91,10 @@ export default function App() {
   const [selection, setSelection] = useState<WaveformSelection | null>(null);
   const [looping, setLooping] = useState(false);
   const [waveformOpen, setWaveformOpen] = useState(true);
+  const [waveformTooltip, setWaveformTooltip] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const loopingRef = useRef(false);
   const [simulatedInput, setSimulatedInput] = useState<Float32Array | null>(
     null,
@@ -505,28 +510,63 @@ export default function App() {
             ) : (
               <div>
                 <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={() => setWaveformOpen((o) => !o)}
-                    className="flex items-center gap-1.5 px-3 py-2 text-xs text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
-                  >
-                    <svg
-                      width="10"
-                      height="10"
-                      viewBox="0 0 10 10"
-                      className={`transition-transform duration-150 ${waveformOpen ? '' : '-rotate-90'}`}
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => setWaveformOpen((o) => !o)}
+                      className="flex items-center gap-1.5 px-3 py-2 text-xs text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
                     >
-                      <path
-                        d="M1 3 L5 7 L9 3"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    Waveform
-                  </button>
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        className={`transition-transform duration-150 ${waveformOpen ? '' : '-rotate-90'}`}
+                      >
+                        <path
+                          d="M1 3 L5 7 L9 3"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Waveform
+                    </button>
+                    <div
+                      className="relative"
+                      onMouseEnter={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setWaveformTooltip({
+                          x: rect.left,
+                          y: rect.bottom + 6,
+                        });
+                      }}
+                      onMouseLeave={() => setWaveformTooltip(null)}
+                    >
+                      <div className="w-4 h-4 rounded-full border border-gray-600 text-gray-500 flex items-center justify-center text-[10px] cursor-help leading-none select-none">
+                        i
+                      </div>
+                      {waveformTooltip &&
+                        createPortal(
+                          <div
+                            className="fixed w-52 bg-gray-800 border border-gray-600 rounded p-2.5 text-xs text-gray-300 font-sans shadow-xl z-[9999] pointer-events-none"
+                            style={{
+                              left: Math.min(
+                                waveformTooltip.x,
+                                window.innerWidth - 220,
+                              ),
+                              top: waveformTooltip.y,
+                            }}
+                          >
+                            Click and drag on the waveform to select a region.
+                            Only the selected portion will be used as the input
+                            for simulation.
+                          </div>,
+                          document.body,
+                        )}
+                    </div>
+                  </div>
                   {waveformOpen && (sourceBuffer || outputBuffer) && (
                     <button
                       type="button"
@@ -591,7 +631,6 @@ export default function App() {
         <CircuitAnalyzer
           outputBuffer={outputBuffer}
           simulatedInput={simulatedInput}
-          onClose={() => setShowAnalyzer(false)}
         />
       )}
       <StatusBar />

@@ -244,6 +244,8 @@ export function Toolbar({
     sweepStatus,
     tabs,
     activeTabId,
+    nodes,
+    edges,
     addTab,
     closeTab,
     switchTab,
@@ -259,6 +261,8 @@ export function Toolbar({
       sweepStatus: s.sweepStatus,
       tabs: s.tabs,
       activeTabId: s.activeTabId,
+      nodes: s.nodes,
+      edges: s.edges,
       addTab: s.addTab,
       closeTab: s.closeTab,
       switchTab: s.switchTab,
@@ -306,7 +310,9 @@ export function Toolbar({
   function handleExport() {
     const activeTab = tabs.find((t) => t.id === activeTabId);
     if (!activeTab) return;
-    const json = exportCircuit(activeTab);
+    // Use the live nodes/edges from the store, not the stale tab snapshot
+    // (tabs only flush on tab-switch / add / close)
+    const json = exportCircuit({ ...activeTab, nodes, edges });
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -416,7 +422,7 @@ export function Toolbar({
             onClick={handleExport}
             className="flex items-center gap-1 text-xs px-2.5 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors font-sans"
           >
-            <Download size={12} />
+            <Upload size={12} />
             <span className="hidden sm:inline">Export</span>
           </button>
           <button
@@ -424,7 +430,7 @@ export function Toolbar({
             onClick={() => fileInputRef.current?.click()}
             className="flex items-center gap-1 text-xs px-2.5 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors font-sans"
           >
-            <Upload size={12} />
+            <Download size={12} />
             <span className="hidden sm:inline">Import</span>
           </button>
           <button

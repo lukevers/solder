@@ -6,7 +6,6 @@ import {
   ChevronRight,
   Pause,
   Play,
-  X,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -60,9 +59,9 @@ const TRACE_COLORS = [
 const SWEEP_COLORS = [
   '#ef4444', // 0%   red
   '#f59e0b', // 25%  amber
-  '#22c55e', // 50%  green
-  '#3b82f6', // 75%  blue
-  '#a855f7', // 100% purple
+  '#14b8a6', // 50%  teal
+  '#a855f7', // 75%  purple
+  '#ec4899', // 100% pink
 ];
 
 const WAVEFORMS: Array<{ value: WaveformType; label: string }> = [
@@ -85,20 +84,24 @@ type Tab = 'analyze' | 'scope';
 type Props = {
   outputBuffer: Float32Array | null;
   simulatedInput: Float32Array | null;
-  onClose: () => void;
 };
 
-export function CircuitAnalyzer({
-  outputBuffer,
-  simulatedInput,
-  onClose,
-}: Props) {
-  const { nodes, edges, sweepResults, sweepNodeId } = useStore(
+export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
+  const {
+    nodes,
+    edges,
+    sweepResults,
+    sweepNodeId,
+    simulationStatus,
+    sweepStatus,
+  } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
       edges: s.edges,
       sweepResults: s.sweepResults,
       sweepNodeId: s.sweepNodeId,
+      simulationStatus: s.simulationStatus,
+      sweepStatus: s.sweepStatus,
     })),
   );
 
@@ -321,18 +324,23 @@ export function CircuitAnalyzer({
   }, [activeTraces]);
 
   const hasSweepEnabled = Object.values(showSweepTraces).some(Boolean);
+  const isSimulating =
+    simulationStatus === 'running' || sweepStatus === 'running';
+  const hasNoScopeData = !outputBuffer && !simulatedInput && !hasSweepEnabled;
+  const scopeEmpty = tab === 'scope' && hasNoScopeData;
+  const analyzeEmpty = tab === 'analyze' && activeTraces.length === 0;
   const emptyMessage =
-    tab === 'scope' && !outputBuffer && !simulatedInput && !hasSweepEnabled
-      ? 'Run a simulation to see waveforms'
-      : undefined;
+    isSimulating && (scopeEmpty || analyzeEmpty)
+      ? 'Simulating…'
+      : scopeEmpty
+        ? 'Run a simulation to see waveforms'
+        : undefined;
 
   const timeDivLabel = timeDiv >= 1000 ? `${timeDiv / 1000}s` : `${timeDiv}ms`;
 
   const freqOptions = [100, 200, 440, 500, 1000, 2000, 5000];
   const ampOptions = [0.1, 0.5, 1.0, 2.0, 5.0];
   const durationOptions = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5];
-
-  const hasScopeData = outputBuffer || simulatedInput;
 
   return (
     <div className="flex flex-col bg-[#080c08] border-t border-[#1a2e1a] flex-shrink-0">
@@ -350,9 +358,8 @@ export function CircuitAnalyzer({
         <div className="w-8 h-0.5 rounded bg-[#2a4a2a]" />
       </div>
 
-      {/* Controls row */}
-      <div className="flex items-center gap-2 px-3 pt-0.5 pb-1.5 border-b border-[#1a2e1a] flex-wrap">
-        {/* Tab switcher */}
+      {/* Top row: tab switcher, time/div, speed, scope toggles, pause, close */}
+      <div className="flex items-center justify-between sm:justify-start sm:gap-2 md:gap-4 pl-3 pr-1 sm:pr-3 pt-0.5 pb-2 flex-wrap">
         <div className="flex rounded border border-[#1a2e1a] overflow-hidden">
           <button
             type="button"
@@ -363,7 +370,7 @@ export function CircuitAnalyzer({
                 : 'text-[#4a7a4a] hover:text-[#6a9a6a]'
             }`}
           >
-            Analyze
+            Scope
           </button>
           <button
             type="button"
@@ -374,106 +381,153 @@ export function CircuitAnalyzer({
                 : 'text-[#4a7a4a] hover:text-[#6a9a6a]'
             }`}
           >
-            Scope
+            Sim.
           </button>
         </div>
 
-        <div className="w-px h-4 bg-[#1a2e1a]" />
+        <div className="flex-1 flex items-center justify-evenly sm:justify-start sm:gap-2 md:gap-4">
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+              Time/Div
+            </span>
+            <button
+              type="button"
+              onClick={() => setTimeDivIdx((i) => Math.max(0, i - 1))}
+              disabled={timeDivIdx === 0}
+              className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <span className="text-[#4ade80] font-mono text-xs w-14 text-center">
+              {timeDivLabel}
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                setTimeDivIdx((i) => Math.min(TIME_DIVS.length - 1, i + 1))
+              }
+              disabled={timeDivIdx === TIME_DIVS.length - 1}
+              className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
 
-        {/* Analyze-specific controls */}
-        {tab === 'analyze' && (
-          <>
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
-                Wave
-              </span>
-              <select
-                value={waveform}
-                onChange={(e) => setWaveform(e.target.value as WaveformType)}
-                className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
-              >
-                {WAVEFORMS.map((w) => (
-                  <option key={w.value} value={w.value}>
-                    {w.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+              Speed
+            </span>
+            <button
+              type="button"
+              onClick={() => setSpeedIdx((i) => Math.max(0, i - 1))}
+              disabled={speedIdx === 0}
+              className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <span className="text-[#4ade80] font-mono text-xs w-12 text-center">
+              {SPEED_OPTIONS[speedIdx].label}
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                setSpeedIdx((i) => Math.min(SPEED_OPTIONS.length - 1, i + 1))
+              }
+              disabled={speedIdx === SPEED_OPTIONS.length - 1}
+              className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
 
-            <div className="w-px h-4 bg-[#1a2e1a]" />
+        <button
+          type="button"
+          onClick={() => setRunning((v) => !v)}
+          className="text-[#4ade80] hover:text-[#86efac] transition-colors pr-2"
+          aria-label={running ? 'Pause' : 'Resume'}
+        >
+          {running ? <Pause size={14} /> : <Play size={14} />}
+        </button>
+      </div>
 
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
-                Freq
-              </span>
-              <select
-                value={frequency}
-                onChange={(e) => setFrequency(Number(e.target.value))}
-                className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
-              >
-                {freqOptions.map((f) => (
-                  <option key={f} value={f}>
-                    {f >= 1000 ? `${f / 1000}kHz` : `${f}Hz`}
-                  </option>
-                ))}
-              </select>
-            </div>
+      {/* Bottom row: analyze dropdowns (only when analyze tab active) */}
+      {tab === 'analyze' && (
+        <div className="flex items-center justify-between sm:justify-start sm:gap-1.5 md:gap-4 pl-3 pr-1 pb-1.5 border-b border-[#1a2e1a] overflow-x-auto">
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+              Wave
+            </span>
+            <select
+              value={waveform}
+              onChange={(e) => setWaveform(e.target.value as WaveformType)}
+              className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
+            >
+              {WAVEFORMS.map((w) => (
+                <option key={w.value} value={w.value}>
+                  {w.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div className="w-px h-4 bg-[#1a2e1a]" />
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+              Freq
+            </span>
+            <select
+              value={frequency}
+              onChange={(e) => setFrequency(Number(e.target.value))}
+              className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
+            >
+              {freqOptions.map((f) => (
+                <option key={f} value={f}>
+                  {f >= 1000 ? `${f / 1000}kHz` : `${f}Hz`}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
-                Amp
-              </span>
-              <select
-                value={amplitude}
-                onChange={(e) => setAmplitude(Number(e.target.value))}
-                className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
-              >
-                {ampOptions.map((a) => (
-                  <option key={a} value={a}>
-                    {a >= 1 ? `${a}V` : `${a * 1000}mV`}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+              Amp
+            </span>
+            <select
+              value={amplitude}
+              onChange={(e) => setAmplitude(Number(e.target.value))}
+              className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
+            >
+              {ampOptions.map((a) => (
+                <option key={a} value={a}>
+                  {a >= 1 ? `${a}V` : `${a * 1000}mV`}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div className="w-px h-4 bg-[#1a2e1a]" />
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+              Dur
+            </span>
+            <select
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
+            >
+              {durationOptions.map((d) => (
+                <option key={d} value={d}>
+                  {d >= 1 ? `${d}s` : `${d * 1000}ms`}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
 
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
-                Dur
-              </span>
-              <select
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
-              >
-                {durationOptions.map((d) => (
-                  <option key={d} value={d}>
-                    {d >= 1 ? `${d}s` : `${d * 1000}ms`}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {status === 'running' && (
-              <span className="text-[10px] text-amber-400 font-mono animate-pulse">
-                Analyzing…
-              </span>
-            )}
-
-            {error && (
-              <span className="text-xs text-red-400 font-mono truncate max-w-48">
-                {error}
-              </span>
-            )}
-          </>
-        )}
-
-        {/* Scope-specific controls */}
-        {tab === 'scope' && (
-          <>
+      {/* Sim-specific controls row */}
+      {tab === 'scope' && (
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 pl-3 pr-1 pb-1.5 border-b border-[#1a2e1a] flex-wrap">
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => setShowScopeInput((v) => !v)}
@@ -498,134 +552,49 @@ export function CircuitAnalyzer({
             >
               Output
             </button>
-            {sweepResults.length > 0 && (
-              <>
-                <div className="w-px h-4 bg-[#1a2e1a]" />
-                <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
-                  {sweepPotLabel ?? 'Sweep'}
-                </span>
-                {sweepResults.map((sr, i) => {
-                  const pct = `${Math.round(sr.position * 100)}%`;
-                  const on = !!showSweepTraces[i];
-                  const color = SWEEP_COLORS[i % SWEEP_COLORS.length];
-                  return (
-                    <button
-                      key={sr.position}
-                      type="button"
-                      onClick={() =>
-                        setShowSweepTraces((prev) => ({
-                          ...prev,
-                          [i]: !prev[i],
-                        }))
-                      }
-                      className={`text-xs font-mono px-2 py-0.5 rounded transition-colors border ${
-                        on
-                          ? 'border-opacity-60 bg-opacity-20'
-                          : 'text-gray-600 border-gray-700 hover:text-gray-400'
-                      }`}
-                      style={
-                        on
-                          ? {
-                              color,
-                              borderColor: color,
-                              backgroundColor: `${color}20`,
-                            }
-                          : undefined
-                      }
-                    >
-                      {pct}
-                    </button>
-                  );
-                })}
-              </>
-            )}
-            {!hasScopeData && sweepResults.length === 0 && (
-              <span className="text-[10px] text-[#4a7a4a] font-mono">
-                Run a simulation first
+          </div>
+          {sweepResults.length > 0 && (
+            <>
+              <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+                {sweepPotLabel ?? 'Sweep'}
               </span>
-            )}
-          </>
-        )}
-
-        <div className="flex-1" />
-
-        {/* Shared scope controls */}
-        <div className="flex items-center gap-1">
-          <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
-            Time/Div
-          </span>
-          <button
-            type="button"
-            onClick={() => setTimeDivIdx((i) => Math.max(0, i - 1))}
-            disabled={timeDivIdx === 0}
-            className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
-          >
-            <ChevronLeft size={14} />
-          </button>
-          <span className="text-[#4ade80] font-mono text-xs w-14 text-center">
-            {timeDivLabel}
-          </span>
-          <button
-            type="button"
-            onClick={() =>
-              setTimeDivIdx((i) => Math.min(TIME_DIVS.length - 1, i + 1))
-            }
-            disabled={timeDivIdx === TIME_DIVS.length - 1}
-            className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
-          >
-            <ChevronRight size={14} />
-          </button>
+              {sweepResults.map((sr, i) => {
+                const pct = `${Math.round(sr.position * 100)}%`;
+                const on = !!showSweepTraces[i];
+                const color = SWEEP_COLORS[i % SWEEP_COLORS.length];
+                return (
+                  <button
+                    key={sr.position}
+                    type="button"
+                    onClick={() =>
+                      setShowSweepTraces((prev) => ({
+                        ...prev,
+                        [i]: !prev[i],
+                      }))
+                    }
+                    className={`text-xs font-mono px-2 py-0.5 rounded transition-colors border ${
+                      on
+                        ? 'border-opacity-60 bg-opacity-20'
+                        : 'text-gray-600 border-gray-700 hover:text-gray-400'
+                    }`}
+                    style={
+                      on
+                        ? {
+                            color,
+                            borderColor: color,
+                            backgroundColor: `${color}20`,
+                          }
+                        : undefined
+                    }
+                  >
+                    {pct}
+                  </button>
+                );
+              })}
+            </>
+          )}
         </div>
-
-        <div className="w-px h-4 bg-[#1a2e1a]" />
-
-        <div className="flex items-center gap-1">
-          <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
-            Speed
-          </span>
-          <button
-            type="button"
-            onClick={() => setSpeedIdx((i) => Math.max(0, i - 1))}
-            disabled={speedIdx === 0}
-            className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
-          >
-            <ChevronLeft size={14} />
-          </button>
-          <span className="text-[#4ade80] font-mono text-xs w-12 text-center">
-            {SPEED_OPTIONS[speedIdx].label}
-          </span>
-          <button
-            type="button"
-            onClick={() =>
-              setSpeedIdx((i) => Math.min(SPEED_OPTIONS.length - 1, i + 1))
-            }
-            disabled={speedIdx === SPEED_OPTIONS.length - 1}
-            className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
-          >
-            <ChevronRight size={14} />
-          </button>
-        </div>
-
-        <div className="w-px h-4 bg-[#1a2e1a]" />
-
-        <button
-          type="button"
-          onClick={() => setRunning((v) => !v)}
-          className="text-[#4ade80] hover:text-[#86efac] transition-colors"
-          aria-label={running ? 'Pause' : 'Resume'}
-        >
-          {running ? <Pause size={14} /> : <Play size={14} />}
-        </button>
-
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-gray-600 hover:text-gray-400 transition-colors"
-          aria-label="Close"
-        >
-          <X size={14} />
-        </button>
-      </div>
+      )}
 
       {/* Probe row (analyze tab only) */}
       {tab === 'analyze' && analyzeTraces.length > 0 && (
@@ -640,6 +609,16 @@ export function CircuitAnalyzer({
               className={`transition-transform ${showProbes ? '' : '-rotate-90'}`}
             />
             Probes ({enabledAnalyzeTraces.length}/{analyzeTraces.length})
+            {status === 'running' && (
+              <span className="text-amber-400 animate-pulse ml-1">
+                Analyzing…
+              </span>
+            )}
+            {error && (
+              <span className="text-red-400 truncate max-w-48 ml-1">
+                {error}
+              </span>
+            )}
           </button>
           {showProbes && (
             <div className="flex flex-wrap gap-1 px-3 pb-1.5">

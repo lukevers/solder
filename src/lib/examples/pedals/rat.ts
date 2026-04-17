@@ -1,25 +1,9 @@
-// src/lib/examples/rat.ts
+// src/lib/examples/pedals/rat.ts
 import type { Edge } from '@xyflow/react';
-import type { ComponentNode } from '../types';
-import { distortionPlusEdges, distortionPlusNodes } from './distortion-plus';
-import { fuzzFaceEdges, fuzzFaceNodes } from './fuzz-face';
-import { highPassFilterEdges, highPassFilterNodes } from './high-pass-filter';
-import { lowPassFilterEdges, lowPassFilterNodes } from './low-pass-filter';
+import type { ComponentNode } from '../../types';
 
-export type ExampleCategory = 'pedals' | 'circuits';
-
-export type ExampleCircuit = {
-  id: string;
-  name: string;
-  description: string;
-  tags: Array<string>;
-  category: ExampleCategory;
-  nodes: Array<ComponentNode>;
-  edges: Array<Edge>;
-};
-
-const ratNodes: Array<ComponentNode> = [
-  // ── Input chain (y=340) ──
+export const ratNodes: Array<ComponentNode> = [
+  // ── Input chain (signal y handle ≈ 360) ──
   {
     id: 'rat-in',
     type: 'jack',
@@ -29,65 +13,88 @@ const ratNodes: Array<ComponentNode> = [
   {
     id: 'rat-gnd_in',
     type: 'ground',
-    position: { x: 80, y: 460 },
+    position: { x: 100, y: 440 },
     data: { label: 'GND' },
   },
   {
     id: 'rat-c1',
     type: 'capacitor',
-    position: { x: 220, y: 340 },
+    position: { x: 200, y: 340 },
     data: { label: 'C1', farads: 47e-9 },
   },
   {
     id: 'rat-r1',
     type: 'resistor',
-    position: { x: 400, y: 340 },
+    position: { x: 340, y: 340 },
     data: { label: 'R1', ohms: 47 },
   },
   {
     id: 'rat-r2',
     type: 'resistor',
-    position: { x: 580, y: 340 },
+    position: { x: 500, y: 340 },
     data: { label: 'R2', ohms: 1000 },
+  },
+
+  // ── Junction at in_neg net (between R2 and U1) ──
+  {
+    id: 'rat-jct-inneg',
+    type: 'junction',
+    position: { x: 620, y: 340 },
+    data: { label: 'J1' },
   },
 
   // ── Op-amp ──
   {
     id: 'rat-u1',
     type: 'opamp',
-    position: { x: 780, y: 300 },
+    position: { x: 720, y: 300 },
     data: { label: 'U1', model: 'TL072' },
   },
 
-  // ── Bias (above signal path) ──
+  // ── Junction at op-amp output (fan-out) ──
+  {
+    id: 'rat-jct-out',
+    type: 'junction',
+    position: { x: 820, y: 320 },
+    data: { label: 'J2' },
+  },
+
+  // ── Bias network (above signal path) ──
   {
     id: 'rat-vcc',
     type: 'power',
-    position: { x: 580, y: 40 },
+    position: { x: 560, y: 40 },
     data: { label: 'VCC', volts: 9 },
   },
   {
     id: 'rat-vcc2',
     type: 'power',
-    position: { x: 820, y: 220 },
+    position: { x: 740, y: 220 },
     data: { label: 'VCC', volts: 9 },
   },
   {
     id: 'rat-rbias1',
     type: 'resistor',
-    position: { x: 580, y: 160 },
+    position: { x: 540, y: 140 },
     data: { label: 'R3', ohms: 47000 },
+  },
+  // Junction at bias midpoint (R3/R4 divider → U1.in_pos)
+  {
+    id: 'rat-jct-bias',
+    type: 'junction',
+    position: { x: 640, y: 160 },
+    data: { label: 'J3' },
   },
   {
     id: 'rat-rbias2',
     type: 'resistor',
-    position: { x: 760, y: 160 },
+    position: { x: 700, y: 160 },
     data: { label: 'R4', ohms: 47000 },
   },
   {
     id: 'rat-gnd_b',
     type: 'ground',
-    position: { x: 860, y: 200 },
+    position: { x: 800, y: 200 },
     data: { label: 'GND' },
   },
 
@@ -95,98 +102,110 @@ const ratNodes: Array<ComponentNode> = [
   {
     id: 'rat-gnd_u',
     type: 'ground',
-    position: { x: 820, y: 460 },
+    position: { x: 740, y: 440 },
     data: { label: 'GND' },
   },
 
-  // ── Feedback: R5 + DIST (above, y=80) ──
+  // ── Feedback: R5 + DIST pot (above signal, y≈100) ──
   {
     id: 'rat-rfb',
     type: 'resistor',
-    position: { x: 920, y: 80 },
+    position: { x: 780, y: 100 },
     data: { label: 'R5', ohms: 2200 },
   },
   {
     id: 'rat-rdist',
     type: 'pot',
-    position: { x: 1100, y: 120 },
+    position: { x: 660, y: 60 },
     data: { label: 'DIST', ohms: 500000, position: 0.5, taper: 'linear' },
   },
 
-  // ── Feedback: C2 (top, y=20) ──
+  // ── Feedback: C2 (top, y≈20) ──
   {
     id: 'rat-cfb',
     type: 'capacitor',
-    position: { x: 920, y: 20 },
+    position: { x: 780, y: 20 },
     data: { label: 'C2', farads: 100e-12 },
   },
 
-  // ── Clipping diodes (below, y=460/540) ──
+  // ── Clipping diodes (below signal, y≈460) ──
   {
     id: 'rat-d1',
     type: 'diode',
-    position: { x: 680, y: 460 },
+    position: { x: 700, y: 460 },
     data: { label: 'D1', model: '1N914' },
   },
   {
     id: 'rat-d2',
     type: 'diode',
-    position: { x: 680, y: 540 },
+    position: { x: 700, y: 520 },
     data: { label: 'D2', model: '1N914' },
   },
 
-  // ── Tone + output (y=340) ──
+  // ── Second junction on output rail (splits to FILTER and C4) ──
+  {
+    id: 'rat-jct-out2',
+    type: 'junction',
+    position: { x: 900, y: 320 },
+    data: { label: 'J4' },
+  },
+
+  // ── Tone filter ──
   {
     id: 'rat-filter',
     type: 'pot',
-    position: { x: 1060, y: 340 },
+    position: { x: 920, y: 400 },
     data: { label: 'FILTER', ohms: 100000, position: 0.5, taper: 'linear' },
   },
   {
     id: 'rat-ctone',
     type: 'capacitor',
-    position: { x: 1060, y: 440 },
+    position: { x: 940, y: 520 },
+    rotation: 90,
     data: { label: 'C3', farads: 3.3e-9 },
   },
   {
     id: 'rat-gnd_t',
     type: 'ground',
-    position: { x: 1100, y: 540 },
+    position: { x: 940, y: 580 },
     data: { label: 'GND' },
   },
+
+  // ── Output coupling + volume ──
   {
     id: 'rat-cout',
     type: 'cap_polar',
-    position: { x: 1240, y: 340 },
+    position: { x: 1020, y: 320 },
     data: { label: 'C4', farads: 1e-6 },
   },
   {
     id: 'rat-vol',
     type: 'pot',
-    position: { x: 1420, y: 340 },
+    position: { x: 1160, y: 320 },
     data: { label: 'VOL', ohms: 100000, position: 0.8, taper: 'log' },
   },
   {
     id: 'rat-gnd_v',
     type: 'ground',
-    position: { x: 1460, y: 460 },
+    position: { x: 1200, y: 440 },
     data: { label: 'GND' },
   },
   {
     id: 'rat-out',
     type: 'jack',
-    position: { x: 1600, y: 340 },
+    position: { x: 1340, y: 320 },
     data: { label: 'OUTPUT', direction: 'out' },
   },
   {
     id: 'rat-gnd_out',
     type: 'ground',
-    position: { x: 1640, y: 460 },
+    position: { x: 1320, y: 420 },
     data: { label: 'GND' },
   },
 ];
 
-const ratEdges: Array<Edge> = [
+export const ratEdges: Array<Edge> = [
+  // ── Input chain ──
   {
     id: 'rat-e1',
     source: 'rat-in',
@@ -215,20 +234,24 @@ const ratEdges: Array<Edge> = [
     target: 'rat-r2',
     targetHandle: 'a',
   },
+  // R2 → in_neg junction
   {
     id: 'rat-e4',
     source: 'rat-r2',
     sourceHandle: 'b',
+    target: 'rat-jct-inneg',
+    targetHandle: 'tl',
+  },
+  // in_neg junction → U1.in_neg
+  {
+    id: 'rat-e4b',
+    source: 'rat-jct-inneg',
+    sourceHandle: 'sr',
     target: 'rat-u1',
     targetHandle: 'in_neg',
   },
-  {
-    id: 'rat-e5',
-    source: 'rat-vcc2',
-    sourceHandle: 'pos',
-    target: 'rat-u1',
-    targetHandle: 'vcc',
-  },
+
+  // ── Bias network ──
   {
     id: 'rat-e6',
     source: 'rat-vcc',
@@ -236,17 +259,27 @@ const ratEdges: Array<Edge> = [
     target: 'rat-rbias1',
     targetHandle: 'a',
   },
+  // R3 → bias junction
   {
     id: 'rat-e7',
     source: 'rat-rbias1',
     sourceHandle: 'b',
+    target: 'rat-jct-bias',
+    targetHandle: 'tl',
+  },
+  // Bias junction → R4
+  {
+    id: 'rat-e7b',
+    source: 'rat-jct-bias',
+    sourceHandle: 'sr',
     target: 'rat-rbias2',
     targetHandle: 'a',
   },
+  // Bias junction → U1.in_pos
   {
     id: 'rat-e8',
-    source: 'rat-rbias1',
-    sourceHandle: 'b',
+    source: 'rat-jct-bias',
+    sourceHandle: 'sb',
     target: 'rat-u1',
     targetHandle: 'in_pos',
   },
@@ -257,6 +290,15 @@ const ratEdges: Array<Edge> = [
     target: 'rat-gnd_b',
     targetHandle: 'gnd',
   },
+
+  // ── Op-amp power ──
+  {
+    id: 'rat-e5',
+    source: 'rat-vcc2',
+    sourceHandle: 'pos',
+    target: 'rat-u1',
+    targetHandle: 'vcc',
+  },
   {
     id: 'rat-e10',
     source: 'rat-gnd_u',
@@ -264,45 +306,63 @@ const ratEdges: Array<Edge> = [
     target: 'rat-u1',
     targetHandle: 'gnd',
   },
+
+  // ── U1.out → output junction ──
   {
     id: 'rat-e11',
     source: 'rat-u1',
     sourceHandle: 'out',
+    target: 'rat-jct-out',
+    targetHandle: 'tl',
+  },
+
+  // ── Feedback from output junction (up) ──
+  // Output junction → R5 (feedback resistor)
+  {
+    id: 'rat-e11b',
+    source: 'rat-jct-out',
+    sourceHandle: 'st',
     target: 'rat-rfb',
-    targetHandle: 'a',
+    targetHandle: 'b',
   },
   {
     id: 'rat-e12',
     source: 'rat-rfb',
-    sourceHandle: 'b',
+    sourceHandle: 'a',
     target: 'rat-rdist',
     targetHandle: 'cw',
   },
+  // DIST wiper → in_neg junction (feedback return)
   {
     id: 'rat-e13',
     source: 'rat-rdist',
     sourceHandle: 'wiper',
-    target: 'rat-u1',
-    targetHandle: 'in_neg',
+    target: 'rat-jct-inneg',
+    targetHandle: 'tt',
   },
+  // Output junction → C2 (feedback cap)
   {
     id: 'rat-e14',
-    source: 'rat-u1',
-    sourceHandle: 'out',
+    source: 'rat-jct-out',
+    sourceHandle: 'st',
     target: 'rat-cfb',
-    targetHandle: 'a',
+    targetHandle: 'b',
   },
+  // C2 → in_neg junction
   {
     id: 'rat-e15',
     source: 'rat-cfb',
-    sourceHandle: 'b',
-    target: 'rat-u1',
-    targetHandle: 'in_neg',
+    sourceHandle: 'a',
+    target: 'rat-jct-inneg',
+    targetHandle: 'tt',
   },
+
+  // ── Clipping diodes (below signal) ──
+  // D1: anode at in_neg, cathode at out
   {
     id: 'rat-e16',
-    source: 'rat-r2',
-    sourceHandle: 'b',
+    source: 'rat-jct-inneg',
+    sourceHandle: 'sb',
     target: 'rat-d1',
     targetHandle: 'a',
   },
@@ -310,13 +370,14 @@ const ratEdges: Array<Edge> = [
     id: 'rat-e17',
     source: 'rat-d1',
     sourceHandle: 'k',
-    target: 'rat-rfb',
-    targetHandle: 'a',
+    target: 'rat-jct-out',
+    targetHandle: 'sb',
   },
+  // D2: anode at out, cathode at in_neg
   {
     id: 'rat-e18',
-    source: 'rat-u1',
-    sourceHandle: 'out',
+    source: 'rat-jct-out',
+    sourceHandle: 'sb',
     target: 'rat-d2',
     targetHandle: 'a',
   },
@@ -324,20 +385,23 @@ const ratEdges: Array<Edge> = [
     id: 'rat-e19',
     source: 'rat-d2',
     sourceHandle: 'k',
-    target: 'rat-u1',
-    targetHandle: 'in_neg',
+    target: 'rat-jct-inneg',
+    targetHandle: 'sb',
   },
+
+  // ── Output junction → second junction (continues right) ──
   {
     id: 'rat-e20',
-    source: 'rat-u1',
-    sourceHandle: 'out',
-    target: 'rat-cout',
-    targetHandle: 'pos',
+    source: 'rat-jct-out',
+    sourceHandle: 'sr',
+    target: 'rat-jct-out2',
+    targetHandle: 'tl',
   },
+  // Second junction → FILTER (tone, down)
   {
     id: 'rat-e20b',
-    source: 'rat-u1',
-    sourceHandle: 'out',
+    source: 'rat-jct-out2',
+    sourceHandle: 'sb',
     target: 'rat-filter',
     targetHandle: 'cw',
   },
@@ -354,6 +418,14 @@ const ratEdges: Array<Edge> = [
     sourceHandle: 'b',
     target: 'rat-gnd_t',
     targetHandle: 'gnd',
+  },
+  // Second junction → C4 (output coupling, right)
+  {
+    id: 'rat-e23',
+    source: 'rat-jct-out2',
+    sourceHandle: 'sr',
+    target: 'rat-cout',
+    targetHandle: 'pos',
   },
   {
     id: 'rat-e24',
@@ -382,60 +454,5 @@ const ratEdges: Array<Edge> = [
     sourceHandle: 'cw',
     target: 'rat-gnd_v',
     targetHandle: 'gnd',
-  },
-];
-
-export const EXAMPLES: Array<ExampleCircuit> = [
-  // ── Pedals ──
-  {
-    id: 'procorat',
-    name: 'ProCo RAT',
-    description:
-      'Classic distortion pedal. LM308 inverting gain stage with 1N914 hard clipping in feedback, RC tone control.',
-    tags: ['distortion', 'fuzz', 'guitar'],
-    category: 'pedals',
-    nodes: ratNodes,
-    edges: ratEdges,
-  },
-  {
-    id: 'fuzzface',
-    name: 'Fuzz Face',
-    description:
-      'Two-transistor PNP germanium fuzz. AC128 common-emitter stages with shunt-series feedback (R4) for the classic 60s fuzz tone.',
-    tags: ['fuzz', 'guitar', 'vintage'],
-    category: 'pedals',
-    nodes: fuzzFaceNodes,
-    edges: fuzzFaceEdges,
-  },
-  {
-    id: 'distortionplus',
-    name: 'MXR Distortion+',
-    description:
-      'Non-inverting LM741 gain stage with 1N270 germanium soft clipping. Variable gain via DIST pot in the feedback network.',
-    tags: ['distortion', 'overdrive', 'guitar'],
-    category: 'pedals',
-    nodes: distortionPlusNodes,
-    edges: distortionPlusEdges,
-  },
-  // ── Circuits ──
-  {
-    id: 'lowpassfilter',
-    name: 'Low Pass Filter',
-    description:
-      'First-order RC low-pass filter. The CUTOFF pot acts as a variable series resistor — turning it up raises the cutoff frequency, letting more treble through.',
-    tags: ['filter', 'basic'],
-    category: 'circuits',
-    nodes: lowPassFilterNodes,
-    edges: lowPassFilterEdges,
-  },
-  {
-    id: 'highpassfilter',
-    name: 'High Pass Filter',
-    description:
-      'First-order CR high-pass filter. The series capacitor blocks DC and low frequencies. The CUTOFF pot shunts the signal to ground, controlling how much bass passes through.',
-    tags: ['filter', 'basic'],
-    category: 'circuits',
-    nodes: highPassFilterNodes,
-    edges: highPassFilterEdges,
   },
 ];

@@ -1,6 +1,6 @@
 // src/lib/examples/distortion-plus.ts
 import type { Edge } from '@xyflow/react';
-import type { ComponentNode } from '../types';
+import type { ComponentNode } from '../../types';
 
 export const distortionPlusNodes: Array<ComponentNode> = [
   // ── Input chain ──
@@ -13,31 +13,39 @@ export const distortionPlusNodes: Array<ComponentNode> = [
   {
     id: 'mxr-gnd_in',
     type: 'ground',
-    position: { x: 80, y: 460 },
+    position: { x: 100, y: 440 },
     data: { label: 'GND' },
+  },
+  // Junction at input (splits to R1 and C1 RF filter)
+  {
+    id: 'mxr-jct-in',
+    type: 'junction',
+    position: { x: 160, y: 340 },
+    data: { label: 'J1' },
   },
   {
     id: 'mxr-c1',
     type: 'capacitor',
-    position: { x: 180, y: 420 },
+    position: { x: 140, y: 440 },
+    rotation: 90,
     data: { label: 'C1', farads: 1e-9 },
   },
   {
     id: 'mxr-gnd_c1',
     type: 'ground',
-    position: { x: 220, y: 520 },
+    position: { x: 140, y: 500 },
     data: { label: 'GND' },
   },
   {
     id: 'mxr-r1',
     type: 'resistor',
-    position: { x: 280, y: 340 },
+    position: { x: 240, y: 340 },
     data: { label: 'R1', ohms: 10000 },
   },
   {
     id: 'mxr-c2',
     type: 'capacitor',
-    position: { x: 460, y: 340 },
+    position: { x: 400, y: 340 },
     data: { label: 'C2', farads: 10e-9 },
   },
 
@@ -45,37 +53,44 @@ export const distortionPlusNodes: Array<ComponentNode> = [
   {
     id: 'mxr-vcc',
     type: 'power',
-    position: { x: 560, y: 40 },
+    position: { x: 520, y: 40 },
     data: { label: 'VCC', volts: 9 },
   },
   {
     id: 'mxr-r6',
     type: 'resistor',
-    position: { x: 560, y: 160 },
+    position: { x: 500, y: 140 },
     data: { label: 'R6', ohms: 1000000 },
+  },
+  // Junction at bias midpoint (splits to R7, C6, R2)
+  {
+    id: 'mxr-jct-bias',
+    type: 'junction',
+    position: { x: 600, y: 140 },
+    data: { label: 'J2' },
   },
   {
     id: 'mxr-r7',
     type: 'resistor',
-    position: { x: 740, y: 160 },
+    position: { x: 660, y: 140 },
     data: { label: 'R7', ohms: 1000000 },
   },
   {
     id: 'mxr-gnd_bias',
     type: 'ground',
-    position: { x: 840, y: 200 },
+    position: { x: 760, y: 180 },
     data: { label: 'GND' },
   },
   {
     id: 'mxr-c6',
     type: 'cap_polar',
-    position: { x: 660, y: 260 },
+    position: { x: 580, y: 240 },
     data: { label: 'C6', farads: 1e-6 },
   },
   {
     id: 'mxr-gnd_c6',
     type: 'ground',
-    position: { x: 700, y: 360 },
+    position: { x: 620, y: 320 },
     data: { label: 'GND' },
   },
 
@@ -83,7 +98,7 @@ export const distortionPlusNodes: Array<ComponentNode> = [
   {
     id: 'mxr-r2',
     type: 'resistor',
-    position: { x: 640, y: 400 },
+    position: { x: 580, y: 380 },
     data: { label: 'R2', ohms: 1000000 },
   },
 
@@ -91,59 +106,67 @@ export const distortionPlusNodes: Array<ComponentNode> = [
   {
     id: 'mxr-u1',
     type: 'opamp',
-    position: { x: 780, y: 320 },
+    position: { x: 740, y: 300 },
     data: { label: 'U1', model: 'LM741' },
   },
   {
     id: 'mxr-vcc2',
     type: 'power',
-    position: { x: 820, y: 220 },
+    position: { x: 760, y: 220 },
     data: { label: 'VCC', volts: 9 },
   },
   {
     id: 'mxr-gnd_u',
     type: 'ground',
-    position: { x: 820, y: 460 },
+    position: { x: 760, y: 440 },
     data: { label: 'GND' },
   },
 
-  // ── Feedback network ──
+  // ── Feedback network (above signal) ──
   {
     id: 'mxr-r4',
     type: 'resistor',
-    position: { x: 920, y: 100 },
+    position: { x: 860, y: 100 },
     data: { label: 'R4', ohms: 1000000 },
   },
   {
     id: 'mxr-c3',
     type: 'capacitor',
-    position: { x: 780, y: 100 },
+    position: { x: 740, y: 100 },
     data: { label: 'C3', farads: 47e-9 },
   },
   {
     id: 'mxr-r3',
     type: 'resistor',
-    position: { x: 640, y: 100 },
+    position: { x: 600, y: 100 },
     data: { label: 'R3', ohms: 4700 },
   },
   {
     id: 'mxr-dist',
     type: 'pot',
-    position: { x: 500, y: 140 },
+    position: { x: 460, y: 140 },
     data: { label: 'DIST', ohms: 1000000, position: 0.5, taper: 'linear' },
   },
   {
     id: 'mxr-gnd_dist',
     type: 'ground',
-    position: { x: 540, y: 260 },
+    position: { x: 480, y: 260 },
     data: { label: 'GND' },
+  },
+
+  // ── Junction at U1 output (splits to feedback and output) ──
+  {
+    id: 'mxr-jct-out',
+    type: 'junction',
+    position: { x: 860, y: 320 },
+    data: { label: 'J3' },
   },
 
   // ── Output coupling ──
   {
     id: 'mxr-c4',
     type: 'cap_polar',
-    position: { x: 1060, y: 340 },
+    position: { x: 960, y: 340 },
     data: { label: 'C4', farads: 1e-6 },
   },
 
@@ -151,31 +174,39 @@ export const distortionPlusNodes: Array<ComponentNode> = [
   {
     id: 'mxr-r5',
     type: 'resistor',
-    position: { x: 1240, y: 340 },
+    position: { x: 1100, y: 340 },
     data: { label: 'R5', ohms: 10000 },
+  },
+  // Junction at clipping node (splits to D1, D2, C5, VOL)
+  {
+    id: 'mxr-jct-clip',
+    type: 'junction',
+    position: { x: 1220, y: 340 },
+    data: { label: 'J4' },
   },
   {
     id: 'mxr-d1',
     type: 'diode',
-    position: { x: 1380, y: 420 },
+    position: { x: 1200, y: 440 },
     data: { label: 'D1', model: '1N270' },
   },
   {
     id: 'mxr-d2',
     type: 'diode',
-    position: { x: 1380, y: 500 },
+    position: { x: 1200, y: 520 },
     data: { label: 'D2', model: '1N270' },
   },
   {
     id: 'mxr-c5',
     type: 'capacitor',
-    position: { x: 1500, y: 420 },
+    position: { x: 1320, y: 440 },
+    rotation: 90,
     data: { label: 'C5', farads: 1e-9 },
   },
   {
     id: 'mxr-gnd_clip',
     type: 'ground',
-    position: { x: 1460, y: 580 },
+    position: { x: 1260, y: 600 },
     data: { label: 'GND' },
   },
 
@@ -183,25 +214,25 @@ export const distortionPlusNodes: Array<ComponentNode> = [
   {
     id: 'mxr-vol',
     type: 'pot',
-    position: { x: 1620, y: 340 },
+    position: { x: 1400, y: 340 },
     data: { label: 'OUTPUT', ohms: 10000, position: 0.8, taper: 'log' },
   },
   {
     id: 'mxr-gnd_vol',
     type: 'ground',
-    position: { x: 1660, y: 460 },
+    position: { x: 1440, y: 440 },
     data: { label: 'GND' },
   },
   {
     id: 'mxr-out',
     type: 'jack',
-    position: { x: 1800, y: 340 },
+    position: { x: 1580, y: 340 },
     data: { label: 'OUTPUT', direction: 'out' },
   },
   {
     id: 'mxr-gnd_out',
     type: 'ground',
-    position: { x: 1840, y: 460 },
+    position: { x: 1560, y: 440 },
     data: { label: 'GND' },
   },
 ];
@@ -212,8 +243,8 @@ export const distortionPlusEdges: Array<Edge> = [
     id: 'mxr-e_in_pos',
     source: 'mxr-in',
     sourceHandle: 'pos',
-    target: 'mxr-r1',
-    targetHandle: 'a',
+    target: 'mxr-jct-in',
+    targetHandle: 'tl',
   },
   {
     id: 'mxr-e_in_neg',
@@ -222,11 +253,19 @@ export const distortionPlusEdges: Array<Edge> = [
     target: 'mxr-gnd_in',
     targetHandle: 'gnd',
   },
-  // C1: RF filter cap from input node to ground
+  // Input junction → R1 (signal path, right)
   {
-    id: 'mxr-e_c1_in',
-    source: 'mxr-in',
-    sourceHandle: 'pos',
+    id: 'mxr-e_jct_r1',
+    source: 'mxr-jct-in',
+    sourceHandle: 'sr',
+    target: 'mxr-r1',
+    targetHandle: 'a',
+  },
+  // Input junction → C1 RF filter (down)
+  {
+    id: 'mxr-e_jct_c1',
+    source: 'mxr-jct-in',
+    sourceHandle: 'sb',
     target: 'mxr-c1',
     targetHandle: 'a',
   },
@@ -255,7 +294,6 @@ export const distortionPlusEdges: Array<Edge> = [
   },
 
   // ── Bias network ──
-  // VCC → R6 → R7 → GND (voltage divider for 4.5V)
   {
     id: 'mxr-e_vcc_r6',
     source: 'mxr-vcc',
@@ -263,10 +301,19 @@ export const distortionPlusEdges: Array<Edge> = [
     target: 'mxr-r6',
     targetHandle: 'a',
   },
+  // R6 → bias junction
   {
-    id: 'mxr-e_r6_r7',
+    id: 'mxr-e_r6_jct',
     source: 'mxr-r6',
     sourceHandle: 'b',
+    target: 'mxr-jct-bias',
+    targetHandle: 'tl',
+  },
+  // Bias junction → R7 (right)
+  {
+    id: 'mxr-e_jct_r7',
+    source: 'mxr-jct-bias',
+    sourceHandle: 'sr',
     target: 'mxr-r7',
     targetHandle: 'a',
   },
@@ -277,11 +324,11 @@ export const distortionPlusEdges: Array<Edge> = [
     target: 'mxr-gnd_bias',
     targetHandle: 'gnd',
   },
-  // C6 decoupling: 4.5V node → C6 → GND
+  // Bias junction → C6 decoupling (down)
   {
-    id: 'mxr-e_bias_c6',
-    source: 'mxr-r6',
-    sourceHandle: 'b',
+    id: 'mxr-e_jct_c6',
+    source: 'mxr-jct-bias',
+    sourceHandle: 'sb',
     target: 'mxr-c6',
     targetHandle: 'pos',
   },
@@ -292,11 +339,11 @@ export const distortionPlusEdges: Array<Edge> = [
     target: 'mxr-gnd_c6',
     targetHandle: 'gnd',
   },
-  // R2: 4.5V bias → non-inverting input
+  // Bias junction → R2 bias resistor (down to non-inverting input)
   {
-    id: 'mxr-e_bias_r2',
-    source: 'mxr-r6',
-    sourceHandle: 'b',
+    id: 'mxr-e_jct_r2',
+    source: 'mxr-jct-bias',
+    sourceHandle: 'sb',
     target: 'mxr-r2',
     targetHandle: 'a',
   },
@@ -324,19 +371,27 @@ export const distortionPlusEdges: Array<Edge> = [
     targetHandle: 'gnd',
   },
 
-  // ── Feedback network ──
-  // R4: op-amp output → inverting input
+  // ── U1 output → junction ──
   {
-    id: 'mxr-e_out_r4',
+    id: 'mxr-e_u1_jct',
     source: 'mxr-u1',
     sourceHandle: 'out',
+    target: 'mxr-jct-out',
+    targetHandle: 'tl',
+  },
+
+  // ── Feedback from output junction (up) ──
+  {
+    id: 'mxr-e_jct_r4',
+    source: 'mxr-jct-out',
+    sourceHandle: 'st',
     target: 'mxr-r4',
-    targetHandle: 'a',
+    targetHandle: 'b',
   },
   {
     id: 'mxr-e_r4_inv',
     source: 'mxr-r4',
-    sourceHandle: 'b',
+    sourceHandle: 'a',
     target: 'mxr-u1',
     targetHandle: 'in_neg',
   },
@@ -346,20 +401,20 @@ export const distortionPlusEdges: Array<Edge> = [
     source: 'mxr-u1',
     sourceHandle: 'in_neg',
     target: 'mxr-c3',
-    targetHandle: 'a',
+    targetHandle: 'b',
   },
   {
     id: 'mxr-e_c3_r3',
     source: 'mxr-c3',
-    sourceHandle: 'b',
+    sourceHandle: 'a',
     target: 'mxr-r3',
-    targetHandle: 'a',
+    targetHandle: 'b',
   },
-  // R3 → DIST pot (variable resistor: CW to R3, wiper+CCW to GND)
+  // R3 → DIST pot
   {
     id: 'mxr-e_r3_dist',
     source: 'mxr-r3',
-    sourceHandle: 'b',
+    sourceHandle: 'a',
     target: 'mxr-dist',
     targetHandle: 'cw',
   },
@@ -378,16 +433,14 @@ export const distortionPlusEdges: Array<Edge> = [
     targetHandle: 'gnd',
   },
 
-  // ── Output coupling ──
-  // Op-amp output → C4
+  // ── Output coupling (right from junction) ──
   {
-    id: 'mxr-e_u1_c4',
-    source: 'mxr-u1',
-    sourceHandle: 'out',
+    id: 'mxr-e_jct_c4',
+    source: 'mxr-jct-out',
+    sourceHandle: 'sr',
     target: 'mxr-c4',
     targetHandle: 'pos',
   },
-  // C4 → R5
   {
     id: 'mxr-e_c4_r5',
     source: 'mxr-c4',
@@ -397,11 +450,19 @@ export const distortionPlusEdges: Array<Edge> = [
   },
 
   // ── Clipping stage ──
-  // D1: anode at clipping node, cathode to GND (clips positive)
+  // R5 → clipping junction
   {
-    id: 'mxr-e_r5_d1',
+    id: 'mxr-e_r5_jct',
     source: 'mxr-r5',
     sourceHandle: 'b',
+    target: 'mxr-jct-clip',
+    targetHandle: 'tl',
+  },
+  // D1: junction → D1 anode (down), cathode to GND (clips positive)
+  {
+    id: 'mxr-e_jct_d1',
+    source: 'mxr-jct-clip',
+    sourceHandle: 'sb',
     target: 'mxr-d1',
     targetHandle: 'a',
   },
@@ -412,7 +473,7 @@ export const distortionPlusEdges: Array<Edge> = [
     target: 'mxr-gnd_clip',
     targetHandle: 'gnd',
   },
-  // D2: anode at GND, cathode at clipping node (clips negative)
+  // D2: GND → D2 anode, cathode to junction (clips negative)
   {
     id: 'mxr-e_gnd_d2',
     source: 'mxr-gnd_clip',
@@ -421,17 +482,17 @@ export const distortionPlusEdges: Array<Edge> = [
     targetHandle: 'a',
   },
   {
-    id: 'mxr-e_d2_clip',
+    id: 'mxr-e_d2_jct',
     source: 'mxr-d2',
     sourceHandle: 'k',
-    target: 'mxr-r5',
-    targetHandle: 'b',
+    target: 'mxr-jct-clip',
+    targetHandle: 'sb',
   },
-  // C5: low-pass filter across clipping node to GND
+  // C5: junction → C5 (filter cap to GND)
   {
-    id: 'mxr-e_clip_c5',
-    source: 'mxr-r5',
-    sourceHandle: 'b',
+    id: 'mxr-e_jct_c5',
+    source: 'mxr-jct-clip',
+    sourceHandle: 'sb',
     target: 'mxr-c5',
     targetHandle: 'a',
   },
@@ -443,12 +504,11 @@ export const distortionPlusEdges: Array<Edge> = [
     targetHandle: 'gnd',
   },
 
-  // ── Output volume ──
-  // Clipping node → OUTPUT pot (CW), CCW to GND, wiper to output
+  // ── Output volume (right from clipping junction) ──
   {
-    id: 'mxr-e_clip_vol',
-    source: 'mxr-r5',
-    sourceHandle: 'b',
+    id: 'mxr-e_jct_vol',
+    source: 'mxr-jct-clip',
+    sourceHandle: 'sr',
     target: 'mxr-vol',
     targetHandle: 'ccw',
   },

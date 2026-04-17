@@ -498,6 +498,106 @@ describe('formatCapacitance', () => {
   });
 });
 
+describe('buildPortGroups with junction nodes', () => {
+  it('all junction handles share the same SPICE net', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'j1',
+        type: 'junction',
+        position: { x: 100, y: 0 },
+        data: { label: 'J1' },
+      },
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 0, y: 0 },
+        data: { label: 'R1', ohms: 1000 },
+      },
+      {
+        id: 'r2',
+        type: 'resistor',
+        position: { x: 200, y: 0 },
+        data: { label: 'R2', ohms: 2000 },
+      },
+    ];
+    const edges: Array<Edge> = [
+      {
+        id: 'e1',
+        source: 'r1',
+        sourceHandle: 'b',
+        target: 'j1',
+        targetHandle: 'tl',
+      },
+      {
+        id: 'e2',
+        source: 'j1',
+        sourceHandle: 'sr',
+        target: 'r2',
+        targetHandle: 'a',
+      },
+    ];
+    const groups = buildPortGroups(nodes, edges);
+    // R1.b and R2.a should share the same net through the junction
+    expect(groups.get('r1|b')).toBe(groups.get('r2|a'));
+  });
+
+  it('junction merges three wires into one net', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'j1',
+        type: 'junction',
+        position: { x: 100, y: 0 },
+        data: { label: 'J1' },
+      },
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 0, y: 0 },
+        data: { label: 'R1', ohms: 1000 },
+      },
+      {
+        id: 'r2',
+        type: 'resistor',
+        position: { x: 200, y: 0 },
+        data: { label: 'R2', ohms: 2000 },
+      },
+      {
+        id: 'r3',
+        type: 'resistor',
+        position: { x: 100, y: 100 },
+        data: { label: 'R3', ohms: 3000 },
+      },
+    ];
+    const edges: Array<Edge> = [
+      {
+        id: 'e1',
+        source: 'r1',
+        sourceHandle: 'b',
+        target: 'j1',
+        targetHandle: 'tl',
+      },
+      {
+        id: 'e2',
+        source: 'j1',
+        sourceHandle: 'sr',
+        target: 'r2',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e3',
+        source: 'j1',
+        sourceHandle: 'sb',
+        target: 'r3',
+        targetHandle: 'a',
+      },
+    ];
+    const groups = buildPortGroups(nodes, edges);
+    const net = groups.get('r1|b');
+    expect(net).toBe(groups.get('r2|a'));
+    expect(net).toBe(groups.get('r3|a'));
+  });
+});
+
 describe('buildPortGroups with label nodes', () => {
   it('two label nodes with same name share the same SPICE net', () => {
     const nodes: Array<ComponentNode> = [

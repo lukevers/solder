@@ -1,7 +1,7 @@
 // src/test/examples.test.ts
 
 import { describe, expect, it } from 'vitest';
-import { EXAMPLES } from '../lib/examples/rat';
+import { EXAMPLES } from '../lib/examples';
 import { compileNetlist } from '../lib/netlist';
 
 describe('EXAMPLES', () => {

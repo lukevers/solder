@@ -214,7 +214,7 @@ export function ScopeCanvas({
     }
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [running, traces, windowSamples, yScale, timeDiv, speed]);
+  }, [running, traces, windowSamples, yScale, timeDiv, speed, emptyMessage]);
 
   // Redraw when paused
   // biome-ignore lint/correctness/useExhaustiveDependencies: draw reads state via closure
@@ -224,7 +224,7 @@ export function ScopeCanvas({
     const onResize = () => draw();
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, [running, traces, windowSamples, yScale, timeDiv]);
+  }, [running, traces, windowSamples, yScale, timeDiv, emptyMessage]);
 
   // Drag-to-pan: global mouse handlers
   useEffect(() => {

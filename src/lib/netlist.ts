@@ -165,6 +165,21 @@ export function buildPortGroups(
     }
   }
 
+  // Junction nodes: all handles on the same junction share one net
+  for (const n of nodes) {
+    if (n.type === 'junction') {
+      const handles = COMPONENT_HANDLES.junction;
+      const firstPort: Port = `${n.id}|${handles[0]}`;
+      if (!adj.has(firstPort)) adj.set(firstPort, new Set());
+      for (let i = 1; i < handles.length; i++) {
+        const port: Port = `${n.id}|${handles[i]}`;
+        if (!adj.has(port)) adj.set(port, new Set());
+        adj.get(firstPort)!.add(port);
+        adj.get(port)!.add(firstPort);
+      }
+    }
+  }
+
   const groundPorts = nodes
     .filter((n) => n.type === 'ground')
     .map((n) => `${n.id}|gnd`);

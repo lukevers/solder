@@ -1,6 +1,6 @@
-// src/lib/examples/low-pass-filter.ts
+// src/lib/examples/circuits/low-pass-filter.ts
 import type { Edge } from '@xyflow/react';
-import type { ComponentNode } from '../types';
+import type { ComponentNode } from '../../types';
 
 export const lowPassFilterNodes: Array<ComponentNode> = [
   // ── Input ──
@@ -13,7 +13,7 @@ export const lowPassFilterNodes: Array<ComponentNode> = [
   {
     id: 'lpf-gnd-in',
     type: 'ground',
-    position: { x: 100, y: 300 },
+    position: { x: 120, y: 430 },
     data: { label: 'GND' },
   },
 
@@ -21,22 +21,30 @@ export const lowPassFilterNodes: Array<ComponentNode> = [
   {
     id: 'lpf-pot',
     type: 'pot',
-    position: { x: 280, y: 200 },
+    position: { x: 220, y: 200 },
     data: { label: 'CUTOFF', ohms: 100000, position: 0.5, taper: 'linear' },
+  },
+
+  // ── Junction at wiper split ──
+  {
+    id: 'lpf-jct',
+    type: 'junction',
+    position: { x: 248, y: 290 },
+    data: { label: 'J1' },
   },
 
   // ── Shunt capacitor (rotated vertical) ──
   {
     id: 'lpf-cap',
     type: 'capacitor',
-    position: { x: 300, y: 360 },
+    position: { x: 240, y: 340 },
     rotation: 90,
-    data: { label: 'C1', farads: 10e-9 },
+    data: { label: 'C1', farads: 47e-9 },
   },
   {
     id: 'lpf-gnd-cap',
     type: 'ground',
-    position: { x: 300, y: 460 },
+    position: { x: 240, y: 430 },
     data: { label: 'GND' },
   },
 
@@ -44,13 +52,13 @@ export const lowPassFilterNodes: Array<ComponentNode> = [
   {
     id: 'lpf-out',
     type: 'jack',
-    position: { x: 520, y: 200 },
+    position: { x: 440, y: 280 },
     data: { label: 'OUTPUT', direction: 'out' },
   },
   {
     id: 'lpf-gnd-out',
     type: 'ground',
-    position: { x: 500, y: 300 },
+    position: { x: 380, y: 430 },
     data: { label: 'GND' },
   },
 ];
@@ -72,33 +80,41 @@ export const lowPassFilterEdges: Array<Edge> = [
     target: 'lpf-gnd-in',
     targetHandle: 'gnd',
   },
-  // Pot wiper to shunt cap
+  // Pot wiper to junction
   {
     id: 'lpf-e3',
     source: 'lpf-pot',
     sourceHandle: 'wiper',
+    target: 'lpf-jct',
+    targetHandle: 'tt',
+  },
+  // Junction to output
+  {
+    id: 'lpf-e4',
+    source: 'lpf-jct',
+    sourceHandle: 'sr',
+    target: 'lpf-out',
+    targetHandle: 'pos',
+  },
+  // Junction to shunt cap
+  {
+    id: 'lpf-e5',
+    source: 'lpf-jct',
+    sourceHandle: 'sb',
     target: 'lpf-cap',
     targetHandle: 'a',
   },
   // Cap to ground
   {
-    id: 'lpf-e4',
+    id: 'lpf-e6',
     source: 'lpf-cap',
     sourceHandle: 'b',
     target: 'lpf-gnd-cap',
     targetHandle: 'gnd',
   },
-  // Pot wiper to output (same junction as cap)
-  {
-    id: 'lpf-e5',
-    source: 'lpf-pot',
-    sourceHandle: 'wiper',
-    target: 'lpf-out',
-    targetHandle: 'pos',
-  },
   // Output ground
   {
-    id: 'lpf-e6',
+    id: 'lpf-e7',
     source: 'lpf-gnd-out',
     sourceHandle: 'gnd',
     target: 'lpf-out',

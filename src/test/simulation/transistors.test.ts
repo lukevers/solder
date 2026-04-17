@@ -673,7 +673,7 @@ describe('MOSFET common-source amplifier (BS170)', () => {
 describe('Fuzz Face preset (AC128 PNP)', () => {
   it('produces output with significant distortion gain', async () => {
     const { fuzzFaceNodes, fuzzFaceEdges } = await import(
-      '../../lib/examples/fuzz-face'
+      '../../lib/examples/pedals/fuzz-face'
     );
     const { nodes, edges } = makeCircuit(fuzzFaceNodes, fuzzFaceEdges);
     const netlist = compileNetlist(nodes, edges, 0.01, 1000, 0.05);
@@ -699,7 +699,7 @@ describe('Fuzz Face preset (AC128 PNP)', () => {
 describe('MXR Distortion+ preset (LM741 + 1N270)', () => {
   it('produces clipped output signal', async () => {
     const { distortionPlusNodes, distortionPlusEdges } = await import(
-      '../../lib/examples/distortion-plus'
+      '../../lib/examples/pedals/distortion-plus'
     );
     const { nodes, edges } = makeCircuit(
       distortionPlusNodes,
