@@ -1,7 +1,7 @@
 // src/components/nodes/CapPolarNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { CapacitorData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell } from './NodeShell';
+import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
 
 export function CapPolarNode({ id, data, selected }: NodeProps) {
   const d = data as CapacitorData;
@@ -39,38 +39,38 @@ export function CapPolarNode({ id, data, selected }: NodeProps) {
         {/* Right wire */}
         <line x1="28" y1="20" x2="60" y2="20" stroke={wire} strokeWidth="1.5" />
         {/* + sign near positive plate */}
-        <text
-          x="16"
-          y="12"
+        <NodeText
+          x={16}
+          y={12}
           textAnchor="middle"
           fill="#6b7280"
           fontSize="8"
           fontFamily="monospace"
         >
           +
-        </text>
+        </NodeText>
         {/* Label */}
-        <text
-          x="25"
-          y="6"
+        <NodeText
+          x={25}
+          y={6}
           textAnchor="middle"
           fill="#7ee787"
           fontSize="8"
           fontFamily="monospace"
         >
           {d.label}
-        </text>
+        </NodeText>
         {/* Value */}
-        <text
-          x="30"
-          y="38"
+        <NodeText
+          x={30}
+          y={38}
           textAnchor="middle"
           fill="#6b7280"
           fontSize="7"
           fontFamily="monospace"
         >
           {faradsLabel}
-        </text>
+        </NodeText>
       </svg>
       <Handle
         type="source"

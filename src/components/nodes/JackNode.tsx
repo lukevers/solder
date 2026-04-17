@@ -1,7 +1,7 @@
 // src/components/nodes/JackNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { JackData } from '../../lib/types';
-import { NodeShell } from './NodeShell';
+import { NodeShell, NodeText } from './NodeShell';
 
 export function JackNode({ id, data, selected }: NodeProps) {
   const d = data as JackData;
@@ -24,9 +24,9 @@ export function JackNode({ id, data, selected }: NodeProps) {
               stroke={stroke}
               strokeWidth="1.5"
             />
-            <text
-              x="34"
-              y="30"
+            <NodeText
+              x={34}
+              y={30}
               textAnchor="middle"
               dominantBaseline="central"
               fill={color}
@@ -35,10 +35,10 @@ export function JackNode({ id, data, selected }: NodeProps) {
               fontWeight="bold"
             >
               {d.label}
-            </text>
-            <text
-              x="68"
-              y="23"
+            </NodeText>
+            <NodeText
+              x={68}
+              y={23}
               textAnchor="middle"
               fill="#60a5fa"
               fontSize="10"
@@ -46,10 +46,10 @@ export function JackNode({ id, data, selected }: NodeProps) {
               fontWeight="bold"
             >
               +
-            </text>
-            <text
-              x="68"
-              y="47"
+            </NodeText>
+            <NodeText
+              x={68}
+              y={47}
               textAnchor="middle"
               fill="#6b7280"
               fontSize="10"
@@ -57,7 +57,7 @@ export function JackNode({ id, data, selected }: NodeProps) {
               fontWeight="bold"
             >
               −
-            </text>
+            </NodeText>
           </svg>
           <Handle
             type="source"
@@ -97,9 +97,9 @@ export function JackNode({ id, data, selected }: NodeProps) {
               stroke={stroke}
               strokeWidth="1.5"
             />
-            <text
-              x="46"
-              y="30"
+            <NodeText
+              x={46}
+              y={30}
               textAnchor="middle"
               dominantBaseline="central"
               fill={color}
@@ -108,10 +108,10 @@ export function JackNode({ id, data, selected }: NodeProps) {
               fontWeight="bold"
             >
               {d.label}
-            </text>
-            <text
-              x="12"
-              y="23"
+            </NodeText>
+            <NodeText
+              x={12}
+              y={23}
               textAnchor="middle"
               fill="#4ade80"
               fontSize="10"
@@ -119,10 +119,10 @@ export function JackNode({ id, data, selected }: NodeProps) {
               fontWeight="bold"
             >
               +
-            </text>
-            <text
-              x="12"
-              y="47"
+            </NodeText>
+            <NodeText
+              x={12}
+              y={47}
               textAnchor="middle"
               fill="#6b7280"
               fontSize="10"
@@ -130,7 +130,7 @@ export function JackNode({ id, data, selected }: NodeProps) {
               fontWeight="bold"
             >
               −
-            </text>
+            </NodeText>
           </svg>
         </>
       )}

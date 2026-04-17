@@ -1,7 +1,7 @@
 // src/components/nodes/ResistorNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { ResistorData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell } from './NodeShell';
+import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
 
 export function ResistorNode({ id, data, selected }: NodeProps) {
   const d = data as ResistorData;
@@ -37,26 +37,26 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
           stroke={selected ? '#60a5fa' : '#9ca3af'}
           strokeWidth="1.5"
         />
-        <text
-          x="40"
-          y="8"
+        <NodeText
+          x={40}
+          y={8}
           textAnchor="middle"
           fill="#7ee787"
           fontSize="8"
           fontFamily="monospace"
         >
           {d.label}
-        </text>
-        <text
-          x="40"
-          y="38"
+        </NodeText>
+        <NodeText
+          x={40}
+          y={38}
           textAnchor="middle"
           fill="#6b7280"
           fontSize="7"
           fontFamily="monospace"
         >
           {d.ohms >= 1000 ? `${d.ohms / 1000}kΩ` : `${d.ohms}Ω`}
-        </text>
+        </NodeText>
       </svg>
       <Handle
         type="source"

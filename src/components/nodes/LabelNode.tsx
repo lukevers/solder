@@ -1,7 +1,7 @@
 // src/components/nodes/LabelNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { LabelData } from '../../lib/types';
-import { NodeShell } from './NodeShell';
+import { NodeShell, NodeText } from './NodeShell';
 
 export function LabelNode({ id, data, selected }: NodeProps) {
   const d = data as LabelData;
@@ -18,9 +18,9 @@ export function LabelNode({ id, data, selected }: NodeProps) {
           stroke={color}
           strokeWidth="1.5"
         />
-        <text
-          x="36"
-          y="18"
+        <NodeText
+          x={36}
+          y={18}
           textAnchor="middle"
           fill={color}
           fontSize="10"
@@ -28,7 +28,7 @@ export function LabelNode({ id, data, selected }: NodeProps) {
           fontWeight="bold"
         >
           {d.label}
-        </text>
+        </NodeText>
       </svg>
       <Handle
         type="source"

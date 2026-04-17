@@ -1,7 +1,7 @@
 // src/components/nodes/OpAmpNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { OpAmpData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell } from './NodeShell';
+import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
 
 export function OpAmpNode({ id, data, selected }: NodeProps) {
   const d = data as OpAmpData;
@@ -52,32 +52,32 @@ export function OpAmpNode({ id, data, selected }: NodeProps) {
           stroke={stroke}
           strokeWidth="1.5"
         />
-        <text x="20" y="28" fill="#e5e7eb" fontSize="10" fontFamily="monospace">
+        <NodeText x={20} y={28} fill="#e5e7eb" fontSize="10" fontFamily="monospace">
           +
-        </text>
-        <text x="20" y="58" fill="#e5e7eb" fontSize="10" fontFamily="monospace">
+        </NodeText>
+        <NodeText x={20} y={58} fill="#e5e7eb" fontSize="10" fontFamily="monospace">
           −
-        </text>
-        <text
-          x="40"
-          y="44"
+        </NodeText>
+        <NodeText
+          x={40}
+          y={44}
           textAnchor="middle"
           fill="#f97316"
           fontSize="8"
           fontFamily="monospace"
         >
           {d.label}
-        </text>
-        <text
-          x="40"
-          y="18"
+        </NodeText>
+        <NodeText
+          x={40}
+          y={18}
           textAnchor="middle"
           fill="#6b7280"
           fontSize="7"
           fontFamily="monospace"
         >
           {d.model}
-        </text>
+        </NodeText>
       </svg>
     </NodeShell>
   );

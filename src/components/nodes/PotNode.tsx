@@ -1,7 +1,7 @@
 // src/components/nodes/PotNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { PotData } from '../../lib/types';
-import { NodeShell } from './NodeShell';
+import { NodeShell, NodeText } from './NodeShell';
 
 export function PotNode({ id, data, selected }: NodeProps) {
   const d = data as PotData;
@@ -91,27 +91,27 @@ export function PotNode({ id, data, selected }: NodeProps) {
           fill={wiperColor}
         />
         {/* Label */}
-        <text
-          x="40"
-          y="8"
+        <NodeText
+          x={40}
+          y={8}
           textAnchor="middle"
           fill="#7ee787"
           fontSize="7"
           fontFamily="monospace"
         >
           {d.label}
-        </text>
+        </NodeText>
         {/* Value + position */}
-        <text
-          x="40"
-          y="58"
+        <NodeText
+          x={40}
+          y={58}
           textAnchor="middle"
           fill="#6b7280"
           fontSize="6"
           fontFamily="monospace"
         >
           {val} {pct}%
-        </text>
+        </NodeText>
       </svg>
     </NodeShell>
   );

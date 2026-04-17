@@ -1,7 +1,7 @@
 // src/components/nodes/PowerNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { PowerData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell } from './NodeShell';
+import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
 
 export function PowerNode({ id, data, selected }: NodeProps) {
   const d = data as PowerData;
@@ -17,19 +17,19 @@ export function PowerNode({ id, data, selected }: NodeProps) {
           stroke={selected ? '#60a5fa' : '#facc15'}
           strokeWidth="1.5"
         />
-        <text
-          x="20"
-          y="16"
+        <NodeText
+          x={20}
+          y={16}
           textAnchor="middle"
           fill="#facc15"
           fontSize="8"
           fontFamily="monospace"
         >
           {d.label}
-        </text>
-        <text
-          x="20"
-          y="27"
+        </NodeText>
+        <NodeText
+          x={20}
+          y={27}
           textAnchor="middle"
           fill="#facc15"
           fontSize="9"
@@ -37,7 +37,7 @@ export function PowerNode({ id, data, selected }: NodeProps) {
           fontWeight="bold"
         >
           {d.volts}V
-        </text>
+        </NodeText>
       </svg>
       <Handle
         type="source"

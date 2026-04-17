@@ -1,7 +1,7 @@
 // src/components/nodes/DiodeNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { DiodeData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell } from './NodeShell';
+import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
 
 export function DiodeNode({ id, data, selected }: NodeProps) {
   const d = data as DiodeData;
@@ -39,26 +39,26 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
           stroke={stroke}
           strokeWidth="1.5"
         />
-        <text
-          x="28"
-          y="8"
+        <NodeText
+          x={28}
+          y={8}
           textAnchor="middle"
           fill="#7ee787"
           fontSize="7"
           fontFamily="monospace"
         >
           {d.label}
-        </text>
-        <text
-          x="28"
-          y="38"
+        </NodeText>
+        <NodeText
+          x={28}
+          y={38}
           textAnchor="middle"
           fill="#6b7280"
           fontSize="6"
           fontFamily="monospace"
         >
           {d.model}
-        </text>
+        </NodeText>
       </svg>
       <Handle
         type="source"

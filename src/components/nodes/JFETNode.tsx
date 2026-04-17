@@ -1,7 +1,7 @@
 // src/components/nodes/JFETNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import type { JFETData } from '../../lib/types';
-import { HANDLE_STYLE, NodeShell } from './NodeShell';
+import { HANDLE_STYLE, NodeShell, NodeText } from './NodeShell';
 
 export function JFETNode({ id, data, selected }: NodeProps) {
   const d = data as JFETData;
@@ -79,27 +79,27 @@ export function JFETNode({ id, data, selected }: NodeProps) {
         )}
 
         {/* Label */}
-        <text
-          x="42"
-          y="8"
+        <NodeText
+          x={42}
+          y={8}
           textAnchor="middle"
           fill="#7ee787"
           fontSize="7"
           fontFamily="monospace"
         >
           {d.label}
-        </text>
+        </NodeText>
         {/* Model */}
-        <text
-          x="42"
-          y="58"
+        <NodeText
+          x={42}
+          y={58}
           textAnchor="middle"
           fill="#6b7280"
           fontSize="6"
           fontFamily="monospace"
         >
           {d.model}
-        </text>
+        </NodeText>
       </svg>
     </NodeShell>
   );
