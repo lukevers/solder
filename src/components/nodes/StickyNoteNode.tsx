@@ -66,6 +66,14 @@ export const STICKY_COLORS: Record<
     borderSelected: '#f97316',
     text: '#6b2f0a',
   },
+  gray: {
+    bg: '#e5e7eb',
+    bgSelected: '#d1d5db',
+    header: '#d1d5db',
+    border: '#d1d5db',
+    borderSelected: '#6b7280',
+    text: '#1f2937',
+  },
 };
 
 const SIZE_CLASSES: Record<StickyNoteSize, string> = {

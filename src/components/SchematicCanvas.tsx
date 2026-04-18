@@ -74,8 +74,28 @@ function SchematicCanvasInner() {
   );
 
   const onNodesChange: OnNodesChange = useCallback(
-    (changes) =>
-      setNodes(applyNodeChanges(changes, nodes) as Array<ComponentNode>),
+    (changes) => {
+      let updated = applyNodeChanges(changes, nodes) as Array<ComponentNode>;
+
+      // Co-move nodes contained in the box being dragged
+      const group = boxDragGroupRef.current;
+      if (group) {
+        const posChange = changes.find(
+          (c) => c.type === 'position' && c.id === group.boxId && c.position,
+        );
+        if (posChange?.type === 'position' && posChange.position) {
+          const dx = posChange.position.x - group.boxStartPos.x;
+          const dy = posChange.position.y - group.boxStartPos.y;
+          updated = updated.map((n) => {
+            const start = group.startPositions.get(n.id);
+            if (!start) return n;
+            return { ...n, position: { x: start.x + dx, y: start.y + dy } };
+          });
+        }
+      }
+
+      setNodes(updated);
+    },
     [nodes, setNodes],
   );
 
@@ -94,6 +114,13 @@ function SchematicCanvasInner() {
     },
     [edges, setEdges, pushHistory],
   );
+
+  // Track nodes to co-move when a box is dragged
+  const boxDragGroupRef = useRef<{
+    boxId: string;
+    boxStartPos: { x: number; y: number };
+    startPositions: Map<string, { x: number; y: number }>;
+  } | null>(null);
 
   // Track connection start for drop-on-edge support
   const connectStartRef = useRef<{
@@ -251,9 +278,35 @@ function SchematicCanvasInner() {
     [edges, nodes, setEdges, setNodes, pushHistory, screenToFlowPosition],
   );
 
-  const onNodeDragStart: OnNodeDrag = useCallback(() => {
-    pushHistory();
-  }, [pushHistory]);
+  const onNodeDragStart: OnNodeDrag = useCallback(
+    (_, node) => {
+      pushHistory();
+      if (node.type === 'box') {
+        const boxLeft = node.position.x;
+        const boxTop = node.position.y;
+        const boxRight = boxLeft + (node.measured?.width ?? 0);
+        const boxBottom = boxTop + (node.measured?.height ?? 0);
+
+        const inside = nodes.filter((n) => {
+          if (n.id === node.id) return false;
+          const cx = n.position.x + (n.measured?.width ?? 0) / 2;
+          const cy = n.position.y + (n.measured?.height ?? 0) / 2;
+          return cx > boxLeft && cx < boxRight && cy > boxTop && cy < boxBottom;
+        });
+
+        boxDragGroupRef.current = {
+          boxId: node.id,
+          boxStartPos: { ...node.position },
+          startPositions: new Map(inside.map((n) => [n.id, { ...n.position }])),
+        };
+      }
+    },
+    [pushHistory, nodes],
+  );
+
+  const onNodeDragStop: OnNodeDrag = useCallback(() => {
+    boxDragGroupRef.current = null;
+  }, []);
 
   const onPaneClick = useCallback(() => {
     selectNode(null);
@@ -299,7 +352,11 @@ function SchematicCanvasInner() {
         connectionMode={ConnectionMode.Loose}
         nodes={nodes.map((n) =>
           n.type === 'box'
-            ? { ...n, className: 'box-node-wrapper', dragHandle: '.box-drag-handle' }
+            ? {
+                ...n,
+                className: 'box-node-wrapper',
+                dragHandle: '.box-drag-handle',
+              }
             : n,
         )}
         edges={signalEdges}
@@ -311,6 +368,7 @@ function SchematicCanvasInner() {
         onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
         onNodeDragStart={onNodeDragStart}
+        onNodeDragStop={onNodeDragStop}
         onEdgeClick={onEdgeClick}
         onPaneClick={onPaneClick}
         nodesDraggable={isInteractive}

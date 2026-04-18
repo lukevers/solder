@@ -301,6 +301,10 @@ function buildCircuitBody(
     lines.push(
       '.model 1N4001 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u)',
     );
+  if (usedDiodeModels.has('1N4002'))
+    lines.push(
+      '.model 1N4002 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u BV=100)',
+    );
   if (usedDiodeModels.has('1N270'))
     lines.push('.model 1N270 D(Is=200n Rs=2 N=1.1 Cjo=1p M=.5 tt=50n BV=100)');
 
@@ -388,8 +392,7 @@ function buildCircuitBody(
         // so they don't short together via the shared 'UNCONNECTED' fallback.
         const nullNeg =
           portToNode.get(`${node.id}|null_neg`) ?? `NC_${node.id}_1`;
-        const comp =
-          portToNode.get(`${node.id}|comp`) ?? `NC_${node.id}_8`;
+        const comp = portToNode.get(`${node.id}|comp`) ?? `NC_${node.id}_8`;
         lines.push(
           `X${node.data.label} ${nullNeg} ${inNeg} ${inPos} ${gnd} ${out} ${vcc} ${comp} LM308`,
         );

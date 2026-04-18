@@ -284,6 +284,7 @@ function DiodeInspector({
         >
           <option value="1N914">1N914</option>
           <option value="1N4001">1N4001</option>
+          <option value="1N4002">1N4002</option>
           <option value="1N270">1N270 (Ge)</option>
         </select>
       </Field>
@@ -985,12 +986,14 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
         <StickyNoteInspector node={selected} />
       )}
       {selected.type === 'box' && <BoxInspector node={selected} />}
-      {selected.type !== 'stickynote' && selected.type !== 'junction' && selected.type !== 'box' && (
-        <RotationControl
-          nodeId={selected.id}
-          rotation={selected.rotation ?? 0}
-        />
-      )}
+      {selected.type !== 'stickynote' &&
+        selected.type !== 'junction' &&
+        selected.type !== 'box' && (
+          <RotationControl
+            nodeId={selected.id}
+            rotation={selected.rotation ?? 0}
+          />
+        )}
       <button
         type="button"
         onClick={() => deleteNode(selected.id)}

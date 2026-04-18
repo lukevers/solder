@@ -1,6 +1,7 @@
 // src/components/nodes/index.ts
 
 import { BJTNode } from './BJTNode';
+import { BoxNode } from './BoxNode';
 import { CapacitorNode } from './CapacitorNode';
 import { CapPolarNode } from './CapPolarNode';
 import { DiodeNode } from './DiodeNode';
@@ -32,4 +33,5 @@ export const nodeTypes = {
   pot: PotNode,
   label: LabelNode,
   stickynote: StickyNoteNode,
+  box: BoxNode,
 };

@@ -70,3 +70,15 @@ body {
 	text-align: unset;
 	box-shadow: none;
 }
+
+/* Box annotation nodes: the XYFlow wrapper is transparent to pointer events
+   so the interior feels like empty canvas. The border strips inside the node
+   (which have pointer-events: auto) still receive events and bubble up to
+   XYFlow's listeners for dragging and selection. */
+.box-node-wrapper {
+	pointer-events: none !important;
+}
+
+.box-node-wrapper .react-flow__resize-control {
+	pointer-events: all !important;
+}
