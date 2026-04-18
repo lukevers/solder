@@ -110,6 +110,115 @@ function FlyoutButton({
   );
 }
 
+type TransistorGroup = { group: string; items: Array<PaletteItem> };
+
+function TransistorFlyout({
+  groups,
+  onSelect,
+}: {
+  groups: Array<TransistorGroup>;
+  onSelect: (item: PaletteItem) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const flyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) { setActiveGroup(null); return; }
+    if (btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 6, left: r.left + r.width / 2 });
+    }
+    function onDown(e: MouseEvent) {
+      if (
+        !btnRef.current?.contains(e.target as Node) &&
+        !flyRef.current?.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [open]);
+
+  const currentItems = activeGroup
+    ? groups.find((g) => g.group === activeGroup)?.items ?? []
+    : null;
+
+  return (
+    <div className="relative group flex-shrink-0">
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
+          open ? 'border-blue-500 text-blue-300' : 'border-gray-700 text-gray-300'
+        }`}
+      >
+        Q
+      </button>
+      {!open && (
+        <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
+          Transistor
+        </div>
+      )}
+      {open &&
+        createPortal(
+          <div
+            ref={flyRef}
+            style={{
+              position: 'fixed',
+              top: pos.top,
+              left: pos.left,
+              zIndex: 9999,
+              transform: 'translateX(-50%)',
+              maxHeight: `calc(100vh - ${pos.top}px - 16px)`,
+              overflowY: 'auto',
+            }}
+            className="flex flex-col gap-1"
+          >
+            {!activeGroup
+              ? groups.map((g) => (
+                  <button
+                    key={g.group}
+                    type="button"
+                    onClick={() => setActiveGroup(g.group)}
+                    className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors flex items-center justify-between gap-3"
+                  >
+                    {g.group}
+                    <span className="text-gray-500">›</span>
+                  </button>
+                ))
+              : <>
+                  <button
+                    type="button"
+                    onClick={() => setActiveGroup(null)}
+                    className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-400 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors flex items-center gap-1"
+                  >
+                    <span>‹</span> {activeGroup}
+                  </button>
+                  {(currentItems ?? []).map((item) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={() => { onSelect(item); setOpen(false); }}
+                      className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </>
+            }
+          </div>,
+          document.body,
+        )}
+    </div>
+  );
+}
+
 const PALETTE: Array<{
   label: string;
   tooltip: string;
@@ -217,30 +326,39 @@ const JACK_ITEMS: Array<{
   },
 ];
 
-const TRANSISTOR_ITEMS: Array<PaletteItem> = [
-  // NPN BJTs
-  { label: '2N3904', tooltip: '2N3904 NPN BJT', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: '2N3904' } },
-  { label: '2N5088', tooltip: '2N5088 NPN BJT (high gain)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: '2N5088' } },
-  { label: '2N5089', tooltip: '2N5089 NPN BJT (very high gain)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: '2N5089' } },
-  { label: 'BC108', tooltip: 'BC108 NPN BJT (Fuzz Face Si)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: 'BC108' } },
-  { label: 'BC549', tooltip: 'BC549 NPN BJT (low noise)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: 'BC549' } },
-  { label: 'MPSA18', tooltip: 'MPSA18 NPN BJT (ultra high gain)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: 'MPSA18' } },
-  // PNP BJTs
-  { label: '2N3906', tooltip: '2N3906 PNP BJT', type: 'bjt', defaultData: { label: 'Q1', polarity: 'PNP', model: '2N3906' } },
-  { label: 'AC128', tooltip: 'AC128 PNP Germanium BJT', type: 'bjt', defaultData: { label: 'Q1', polarity: 'PNP', model: 'AC128' } },
-  // N-ch JFETs
-  { label: '2N5457', tooltip: '2N5457 N-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: '2N5457' } },
-  { label: 'J201', tooltip: 'J201 N-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'J201' } },
-  { label: 'J113', tooltip: 'J113 N-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'J113' } },
-  { label: 'MPF102', tooltip: 'MPF102 N-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'MPF102' } },
-  // P-ch JFETs
-  { label: '2N5460', tooltip: '2N5460 P-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'P', model: '2N5460' } },
-  // N-ch MOSFETs
-  { label: 'BS170', tooltip: 'BS170 N-ch MOSFET', type: 'mosfet', defaultData: { label: 'M1', polarity: 'N', model: 'BS170' } },
-  { label: '2N7000', tooltip: '2N7000 N-ch MOSFET', type: 'mosfet', defaultData: { label: 'M1', polarity: 'N', model: '2N7000' } },
-  { label: 'IRF510', tooltip: 'IRF510 N-ch power MOSFET', type: 'mosfet', defaultData: { label: 'M1', polarity: 'N', model: 'IRF510' } },
-  // P-ch MOSFETs
-  { label: 'IRF9510', tooltip: 'IRF9510 P-ch power MOSFET', type: 'mosfet', defaultData: { label: 'M1', polarity: 'P', model: 'IRF9510' } },
+const TRANSISTOR_GROUPS: Array<TransistorGroup> = [
+  {
+    group: 'BJT',
+    items: [
+      { label: '2N3904', tooltip: '2N3904 NPN', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: '2N3904' } },
+      { label: '2N5088', tooltip: '2N5088 NPN (high gain)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: '2N5088' } },
+      { label: '2N5089', tooltip: '2N5089 NPN (very high gain)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: '2N5089' } },
+      { label: 'BC108', tooltip: 'BC108 NPN (Fuzz Face Si)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: 'BC108' } },
+      { label: 'BC549', tooltip: 'BC549 NPN (low noise)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: 'BC549' } },
+      { label: 'MPSA18', tooltip: 'MPSA18 NPN (ultra high gain)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: 'MPSA18' } },
+      { label: '2N3906', tooltip: '2N3906 PNP', type: 'bjt', defaultData: { label: 'Q1', polarity: 'PNP', model: '2N3906' } },
+      { label: 'AC128', tooltip: 'AC128 PNP Germanium', type: 'bjt', defaultData: { label: 'Q1', polarity: 'PNP', model: 'AC128' } },
+    ],
+  },
+  {
+    group: 'JFET',
+    items: [
+      { label: '2N5457', tooltip: '2N5457 N-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: '2N5457' } },
+      { label: 'J201', tooltip: 'J201 N-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'J201' } },
+      { label: 'J113', tooltip: 'J113 N-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'J113' } },
+      { label: 'MPF102', tooltip: 'MPF102 N-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'MPF102' } },
+      { label: '2N5460', tooltip: '2N5460 P-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'P', model: '2N5460' } },
+    ],
+  },
+  {
+    group: 'MOSFET',
+    items: [
+      { label: 'BS170', tooltip: 'BS170 N-ch', type: 'mosfet', defaultData: { label: 'M1', polarity: 'N', model: 'BS170' } },
+      { label: '2N7000', tooltip: '2N7000 N-ch', type: 'mosfet', defaultData: { label: 'M1', polarity: 'N', model: '2N7000' } },
+      { label: 'IRF510', tooltip: 'IRF510 N-ch power', type: 'mosfet', defaultData: { label: 'M1', polarity: 'N', model: 'IRF510' } },
+      { label: 'IRF9510', tooltip: 'IRF9510 P-ch power', type: 'mosfet', defaultData: { label: 'M1', polarity: 'P', model: 'IRF9510' } },
+    ],
+  },
 ];
 
 type ToolbarProps = {
@@ -626,15 +744,10 @@ export function Toolbar({
 
           {PALETTE.map((item) => {
             const transistorButton = item.type === 'diode' && (
-              <FlyoutButton
+              <TransistorFlyout
                 key="transistor"
-                label="Q"
-                tooltip="Transistor"
-                active={false}
-                items={TRANSISTOR_ITEMS}
-                onSelect={(lbl) =>
-                  handleAdd(TRANSISTOR_ITEMS.find((i) => i.label === lbl)!)
-                }
+                groups={TRANSISTOR_GROUPS}
+                onSelect={(t) => handleAdd(t)}
               />
             );
 
