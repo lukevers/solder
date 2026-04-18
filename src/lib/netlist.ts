@@ -3,11 +3,20 @@ import type { Edge } from '@xyflow/react';
 import {
   BJT_2N3904,
   BJT_2N3906,
+  BJT_2N5088,
+  BJT_2N5089,
   BJT_AC128,
+  BJT_BC108,
+  BJT_BC549,
+  BJT_MPSA18,
   JFET_2N5457,
   JFET_2N5460,
+  JFET_J113,
   JFET_J201,
+  JFET_MPF102,
+  LM308_SUBCKT,
   LM741_SUBCKT,
+  MOSFET_2N7000,
   MOSFET_BS170,
   MOSFET_IRF510,
   MOSFET_IRF9510,
@@ -76,6 +85,7 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   jfet: ['g', 'd', 's'],
   mosfet: ['g', 'd', 's'],
   stickynote: [],
+  box: [],
 };
 
 /** Port identifier: "${nodeId}|${handleId}" */
@@ -278,6 +288,7 @@ function buildCircuitBody(
   );
   if (usedModels.has('TL072')) lines.push(TL072_SUBCKT);
   if (usedModels.has('LM741')) lines.push(LM741_SUBCKT);
+  if (usedModels.has('LM308')) lines.push(LM308_SUBCKT);
 
   // Diode model statements — inline for standard models
   const usedDiodeModels = new Set(
@@ -299,6 +310,11 @@ function buildCircuitBody(
   if (usedBJTModels.has('2N3904')) lines.push(BJT_2N3904);
   if (usedBJTModels.has('2N3906')) lines.push(BJT_2N3906);
   if (usedBJTModels.has('AC128')) lines.push(BJT_AC128);
+  if (usedBJTModels.has('2N5088')) lines.push(BJT_2N5088);
+  if (usedBJTModels.has('2N5089')) lines.push(BJT_2N5089);
+  if (usedBJTModels.has('BC108')) lines.push(BJT_BC108);
+  if (usedBJTModels.has('BC549')) lines.push(BJT_BC549);
+  if (usedBJTModels.has('MPSA18')) lines.push(BJT_MPSA18);
 
   // JFET model statements
   const usedJFETModels = new Set(
@@ -306,6 +322,8 @@ function buildCircuitBody(
   );
   if (usedJFETModels.has('2N5457')) lines.push(JFET_2N5457);
   if (usedJFETModels.has('J201')) lines.push(JFET_J201);
+  if (usedJFETModels.has('J113')) lines.push(JFET_J113);
+  if (usedJFETModels.has('MPF102')) lines.push(JFET_MPF102);
   if (usedJFETModels.has('2N5460')) lines.push(JFET_2N5460);
 
   // MOSFET model statements
@@ -315,6 +333,7 @@ function buildCircuitBody(
   if (usedMOSFETModels.has('BS170')) lines.push(MOSFET_BS170);
   if (usedMOSFETModels.has('IRF510')) lines.push(MOSFET_IRF510);
   if (usedMOSFETModels.has('IRF9510')) lines.push(MOSFET_IRF9510);
+  if (usedMOSFETModels.has('2N7000')) lines.push(MOSFET_2N7000);
 
   // Find input and output jack nodes
   const inputNode = nodes.find(
@@ -361,9 +380,22 @@ function buildCircuitBody(
       const out = getNode(node.id, 'out');
       const vcc = getNode(node.id, 'vcc');
       const gnd = getNode(node.id, 'gnd');
-      lines.push(
-        `X${node.data.label} ${inPos} ${inNeg} ${vcc} ${gnd} ${out} ${node.data.model}`,
-      );
+      if (node.data.model === 'LM308') {
+        // LM308 exposes 7 ports matching physical DIP-8 pins 1,2,3,4,6,7,8.
+        // Pins 1 (null_neg) and 8 (comp) get unique NC net names when unconnected
+        // so they don't short together via the shared 'UNCONNECTED' fallback.
+        const nullNeg =
+          portToNode.get(`${node.id}|null_neg`) ?? `NC_${node.id}_1`;
+        const comp =
+          portToNode.get(`${node.id}|comp`) ?? `NC_${node.id}_8`;
+        lines.push(
+          `X${node.data.label} ${nullNeg} ${inNeg} ${inPos} ${gnd} ${out} ${vcc} ${comp} LM308`,
+        );
+      } else {
+        lines.push(
+          `X${node.data.label} ${inPos} ${inNeg} ${vcc} ${gnd} ${out} ${node.data.model}`,
+        );
+      }
     } else if (node.type === 'power') {
       if (!emittedPower.has(node.data.label)) {
         emittedPower.add(node.data.label);

@@ -7,6 +7,7 @@ import { useShallow } from 'zustand/react/shallow';
 import {
   type BJTData,
   type BJTModel,
+  type BoxVariant,
   type ComponentNode,
   type DiodeData,
   isEdgeDC,
@@ -205,12 +206,13 @@ function OpAmpInspector({
           onChange={(e) =>
             updateNodeData(node.id, {
               label,
-              model: e.target.value as 'TL072' | 'LM741',
+              model: e.target.value as 'TL072' | 'LM741' | 'LM308',
             })
           }
         >
           <option value="TL072">TL072</option>
           <option value="LM741">LM741</option>
+          <option value="LM308">LM308</option>
         </select>
       </Field>
     </>
@@ -293,6 +295,11 @@ const BJT_MODEL_POLARITY: Record<BJTModel, 'NPN' | 'PNP'> = {
   '2N3904': 'NPN',
   '2N3906': 'PNP',
   AC128: 'PNP',
+  '2N5088': 'NPN',
+  '2N5089': 'NPN',
+  BC108: 'NPN',
+  BC549: 'NPN',
+  MPSA18: 'NPN',
 };
 
 function BJTInspector({
@@ -330,6 +337,11 @@ function BJTInspector({
           <option value="2N3904">2N3904 (NPN)</option>
           <option value="2N3906">2N3906 (PNP)</option>
           <option value="AC128">AC128 (PNP Ge)</option>
+          <option value="2N5088">2N5088 (NPN)</option>
+          <option value="2N5089">2N5089 (NPN)</option>
+          <option value="BC108">BC108 (NPN)</option>
+          <option value="BC549">BC549 (NPN)</option>
+          <option value="MPSA18">MPSA18 (NPN)</option>
         </select>
       </Field>
       <Field label="Polarity">
@@ -342,6 +354,8 @@ function BJTInspector({
 const JFET_MODEL_POLARITY: Record<JFETModel, 'N' | 'P'> = {
   '2N5457': 'N',
   J201: 'N',
+  J113: 'N',
+  MPF102: 'N',
   '2N5460': 'P',
 };
 
@@ -379,6 +393,8 @@ function JFETInspector({
         >
           <option value="2N5457">2N5457 (N-ch)</option>
           <option value="J201">J201 (N-ch)</option>
+          <option value="J113">J113 (N-ch)</option>
+          <option value="MPF102">MPF102 (N-ch)</option>
           <option value="2N5460">2N5460 (P-ch)</option>
         </select>
       </Field>
@@ -395,6 +411,7 @@ const MOSFET_MODEL_POLARITY: Record<MOSFETModel, 'N' | 'P'> = {
   BS170: 'N',
   IRF510: 'N',
   IRF9510: 'P',
+  '2N7000': 'N',
 };
 
 function MOSFETInspector({
@@ -432,6 +449,7 @@ function MOSFETInspector({
           <option value="BS170">BS170 (N-ch)</option>
           <option value="IRF510">IRF510 (N-ch)</option>
           <option value="IRF9510">IRF9510 (P-ch)</option>
+          <option value="2N7000">2N7000 (N-ch)</option>
         </select>
       </Field>
       <Field label="Channel">
@@ -627,6 +645,7 @@ const STICKY_COLOR_OPTIONS: Array<{ id: StickyNoteColor; swatch: string }> = [
   { id: 'pink', swatch: '#f9a8d4' },
   { id: 'purple', swatch: '#c4b5fd' },
   { id: 'orange', swatch: '#fdba74' },
+  { id: 'gray', swatch: '#9ca3af' },
 ];
 
 function StickyNoteInspector({
@@ -742,6 +761,68 @@ function StickyNoteInspector({
               }
               className={`w-5 h-5 rounded-full border-2 transition-colors ${
                 current === opt.id
+                  ? 'border-white scale-110'
+                  : 'border-gray-600 hover:border-gray-400'
+              }`}
+              style={{ background: opt.swatch }}
+              title={opt.id}
+            />
+          ))}
+        </div>
+      </Field>
+    </>
+  );
+}
+
+function BoxInspector({
+  node,
+}: {
+  node: Extract<ComponentNode, { type: 'box' }>;
+}) {
+  const updateNodeData = useStore((s) => s.updateNodeData);
+  const { label, color = 'blue', variant = 'outline' } = node.data;
+
+  const update = (patch: Partial<typeof node.data>) =>
+    updateNodeData(node.id, { label, color, variant, ...patch });
+
+  return (
+    <>
+      <Field label="Label">
+        <input
+          className={INPUT_CLASS}
+          value={label}
+          placeholder="(none)"
+          onChange={(e) => update({ label: e.target.value })}
+        />
+      </Field>
+      <Field label="Variant">
+        <div className="flex rounded border border-gray-700 overflow-hidden">
+          {(['outline', 'filled', 'dashed'] as Array<BoxVariant>).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => update({ variant: s })}
+              className={[
+                'flex-1 px-1 py-1 text-xs font-mono border-r last:border-r-0 border-gray-700 transition-colors',
+                s === variant
+                  ? 'bg-blue-950 text-blue-300'
+                  : 'bg-gray-950 text-gray-500 hover:text-gray-300',
+              ].join(' ')}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </Field>
+      <Field label="Color">
+        <div className="flex gap-1.5">
+          {STICKY_COLOR_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => update({ color: opt.id })}
+              className={`w-5 h-5 rounded-full border-2 transition-colors ${
+                color === opt.id
                   ? 'border-white scale-110'
                   : 'border-gray-600 hover:border-gray-400'
               }`}
@@ -901,7 +982,8 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
       {selected.type === 'stickynote' && (
         <StickyNoteInspector node={selected} />
       )}
-      {selected.type !== 'stickynote' && selected.type !== 'junction' && (
+      {selected.type === 'box' && <BoxInspector node={selected} />}
+      {selected.type !== 'stickynote' && selected.type !== 'junction' && selected.type !== 'box' && (
         <RotationControl
           nodeId={selected.id}
           rotation={selected.rotation ?? 0}

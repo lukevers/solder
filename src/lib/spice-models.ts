@@ -117,7 +117,108 @@ RL3 22 28 100K
 .MODEL QX NPN(BF=625)
 .ENDS`;
 
+/**
+ * LM308 operational amplifier macromodel subcircuit.
+ * Based on the National Semiconductor precision op-amp macromodel.
+ *
+ * Physical DIP-8 pin order (pins 1–4 left, 6–8 right; pin 5/Null+ not exposed):
+ *   p1 = pin 1  Null−       ← mapped to internal emitter-tail node
+ *   p2 = pin 2  IN−
+ *   p3 = pin 3  IN+
+ *   p4 = pin 4  V−
+ *   p6 = pin 6  OUT
+ *   p7 = pin 7  V+
+ *   p8 = pin 8  Comp/NC     ← mapped to internal dominant-pole node
+ *
+ * Pins 1 and 8 are exposed so external compensation components work in
+ * simulation. A 47 pF cap from p1→p8 (emitter-tail→dominant-pole) is the
+ * standard RAT pedal frequency-compensation configuration.
+ *
+ * POLY() removed for compatibility with eecircuit-engine (no XSPICE):
+ *   - EOS POLY(1) → E element + series offset voltage source (eos_m node)
+ *   - F6  POLY(1) → F element + parallel DC current source
+ * 1G replaced with 1000Meg where needed.
+ *
+ * Internal node rename vs. original 5-port model:
+ *   old port "1"  (IN+)          → p3
+ *   old port "2"  (IN−)          → p2
+ *   old port "99" (V+)           → p7
+ *   old port "50" (V−)           → p4
+ *   old port "28" (OUT)          → p6
+ *   old internal node "4" (emitter tail)  → p1  (now an exposed port)
+ *   old internal node "9" (dominant pole) → p8  (now an exposed port)
+ *   old internal node "8" (V2 clamp)      → cnh (renamed to avoid p8 confusion)
+ */
+export const LM308_SUBCKT = `* LM308 OPERATIONAL AMPLIFIER MACRO-MODEL
+* DIP-8 PINS:    Null- IN- IN+ V-  OUT  V+  Comp/NC
+*                p1    p2  p3  p4   p6  p7   p8
+*
+* p1 (pin 1) = emitter-tail node of input pair
+* p8 (pin 8) = dominant-pole node; connect 47pF cap p1→p8 for compensation
+.SUBCKT LM308    p1 p2 p3 p4 p6 p7 p8
+IOS p2 p3 500P
+R1 p3 3 20MEG
+R2 3 p2 20MEG
+I1 p1 p4 6U
+R3 5 p7 33.33K
+R4 6 p7 33.33K
+Q1 5 p2 p1 QX
+Q2 6 7 p1 QX
+C4 5 6 30P
+I2 p7 p4 2MA
+EOS_vc 7 eos_m 16 49 1
+VEOS_os eos_m p3 500U
+R8 p7 49 40K
+R9 49 p4 40K
+V2 p7 cnh 1.5
+D1 p8 cnh DX
+D2 10 p8 DX
+V3 10 p4 1.5
+EH p7 98 p7 49 1
+G1 98 p8 5 6 115.4U
+R5 98 p8 86.6MEG
+C3 98 p8 30P
+G3 98 15 p8 49 1E-6
+R12 98 15 1MEG
+C5 98 15 30P
+G4 98 16 3 49 1E-8
+L2 98 17 530.5M
+R13 17 16 1K
+F6a p4 p7 V6 1
+IF6b p4 p7 DC 450U
+E1 p7 23 p7 15 1
+R16 24 23 25
+D5 26 24 DX
+V6 26 22 0.65V
+R17 23 25 25
+D6 25 27 DX
+V7 22 27 0.65V
+V5 22 21 0.18V
+D4 21 15 DX
+V4 20 22 0.18V
+D3 15 20 DX
+L3 22 p6 100P
+RL3 22 p6 100K
+.MODEL DX D(IS=1E-15)
+.MODEL QX NPN(BF=5000)
+.ENDS`;
+
 /** BJT .model statements — inline single-line definitions. */
+export const BJT_2N5088 =
+  '.model 2N5088 NPN(IS=5.911f ISE=5.911f NF=1 BF=1122 NE=1.394 BR=1.271 NR=1 IKF=14.92m VAF=62.37 VAR=21.5 RC=1.61 RE=0.15 RB=10 CJE=4.973p CJC=4.017p VJE=0.65 VJC=0.65 MJE=0.4146 MJC=0.3174 TF=821.7p TR=4.673n FC=0.5)';
+
+export const BJT_2N5089 =
+  '.model 2N5089 NPN(IS=5.911f ISE=5.911f NF=1 BF=1434 NE=1.421 BR=1.262 NR=1 IKF=15.4m VAF=62.37 VAR=21.5 RC=1.61 RE=0.15 RB=10 CJE=4.973p CJC=4.017p VJE=0.75 VJC=0.75 MJE=0.4146 MJC=0.3174 TF=822.3p TR=4.671n FC=0.5)';
+
+export const BJT_BC108 =
+  '.model BC108 NPN(IS=1.8f ISE=50f NF=0.9955 NE=1.46 BF=400 BR=35.5 NR=1.005 VAF=80 IKF=0.14 IKR=0.03 NC=1.27 RB=0.56 RE=0.6 RC=0.25 CJE=13p CJC=4p VJE=0.65 VJC=0.54 MJE=0.55 MJC=0.33 TF=640p TR=50.7n FC=0.5)';
+
+export const BJT_BC549 =
+  '.model BC549 NPN(IS=10f ISE=36f NF=1 NE=1.5 BF=420 BR=5 NR=1 VAF=50 IKF=0.1 RB=120 RE=0.5 RC=0.5 CJE=10.85p CJC=4.75p VJE=0.65 VJC=0.65 MJE=0.36 MJC=0.36 TF=410p TR=10n FC=0.5)';
+
+export const BJT_MPSA18 =
+  '.model MPSA18 NPN(IS=20.3f ISE=1.41p NF=1 NE=2 BF=1430 BR=4 NR=1 VAF=120 VAR=26 IKF=0.12 IKR=0.18 RC=0.186 RE=0.465 RB=1.86 CJE=7.87p CJC=5.2p VJE=1.1 VJC=0.3 MJE=0.5 MJC=0.3 TF=353p TR=245n FC=0.5)';
+
 export const BJT_2N3904 =
   '.model 2N3904 NPN(IS=6.734f BF=416.4 NF=1 VAF=74.03 IKF=66.78m ISE=6.734f NE=1.259 BR=.7389 NR=1 VAR=28 IKR=0 ISC=0 NC=2 RB=10 RE=.2267 RC=.4295 CJE=3.638p VJE=.75 MJE=.3085 TF=301.2p XTF=2 VTF=4 ITF=.4 CJC=4.082p VJC=.75 MJC=.2196 XCJC=1 FC=.5 TR=239.5p)';
 
@@ -134,6 +235,12 @@ export const JFET_2N5457 =
 export const JFET_J201 =
   '.model J201 NJF(VTO=-0.7 BETA=1.4m LAMBDA=2.25m RD=1 RS=1 CGS=2.5p CGD=2.5p IS=100f)';
 
+export const JFET_J113 =
+  '.model J113 NJF(VTO=-1.29 BETA=9.26m LAMBDA=30.4m RD=1.3 RS=1.3 CGS=10.5p CGD=12p IS=987f)';
+
+export const JFET_MPF102 =
+  '.model MPF102 NJF(VTO=-3.5 BETA=4m LAMBDA=2m RD=1 RS=1 CGS=4p CGD=3p IS=100f)';
+
 export const JFET_2N5460 =
   '.model 2N5460 PJF(VTO=1.5 BETA=1.25m LAMBDA=6m RD=1 RS=1 CGS=5p CGD=5p IS=50f)';
 
@@ -146,3 +253,6 @@ export const MOSFET_IRF510 =
 
 export const MOSFET_IRF9510 =
   '.model IRF9510 PMOS(VTO=-3.7 KP=2.5 LAMBDA=0 RD=0.7 RS=0.7 CGS=350p CGD=90p CBD=480p IS=1f)';
+
+export const MOSFET_2N7000 =
+  '.model 2N7000 NMOS(VTO=2.1 KP=190m LAMBDA=5m RD=1.5 RS=1.5 CGS=25p CGD=5p CBD=30p IS=1f)';
