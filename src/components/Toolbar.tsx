@@ -169,9 +169,31 @@ const PALETTE: Array<{
     type: 'label',
     defaultData: { label: 'NET1' },
   },
+  {
+    label: 'BOX',
+    tooltip: 'Schematic Box',
+    type: 'box',
+    defaultData: { label: '', color: 'blue', variant: 'outline' },
+  },
 ];
 
 type PaletteItem = (typeof PALETTE)[number];
+
+function nextLabel(defaultLabel: string, nodes: ComponentNode[]): string {
+  const match = defaultLabel.match(/^([A-Za-z]+)(\d+)$/);
+  if (!match) return defaultLabel;
+  const prefix = match[1];
+  const re = new RegExp(`^${prefix}(\\d+)$`, 'i');
+  let max = 0;
+  for (const node of nodes) {
+    const lbl = (node.data as { label?: string }).label;
+    if (typeof lbl === 'string') {
+      const m = lbl.match(re);
+      if (m) max = Math.max(max, parseInt(m[1], 10));
+    }
+  }
+  return `${prefix}${max + 1}`;
+}
 
 const JACK_ITEMS: Array<{
   label: string;
@@ -194,24 +216,29 @@ const JACK_ITEMS: Array<{
 ];
 
 const TRANSISTOR_ITEMS: Array<PaletteItem> = [
-  {
-    label: 'BJT',
-    tooltip: 'BJT Transistor',
-    type: 'bjt',
-    defaultData: { label: 'Q1', polarity: 'NPN', model: '2N3904' },
-  },
-  {
-    label: 'JFET',
-    tooltip: 'JFET Transistor',
-    type: 'jfet',
-    defaultData: { label: 'J1', polarity: 'N', model: '2N5457' },
-  },
-  {
-    label: 'MOSFET',
-    tooltip: 'MOSFET',
-    type: 'mosfet',
-    defaultData: { label: 'M1', polarity: 'N', model: 'BS170' },
-  },
+  // NPN BJTs
+  { label: '2N3904', tooltip: '2N3904 NPN BJT', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: '2N3904' } },
+  { label: '2N5088', tooltip: '2N5088 NPN BJT (high gain)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: '2N5088' } },
+  { label: '2N5089', tooltip: '2N5089 NPN BJT (very high gain)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: '2N5089' } },
+  { label: 'BC108', tooltip: 'BC108 NPN BJT (Fuzz Face Si)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: 'BC108' } },
+  { label: 'BC549', tooltip: 'BC549 NPN BJT (low noise)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: 'BC549' } },
+  { label: 'MPSA18', tooltip: 'MPSA18 NPN BJT (ultra high gain)', type: 'bjt', defaultData: { label: 'Q1', polarity: 'NPN', model: 'MPSA18' } },
+  // PNP BJTs
+  { label: '2N3906', tooltip: '2N3906 PNP BJT', type: 'bjt', defaultData: { label: 'Q1', polarity: 'PNP', model: '2N3906' } },
+  { label: 'AC128', tooltip: 'AC128 PNP Germanium BJT', type: 'bjt', defaultData: { label: 'Q1', polarity: 'PNP', model: 'AC128' } },
+  // N-ch JFETs
+  { label: '2N5457', tooltip: '2N5457 N-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: '2N5457' } },
+  { label: 'J201', tooltip: 'J201 N-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'J201' } },
+  { label: 'J113', tooltip: 'J113 N-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'J113' } },
+  { label: 'MPF102', tooltip: 'MPF102 N-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'MPF102' } },
+  // P-ch JFETs
+  { label: '2N5460', tooltip: '2N5460 P-ch JFET', type: 'jfet', defaultData: { label: 'J1', polarity: 'P', model: '2N5460' } },
+  // N-ch MOSFETs
+  { label: 'BS170', tooltip: 'BS170 N-ch MOSFET', type: 'mosfet', defaultData: { label: 'M1', polarity: 'N', model: 'BS170' } },
+  { label: '2N7000', tooltip: '2N7000 N-ch MOSFET', type: 'mosfet', defaultData: { label: 'M1', polarity: 'N', model: '2N7000' } },
+  { label: 'IRF510', tooltip: 'IRF510 N-ch power MOSFET', type: 'mosfet', defaultData: { label: 'M1', polarity: 'N', model: 'IRF510' } },
+  // P-ch MOSFETs
+  { label: 'IRF9510', tooltip: 'IRF9510 P-ch power MOSFET', type: 'mosfet', defaultData: { label: 'M1', polarity: 'P', model: 'IRF9510' } },
 ];
 
 type ToolbarProps = {
@@ -287,11 +314,15 @@ export function Toolbar({
     item: (typeof PALETTE)[number] | (typeof JACK_ITEMS)[number],
   ) {
     const offset = Math.random() * 100;
+    const defaultLabel = (item.defaultData as { label?: string }).label ?? '';
+    const label = nextLabel(defaultLabel, nodes);
+    const isBox = item.type === 'box';
     addNode({
       id: crypto.randomUUID(),
       type: item.type,
       position: { x: 200 + offset, y: 150 + offset },
-      data: item.defaultData,
+      data: { ...item.defaultData, label },
+      ...(isBox ? { zIndex: -1, style: { width: 200, height: 150 }, dragHandle: '.box-drag-handle', className: 'box-node-wrapper' } : {}),
     } as ComponentNode);
   }
 
