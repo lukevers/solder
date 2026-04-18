@@ -85,6 +85,8 @@ function FlyoutButton({
               left: pos.left,
               zIndex: 9999,
               transform: 'translateX(-50%)',
+              maxHeight: `calc(100vh - ${pos.top}px - 16px)`,
+              overflowY: 'auto',
             }}
             className="flex flex-col gap-1"
           >
