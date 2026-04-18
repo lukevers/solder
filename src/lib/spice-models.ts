@@ -232,6 +232,9 @@ export const BJT_AC128 =
 export const JFET_2N5457 =
   '.model 2N5457 NJF(VTO=-1.8 BETA=1.813m LAMBDA=5.548m RD=1 RS=1 CGS=4.208p CGD=4.208p IS=205.8f)';
 
+export const JFET_2N5458 =
+  '.model 2N5458 NJF(VTO=-3.5 BETA=2.235m LAMBDA=5.548m RD=1 RS=1 CGS=4.5p CGD=4.5p IS=205.8f)';
+
 export const JFET_J201 =
   '.model J201 NJF(VTO=-0.7 BETA=1.4m LAMBDA=2.25m RD=1 RS=1 CGS=2.5p CGD=2.5p IS=100f)';
 

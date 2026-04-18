@@ -353,6 +353,7 @@ function BJTInspector({
 
 const JFET_MODEL_POLARITY: Record<JFETModel, 'N' | 'P'> = {
   '2N5457': 'N',
+  '2N5458': 'N',
   J201: 'N',
   J113: 'N',
   MPF102: 'N',
@@ -392,6 +393,7 @@ function JFETInspector({
           }}
         >
           <option value="2N5457">2N5457 (N-ch)</option>
+          <option value="2N5458">2N5458 (N-ch)</option>
           <option value="J201">J201 (N-ch)</option>
           <option value="J113">J113 (N-ch)</option>
           <option value="MPF102">MPF102 (N-ch)</option>

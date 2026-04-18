@@ -50,7 +50,7 @@ export type BJTData = {
   model: BJTModel;
   symbol?: string;
 };
-export type JFETModel = '2N5457' | 'J201' | 'J113' | 'MPF102' | '2N5460';
+export type JFETModel = '2N5457' | '2N5458' | 'J201' | 'J113' | 'MPF102' | '2N5460';
 export type JFETData = {
   label: string;
   polarity: 'N' | 'P';

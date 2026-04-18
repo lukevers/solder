@@ -10,6 +10,7 @@ import {
   BJT_BC549,
   BJT_MPSA18,
   JFET_2N5457,
+  JFET_2N5458,
   JFET_2N5460,
   JFET_J113,
   JFET_J201,
@@ -321,6 +322,7 @@ function buildCircuitBody(
     nodes.filter((n) => n.type === 'jfet').map((n) => n.data.model),
   );
   if (usedJFETModels.has('2N5457')) lines.push(JFET_2N5457);
+  if (usedJFETModels.has('2N5458')) lines.push(JFET_2N5458);
   if (usedJFETModels.has('J201')) lines.push(JFET_J201);
   if (usedJFETModels.has('J113')) lines.push(JFET_J113);
   if (usedJFETModels.has('MPF102')) lines.push(JFET_MPF102);

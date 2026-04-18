@@ -344,6 +344,7 @@ const TRANSISTOR_GROUPS: Array<TransistorGroup> = [
     group: 'JFET',
     items: [
       { label: '2N5457', tooltip: '2N5457 N-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: '2N5457' } },
+      { label: '2N5458', tooltip: '2N5458 N-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: '2N5458' } },
       { label: 'J201', tooltip: 'J201 N-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'J201' } },
       { label: 'J113', tooltip: 'J113 N-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'J113' } },
       { label: 'MPF102', tooltip: 'MPF102 N-ch', type: 'jfet', defaultData: { label: 'J1', polarity: 'N', model: 'MPF102' } },
