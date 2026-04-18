@@ -395,6 +395,7 @@ export function Toolbar({
     activeTabId,
     nodes,
     edges,
+    viewport,
     addTab,
     closeTab,
     switchTab,
@@ -412,6 +413,7 @@ export function Toolbar({
       activeTabId: s.activeTabId,
       nodes: s.nodes,
       edges: s.edges,
+      viewport: s.viewport,
       addTab: s.addTab,
       closeTab: s.closeTab,
       switchTab: s.switchTab,
@@ -434,14 +436,20 @@ export function Toolbar({
   function handleAdd(
     item: (typeof PALETTE)[number] | (typeof JACK_ITEMS)[number],
   ) {
-    const offset = Math.random() * 100;
+    const offset = (Math.random() - 0.5) * 40;
     const defaultLabel = (item.defaultData as { label?: string }).label ?? '';
     const label = nextLabel(defaultLabel, nodes);
     const isBox = item.type === 'box';
+    // Convert screen center to flow coordinates using the stored viewport transform
+    const cx = (window.innerWidth / 2 - viewport.x) / viewport.zoom + offset;
+    const cy = (window.innerHeight / 2 - viewport.y) / viewport.zoom + offset;
+    // Snap to 10px grid
+    const x = Math.round(cx / 10) * 10;
+    const y = Math.round(cy / 10) * 10;
     addNode({
       id: crypto.randomUUID(),
       type: item.type,
-      position: { x: 200 + offset, y: 150 + offset },
+      position: { x, y },
       data: { ...item.defaultData, label },
       ...(isBox ? { zIndex: -1, style: { width: 200, height: 150 }, dragHandle: '.box-drag-handle', className: 'box-node-wrapper' } : {}),
     } as ComponentNode);

@@ -170,6 +170,10 @@ type StoreState = {
   /** Incremented on tab switch, close, or loadCircuit to trigger fitView */
   viewResetKey: number;
 
+  /** Current ReactFlow viewport — updated by SchematicCanvas onMove. Not persisted. */
+  viewport: { x: number; y: number; zoom: number };
+  setViewport: (vp: { x: number; y: number; zoom: number }) => void;
+
   // circuit slice
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
@@ -237,6 +241,8 @@ const initialState = {
   tabs: [firstTab] as Array<Tab>,
   activeTabId: firstTab.id,
   viewResetKey: 0,
+
+  viewport: { x: 0, y: 0, zoom: 1 },
 
   // circuit slice (seeded from first tab)
   nodes: firstTab.nodes,
@@ -541,6 +547,8 @@ export const useStore = create<StoreState>()(
           sweepPlayingIndex: null,
         }),
       setSweepPlayingIndex: (sweepPlayingIndex) => set({ sweepPlayingIndex }),
+
+      setViewport: (viewport) => set({ viewport }),
 
       // audio
       setAudioSource: (audioSource) => set({ audioSource }),

@@ -59,6 +59,7 @@ function SchematicCanvasInner() {
     selectNode,
     selectEdge,
     pushHistory,
+    setViewport,
   } = useStore(
     useShallow((s) => ({
       nodes: s.nodes,
@@ -68,6 +69,7 @@ function SchematicCanvasInner() {
       selectNode: s.selectNode,
       selectEdge: s.selectEdge,
       pushHistory: s.pushHistory,
+      setViewport: s.setViewport,
     })),
   );
 
@@ -295,7 +297,11 @@ function SchematicCanvasInner() {
     <div className="flex-1 bg-gray-950">
       <ReactFlow
         connectionMode={ConnectionMode.Loose}
-        nodes={nodes}
+        nodes={nodes.map((n) =>
+          n.type === 'box'
+            ? { ...n, className: 'box-node-wrapper', dragHandle: '.box-drag-handle' }
+            : n,
+        )}
         edges={signalEdges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
@@ -314,6 +320,7 @@ function SchematicCanvasInner() {
         proOptions={{ hideAttribution: true }}
         snapToGrid
         snapGrid={[10, 10]}
+        onMove={(_evt, vp) => setViewport(vp)}
         fitView
       >
         <Background
