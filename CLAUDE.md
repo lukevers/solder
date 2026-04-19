@@ -100,3 +100,35 @@ The first letter of an element name determines its type (D=diode, R=resistor, C=
 
 ### Adding new op-amp subcircuit models
 Before adding a new `.SUBCKT` to `spice-models.ts`, scan it for `POLY(` and replace as described above. The TL072 and LM741 in the file are already converted and serve as reference.
+
+## XYFlow handle conventions
+
+### Bidirectional handles
+All passive components (resistor, capacitor, cap_polar, diode, pot) plus ground, power, and input jacks expose **both** a `type="source"` and `type="target"` handle at each pin position. XYFlow identifies handles by the tuple `(nodeId, handleId, handleType)`, so two handles with the same `id` but different `type` coexist. The primary handle is visible; the complementary one is hidden (`opacity: 0`). This allows edges to reference any handle as either `sourceHandle` or `targetHandle` regardless of signal direction — important because current flows both ways through passive components.
+
+### Handle IDs by component
+| Component | Handles (id) | Primary type |
+|-----------|-------------|-------------|
+| Resistor | `a` (left), `b` (right) | a=target, b=source |
+| Capacitor | `a` (left), `b` (right) | a=target, b=source |
+| Cap polar | `pos` (left), `neg` (right) | pos=target, neg=source |
+| Diode | `a` (left), `k` (right) | a=target, k=source |
+| Pot | `ccw` (left), `cw` (right), `wiper` (bottom) | ccw=target, cw/wiper=source |
+| OpAmp | `in_pos`, `in_neg`, `vcc`, `gnd` (targets); `out` (source) | — |
+| Junction | `st/sr/sb/sl` (sources), `tt/tr/tb/tl` (targets) | per-side pairs |
+| Jack (in) | `pos`, `neg` (right) | source (+ hidden target) |
+| Jack (out) | `pos`, `neg` (left) | target |
+| Ground | `gnd` (top) | source (+ hidden target) |
+| Power | `pos` (bottom) | source (+ hidden target) |
+
+### `measured` dimensions on load
+`loadCircuit` in the store injects `measured: { width, height }` on every node using `ensureMeasured()`. This gives XYFlow node dimensions before DOM measurement, so edge handle positions are correct on the first render. Without this, edges appear "floating" (disconnected from handles) until XYFlow's ResizeObserver fires. Component dimensions are looked up from `src/lib/symbols.ts`; rotation (90/270) swaps width and height.
+
+## Writing example circuits
+
+Example circuits live in `src/lib/examples/` as JSON and are registered in `index.ts`. Key rules:
+
+- **Edge direction must match handle types.** An edge's `sourceHandle` must exist as a `type="source"` handle on the source node, and `targetHandle` as `type="target"` on the target node. Mismatches produce React Flow error #008 and visually broken edges. With bidirectional handles this is usually fine, but junction handles are strictly directional (`s*` = source only, `t*` = target only).
+- **`measured` is injected automatically** by `loadCircuit` → `ensureMeasured()`. You do NOT need to include `measured` in example JSON files.
+- **Positions should align with op-amp handle offsets.** For the TL072 triangle (80×80), `in_pos` (+) is upper-left (~y+20) and `in_neg` (−) is lower-left (~y+60). Place the inverting-input junction ~50px below the op-amp origin to visually align with `−`. See the gain-stage example as reference.
+- **Bias networks for single-supply op-amps** need VCC → R → junction → R → GND voltage divider, bypass cap to ground, and junction → `in_pos`. Position the bias junction nearly above the op-amp so the wire drops vertically.
