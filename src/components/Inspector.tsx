@@ -1002,7 +1002,7 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
         <Trash2 size={11} />
         Delete
       </button>
-      <div className="mt-2 text-[10px] text-gray-600 font-mono flex justify-between">
+      <div className="mt-2 text-[10px] text-gray-600 font-mono flex flex-col items-center">
         <span>
           X: {Math.round(selected.position.x)}, Y:{' '}
           {Math.round(selected.position.y)}
@@ -1012,7 +1012,7 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
           title="Click to copy"
           onClick={() => navigator.clipboard.writeText(selected.id)}
         >
-          ID: {selected.id}
+          {selected.id}
         </span>
       </div>
     </div>
