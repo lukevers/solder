@@ -9,8 +9,13 @@ export function GroundNode({ id, selected }: NodeProps) {
         type="source"
         position={Position.Top}
         id="gnd"
-        isConnectableEnd={true}
         style={HANDLE_STYLE}
+      />
+      <RotatedHandle
+        type="target"
+        position={Position.Top}
+        id="gnd"
+        style={{ ...HANDLE_STYLE, opacity: 0 }}
       />
       <NodeSvg width={40} height={36}>
         <line

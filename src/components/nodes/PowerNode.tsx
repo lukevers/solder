@@ -51,6 +51,12 @@ export function PowerNode({ id, data, selected }: NodeProps) {
         id="pos"
         style={HANDLE_STYLE}
       />
+      <RotatedHandle
+        type="target"
+        position={Position.Bottom}
+        id="pos"
+        style={{ ...HANDLE_STYLE, opacity: 0 }}
+      />
     </NodeShell>
   );
 }

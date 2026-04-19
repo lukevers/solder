@@ -535,13 +535,6 @@
     },
     {
       "source": "37645ab0-1753-444c-b801-2ee3ca5a2007",
-      "sourceHandle": "tr",
-      "target": "gs-u1",
-      "targetHandle": "in_neg",
-      "id": "xy-edge__37645ab0-1753-444c-b801-2ee3ca5a2007tr-gs-u1in_neg"
-    },
-    {
-      "source": "37645ab0-1753-444c-b801-2ee3ca5a2007",
       "sourceHandle": "sr",
       "target": "gs-u1",
       "targetHandle": "in_neg",

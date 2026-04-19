@@ -15,6 +15,7 @@ import {
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
+  useUpdateNodeInternals,
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -27,16 +28,22 @@ import { nodeTypes } from './nodes';
 /** Triggers fitView when tabs switch, close, or a circuit/example is loaded */
 function FitViewOnChange() {
   const { fitView } = useReactFlow();
+  const updateNodeInternals = useUpdateNodeInternals();
   const viewResetKey = useStore((s) => s.viewResetKey);
 
   useEffect(() => {
-    // Reference key so the linter sees it as used; the real purpose is
-    // to re-trigger this effect whenever the key increments.
     void viewResetKey;
-    // Delay so React Flow can process the new nodes before we fit
-    const id = setTimeout(() => fitView({ padding: 0.15 }), 50);
+    // Delay so React Flow can render and measure nodes in the DOM,
+    // then force handle position recalculation and fit the viewport.
+    const id = setTimeout(() => {
+      const nodeIds = useStore.getState().nodes.map((n) => n.id);
+      if (nodeIds.length > 0) {
+        updateNodeInternals(nodeIds);
+      }
+      fitView({ padding: 0.15 });
+    }, 50);
     return () => clearTimeout(id);
-  }, [viewResetKey, fitView]);
+  }, [viewResetKey, fitView, updateNodeInternals]);
 
   return null;
 }

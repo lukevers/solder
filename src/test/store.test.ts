@@ -499,7 +499,10 @@ describe('loadCircuit', () => {
       },
     ];
     useStore.getState().loadCircuit(newNodes, []);
-    expect(useStore.getState().nodes).toEqual(newNodes);
+    // loadCircuit injects `measured` dimensions for XYFlow handle resolution
+    expect(useStore.getState().nodes).toEqual(
+      newNodes.map((n) => ({ ...n, measured: expect.any(Object) })),
+    );
     expect(useStore.getState().edges).toEqual([]);
     expect(useStore.getState().outputBuffer).toBeNull();
     expect(useStore.getState().past).toEqual([]);

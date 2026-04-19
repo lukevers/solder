@@ -2,100 +2,204 @@
   "version": 1,
   "id": "hardclipping",
   "name": "Hard Clipping",
-  "description": "Anti-parallel silicon diodes (1N914) shunt signal to ground after a series resistor. Silicon diodes clip sharply at ~0.7V, producing an aggressive, squared-off waveform.",
+  "description": "Op-amp gain stage driving 1N914 silicon diodes shunting to ground. The amplified signal slams into the diodes and gets clamped at ±0.7V — producing flat-topped, aggressive distortion like a RAT or DS-1.",
   "tags": ["clipping", "distortion"],
   "category": "circuits",
   "nodes": [
     {
       "id": "hc-in",
       "type": "jack",
-      "position": { "x": 40, "y": 200 },
+      "position": { "x": 40, "y": 400 },
       "data": { "label": "INPUT", "direction": "in" }
     },
     {
       "id": "hc-gnd-in",
       "type": "ground",
-      "position": { "x": 160, "y": 440 },
+      "position": { "x": 100, "y": 540 },
       "data": { "label": "GND" }
     },
     {
       "id": "hc-c1",
       "type": "capacitor",
-      "position": { "x": 180, "y": 200 },
+      "position": { "x": 200, "y": 400 },
       "data": { "label": "C1", "farads": 1e-7 }
     },
     {
-      "id": "hc-r1",
+      "id": "hc-rin",
       "type": "resistor",
-      "position": { "x": 280, "y": 200 },
+      "position": { "x": 340, "y": 400 },
       "data": { "label": "R1", "ohms": 10000 }
     },
     {
-      "id": "hc-jct",
+      "id": "hc-jct-inv",
       "type": "junction",
-      "position": { "x": 410, "y": 210 },
+      "position": { "x": 560, "y": 410 },
       "data": { "label": "J1" }
+    },
+    {
+      "id": "hc-u1",
+      "type": "opamp",
+      "position": { "x": 650, "y": 360 },
+      "data": { "label": "U1", "model": "TL072" }
+    },
+    {
+      "id": "hc-jct-out",
+      "type": "junction",
+      "position": { "x": 830, "y": 400 },
+      "data": { "label": "J2" }
+    },
+    {
+      "id": "hc-c2",
+      "type": "capacitor",
+      "position": { "x": 910, "y": 400 },
+      "data": { "label": "C2", "farads": 1e-7 }
+    },
+    {
+      "id": "hc-rclip",
+      "type": "resistor",
+      "position": { "x": 1030, "y": 400 },
+      "data": { "label": "R3", "ohms": 10000 }
+    },
+    {
+      "id": "hc-jct-clip",
+      "type": "junction",
+      "position": { "x": 1150, "y": 410 },
+      "data": { "label": "J6" }
     },
     {
       "id": "hc-d1",
       "type": "diode",
-      "position": { "x": 360, "y": 310 },
+      "position": { "x": 1100, "y": 480 },
       "rotation": 90,
       "data": { "label": "D1", "model": "1N914" }
     },
     {
       "id": "hc-d2",
       "type": "diode",
-      "position": { "x": 440, "y": 310 },
+      "position": { "x": 1180, "y": 480 },
       "rotation": 270,
       "data": { "label": "D2", "model": "1N914" }
     },
     {
       "id": "hc-gnd-clip",
       "type": "ground",
-      "position": { "x": 400, "y": 440 },
+      "position": { "x": 1140, "y": 580 },
       "data": { "label": "GND" }
     },
     {
       "id": "hc-out",
       "type": "jack",
-      "position": { "x": 570, "y": 200 },
+      "position": { "x": 1290, "y": 400 },
       "data": { "label": "OUTPUT", "direction": "out" }
     },
     {
       "id": "hc-gnd-out",
       "type": "ground",
-      "position": { "x": 500, "y": 440 },
+      "position": { "x": 1210, "y": 540 },
       "data": { "label": "GND" }
+    },
+    {
+      "id": "hc-vcc-u",
+      "type": "power",
+      "position": { "x": 670, "y": 250 },
+      "data": { "label": "VCC", "volts": 9 }
+    },
+    {
+      "id": "hc-gnd-u",
+      "type": "ground",
+      "position": { "x": 670, "y": 530 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "hc-vcc",
+      "type": "power",
+      "position": { "x": 650, "y": -40 },
+      "data": { "label": "VCC", "volts": 9 }
+    },
+    {
+      "id": "hc-rb1",
+      "type": "resistor",
+      "position": { "x": 650, "y": 20 },
+      "rotation": 90,
+      "data": { "label": "RB1", "ohms": 100000 }
+    },
+    {
+      "id": "hc-jct-bias",
+      "type": "junction",
+      "position": { "x": 660, "y": 160 },
+      "data": { "label": "J3" }
+    },
+    {
+      "id": "hc-rb2",
+      "type": "resistor",
+      "position": { "x": 730, "y": 150 },
+      "data": { "label": "RB2", "ohms": 100000 }
+    },
+    {
+      "id": "hc-gnd-bias",
+      "type": "ground",
+      "position": { "x": 870, "y": 230 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "hc-cb",
+      "type": "cap_polar",
+      "position": { "x": 580, "y": 190 },
+      "rotation": 90,
+      "data": { "label": "CB", "farads": 1e-5 }
+    },
+    {
+      "id": "hc-gnd-cb",
+      "type": "ground",
+      "position": { "x": 580, "y": 300 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "hc-jct-fb-in",
+      "type": "junction",
+      "position": { "x": 560, "y": 100 },
+      "data": { "label": "J4" }
+    },
+    {
+      "id": "hc-rfb",
+      "type": "resistor",
+      "position": { "x": 670, "y": 90 },
+      "data": { "label": "R2", "ohms": 100000 }
+    },
+    {
+      "id": "hc-jct-fb-out",
+      "type": "junction",
+      "position": { "x": 830, "y": 100 },
+      "data": { "label": "J5" }
     },
     {
       "id": "hc-note-1",
       "type": "stickynote",
-      "position": { "x": 40, "y": 100 },
+      "position": { "x": 40, "y": 280 },
       "data": {
         "label": "What does this do?",
-        "text": "Hard clipping chops the signal peaks flat, creating aggressive, buzzy distortion. This is the sound behind many distortion pedals.",
+        "text": "Hard clipping chops the signal peaks flat, creating aggressive, buzzy distortion. The op-amp amplifies the signal, then shunt diodes brutally clamp it at ±0.7V.",
         "color": "blue"
       }
     },
     {
       "id": "hc-note-2",
       "type": "stickynote",
-      "position": { "x": 270, "y": 100 },
+      "position": { "x": 1070, "y": 620 },
       "data": {
-        "label": "Why silicon?",
-        "text": "Silicon diodes (1N914) clip at ~0.7V — higher than germanium. The signal stays clean longer, then clips abruptly and harshly.",
+        "label": "Shunt diodes",
+        "text": "D1 and D2 connect from the signal path directly to ground. When the amplified signal exceeds ~0.7V, the diodes conduct and dump the excess to ground — creating a hard, flat-topped cutoff.",
         "color": "green"
       }
     },
     {
       "id": "hc-note-3",
       "type": "stickynote",
-      "position": { "x": 500, "y": 100 },
+      "position": { "x": 950, "y": 280 },
       "data": {
-        "label": "Soft vs Hard",
-        "text": "Compare this to the Soft Clipping example — same circuit, different diodes! Germanium = warm, silicon = aggressive.",
-        "color": "purple"
+        "label": "Same diodes, different result",
+        "text": "Compare this to the Soft Clipping example — both use 1N914 silicon diodes! But here they shunt to ground (hard), not in the feedback loop (soft). Topology matters more than the diode type.",
+        "color": "yellow"
       }
     }
   ],
@@ -118,53 +222,179 @@
       "id": "hc-e3",
       "source": "hc-c1",
       "sourceHandle": "b",
-      "target": "hc-r1",
+      "target": "hc-rin",
       "targetHandle": "a"
     },
     {
       "id": "hc-e4",
-      "source": "hc-r1",
+      "source": "hc-rin",
       "sourceHandle": "b",
-      "target": "hc-jct",
+      "target": "hc-jct-inv",
       "targetHandle": "tl"
     },
     {
       "id": "hc-e5",
-      "source": "hc-jct",
+      "source": "hc-jct-inv",
+      "sourceHandle": "sr",
+      "target": "hc-u1",
+      "targetHandle": "in_neg"
+    },
+    {
+      "id": "hc-e6",
+      "source": "hc-vcc",
+      "sourceHandle": "pos",
+      "target": "hc-rb1",
+      "targetHandle": "a"
+    },
+    {
+      "id": "hc-e7",
+      "source": "hc-rb1",
+      "sourceHandle": "b",
+      "target": "hc-jct-bias",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "hc-e8",
+      "source": "hc-jct-bias",
+      "sourceHandle": "sr",
+      "target": "hc-rb2",
+      "targetHandle": "a"
+    },
+    {
+      "id": "hc-e9",
+      "source": "hc-rb2",
+      "sourceHandle": "b",
+      "target": "hc-gnd-bias",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "hc-e10",
+      "source": "hc-jct-bias",
+      "sourceHandle": "sl",
+      "target": "hc-cb",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "hc-e11",
+      "source": "hc-cb",
+      "sourceHandle": "neg",
+      "target": "hc-gnd-cb",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "hc-e12",
+      "source": "hc-jct-bias",
+      "sourceHandle": "sb",
+      "target": "hc-u1",
+      "targetHandle": "in_pos"
+    },
+    {
+      "id": "hc-e13",
+      "source": "hc-vcc-u",
+      "sourceHandle": "pos",
+      "target": "hc-u1",
+      "targetHandle": "vcc"
+    },
+    {
+      "id": "hc-e14",
+      "source": "hc-gnd-u",
+      "sourceHandle": "gnd",
+      "target": "hc-u1",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "hc-e15",
+      "source": "hc-u1",
+      "sourceHandle": "out",
+      "target": "hc-jct-out",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "hc-e16",
+      "source": "hc-jct-out",
+      "sourceHandle": "st",
+      "target": "hc-jct-fb-out",
+      "targetHandle": "tb"
+    },
+    {
+      "id": "hc-e17",
+      "source": "hc-jct-fb-out",
+      "sourceHandle": "sl",
+      "target": "hc-rfb",
+      "targetHandle": "b"
+    },
+    {
+      "id": "hc-e18",
+      "source": "hc-rfb",
+      "sourceHandle": "a",
+      "target": "hc-jct-fb-in",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "hc-e19",
+      "source": "hc-jct-fb-in",
+      "sourceHandle": "sb",
+      "target": "hc-jct-inv",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "hc-e20",
+      "source": "hc-jct-out",
+      "sourceHandle": "sr",
+      "target": "hc-c2",
+      "targetHandle": "a"
+    },
+    {
+      "id": "hc-e21",
+      "source": "hc-c2",
+      "sourceHandle": "b",
+      "target": "hc-rclip",
+      "targetHandle": "a"
+    },
+    {
+      "id": "hc-e22",
+      "source": "hc-rclip",
+      "sourceHandle": "b",
+      "target": "hc-jct-clip",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "hc-e23",
+      "source": "hc-jct-clip",
       "sourceHandle": "sb",
       "target": "hc-d1",
       "targetHandle": "a"
     },
     {
-      "id": "hc-e6",
+      "id": "hc-e24",
       "source": "hc-d1",
       "sourceHandle": "k",
       "target": "hc-gnd-clip",
       "targetHandle": "gnd"
     },
     {
-      "id": "hc-e7",
+      "id": "hc-e25",
       "source": "hc-gnd-clip",
       "sourceHandle": "gnd",
       "target": "hc-d2",
       "targetHandle": "a"
     },
     {
-      "id": "hc-e8",
+      "id": "hc-e26",
       "source": "hc-d2",
       "sourceHandle": "k",
-      "target": "hc-jct",
+      "target": "hc-jct-clip",
       "targetHandle": "sb"
     },
     {
-      "id": "hc-e9",
-      "source": "hc-jct",
+      "id": "hc-e27",
+      "source": "hc-jct-clip",
       "sourceHandle": "sr",
       "target": "hc-out",
       "targetHandle": "pos"
     },
     {
-      "id": "hc-e10",
+      "id": "hc-e28",
       "source": "hc-gnd-out",
       "sourceHandle": "gnd",
       "target": "hc-out",

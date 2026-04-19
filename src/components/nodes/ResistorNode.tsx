@@ -21,6 +21,12 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
         id="a"
         style={HANDLE_STYLE}
       />
+      <RotatedHandle
+        type="source"
+        position={Position.Left}
+        id="a"
+        style={{ ...HANDLE_STYLE, opacity: 0 }}
+      />
       <NodeSvg width={80} height={40}>
         <line
           x1="0"
@@ -70,6 +76,12 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
         position={Position.Right}
         id="b"
         style={HANDLE_STYLE}
+      />
+      <RotatedHandle
+        type="target"
+        position={Position.Right}
+        id="b"
+        style={{ ...HANDLE_STYLE, opacity: 0 }}
       />
     </NodeShell>
   );

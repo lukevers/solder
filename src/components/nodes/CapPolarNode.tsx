@@ -25,6 +25,12 @@ export function CapPolarNode({ id, data, selected }: NodeProps) {
         id="pos"
         style={HANDLE_STYLE}
       />
+      <RotatedHandle
+        type="source"
+        position={Position.Left}
+        id="pos"
+        style={{ ...HANDLE_STYLE, opacity: 0 }}
+      />
       <NodeSvg width={60} height={40}>
         {/* Left wire */}
         <line x1="0" y1="20" x2="22" y2="20" stroke={wire} strokeWidth="1.5" />
@@ -78,6 +84,12 @@ export function CapPolarNode({ id, data, selected }: NodeProps) {
         position={Position.Right}
         id="neg"
         style={HANDLE_STYLE}
+      />
+      <RotatedHandle
+        type="target"
+        position={Position.Right}
+        id="neg"
+        style={{ ...HANDLE_STYLE, opacity: 0 }}
       />
     </NodeShell>
   );

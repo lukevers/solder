@@ -66,10 +66,22 @@ export function JackNode({ id, data, selected }: NodeProps) {
             style={{ top: 20, background: '#3b82f6' }}
           />
           <RotatedHandle
+            type="target"
+            position={Position.Right}
+            id="pos"
+            style={{ top: 20, opacity: 0 }}
+          />
+          <RotatedHandle
             type="source"
             position={Position.Right}
             id="neg"
             style={{ top: 44, background: '#4b5563' }}
+          />
+          <RotatedHandle
+            type="target"
+            position={Position.Right}
+            id="neg"
+            style={{ top: 44, opacity: 0 }}
           />
         </>
       ) : (

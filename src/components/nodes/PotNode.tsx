@@ -23,6 +23,12 @@ export function PotNode({ id, data, selected }: NodeProps) {
         id="ccw"
         style={{ top: 20, background: '#4b5563' }}
       />
+      <RotatedHandle
+        type="source"
+        position={Position.Left}
+        id="ccw"
+        style={{ top: 20, background: '#4b5563', opacity: 0 }}
+      />
       {/* CW end — right at y=20 */}
       <RotatedHandle
         type="source"
@@ -30,12 +36,24 @@ export function PotNode({ id, data, selected }: NodeProps) {
         id="cw"
         style={{ top: 20, background: '#4b5563' }}
       />
+      <RotatedHandle
+        type="target"
+        position={Position.Right}
+        id="cw"
+        style={{ top: 20, background: '#4b5563', opacity: 0 }}
+      />
       {/* Wiper tap — bottom center (x=40, y=60, both multiples of 20) */}
       <RotatedHandle
         type="source"
         position={Position.Bottom}
         id="wiper"
         style={{ left: '50%', background: '#a78bfa' }}
+      />
+      <RotatedHandle
+        type="target"
+        position={Position.Bottom}
+        id="wiper"
+        style={{ left: '50%', background: '#a78bfa', opacity: 0 }}
       />
 
       <NodeSvg width={80} height={60}>

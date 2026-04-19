@@ -3,6 +3,7 @@
 import type { Edge } from '@xyflow/react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { DEFAULT_SYMBOL, resolveOpAmpSymbol, SYMBOLS } from '../lib/symbols';
 import type { AudioSource, ComponentNode, SweepResult } from '../lib/types';
 
 type SimulationStatus = 'idle' | 'running' | 'error';
@@ -10,6 +11,99 @@ type SimulationStatus = 'idle' | 'running' | 'error';
 type Snapshot = { nodes: Array<ComponentNode>; edges: Array<Edge> };
 
 const MAX_HISTORY = 50;
+
+/**
+ * Inject `measured` dimensions onto nodes that lack them so XYFlow can
+ * resolve handle positions on the first render (before DOM measurement).
+ */
+function ensureMeasured(nodes: Array<ComponentNode>): Array<ComponentNode> {
+  return nodes.map((n) => {
+    if (n.measured?.width && n.measured?.height) return n;
+
+    let w: number | undefined;
+    let h: number | undefined;
+    const model = (n.data as { model?: string }).model;
+
+    switch (n.type) {
+      case 'opamp': {
+        const sym = resolveOpAmpSymbol(model ?? 'TL072');
+        w = sym.width;
+        h = sym.height;
+        break;
+      }
+      case 'diode': {
+        const symId =
+          (model && DEFAULT_SYMBOL.diode[model]) ??
+          Object.values(DEFAULT_SYMBOL.diode)[0];
+        const sym = SYMBOLS[symId];
+        if (sym) {
+          w = sym.width;
+          h = sym.height;
+        }
+        break;
+      }
+      case 'resistor': {
+        w = 80;
+        h = 40;
+        break;
+      }
+      case 'capacitor': {
+        w = 60;
+        h = 40;
+        break;
+      }
+      case 'cap_polar': {
+        w = 60;
+        h = 40;
+        break;
+      }
+      case 'pot': {
+        w = 80;
+        h = 60;
+        break;
+      }
+      case 'junction': {
+        w = 20;
+        h = 20;
+        break;
+      }
+      case 'jack': {
+        w = 80;
+        h = 60;
+        break;
+      }
+      case 'ground': {
+        w = 40;
+        h = 36;
+        break;
+      }
+      case 'power': {
+        w = 40;
+        h = 40;
+        break;
+      }
+      case 'bjt':
+      case 'jfet':
+      case 'mosfet': {
+        w = 60;
+        h = 60;
+        break;
+      }
+    }
+
+    if (!w || !h) return n;
+
+    const rot = n.rotation ?? 0;
+    const is90or270 = rot === 90 || rot === 270;
+    return {
+      ...n,
+      measured: {
+        width: is90or270 ? h : w,
+        height: is90or270 ? w : h,
+      },
+    };
+  });
+}
 
 export type Tab = {
   id: string;
@@ -450,11 +544,12 @@ export const useStore = create<StoreState>()(
         })),
       loadCircuit: (nodes, edges) =>
         set((s) => {
+          const measured = ensureMeasured(nodes);
           const updatedTabs = s.tabs.map((t) =>
             t.id === s.activeTabId
               ? {
                   ...t,
-                  nodes,
+                  nodes: measured,
                   edges,
                   selectedNodeId: null,
                   past: [],
@@ -463,7 +558,7 @@ export const useStore = create<StoreState>()(
               : t,
           );
           return {
-            nodes,
+            nodes: measured,
             edges,
             selectedNodeId: null,
             past: [],
