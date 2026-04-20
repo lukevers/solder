@@ -28,14 +28,14 @@ export function MOSFETNode({ id, data, selected }: NodeProps) {
         type="source"
         position={Position.Right}
         id="d"
-        style={{ top: 15, background: '#4b5563' }}
+        style={{ top: 10, background: '#4b5563' }}
       />
       {/* Source — right bottom */}
       <RotatedHandle
         type="source"
         position={Position.Right}
         id="s"
-        style={{ top: 45, background: '#4b5563' }}
+        style={{ top: 50, background: '#4b5563' }}
       />
 
       <NodeSvg width={60} height={60}>
@@ -87,7 +87,7 @@ export function MOSFETNode({ id, data, selected }: NodeProps) {
           x1="20"
           y1="15"
           x2="60"
-          y2="15"
+          y2="10"
           stroke={stroke}
           strokeWidth="1.5"
         />
@@ -96,7 +96,7 @@ export function MOSFETNode({ id, data, selected }: NodeProps) {
           x1="20"
           y1="45"
           x2="60"
-          y2="45"
+          y2="50"
           stroke={stroke}
           strokeWidth="1.5"
         />
@@ -113,7 +113,7 @@ export function MOSFETNode({ id, data, selected }: NodeProps) {
           x1="32"
           y1="30"
           x2="32"
-          y2="45"
+          y2="50"
           stroke={stroke}
           strokeWidth="1.5"
         />

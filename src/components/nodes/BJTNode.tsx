@@ -28,14 +28,14 @@ export function BJTNode({ id, data, selected }: NodeProps) {
         type="source"
         position={Position.Right}
         id="c"
-        style={{ top: 15, background: '#4b5563' }}
+        style={{ top: 10, background: '#4b5563' }}
       />
       {/* Emitter — right bottom */}
       <RotatedHandle
         type="source"
         position={Position.Right}
         id="e"
-        style={{ top: 45, background: '#4b5563' }}
+        style={{ top: 50, background: '#4b5563' }}
       />
 
       <NodeSvg width={60} height={60}>
@@ -62,7 +62,7 @@ export function BJTNode({ id, data, selected }: NodeProps) {
           x1="22"
           y1="19"
           x2="60"
-          y2="15"
+          y2="10"
           stroke={stroke}
           strokeWidth="1.5"
         />
@@ -71,7 +71,7 @@ export function BJTNode({ id, data, selected }: NodeProps) {
           x1="22"
           y1="41"
           x2="60"
-          y2="45"
+          y2="50"
           stroke={stroke}
           strokeWidth="1.5"
         />
@@ -81,7 +81,7 @@ export function BJTNode({ id, data, selected }: NodeProps) {
           <polygon points="29,37 22,41 29,45" fill={stroke} />
         ) : (
           /* NPN: arrow on emitter pointing away from base */
-          <polygon points="53,40 60,45 53,49" fill={stroke} />
+          <polygon points="53,45 60,50 53,54" fill={stroke} />
         )}
 
         {/* Label */}

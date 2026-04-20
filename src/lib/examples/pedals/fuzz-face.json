@@ -9,172 +9,478 @@
     {
       "id": "ff-in",
       "type": "jack",
-      "position": { "x": 40, "y": 280 },
-      "data": { "label": "INPUT", "direction": "in" }
+      "position": {
+        "x": 40,
+        "y": 270
+      },
+      "data": {
+        "label": "INPUT",
+        "direction": "in"
+      },
+      "measured": {
+        "width": 80,
+        "height": 60
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-gnd_in",
       "type": "ground",
-      "position": { "x": 100, "y": 400 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 140,
+        "y": 400
+      },
+      "data": {
+        "label": "GND"
+      },
+      "measured": {
+        "width": 40,
+        "height": 36
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-c1",
       "type": "cap_polar",
-      "position": { "x": 200, "y": 280 },
-      "data": { "label": "C1", "farads": 2.2e-6 }
+      "position": {
+        "x": 200,
+        "y": 270
+      },
+      "data": {
+        "label": "C1",
+        "farads": 0.0000022
+      },
+      "measured": {
+        "width": 60,
+        "height": 40
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-jct-q1b",
       "type": "junction",
-      "position": { "x": 310, "y": 280 },
-      "data": { "label": "J0" }
+      "position": {
+        "x": 310,
+        "y": 280
+      },
+      "data": {
+        "label": "J0"
+      },
+      "measured": {
+        "width": 20,
+        "height": 20
+      }
     },
     {
       "id": "ff-q1",
       "type": "bjt",
-      "position": { "x": 350, "y": 260 },
-      "data": { "label": "Q1", "polarity": "PNP", "model": "AC128" }
+      "position": {
+        "x": 350,
+        "y": 260
+      },
+      "data": {
+        "label": "Q1",
+        "polarity": "PNP",
+        "model": "AC128"
+      },
+      "measured": {
+        "width": 60,
+        "height": 60
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-gnd_q1",
       "type": "ground",
-      "position": { "x": 390, "y": 380 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 420,
+        "y": 360
+      },
+      "data": {
+        "label": "GND"
+      },
+      "measured": {
+        "width": 40,
+        "height": 36
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-jct-q1c",
       "type": "junction",
-      "position": { "x": 460, "y": 265 },
-      "data": { "label": "J1" }
+      "position": {
+        "x": 470,
+        "y": 260
+      },
+      "data": {
+        "label": "J1"
+      },
+      "measured": {
+        "width": 20,
+        "height": 20
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-r1",
       "type": "resistor",
-      "position": { "x": 450, "y": 140 },
+      "position": {
+        "x": 460,
+        "y": 140
+      },
       "rotation": 90,
-      "data": { "label": "R1", "ohms": 33000 }
+      "data": {
+        "label": "R1",
+        "ohms": 33000
+      },
+      "measured": {
+        "width": 40,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-vcc",
       "type": "power",
-      "position": { "x": 450, "y": 60 },
-      "data": { "label": "VCC", "volts": -9 }
+      "position": {
+        "x": 460,
+        "y": 50
+      },
+      "data": {
+        "label": "VCC",
+        "volts": -9
+      },
+      "measured": {
+        "width": 40,
+        "height": 40
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-q2",
       "type": "bjt",
-      "position": { "x": 570, "y": 260 },
-      "data": { "label": "Q2", "polarity": "PNP", "model": "AC128" }
+      "position": {
+        "x": 570,
+        "y": 240
+      },
+      "data": {
+        "label": "Q2",
+        "polarity": "PNP",
+        "model": "AC128"
+      },
+      "measured": {
+        "width": 60,
+        "height": 60
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-jct-q2c",
       "type": "junction",
-      "position": { "x": 680, "y": 265 },
-      "data": { "label": "J2" }
+      "position": {
+        "x": 670,
+        "y": 240
+      },
+      "data": {
+        "label": "J2"
+      },
+      "measured": {
+        "width": 20,
+        "height": 20
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-r2",
       "type": "resistor",
-      "position": { "x": 660, "y": 160 },
+      "position": {
+        "x": 660,
+        "y": 110
+      },
       "rotation": 90,
-      "data": { "label": "R2", "ohms": 470 }
+      "data": {
+        "label": "R2",
+        "ohms": 470
+      },
+      "measured": {
+        "width": 40,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-r3",
       "type": "resistor",
-      "position": { "x": 660, "y": 40 },
+      "position": {
+        "x": 660,
+        "y": -10
+      },
       "rotation": 90,
-      "data": { "label": "R3", "ohms": 8200 }
+      "data": {
+        "label": "R3",
+        "ohms": 8200
+      },
+      "measured": {
+        "width": 40,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-vcc2",
       "type": "power",
-      "position": { "x": 660, "y": -40 },
-      "data": { "label": "VCC", "volts": -9 }
-    },
-    {
-      "id": "ff-jct-q2e",
-      "type": "junction",
-      "position": { "x": 620, "y": 340 },
-      "data": { "label": "J3" }
+      "position": {
+        "x": 660,
+        "y": -90
+      },
+      "data": {
+        "label": "VCC",
+        "volts": -9
+      },
+      "measured": {
+        "width": 40,
+        "height": 40
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-r4",
       "type": "resistor",
-      "position": { "x": 440, "y": 400 },
-      "data": { "label": "R4", "ohms": 100000 }
+      "position": {
+        "x": 390,
+        "y": 420
+      },
+      "data": {
+        "label": "R4",
+        "ohms": 100000
+      },
+      "measured": {
+        "width": 80,
+        "height": 40
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-fuzz",
       "type": "pot",
-      "position": { "x": 720, "y": 340 },
+      "position": {
+        "x": 630,
+        "y": 480
+      },
       "data": {
         "label": "FUZZ",
         "ohms": 1000,
         "position": 0.5,
         "taper": "linear"
-      }
+      },
+      "measured": {
+        "width": 60,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false,
+      "rotation": 270
     },
     {
       "id": "ff-gnd_fuzz_cw",
       "type": "ground",
-      "position": { "x": 780, "y": 420 },
-      "data": { "label": "GND" }
-    },
-    {
-      "id": "ff-gnd_fuzz_w",
-      "type": "ground",
-      "position": { "x": 740, "y": 460 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 630,
+        "y": 680
+      },
+      "data": {
+        "label": "GND"
+      },
+      "measured": {
+        "width": 40,
+        "height": 36
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-c2",
       "type": "cap_polar",
-      "position": { "x": 600, "y": 420 },
-      "rotation": 90,
-      "data": { "label": "C2", "farads": 2e-5 }
-    },
-    {
-      "id": "ff-gnd_c2",
-      "type": "ground",
-      "position": { "x": 600, "y": 540 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 720,
+        "y": 540
+      },
+      "rotation": 270,
+      "data": {
+        "label": "C2",
+        "farads": 0.00002
+      },
+      "measured": {
+        "width": 40,
+        "height": 60
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-c3",
       "type": "capacitor",
-      "position": { "x": 790, "y": 260 },
-      "data": { "label": "C3", "farads": 1e-8 }
+      "position": {
+        "x": 790,
+        "y": 230
+      },
+      "data": {
+        "label": "C3",
+        "farads": 1e-8
+      },
+      "measured": {
+        "width": 60,
+        "height": 40
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-vol",
       "type": "pot",
-      "position": { "x": 930, "y": 260 },
+      "position": {
+        "x": 930,
+        "y": 230
+      },
       "data": {
         "label": "VOL",
         "ohms": 500000,
         "position": 0.8,
         "taper": "log"
-      }
+      },
+      "measured": {
+        "width": 80,
+        "height": 60
+      },
+      "selected": false,
+      "dragging": false,
+      "rotation": 0
     },
     {
       "id": "ff-gnd_vol",
       "type": "ground",
-      "position": { "x": 990, "y": 360 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 1030,
+        "y": 270
+      },
+      "data": {
+        "label": "GND"
+      },
+      "measured": {
+        "width": 40,
+        "height": 36
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-out",
       "type": "jack",
-      "position": { "x": 1120, "y": 300 },
-      "data": { "label": "OUTPUT", "direction": "out" }
+      "position": {
+        "x": 1120,
+        "y": 300
+      },
+      "data": {
+        "label": "OUTPUT",
+        "direction": "out"
+      },
+      "measured": {
+        "width": 80,
+        "height": 60
+      }
     },
     {
       "id": "ff-gnd_out",
       "type": "ground",
-      "position": { "x": 1100, "y": 400 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 1040,
+        "y": 380
+      },
+      "data": {
+        "label": "GND"
+      },
+      "measured": {
+        "width": 40,
+        "height": 36
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
+      "type": "junction",
+      "position": {
+        "x": 640,
+        "y": 620
+      },
+      "data": {
+        "label": ""
+      },
+      "measured": {
+        "width": 20,
+        "height": 20
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
+      "type": "junction",
+      "position": {
+        "x": 640,
+        "y": 430
+      },
+      "data": {
+        "label": ""
+      },
+      "measured": {
+        "width": 20,
+        "height": 20
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "76a06ded-fa6d-4f89-8cba-272555a543b9",
+      "type": "box",
+      "position": {
+        "x": 280,
+        "y": 400
+      },
+      "data": {
+        "label": "Feedback Network",
+        "color": "green",
+        "variant": "filled"
+      },
+      "zIndex": -1,
+      "style": {
+        "width": 200,
+        "height": 150
+      },
+      "dragHandle": ".box-drag-handle",
+      "className": "box-node-wrapper",
+      "measured": {
+        "width": 500,
+        "height": 330
+      },
+      "selected": false,
+      "width": 500,
+      "height": 330,
+      "resizing": false
     }
   ],
   "edges": [
@@ -270,55 +576,6 @@
       "targetHandle": "pos"
     },
     {
-      "id": "ff-e11a",
-      "source": "ff-q2",
-      "sourceHandle": "e",
-      "target": "ff-jct-q2e",
-      "targetHandle": "tt"
-    },
-    {
-      "id": "ff-e11",
-      "source": "ff-jct-q2e",
-      "sourceHandle": "sr",
-      "target": "ff-fuzz",
-      "targetHandle": "ccw"
-    },
-    {
-      "id": "ff-e12",
-      "source": "ff-fuzz",
-      "sourceHandle": "cw",
-      "target": "ff-gnd_fuzz_cw",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "ff-e13",
-      "source": "ff-fuzz",
-      "sourceHandle": "wiper",
-      "target": "ff-gnd_fuzz_w",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "ff-e14",
-      "source": "ff-jct-q2e",
-      "sourceHandle": "sb",
-      "target": "ff-c2",
-      "targetHandle": "pos"
-    },
-    {
-      "id": "ff-e15",
-      "source": "ff-c2",
-      "sourceHandle": "neg",
-      "target": "ff-gnd_c2",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "ff-e16",
-      "source": "ff-jct-q2e",
-      "sourceHandle": "sl",
-      "target": "ff-r4",
-      "targetHandle": "b"
-    },
-    {
       "id": "ff-e17",
       "source": "ff-r4",
       "sourceHandle": "a",
@@ -359,6 +616,55 @@
       "sourceHandle": "gnd",
       "target": "ff-out",
       "targetHandle": "neg"
+    },
+    {
+      "source": "ff-c2",
+      "sourceHandle": "neg",
+      "target": "ff-fuzz",
+      "targetHandle": "wiper",
+      "id": "xy-edge__ff-c2neg-ff-fuzzwiper"
+    },
+    {
+      "source": "ff-fuzz",
+      "sourceHandle": "ccw",
+      "target": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
+      "targetHandle": "tt",
+      "id": "xy-edge__ff-fuzzccw-33b9bcdb-7b8a-473d-867a-6437f01e6550tt"
+    },
+    {
+      "source": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
+      "sourceHandle": "sb",
+      "target": "ff-gnd_fuzz_cw",
+      "targetHandle": "gnd",
+      "id": "xy-edge__33b9bcdb-7b8a-473d-867a-6437f01e6550sb-ff-gnd_fuzz_cwgnd"
+    },
+    {
+      "source": "ff-c2",
+      "sourceHandle": "pos",
+      "target": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
+      "targetHandle": "tr",
+      "id": "xy-edge__ff-c2pos-33b9bcdb-7b8a-473d-867a-6437f01e6550tr"
+    },
+    {
+      "source": "ff-q2",
+      "sourceHandle": "e",
+      "target": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
+      "targetHandle": "tt",
+      "id": "xy-edge__ff-q2e-3579d6bd-78ad-409b-bd91-2ccf06e7e4a8tt"
+    },
+    {
+      "source": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
+      "sourceHandle": "sb",
+      "target": "ff-fuzz",
+      "targetHandle": "cw",
+      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sb-ff-fuzzcw"
+    },
+    {
+      "source": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
+      "sourceHandle": "sl",
+      "target": "ff-r4",
+      "targetHandle": "b",
+      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sl-ff-r4b"
     }
   ]
 }
