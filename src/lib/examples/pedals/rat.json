@@ -113,7 +113,12 @@
       "id": "rat-rdist",
       "type": "pot",
       "position": { "x": 620, "y": 60 },
-      "data": { "label": "DIST", "ohms": 500000, "position": 0.5, "taper": "linear" }
+      "data": {
+        "label": "DIST",
+        "ohms": 500000,
+        "position": 0.5,
+        "taper": "linear"
+      }
     },
     {
       "id": "rat-cfb",
@@ -162,7 +167,12 @@
       "id": "rat-filter",
       "type": "pot",
       "position": { "x": 920, "y": 400 },
-      "data": { "label": "FILTER", "ohms": 100000, "position": 0.5, "taper": "linear" }
+      "data": {
+        "label": "FILTER",
+        "ohms": 100000,
+        "position": 0.5,
+        "taper": "linear"
+      }
     },
     {
       "id": "rat-ctone",
@@ -187,7 +197,12 @@
       "id": "rat-vol",
       "type": "pot",
       "position": { "x": 1180, "y": 320 },
-      "data": { "label": "VOL", "ohms": 100000, "position": 0.8, "taper": "log" }
+      "data": {
+        "label": "VOL",
+        "ohms": 100000,
+        "position": 0.8,
+        "taper": "log"
+      }
     },
     {
       "id": "rat-gnd_v",

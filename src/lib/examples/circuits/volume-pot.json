@@ -9,110 +9,43 @@
     {
       "id": "vp-in",
       "type": "jack",
-      "position": {
-        "x": 60,
-        "y": 190
-      },
-      "data": {
-        "label": "INPUT",
-        "direction": "in"
-      },
-      "measured": {
-        "width": 80,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      "position": { "x": 60, "y": 190 },
+      "data": { "label": "INPUT", "direction": "in" }
     },
     {
       "id": "vp-gnd-in",
       "type": "ground",
-      "position": {
-        "x": 160,
-        "y": 390
-      },
-      "data": {
-        "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      "position": { "x": 160, "y": 390 },
+      "data": { "label": "GND" }
     },
     {
       "id": "vp-pot",
       "type": "pot",
-      "position": {
-        "x": 250,
-        "y": 190
-      },
+      "position": { "x": 250, "y": 190 },
       "data": {
         "label": "VOLUME",
         "ohms": 100000,
         "position": 0.7,
         "taper": "log"
-      },
-      "measured": {
-        "width": 80,
-        "height": 60
-      },
-      "selected": false,
-      "rotation": 0,
-      "dragging": false
+      }
     },
     {
       "id": "vp-gnd-pot",
       "type": "ground",
-      "position": {
-        "x": 380,
-        "y": 230
-      },
-      "data": {
-        "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      "position": { "x": 380, "y": 230 },
+      "data": { "label": "GND" }
     },
     {
       "id": "vp-out",
       "type": "jack",
-      "position": {
-        "x": 450,
-        "y": 270
-      },
-      "data": {
-        "label": "OUTPUT",
-        "direction": "out"
-      },
-      "measured": {
-        "width": 80,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      "position": { "x": 450, "y": 270 },
+      "data": { "label": "OUTPUT", "direction": "out" }
     },
     {
       "id": "vp-gnd-out",
       "type": "ground",
-      "position": {
-        "x": 380,
-        "y": 390
-      },
-      "data": {
-        "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      "position": { "x": 380, "y": 390 },
+      "data": { "label": "GND" }
     },
     {
       "id": "vp-note-1",
@@ -121,7 +54,9 @@
       "data": {
         "label": "What does this do?",
         "text": "A volume pot is a voltage divider — it splits the signal between the output and ground. Turn it down and more signal goes to ground instead.",
-        "color": "blue"
+        "color": "yellow",
+        "size": "sm",
+        "width": "normal"
       }
     },
     {
@@ -131,7 +66,9 @@
       "data": {
         "label": "Log taper",
         "text": "This pot uses a logarithmic taper, which matches how our ears perceive loudness. A linear pot would feel like most of the change happens at one end.",
-        "color": "green"
+        "color": "blue",
+        "size": "sm",
+        "width": "normal"
       }
     }
   ],

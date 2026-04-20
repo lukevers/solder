@@ -2,7 +2,7 @@
   "version": 1,
   "id": "lowpassfilter",
   "name": "Low Pass Filter",
-  "description": "First-order RC low-pass filter. The CUTOFF pot acts as a variable series resistor — turning it up raises the cutoff frequency, letting more treble through.",
+  "description": "First-order RC (resistor-capacitor) low-pass filter. The CUTOFF pot acts as a variable series resistor — turning it up raises the cutoff frequency, letting more treble through.",
   "tags": ["filter"],
   "category": "circuits",
   "nodes": [
@@ -22,67 +22,99 @@
       "id": "lpf-pot",
       "type": "pot",
       "position": { "x": 220, "y": 200 },
-      "data": { "label": "CUTOFF", "ohms": 100000, "position": 0.5, "taper": "linear" }
+      "data": {
+        "label": "CUTOFF",
+        "ohms": 10000,
+        "position": 0.5,
+        "taper": "linear"
+      }
+    },
+    {
+      "id": "lpf-jct-short",
+      "type": "junction",
+      "position": { "x": 250, "y": 270 },
+      "data": { "label": "J2" }
     },
     {
       "id": "lpf-jct",
       "type": "junction",
-      "position": { "x": 248, "y": 290 },
+      "position": { "x": 248, "y": 320 },
       "data": { "label": "J1" }
     },
     {
       "id": "lpf-cap",
       "type": "capacitor",
-      "position": { "x": 240, "y": 340 },
+      "position": { "x": 240, "y": 370 },
       "rotation": 90,
       "data": { "label": "C1", "farads": 4.7e-8 }
     },
     {
       "id": "lpf-gnd-cap",
       "type": "ground",
-      "position": { "x": 240, "y": 430 },
+      "position": { "x": 240, "y": 460 },
       "data": { "label": "GND" }
     },
     {
       "id": "lpf-out",
       "type": "jack",
-      "position": { "x": 440, "y": 280 },
+      "position": { "x": 440, "y": 310 },
       "data": { "label": "OUTPUT", "direction": "out" }
     },
     {
       "id": "lpf-gnd-out",
       "type": "ground",
-      "position": { "x": 380, "y": 430 },
+      "position": { "x": 380, "y": 460 },
       "data": { "label": "GND" }
+    },
+    {
+      "id": "lpf-box",
+      "type": "box",
+      "position": { "x": 200, "y": 185 },
+      "data": {
+        "label": "RC Filter",
+        "color": "blue",
+        "variant": "filled"
+      },
+      "zIndex": -1,
+      "dragHandle": ".box-drag-handle",
+      "className": "box-node-wrapper",
+      "width": 130,
+      "height": 310
     },
     {
       "id": "lpf-note-1",
       "type": "stickynote",
-      "position": { "x": 140, "y": 70 },
+      "position": { "x": 40, "y": 70 },
       "data": {
         "label": "What does this do?",
         "text": "A low-pass filter lets bass and mids through but cuts treble. Like turning the tone knob down on a guitar.",
-        "color": "blue"
+        "color": "yellow",
+        "size": "sm",
+        "width": "normal"
       }
     },
     {
       "id": "lpf-note-2",
       "type": "stickynote",
-      "position": { "x": 320, "y": 70 },
+      "position": { "x": 220, "y": 70 },
       "data": {
         "label": "How it works",
         "text": "The resistor (pot) and capacitor form a voltage divider. High frequencies see the cap as a short to ground, so they get cut.",
-        "color": "green"
+        "color": "blue",
+        "size": "sm",
+        "width": "normal"
       }
     },
     {
       "id": "lpf-note-3",
       "type": "stickynote",
-      "position": { "x": 320, "y": 170 },
+      "position": { "x": 360, "y": 180 },
       "data": {
         "label": "Try it",
         "text": "Turn the CUTOFF pot up to raise the cutoff frequency and let more treble through. Lower values = darker tone.",
-        "color": "yellow"
+        "color": "yellow",
+        "size": "sm",
+        "width": "normal"
       }
     }
   ],
@@ -105,6 +137,20 @@
       "id": "lpf-e3",
       "source": "lpf-pot",
       "sourceHandle": "wiper",
+      "target": "lpf-jct-short",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "lpf-e8",
+      "source": "lpf-pot",
+      "sourceHandle": "cw",
+      "target": "lpf-jct-short",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "lpf-e9",
+      "source": "lpf-jct-short",
+      "sourceHandle": "sb",
       "target": "lpf-jct",
       "targetHandle": "tt"
     },

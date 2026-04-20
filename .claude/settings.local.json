@@ -80,7 +80,8 @@
       "Bash(npm test:*)",
       "Bash(curl -s -L --max-time 30 \"https://www.electrosmash.com/mxr-distortion-plus-analysis\")",
       "Bash(grep -rn \"NodeDragHandler\\\\|NodeDrag\\\\b\" /Users/lukevers/Code/solder/node_modules/@xyflow/react/dist/esm/*.d.ts)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(curl -s -L \"https://davidlibland.github.io/posts/2020-08-30-hard-vs-soft-clipping.html\")"
     ]
   }
 }

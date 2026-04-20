@@ -6,19 +6,16 @@ import { EXAMPLES, type ExampleCategory } from '../lib/examples';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
 
-const GRID = 20;
+const GRID = 10;
 
 function snapNodes(nodes: Array<ComponentNode>): Array<ComponentNode> {
   return nodes.map((n) => {
-    // Junctions are 20×20 with handles at 10px offsets, so they need
-    // half-grid precision to align their handles with the main grid.
-    if (n.type === 'stickynote') return n;
-    const g = n.type === 'junction' ? GRID / 2 : GRID;
+    if (n.type === 'stickynote' || n.type === 'box') return n;
     return {
       ...n,
       position: {
-        x: Math.round(n.position.x / g) * g,
-        y: Math.round(n.position.y / g) * g,
+        x: Math.round(n.position.x / GRID) * GRID,
+        y: Math.round(n.position.y / GRID) * GRID,
       },
     };
   });

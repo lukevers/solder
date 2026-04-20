@@ -2,7 +2,7 @@
   "version": 1,
   "id": "highpassfilter",
   "name": "High Pass Filter",
-  "description": "First-order CR high-pass filter. The series capacitor blocks DC and low frequencies. The CUTOFF pot shunts the signal to ground, controlling how much bass passes through.",
+  "description": "First-order CR (capacitor-resistor) high-pass filter. The series capacitor blocks DC and low frequencies. The CUTOFF pot shunts the signal to ground, controlling how much bass passes through.",
   "tags": ["filter"],
   "category": "circuits",
   "nodes": [
@@ -15,7 +15,7 @@
     {
       "id": "hpf-gnd-in",
       "type": "ground",
-      "position": { "x": 110, "y": 430 },
+      "position": { "x": 120, "y": 430 },
       "data": { "label": "GND" }
     },
     {
@@ -35,7 +35,18 @@
       "type": "pot",
       "position": { "x": 260, "y": 300 },
       "rotation": 90,
-      "data": { "label": "CUTOFF", "ohms": 100000, "position": 0.5, "taper": "linear" }
+      "data": {
+        "label": "CUTOFF",
+        "ohms": 10000,
+        "position": 0.5,
+        "taper": "linear"
+      }
+    },
+    {
+      "id": "hpf-jct-short",
+      "type": "junction",
+      "position": { "x": 230, "y": 390 },
+      "data": { "label": "J2" }
     },
     {
       "id": "hpf-gnd-pot",
@@ -56,13 +67,30 @@
       "data": { "label": "GND" }
     },
     {
+      "id": "hpf-box",
+      "type": "box",
+      "position": { "x": 165, "y": 185 },
+      "data": {
+        "label": "CR Filter",
+        "color": "blue",
+        "variant": "filled"
+      },
+      "zIndex": -1,
+      "dragHandle": ".box-drag-handle",
+      "className": "box-node-wrapper",
+      "width": 170,
+      "height": 290
+    },
+    {
       "id": "hpf-note-1",
       "type": "stickynote",
       "position": { "x": 40, "y": 90 },
       "data": {
         "label": "What does this do?",
         "text": "A high-pass filter cuts bass and lets treble through. Useful for removing low-end rumble or tightening up a signal.",
-        "color": "blue"
+        "color": "yellow",
+        "size": "sm",
+        "width": "normal"
       }
     },
     {
@@ -72,7 +100,9 @@
       "data": {
         "label": "How it works",
         "text": "The capacitor blocks DC and low frequencies. The pot shunts remaining signal to ground — it controls the cutoff point.",
-        "color": "green"
+        "color": "blue",
+        "size": "sm",
+        "width": "normal"
       }
     },
     {
@@ -82,7 +112,9 @@
       "data": {
         "label": "LPF vs HPF",
         "text": "Compare this to the Low Pass Filter example. They use the same parts (R + C) but swapped — the order determines what gets cut!",
-        "color": "purple"
+        "color": "yellow",
+        "size": "sm",
+        "width": "normal"
       }
     }
   ],
@@ -126,11 +158,25 @@
       "id": "hpf-e6",
       "source": "hpf-pot",
       "sourceHandle": "wiper",
+      "target": "hpf-jct-short",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "hpf-e7",
+      "source": "hpf-pot",
+      "sourceHandle": "cw",
+      "target": "hpf-jct-short",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "hpf-e8",
+      "source": "hpf-jct-short",
+      "sourceHandle": "sb",
       "target": "hpf-gnd-pot",
       "targetHandle": "gnd"
     },
     {
-      "id": "hpf-e7",
+      "id": "hpf-e9",
       "source": "hpf-gnd-out",
       "sourceHandle": "gnd",
       "target": "hpf-out",

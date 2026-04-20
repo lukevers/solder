@@ -182,6 +182,20 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
   // Node labels for display
   const nodeLabels = useMemo(() => getNodeLabels(nodes, edges), [nodes, edges]);
 
+  // Stable fingerprint that ignores position/measured/selected changes —
+  // only reacts to topology (ids, types, data) and edge connectivity.
+  const circuitKey = useMemo(() => {
+    const nk = nodes
+      .map((n) => `${n.id}:${n.type}:${JSON.stringify(n.data)}`)
+      .join('|');
+    const ek = edges
+      .map(
+        (e) => `${e.source}:${e.sourceHandle}->${e.target}:${e.targetHandle}`,
+      )
+      .join('|');
+    return `${nk}||${ek}`;
+  }, [nodes, edges]);
+
   const handleAnalyze = useCallback(() => {
     // Terminate the previous worker to free any in-flight WASM allocations,
     // then create a fresh one. This prevents stale results from arriving.
@@ -255,12 +269,13 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
   const handleAnalyzeRef = useRef(handleAnalyze);
   handleAnalyzeRef.current = handleAnalyze;
 
-  // Auto-run on mount and whenever circuit or signal settings change (debounced)
-  // biome-ignore lint/correctness/useExhaustiveDependencies: ref avoids stale closure
+  // Auto-run on mount and whenever circuit or signal settings change (debounced).
+  // Uses circuitKey instead of nodes/edges so position-only moves don't re-trigger.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ref avoids stale closure; circuitKey replaces nodes/edges
   useEffect(() => {
     const timer = setTimeout(() => handleAnalyzeRef.current(), 250);
     return () => clearTimeout(timer);
-  }, [waveform, frequency, amplitude, duration, nodes, edges]);
+  }, [waveform, frequency, amplitude, duration, circuitKey]);
 
   const toggleTrace = useCallback((node: string) => {
     setAnalyzeTraces((prev) =>
@@ -270,7 +285,10 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
 
   // --- Build active traces + yScale for the current tab ---
 
-  const enabledAnalyzeTraces = analyzeTraces.filter((t) => t.enabled);
+  const enabledAnalyzeTraces = useMemo(
+    () => analyzeTraces.filter((t) => t.enabled),
+    [analyzeTraces],
+  );
 
   const analyzeScopeTraces: Array<ScopeTrace> = useMemo(
     () =>

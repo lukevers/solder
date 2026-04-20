@@ -109,7 +109,12 @@
       "id": "ff-fuzz",
       "type": "pot",
       "position": { "x": 720, "y": 340 },
-      "data": { "label": "FUZZ", "ohms": 1000, "position": 0.5, "taper": "linear" }
+      "data": {
+        "label": "FUZZ",
+        "ohms": 1000,
+        "position": 0.5,
+        "taper": "linear"
+      }
     },
     {
       "id": "ff-gnd_fuzz_cw",
@@ -146,7 +151,12 @@
       "id": "ff-vol",
       "type": "pot",
       "position": { "x": 930, "y": 260 },
-      "data": { "label": "VOL", "ohms": 500000, "position": 0.8, "taper": "log" }
+      "data": {
+        "label": "VOL",
+        "ohms": 500000,
+        "position": 0.8,
+        "taper": "log"
+      }
     },
     {
       "id": "ff-gnd_vol",

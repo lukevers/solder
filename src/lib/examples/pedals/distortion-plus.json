@@ -152,7 +152,12 @@
       "id": "mxr-dist",
       "type": "pot",
       "position": { "x": 400, "y": 100 },
-      "data": { "label": "DIST", "ohms": 1000000, "position": 0.5, "taper": "linear" }
+      "data": {
+        "label": "DIST",
+        "ohms": 1000000,
+        "position": 0.5,
+        "taper": "linear"
+      }
     },
     {
       "id": "mxr-gnd_dist_w",
@@ -233,7 +238,12 @@
       "id": "mxr-vol",
       "type": "pot",
       "position": { "x": 1320, "y": 340 },
-      "data": { "label": "OUTPUT", "ohms": 10000, "position": 0.8, "taper": "log" }
+      "data": {
+        "label": "OUTPUT",
+        "ohms": 10000,
+        "position": 0.8,
+        "taper": "log"
+      }
     },
     {
       "id": "mxr-gnd_vol",
