@@ -10,15 +10,15 @@ import type { SymbolDef } from '../types';
  *
  * Pin layout (80 × 80 px):
  *
- *              ┌─── vcc (top, centre)
- *              │
+ *             ┌─── vcc (top, centre)
+ *             │
  *   in_pos ──►│╲
- *              │  ╲
- *              │   ╲──── out (right, centre)
- *              │   ╱
+ *             │  ╲
+ *             │   ╲──── out (right, centre)
+ *             │   ╱
  *   in_neg ──►│╱
- *              │
- *              └─── gnd (bottom, centre)
+ *             │
+ *             └─── gnd (bottom, centre)
  *
  * Used by TL072 and as the default fallback for
  * any op-amp model without a specific DIP symbol.

@@ -17,11 +17,13 @@ export class MockSpiceEngine implements SpiceEngine {
     const n = this.sampleRate;
     const timeValues = new Float64Array(n);
     const voltageValues = new Float64Array(n);
+
     for (let i = 0; i < n; i++) {
       timeValues[i] = i / this.sampleRate;
       voltageValues[i] =
         this.amplitude * Math.sin(2 * Math.PI * this.frequency * timeValues[i]);
     }
+
     return { timeValues, voltageValues };
   }
 }

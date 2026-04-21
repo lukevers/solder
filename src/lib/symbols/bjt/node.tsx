@@ -8,9 +8,12 @@ import {
 } from '../node-shell';
 import type { BJTData } from './types';
 
-export function BJTNode({ id, data, selected }: NodeProps) {
-  const d = data as BJTData;
-  const isPNP = d.polarity === 'PNP';
+interface BJTNodeProps extends NodeProps {
+  data: BJTData;
+}
+
+export function BJTNode({ id, data, selected }: BJTNodeProps) {
+  const isPNP = data.polarity === 'PNP';
   const stroke = selected ? '#a78bfa' : '#8b5cf6';
 
   return (
@@ -92,7 +95,7 @@ export function BJTNode({ id, data, selected }: NodeProps) {
           fontSize="7"
           fontFamily="monospace"
         >
-          {d.label}
+          {data.label}
         </NodeText>
         {/* Model */}
         <NodeText
@@ -103,7 +106,7 @@ export function BJTNode({ id, data, selected }: NodeProps) {
           fontSize="6"
           fontFamily="monospace"
         >
-          {d.model}
+          {data.model}
         </NodeText>
       </NodeSvg>
     </NodeShell>

@@ -77,12 +77,15 @@ const SIZE_CLASSES: Record<StickyNoteSize, string> = {
   md: 'text-[10px] leading-snug',
 };
 
-export function StickyNoteNode({ id, data, selected }: NodeProps) {
-  const d = data as StickyNoteData;
+interface StickyNoteNodeProps extends NodeProps {
+  data: StickyNoteData;
+}
+
+export function StickyNoteNode({ id, data, selected }: StickyNoteNodeProps) {
   const selectNode = useStore((s) => s.selectNode);
-  const c = STICKY_COLORS[d.color ?? 'yellow'];
-  const sizeClass = SIZE_CLASSES[d.size ?? 'sm'];
-  const w = d.width === 'slim' ? 80 : 160;
+  const c = STICKY_COLORS[data.color ?? 'yellow'];
+  const sizeClass = SIZE_CLASSES[data.size ?? 'sm'];
+  const w = data.width === 'slim' ? 80 : 160;
 
   return (
     <div
@@ -109,13 +112,13 @@ export function StickyNoteNode({ id, data, selected }: NodeProps) {
             color: c.text,
           }}
         >
-          {d.label}
+          {data.label}
         </div>
         <div
           className={`whitespace-pre-wrap break-words px-2 py-1.5 font-sans ${sizeClass}`}
           style={{ color: c.text }}
         >
-          {d.text}
+          {data.text}
         </div>
       </div>
     </div>

@@ -40,6 +40,7 @@ export function voltageToAudioBuffer(
     Math.max(1, Math.round(maxTime * sampleRate)),
     MAX_RESAMPLE_SAMPLES,
   );
+
   const result = new Float32Array(n);
 
   let j = 0;
@@ -68,6 +69,7 @@ export function voltageToAudioBuffer(
   for (let i = 0; i < n; i++) {
     peak = Math.max(peak, Math.abs(result[i]));
   }
+
   const scale = 1 / Math.max(peak, 0.01);
   for (let i = 0; i < n; i++) {
     result[i] *= scale;
@@ -93,17 +95,21 @@ function resampleTrace(
     Math.max(1, Math.round(maxTime * sampleRate)),
     MAX_RESAMPLE_SAMPLES,
   );
+
   const result = new Float32Array(n);
+
   let j = 0;
   for (let i = 0; i < n; i++) {
     const t = i / sampleRate;
     while (j < timeValues.length - 2 && timeValues[j + 1] <= t) {
       j++;
     }
+
     const t0 = timeValues[j];
     const t1 = timeValues[j + 1] ?? t0;
     const v0 = voltageValues[j];
     const v1 = voltageValues[j + 1] ?? v0;
+
     if (t1 === t0) {
       result[i] = v0;
     } else {
@@ -111,6 +117,7 @@ function resampleTrace(
       result[i] = v0 + alpha * (v1 - v0);
     }
   }
+
   return result;
 }
 
@@ -124,12 +131,15 @@ export function resampleAllTraces(
 ): Map<string, Float32Array> {
   const result = new Map<string, Float32Array>();
   let count = 0;
+
   for (const [name, values] of output.traces) {
     if (count >= MAX_TRACES) {
       break;
     }
+
     result.set(name, resampleTrace(output.timeValues, values, sampleRate));
     count++;
   }
+
   return result;
 }

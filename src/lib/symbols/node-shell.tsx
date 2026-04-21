@@ -32,9 +32,11 @@ function resolveOffset(
   if (value === undefined) {
     return undefined;
   }
+
   if (typeof value === 'string' && value.endsWith('%')) {
     return (parseFloat(value) / 100) * dimension;
   }
+
   return Number(value);
 }
 
@@ -71,6 +73,7 @@ function transformHandleStyle(
         return { ...rest, top: L! };
     }
   }
+
   if (steps === 180) {
     switch (origPosition) {
       case Position.Left:
@@ -81,6 +84,7 @@ function transformHandleStyle(
         return { ...rest, left: origW - L! };
     }
   }
+
   if (steps === 270) {
     switch (origPosition) {
       case Position.Left:
@@ -138,6 +142,7 @@ export function NodeShell({ id, width, height, children }: NodeShellProps) {
   const rotation = useStore(
     (s) => s.nodes.find((n) => n.id === id)?.rotation ?? 0,
   );
+
   const updateNodeInternals = useUpdateNodeInternals();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-measure handles when rotation/dimensions change
@@ -226,8 +231,10 @@ export function NodeText({
   const counterTransform = rotation
     ? `rotate(${-rotation}, ${x}, ${y})`
     : undefined;
+
   const combined =
     [counterTransform, transform].filter(Boolean).join(' ') || undefined;
+
   return (
     <text x={x} y={y} transform={combined} {...props}>
       {children}

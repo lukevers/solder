@@ -3,15 +3,18 @@ import { formatOhms } from '../../units';
 import { NodeShell, NodeSvg, NodeText, RotatedHandle } from '../node-shell';
 import type { PotData } from './types';
 
-export function PotNode({ id, data, selected }: NodeProps) {
-  const d = data as PotData;
+interface PotNodeProps extends NodeProps {
+  data: PotData;
+}
+
+export function PotNode({ id, data, selected }: PotNodeProps) {
   const stroke = selected ? '#60a5fa' : '#9ca3af';
   const wiperColor = selected ? '#60a5fa' : '#a78bfa';
 
   // Wiper x position along the resistor body (body spans x 12–68)
-  const wiperX = 12 + 56 * d.position;
-  const pct = Math.round(d.position * 100);
-  const val = formatOhms(d.ohms);
+  const wiperX = 12 + 56 * data.position;
+  const pct = Math.round(data.position * 100);
+  const val = formatOhms(data.ohms);
 
   return (
     <NodeShell id={id} width={80} height={60}>
@@ -112,7 +115,7 @@ export function PotNode({ id, data, selected }: NodeProps) {
           fontSize="7"
           fontFamily="monospace"
         >
-          {d.label}
+          {data.label}
         </NodeText>
         {/* Value + position */}
         <NodeText

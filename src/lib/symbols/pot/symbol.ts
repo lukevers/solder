@@ -4,8 +4,8 @@ import type { SymbolDef } from '../types';
  * Three-terminal potentiometer.
  *
  *   ccw ──┤pot├── cw
- *              │
- *           wiper
+ *           │
+ *          wiper
  *
  * 80 × 60 px. CCW on left, CW on right, wiper on
  * bottom. The netlist compiler splits this into two

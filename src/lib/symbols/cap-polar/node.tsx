@@ -9,9 +9,12 @@ import {
   RotatedHandle,
 } from '../node-shell';
 
-export function CapPolarNode({ id, data, selected }: NodeProps) {
-  const d = data as CapacitorData;
-  const faradsLabel = formatFarads(d.farads);
+interface CapPolarNodeProps extends NodeProps {
+  data: CapacitorData;
+}
+
+export function CapPolarNode({ id, data, selected }: CapPolarNodeProps) {
+  const faradsLabel = formatFarads(data.farads);
 
   const wire = selected ? '#60a5fa' : '#9ca3af';
   const plate = selected ? '#60a5fa' : '#e5e7eb';
@@ -64,7 +67,7 @@ export function CapPolarNode({ id, data, selected }: NodeProps) {
           fontSize="8"
           fontFamily="monospace"
         >
-          {d.label}
+          {data.label}
         </NodeText>
         {/* Value */}
         <NodeText

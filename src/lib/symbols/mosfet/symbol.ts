@@ -4,9 +4,9 @@ import type { SymbolDef, SymbolPin } from '../types';
  * Shared pin layout for MOSFET (metal-oxide
  * semiconductor field-effect transistor) variants.
  *
- *            ┌── d (drain)
+ *           ┌── d (drain)
  *   g ──────┤
- *            └── s (source)
+ *           └── s (source)
  *
  * Gate on the left, drain and source on the
  * right (top and bottom respectively).

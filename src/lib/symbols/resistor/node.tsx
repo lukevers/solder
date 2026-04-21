@@ -9,9 +9,11 @@ import {
 } from '../node-shell';
 import type { ResistorData } from './types';
 
-export function ResistorNode({ id, data, selected }: NodeProps) {
-  const d = data as ResistorData;
+interface ResistorNodeProps extends NodeProps {
+  data: ResistorData;
+}
 
+export function ResistorNode({ id, data, selected }: ResistorNodeProps) {
   return (
     <NodeShell id={id} width={80} height={40}>
       <RotatedHandle
@@ -57,7 +59,7 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
           fontSize="8"
           fontFamily="monospace"
         >
-          {d.label}
+          {data.label}
         </NodeText>
         <NodeText
           x={40}
@@ -67,7 +69,7 @@ export function ResistorNode({ id, data, selected }: NodeProps) {
           fontSize="7"
           fontFamily="monospace"
         >
-          {formatOhms(d.ohms)}
+          {formatOhms(data.ohms)}
         </NodeText>
       </NodeSvg>
       <RotatedHandle

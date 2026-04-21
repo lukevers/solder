@@ -2,9 +2,12 @@ import { type NodeProps, Position } from '@xyflow/react';
 import { NodeShell, NodeSvg, NodeText, RotatedHandle } from '../node-shell';
 import type { JackData } from './types';
 
-export function JackNode({ id, data, selected }: NodeProps) {
-  const d = data as JackData;
-  const isIn = d.direction === 'in';
+interface JackNodeProps extends NodeProps {
+  data: JackData;
+}
+
+export function JackNode({ id, data, selected }: JackNodeProps) {
+  const isIn = data.direction === 'in';
   const color = isIn ? '#3b82f6' : '#22c55e';
   const stroke = selected ? '#60a5fa' : color;
 
@@ -33,7 +36,7 @@ export function JackNode({ id, data, selected }: NodeProps) {
               fontFamily="monospace"
               fontWeight="bold"
             >
-              {d.label}
+              {data.label}
             </NodeText>
             <NodeText
               x={68}
@@ -118,7 +121,7 @@ export function JackNode({ id, data, selected }: NodeProps) {
               fontFamily="monospace"
               fontWeight="bold"
             >
-              {d.label}
+              {data.label}
             </NodeText>
             <NodeText
               x={12}

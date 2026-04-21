@@ -8,8 +8,11 @@ import {
 } from '../node-shell';
 import type { DiodeData } from './types';
 
-export function DiodeNode({ id, data, selected }: NodeProps) {
-  const d = data as DiodeData;
+interface DiodeNodeProps extends NodeProps {
+  data: DiodeData;
+}
+
+export function DiodeNode({ id, data, selected }: DiodeNodeProps) {
   const stroke = selected ? '#60a5fa' : '#e5e7eb';
 
   return (
@@ -58,7 +61,7 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
           fontSize="7"
           fontFamily="monospace"
         >
-          {d.label}
+          {data.label}
         </NodeText>
         <NodeText
           x={28}
@@ -68,7 +71,7 @@ export function DiodeNode({ id, data, selected }: NodeProps) {
           fontSize="6"
           fontFamily="monospace"
         >
-          {d.model}
+          {data.model}
         </NodeText>
       </NodeSvg>
       <RotatedHandle

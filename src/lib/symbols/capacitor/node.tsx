@@ -9,9 +9,12 @@ import {
 } from '../node-shell';
 import type { CapacitorData } from './types';
 
-export function CapacitorNode({ id, data, selected }: NodeProps) {
-  const d = data as CapacitorData;
-  const faradsLabel = formatFarads(d.farads);
+interface CapacitorNodeProps extends NodeProps {
+  data: CapacitorData;
+}
+
+export function CapacitorNode({ id, data, selected }: CapacitorNodeProps) {
+  const faradsLabel = formatFarads(data.farads);
 
   return (
     <NodeShell id={id} width={60} height={40}>
@@ -68,7 +71,7 @@ export function CapacitorNode({ id, data, selected }: NodeProps) {
           fontSize="8"
           fontFamily="monospace"
         >
-          {d.label}
+          {data.label}
         </NodeText>
         <NodeText
           x={30}

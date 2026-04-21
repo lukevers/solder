@@ -2,9 +2,11 @@ import { type NodeProps, Position } from '@xyflow/react';
 import { NodeShell, NodeSvg, RotatedHandle } from '../node-shell';
 import type { LabelData } from './types';
 
-export function LabelNode({ id, data, selected }: NodeProps) {
-  const d = data as LabelData;
+interface LabelNodeProps extends NodeProps {
+  data: LabelData;
+}
 
+export function LabelNode({ id, data, selected }: LabelNodeProps) {
   const color = selected ? '#60a5fa' : '#a78bfa';
 
   return (
@@ -26,7 +28,7 @@ export function LabelNode({ id, data, selected }: NodeProps) {
           fontFamily="monospace"
           fontWeight="bold"
         >
-          {d.label}
+          {data.label}
         </text>
       </NodeSvg>
       <RotatedHandle

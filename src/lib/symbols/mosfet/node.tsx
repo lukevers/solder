@@ -8,9 +8,12 @@ import {
 } from '../node-shell';
 import type { MOSFETData } from './types';
 
-export function MOSFETNode({ id, data, selected }: NodeProps) {
-  const d = data as MOSFETData;
-  const isP = d.polarity === 'P';
+interface MOSFETNodeProps extends NodeProps {
+  data: MOSFETData;
+}
+
+export function MOSFETNode({ id, data, selected }: MOSFETNodeProps) {
+  const isP = data.polarity === 'P';
   const stroke = selected ? '#fbbf24' : '#f59e0b';
 
   return (
@@ -134,7 +137,7 @@ export function MOSFETNode({ id, data, selected }: NodeProps) {
           fontSize="7"
           fontFamily="monospace"
         >
-          {d.label}
+          {data.label}
         </NodeText>
         {/* Model */}
         <NodeText
@@ -145,7 +148,7 @@ export function MOSFETNode({ id, data, selected }: NodeProps) {
           fontSize="6"
           fontFamily="monospace"
         >
-          {d.model}
+          {data.model}
         </NodeText>
       </NodeSvg>
     </NodeShell>

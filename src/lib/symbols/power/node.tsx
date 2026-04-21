@@ -8,9 +8,11 @@ import {
 } from '../node-shell';
 import type { PowerData } from './types';
 
-export function PowerNode({ id, data, selected }: NodeProps) {
-  const d = data as PowerData;
+interface PowerNodeProps extends NodeProps {
+  data: PowerData;
+}
 
+export function PowerNode({ id, data, selected }: PowerNodeProps) {
   return (
     <NodeShell id={id} width={40} height={40}>
       <NodeSvg width={40} height={40}>
@@ -30,7 +32,7 @@ export function PowerNode({ id, data, selected }: NodeProps) {
           fontSize="8"
           fontFamily="monospace"
         >
-          {d.label}
+          {data.label}
         </NodeText>
         <NodeText
           x={20}
@@ -41,7 +43,7 @@ export function PowerNode({ id, data, selected }: NodeProps) {
           fontFamily="monospace"
           fontWeight="bold"
         >
-          {d.volts}V
+          {data.volts}V
         </NodeText>
       </NodeSvg>
       <RotatedHandle

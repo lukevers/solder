@@ -8,9 +8,12 @@ import {
 } from '../node-shell';
 import type { JFETData } from './types';
 
-export function JFETNode({ id, data, selected }: NodeProps) {
-  const d = data as JFETData;
-  const isP = d.polarity === 'P';
+interface JFETNodeProps extends NodeProps {
+  data: JFETData;
+}
+
+export function JFETNode({ id, data, selected }: JFETNodeProps) {
+  const isP = data.polarity === 'P';
   const stroke = selected ? '#22d3ee' : '#06b6d4';
 
   return (
@@ -92,7 +95,7 @@ export function JFETNode({ id, data, selected }: NodeProps) {
           fontSize="7"
           fontFamily="monospace"
         >
-          {d.label}
+          {data.label}
         </NodeText>
         {/* Model */}
         <NodeText
@@ -103,7 +106,7 @@ export function JFETNode({ id, data, selected }: NodeProps) {
           fontSize="6"
           fontFamily="monospace"
         >
-          {d.model}
+          {data.model}
         </NodeText>
       </NodeSvg>
     </NodeShell>

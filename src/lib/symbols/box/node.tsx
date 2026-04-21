@@ -1,50 +1,18 @@
 import { type NodeProps, NodeResizer } from '@xyflow/react';
 import { useStore } from '../../../store';
-import type { StickyNoteColor } from '../stickynote/types';
-import type { BoxData, BoxVariant } from './types';
+import type { BoxData } from './types';
+import { COLOR_MAP, dashArray } from './utils';
 
-const COLOR_MAP: Record<StickyNoteColor, { border: string; fill: string }> = {
-  yellow: {
-    border: '#eab308',
-    fill: 'rgba(234,179,8,0.07)',
-  },
-  blue: {
-    border: '#3b82f6',
-    fill: 'rgba(59,130,246,0.07)',
-  },
-  green: {
-    border: '#22c55e',
-    fill: 'rgba(34,197,94,0.07)',
-  },
-  pink: {
-    border: '#ec4899',
-    fill: 'rgba(236,72,153,0.07)',
-  },
-  purple: {
-    border: '#8b5cf6',
-    fill: 'rgba(139,92,246,0.07)',
-  },
-  orange: {
-    border: '#f97316',
-    fill: 'rgba(249,115,22,0.07)',
-  },
-  gray: {
-    border: '#6b7280',
-    fill: 'rgba(107,114,128,0.07)',
-  },
-};
-
-function dashArray(variant: BoxVariant): string | undefined {
-  return variant === 'dashed' ? '8 4' : undefined;
+interface BoxNodeProps extends NodeProps {
+  data: BoxData;
 }
 
-export function BoxNode({ id, data }: NodeProps) {
-  const d = data as BoxData;
+export function BoxNode({ id, data }: BoxNodeProps) {
   const selectNode = useStore((s) => s.selectNode);
   const isSelected = useStore((s) => s.selectedNodeId === id);
 
-  const color = d.color ?? 'blue';
-  const variant = d.variant ?? 'outline';
+  const color = data.color ?? 'blue';
+  const variant = data.variant ?? 'outline';
   const { border: borderColor, fill } = COLOR_MAP[color];
   const strokeWidth = isSelected ? 2 : 1.5;
 
@@ -162,7 +130,7 @@ export function BoxNode({ id, data }: NodeProps) {
         />
 
         {/* Label — cut into the top border, KiCad style */}
-        {d.label && (
+        {data.label && (
           <span
             style={{
               position: 'absolute',
@@ -179,7 +147,7 @@ export function BoxNode({ id, data }: NodeProps) {
               pointerEvents: 'none',
             }}
           >
-            {d.label}
+            {data.label}
           </span>
         )}
       </div>

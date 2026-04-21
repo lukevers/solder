@@ -161,16 +161,19 @@ export class AudioPipeline {
       audio: true,
       video: false,
     });
+
     this.mediaSource = this.ctx.createMediaStreamSource(this.stream);
     this.scriptNode = this.ctx.createScriptProcessor(BUFFER_SIZE, 1, 1);
     this.scriptNode.onaudioprocess = (e) => {
       if (!this.onInputBuffer) {
         return;
       }
+
       const chunk = new Float32Array(BUFFER_SIZE);
       chunk.set(e.inputBuffer.getChannelData(0));
       this.onInputBuffer(chunk);
     };
+
     this.mediaSource.connect(this.scriptNode);
     const silentGain = this.ctx.createGain();
     this.silentGain = silentGain;
@@ -190,23 +193,26 @@ export class AudioPipeline {
     if (!this.ctx || !this.gainNode) {
       return;
     }
+
     this.ctx.resume();
     const audioBuffer = this.ctx.createBuffer(
       1,
       outputBuffer.length,
       this.ctx.sampleRate,
     );
+
     audioBuffer.copyToChannel(outputBuffer as Float32Array<ArrayBuffer>, 0);
     const source = this.ctx.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(this.gainNode);
 
-    const now = this.ctx.currentTime;
     // Schedule ahead by one buffer to allow for simulation latency
+    const now = this.ctx.currentTime;
     const bufferDuration = BUFFER_SIZE / this.ctx.sampleRate;
     if (this.nextPlayTime < now + bufferDuration) {
       this.nextPlayTime = now + bufferDuration;
     }
+
     source.start(this.nextPlayTime);
     this.nextPlayTime += bufferDuration;
   }
@@ -221,14 +227,18 @@ export class AudioPipeline {
     if (!this.ctx || !this.gainNode) {
       return;
     }
+
     void this.ctx.resume();
     this.stopPlayback();
+
     const audioBuffer = this.ctx.createBuffer(
       1,
       buffer.length,
       this.ctx.sampleRate,
     );
+
     audioBuffer.copyToChannel(buffer as Float32Array<ArrayBuffer>, 0);
+
     this.activeSource = this.ctx.createBufferSource();
     this.activeSource.buffer = audioBuffer;
     this.activeSource.connect(this.gainNode);
@@ -236,6 +246,7 @@ export class AudioPipeline {
       this.activeSource = null;
       onEnded?.();
     };
+
     this.playbackStartTime = this.ctx.currentTime;
     this.playbackOffset = 0;
     this.playbackDuration = buffer.length / this.ctx.sampleRate;
@@ -257,25 +268,31 @@ export class AudioPipeline {
     if (!this.ctx || !this.gainNode) {
       return;
     }
+
     void this.ctx.resume();
     this.stopPlayback();
+
     const sampleRate = this.ctx.sampleRate;
     const totalDuration = buffer.length / sampleRate;
     const clampedOffset = Math.max(0, Math.min(offsetSeconds, totalDuration));
     const offsetSamples = Math.floor(clampedOffset * sampleRate);
+
     if (offsetSamples >= buffer.length) {
       onEnded?.();
       return;
     }
+
     const audioBuffer = this.ctx.createBuffer(
       1,
       buffer.length - offsetSamples,
       sampleRate,
     );
+
     audioBuffer.copyToChannel(
       new Float32Array(buffer.subarray(offsetSamples)),
       0,
     );
+
     this.activeSource = this.ctx.createBufferSource();
     this.activeSource.buffer = audioBuffer;
     this.activeSource.connect(this.gainNode);
@@ -283,6 +300,7 @@ export class AudioPipeline {
       this.activeSource = null;
       onEnded?.();
     };
+
     this.playbackStartTime = this.ctx.currentTime;
     this.playbackOffset = clampedOffset;
     this.playbackDuration = totalDuration;
@@ -300,11 +318,13 @@ export class AudioPipeline {
     if (!this.ctx || !this.activeSource) {
       return null;
     }
+
     const elapsed = this.ctx.currentTime - this.playbackStartTime;
     const currentTime = this.playbackOffset + elapsed;
     if (currentTime >= this.playbackDuration) {
       return null;
     }
+
     return currentTime / this.playbackDuration;
   }
 
@@ -339,6 +359,7 @@ export class AudioPipeline {
     this.stream?.getTracks().forEach((t) => {
       t.stop();
     });
+
     this.stream = null;
     this.onInputBuffer = null;
     this.nextPlayTime = 0;

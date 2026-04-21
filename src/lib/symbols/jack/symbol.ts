@@ -49,6 +49,7 @@ export const SYM_JACK_IN: SymbolDef = {
  * The netlist compiler measures voltage between
  * pos and neg to produce the output buffer.
  *
+ *                  ┌──────┐
  *   pos (signal) ──┤      │
  *   neg (ground) ──┤ OUT  │
  *                  └──────┘
