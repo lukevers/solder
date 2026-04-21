@@ -2,7 +2,7 @@ import { ChevronRight, Maximize2, Repeat, RotateCcw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useShallow } from 'zustand/react/shallow';
-import { AudioPipeline } from './audio/pipeline';
+import { AudioPipeline } from './lib/audio/pipeline';
 import { AudioControls } from './components/AudioControls';
 import { CircuitAnalyzer } from './components/CircuitAnalyzer';
 import { ExamplesPanel } from './components/ExamplesPanel';

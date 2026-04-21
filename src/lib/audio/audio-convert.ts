@@ -1,4 +1,7 @@
-import type { MultiNodeOutput, SimulationOutput } from './spice-engine';
+import type {
+  MultiNodeOutput,
+  SimulationOutput,
+} from '../engines/spice-engine';
 
 /** Maximum resampled samples per trace (≈45 seconds at 44.1 kHz, ~8 MB). */
 const MAX_RESAMPLE_SAMPLES = 2_000_000;

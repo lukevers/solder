@@ -1,4 +1,4 @@
-import type { SimulationOutput, SpiceEngine } from '../spice-engine';
+import type { SimulationOutput, SpiceEngine } from './spice-engine';
 
 export class MockSpiceEngine implements SpiceEngine {
   private frequency: number;

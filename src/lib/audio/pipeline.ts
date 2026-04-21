@@ -1,4 +1,4 @@
-import { SAMPLE_RATE } from '../lib/constants';
+import { SAMPLE_RATE } from '../constants';
 
 const BUFFER_SIZE = 2048;
 

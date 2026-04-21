@@ -672,7 +672,7 @@ describe('MOSFET common-source amplifier (BS170)', () => {
 // └────────────────────────────────────────────────────────────────────┘
 describe('Fuzz Face preset (AC128 PNP)', () => {
   it('produces output with significant distortion gain', async () => {
-    const fuzzFace = await import('../../lib/examples/pedals/fuzz-face.json');
+    const fuzzFace = await import('../../examples/pedals/fuzz-face.json');
     const { nodes, edges } = makeCircuit(
       fuzzFace.nodes as Array<ComponentNode>,
       fuzzFace.edges as Array<Edge>,
@@ -700,7 +700,7 @@ describe('Fuzz Face preset (AC128 PNP)', () => {
 describe('MXR Distortion+ preset (LM741 + 1N270)', () => {
   it('produces clipped output signal', async () => {
     const distortionPlus = await import(
-      '../../lib/examples/pedals/distortion-plus.json'
+      '../../examples/pedals/distortion-plus.json'
     );
     const { nodes, edges } = makeCircuit(
       distortionPlus.nodes as Array<ComponentNode>,

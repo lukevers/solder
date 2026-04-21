@@ -3,7 +3,7 @@ import type {
   MultiNodeOutput,
   SimulationOutput,
   SpiceEngine,
-} from '../spice-engine';
+} from './spice-engine';
 
 /** Maximum time (ms) a single simulation is allowed to run before we abort. */
 const SIM_TIMEOUT_MS = 60_000;

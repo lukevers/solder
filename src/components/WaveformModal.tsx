@@ -1,6 +1,6 @@
 import { Pause, Play, Repeat, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { AudioPipeline } from '../audio/pipeline';
+import type { AudioPipeline } from '../lib/audio/pipeline';
 import { SAMPLE_RATE } from '../lib/constants';
 import {
   WaveformDisplay,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { voltageToAudioBuffer } from '../lib/audio-convert';
-import type { SimulationOutput } from '../lib/spice-engine';
+import { voltageToAudioBuffer } from '../lib/audio/audio-convert';
+import type { SimulationOutput } from '../lib/engines/spice-engine';
 
 describe('voltageToAudioBuffer', () => {
   it('returns a Float32Array', () => {

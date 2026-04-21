@@ -9,7 +9,7 @@
 // verify the path used when simulating with real guitar samples.
 
 import { beforeAll, describe, expect, it } from 'vitest';
-import { voltageToAudioBuffer } from '../../lib/audio-convert';
+import { voltageToAudioBuffer } from '../../lib/audio/audio-convert';
 import { compileNetlist } from '../../lib/netlist';
 import { engine, makeCircuit, peak, snapshot } from './setup';
 

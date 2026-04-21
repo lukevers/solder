@@ -1,5 +1,5 @@
 import type { Edge } from '@xyflow/react';
-import type { ComponentNode } from '../types';
+import type { ComponentNode } from '../lib/types';
 import gainStage from './circuits/gain-stage.json';
 import hardClipping from './circuits/hard-clipping.json';
 import highPassFilter from './circuits/high-pass-filter.json';

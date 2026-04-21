@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EXAMPLES } from '../lib/examples';
+import { EXAMPLES } from '../examples';
 import { compileNetlist } from '../lib/netlist';
 
 describe('EXAMPLES', () => {

@@ -1,4 +1,4 @@
-import { resampleAllTraces } from '../lib/audio-convert';
+import { resampleAllTraces } from '../lib/audio/audio-convert';
 import { SAMPLE_RATE } from '../lib/constants';
 import { EECircuitEngine } from '../lib/engines/eecircuit';
 import { compileAnalysisNetlist } from '../lib/netlist';

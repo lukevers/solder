@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { EXAMPLES, type ExampleCategory } from '../lib/examples';
+import { EXAMPLES, type ExampleCategory } from '../examples';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
 

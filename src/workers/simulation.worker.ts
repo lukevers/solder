@@ -1,7 +1,7 @@
-import { voltageToAudioBuffer } from '../lib/audio-convert';
+import { voltageToAudioBuffer } from '../lib/audio/audio-convert';
 import { EECircuitEngine } from '../lib/engines/eecircuit';
 import { compileNetlist } from '../lib/netlist';
-import type { SpiceEngine } from '../lib/spice-engine';
+import type { SpiceEngine } from '../lib/engines/spice-engine';
 import type { SimulateRequest, SimulateResponse } from '../lib/types';
 
 const SAMPLE_RATE = 44100;
