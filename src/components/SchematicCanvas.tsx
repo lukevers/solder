@@ -17,11 +17,11 @@ import {
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { nodeTypes } from '../lib/symbols';
 import type { ComponentNode } from '../lib/types';
 import { isEdgeDC } from '../lib/types';
 import { useStore } from '../store';
 import { edgeTypes } from './edges';
-import { nodeTypes } from './nodes';
 
 /** Triggers fitView when tabs switch, close, or a circuit/example is loaded */
 function FitViewOnChange() {

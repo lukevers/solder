@@ -2,7 +2,7 @@ import { resampleAllTraces } from '../lib/audio/audio-convert';
 import { SAMPLE_RATE } from '../lib/constants';
 import { EECircuitEngine } from '../lib/engines/eecircuit';
 import { compileAnalysisNetlist } from '../lib/netlist';
-import type { AnalyzeRequest, AnalyzeResponse } from '../lib/types';
+import type { AnalyzeRequest, AnalyzeResponse } from '../lib/simulation-types';
 
 /** Maximum total bytes we allow the resampled trace set to occupy (~128 MB). */
 const MAX_TRACE_BYTES = 128 * 1024 * 1024;

@@ -1,95 +1,61 @@
+// Circuit graph types — component data, node union,
+// and circuit state.
+//
+// Data types are defined per-domain under
+// src/lib/symbols/<component>/types.ts and
+// re-exported here for backward compatibility.
+
 import type { Edge, XYPosition } from '@xyflow/react';
 
 export type { XYPosition };
 
-export type ResistorData = { label: string; ohms: number; symbol?: string };
-export type CapacitorData = { label: string; farads: number; symbol?: string };
-export type OpAmpData = {
-  label: string;
-  model: 'TL072' | 'LM741' | 'LM308';
-  symbol?: string;
-};
-export type PowerData = { label: string; volts: number; symbol?: string };
-export type GroundData = { label: string; symbol?: string };
-export type JackData = {
-  label: string;
-  direction: 'in' | 'out';
-  symbol?: string;
-};
-export type DiodeData = {
-  label: string;
-  model: '1N914' | '1N4001' | '1N4002' | '1N270';
-  symbol?: string;
-};
-export type PotTaper = 'linear' | 'log' | 'antilog';
-export type PotData = {
-  label: string;
-  ohms: number;
-  position: number;
-  taper?: PotTaper;
-  symbol?: string;
-};
-export type LabelData = { label: string };
-export type StickyNoteColor =
-  | 'yellow'
-  | 'blue'
-  | 'green'
-  | 'pink'
-  | 'purple'
-  | 'orange'
-  | 'gray';
-export type StickyNoteSize = 'xs' | 'sm' | 'md';
-export type StickyNoteWidth = 'slim' | 'normal';
-export type StickyNoteData = {
-  label: string;
-  text: string;
-  color?: StickyNoteColor;
-  size?: StickyNoteSize;
-  width?: StickyNoteWidth;
-};
-export type BoxVariant = 'outline' | 'filled' | 'dashed';
-export type BoxData = {
-  label: string;
-  color?: StickyNoteColor;
-  variant?: BoxVariant;
-};
-export type JunctionData = { label: string };
-export type BJTModel =
-  | '2N3904'
-  | '2N3906'
-  | 'AC128'
-  | '2N5088'
-  | '2N5089'
-  | 'BC108'
-  | 'BC549'
-  | 'MPSA18';
-export type BJTData = {
-  label: string;
-  polarity: 'NPN' | 'PNP';
-  model: BJTModel;
-  symbol?: string;
-};
-export type JFETModel =
-  | '2N5457'
-  | '2N5458'
-  | 'J201'
-  | 'J113'
-  | 'MPF102'
-  | '2N5460';
-export type JFETData = {
-  label: string;
-  polarity: 'N' | 'P';
-  model: JFETModel;
-  symbol?: string;
-};
-export type MOSFETModel = 'BS170' | 'IRF510' | 'IRF9510' | '2N7000';
-export type MOSFETData = {
-  label: string;
-  polarity: 'N' | 'P';
-  model: MOSFETModel;
-  symbol?: string;
-};
+// ── Re-exported component data types ────────────────────
 
+export type { BJTData, BJTModel } from './symbols/bjt/types';
+export type { BoxData, BoxVariant } from './symbols/box/types';
+export type { CapacitorData } from './symbols/capacitor/types';
+export type { DiodeData } from './symbols/diode/types';
+export type { GroundData } from './symbols/ground/types';
+export type { JackData } from './symbols/jack/types';
+export type { JFETData, JFETModel } from './symbols/jfet/types';
+export type { JunctionData } from './symbols/junction/types';
+export type { LabelData } from './symbols/label/types';
+export type { MOSFETData, MOSFETModel } from './symbols/mosfet/types';
+export type { OpAmpData } from './symbols/opamp/types';
+export type { PotData, PotTaper } from './symbols/pot/types';
+export type { PowerData } from './symbols/power/types';
+export type { ResistorData } from './symbols/resistor/types';
+export type {
+  StickyNoteColor,
+  StickyNoteData,
+  StickyNoteSize,
+  StickyNoteWidth,
+} from './symbols/stickynote/types';
+
+// ── Imports for the discriminated union ─────────────────
+
+import type { BJTData } from './symbols/bjt/types';
+import type { BoxData } from './symbols/box/types';
+import type { CapacitorData } from './symbols/capacitor/types';
+import type { DiodeData } from './symbols/diode/types';
+import type { GroundData } from './symbols/ground/types';
+import type { JackData } from './symbols/jack/types';
+import type { JFETData } from './symbols/jfet/types';
+import type { JunctionData } from './symbols/junction/types';
+import type { LabelData } from './symbols/label/types';
+import type { MOSFETData } from './symbols/mosfet/types';
+import type { OpAmpData } from './symbols/opamp/types';
+import type { PotData } from './symbols/pot/types';
+import type { PowerData } from './symbols/power/types';
+import type { ResistorData } from './symbols/resistor/types';
+import type { StickyNoteData } from './symbols/stickynote/types';
+
+// ── Node union ──────────────────────────────────────────
+
+/**
+ * Shared fields present on every circuit node,
+ * regardless of component type.
+ */
 type NodeBase = {
   id: string;
   position: XYPosition;
@@ -97,6 +63,21 @@ type NodeBase = {
   measured?: { width?: number; height?: number };
 };
 
+/**
+ * Discriminated union of all circuit node types.
+ *
+ * Each variant pairs a `type` string tag with
+ * the corresponding data payload. XYFlow uses
+ * the `type` field to select the correct React
+ * node renderer.
+ *
+ * Adding a new component type requires:
+ *   1. A new data type in its domain directory
+ *   2. A new variant here
+ *   3. A new node renderer in its domain directory
+ *   4. A new entry in COMPONENT_HANDLES
+ *      (netlist.ts)
+ */
 export type ComponentNode =
   | (NodeBase & { type: 'resistor'; data: ResistorData })
   | (NodeBase & { type: 'capacitor'; data: CapacitorData })
@@ -121,62 +102,26 @@ export type ComponentNode =
       className?: string;
     });
 
+// ── Circuit state ───────────────────────────────────────
+
+/**
+ * The complete state of a circuit: all nodes
+ * and all edges (wires) between them.
+ */
 export type CircuitState = {
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
 };
 
-// Worker message types
-export type SimulateRequest = {
-  type: 'simulate';
-  nodes: Array<ComponentNode>;
-  edges: Array<Edge>;
-  duration: number;
-  frequency: number;
-  amplitude: number;
-  /** Raw audio samples to use as PWL voltage source; absent → use SIN test tone */
-  inputBuffer?: Float32Array;
-  /** Sample rate of inputBuffer (default 44100) */
-  inputSampleRate?: number;
-};
+// ── Utility functions ───────────────────────────────────
 
-export type SimulateResponse =
-  | { type: 'result'; outputBuffer: Float32Array }
-  | { type: 'error'; message: string };
-
-// Pot sweep
-export const SWEEP_POSITIONS = [0, 0.25, 0.5, 0.75, 1.0] as const;
-
-export type SweepResult = {
-  position: number;
-  outputBuffer: Float32Array;
-};
-
-// Audio source
-export type AudioSource = { type: 'sample'; name: string } | { type: 'live' };
-
-// Circuit analysis
-export type WaveformType = 'sine' | 'square' | 'triangle' | 'sawtooth';
-
-export type AnalyzeRequest = {
-  type: 'analyze';
-  nodes: Array<ComponentNode>;
-  edges: Array<Edge>;
-  duration: number;
-  frequency: number;
-  amplitude: number;
-  waveform: WaveformType;
-};
-
-export type AnalyzeTraceData = {
-  node: string;
-  values: Float32Array;
-};
-
-export type AnalyzeResponse =
-  | { type: 'result'; traces: Array<AnalyzeTraceData>; sampleRate: number }
-  | { type: 'error'; message: string };
-
+/**
+ * Returns true if an edge connects to a power
+ * or ground node.
+ *
+ * Used by SchematicCanvas to apply DC-specific
+ * edge styling (dashed lines for power rails).
+ */
 export function isEdgeDC(
   srcType?: ComponentNode['type'],
   tgtType?: ComponentNode['type'],

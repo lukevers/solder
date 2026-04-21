@@ -41,13 +41,41 @@ Any circuit mutation (add/delete node, connect/disconnect edge, update component
 7. User clicks Play — `AudioPipeline.playBuffer()` plays it once through Web Audio API
 
 ### Key lib files
-- `src/lib/types.ts` — discriminated union `ComponentNode` type for all circuit elements
+- `src/lib/types.ts` — discriminated union `ComponentNode` type for all circuit elements; re-exports per-domain data types
 - `src/lib/netlist.ts` — circuit → SPICE netlist compiler (`compileNetlist`, `buildPortGroups`, `SPICE_SAMPLE_RATE`)
-- `src/lib/spice-models.ts` — TL072 and LM741 subcircuit definitions (POLY-free for eecircuit-engine)
-- `src/lib/audio-convert.ts` — `voltageToAudioBuffer`: interpolates SPICE output to fixed sample rate
+- `src/lib/models/` — SPICE model definitions (TL072, LM741, LM308 subcircuits + transistor .model statements)
+- `src/lib/audio/audio-convert.ts` — `voltageToAudioBuffer`: interpolates SPICE output to fixed sample rate
 - `src/lib/engines/eecircuit.ts` — `EECircuitEngine` wrapping `eecircuit-engine` npm package
 - `src/lib/circuit-io.ts` — JSON import/export for circuits
 - `src/lib/examples/` — preset circuits (e.g., `rat.ts`)
+
+### Symbol library (`src/lib/symbols/`)
+Organized by component domain — each subdirectory co-locates a component's symbol definition, React node renderer, and data types:
+
+```
+src/lib/symbols/
+  types.ts           — shared SymbolDef, SymbolPin types
+  node-shell.tsx     — shared rendering utilities (NodeShell, RotatedHandle, etc.)
+  index.ts           — barrel: SYMBOLS registry, DEFAULT_SYMBOL, nodeTypes, resolveOpAmpSymbol
+  resistor/          — symbol.ts + node.tsx + types.ts + index.ts
+  capacitor/         — symbol.ts + node.tsx + types.ts + index.ts
+  cap-polar/         — symbol.ts + node.tsx + index.ts (reuses CapacitorData)
+  opamp/             — symbol.ts + node.tsx + types.ts + index.ts
+  diode/             — symbol.ts + node.tsx + types.ts + index.ts
+  bjt/               — symbol.ts + node.tsx + types.ts + index.ts
+  jfet/              — symbol.ts + node.tsx + types.ts + index.ts
+  mosfet/            — symbol.ts + node.tsx + types.ts + index.ts
+  pot/               — symbol.ts + node.tsx + types.ts + index.ts
+  power/             — symbol.ts + node.tsx + types.ts + index.ts
+  ground/            — symbol.ts + node.tsx + types.ts + index.ts
+  jack/              — symbol.ts + node.tsx + types.ts + index.ts
+  junction/          — node.tsx + types.ts + index.ts (no symbol)
+  label/             — node.tsx + types.ts + index.ts (no symbol)
+  stickynote/        — node.tsx + types.ts + index.ts (no symbol)
+  box/               — node.tsx + types.ts + index.ts (no symbol)
+```
+
+Adding a new component: create a new subdirectory with `symbol.ts`, `node.tsx`, `types.ts`, and `index.ts`. Register the symbol in `SYMBOLS` and the node renderer in `nodeTypes` in the parent `index.ts`.
 
 ### KiCad-style power pins
 Ground and Power nodes act as global net labels (like KiCad power flags). Users can place multiple instances:
@@ -56,8 +84,8 @@ Ground and Power nodes act as global net labels (like KiCad power flags). Users 
 
 Connections can also be dropped directly onto existing wires (edges) to join that net without targeting a specific handle.
 
-### Component nodes (`src/components/nodes/`)
-One renderer per circuit element type: `ResistorNode`, `CapacitorNode`, `OpAmpNode`, `DiodeNode`, `PotentiometerNode`, `PowerNode`, `GroundNode`, `AudioInNode`, `AudioOutNode`, `StickyNoteNode`.
+### Component nodes (`src/lib/symbols/<component>/node.tsx`)
+One renderer per circuit element type, co-located with its symbol definition. Each exports a single React component (e.g., `ResistorNode`, `OpAmpNode`, `BJTNode`). Shared rendering primitives (`NodeShell`, `RotatedHandle`, `NodeSvg`, `NodeText`) live in `src/lib/symbols/node-shell.tsx`.
 
 ### Audio pipeline (`src/audio/pipeline.ts`)
 Web Audio API integration: loads `.wav` samples from `/public/samples/`, exposes `getSampleData(name)` to get raw `Float32Array`, uses `ScriptProcessorNode` for live input buffer callbacks.
@@ -99,7 +127,7 @@ The `Vin` source connects `inputPos` to `inputNeg`, and `Rprobe` connects `outpu
 The first letter of an element name determines its type (D=diode, R=resistor, C=capacitor, etc.). Pot labels like `DIST` produce element names `DISTa`/`DISTb` — ngspice reads the leading `D` as a diode and fails. The netlist compiler always prefixes pot split-resistors with `R`.
 
 ### Adding new op-amp subcircuit models
-Before adding a new `.SUBCKT` to `spice-models.ts`, scan it for `POLY(` and replace as described above. The TL072 and LM741 in the file are already converted and serve as reference.
+Before adding a new `.SUBCKT` to `src/lib/models/`, scan it for `POLY(` and replace as described above. The TL072 and LM741 in the file are already converted and serve as reference.
 
 ## XYFlow handle conventions
 
@@ -122,7 +150,139 @@ All passive components (resistor, capacitor, cap_polar, diode, pot) plus ground,
 | Power | `pos` (bottom) | source (+ hidden target) |
 
 ### `measured` dimensions on load
-`loadCircuit` in the store injects `measured: { width, height }` on every node using `ensureMeasured()`. This gives XYFlow node dimensions before DOM measurement, so edge handle positions are correct on the first render. Without this, edges appear "floating" (disconnected from handles) until XYFlow's ResizeObserver fires. Component dimensions are looked up from `src/lib/symbols.ts`; rotation (90/270) swaps width and height.
+`loadCircuit` in the store injects `measured: { width, height }` on every node using `ensureMeasured()`. This gives XYFlow node dimensions before DOM measurement, so edge handle positions are correct on the first render. Without this, edges appear "floating" (disconnected from handles) until XYFlow's ResizeObserver fires. Component dimensions are looked up from the `SYMBOLS` registry in `src/lib/symbols/`; rotation (90/270) swaps width and height.
+
+## Code style
+
+- **Early returns:** Always use early returns to reduce nesting. Guard clauses at the top of a function should handle edge cases and bail out early, keeping the main logic at the lowest indentation level. Always use braces for return statements — no single-line `if (x) return y`.
+
+  ```ts
+  // Bad
+  function process(node: ComponentNode | null) {
+    if (node) {
+      if (node.type === 'resistor') {
+        return doSomething(node)
+      }
+    }
+    return null
+  }
+
+  // Good
+  function process(node: ComponentNode | null) {
+    if (!node) {
+      return null
+    }
+
+    if (node.type !== 'resistor') {
+      return null
+    }
+
+    return doSomething(node)
+  }
+  ```
+
+- **Logical grouping:** Group related lines of code together and separate unrelated blocks with a blank line. Reorder statements within a block (where it doesn't affect functionality) so that related logic is adjacent rather than interleaved. Add blank lines after block statements (`if`, `for`, `while`, etc.) to visually separate them from the next piece of logic.
+
+  ```ts
+  // Bad — declarations interleaved
+  const width = node.measured?.width ?? 0
+  const label = node.data.label
+  const height = node.measured?.height ?? 0
+  const rotation = node.data.rotation ?? 0
+  const x = node.position.x + width / 2
+  const y = node.position.y + height / 2
+
+  // Good — related declarations grouped
+  const label = node.data.label
+  const rotation = node.data.rotation ?? 0
+
+  const width = node.measured?.width ?? 0
+  const height = node.measured?.height ?? 0
+  const x = node.position.x + width / 2
+  const y = node.position.y + height / 2
+  ```
+
+  ```ts
+  // Bad — block statements crammed together
+  if (!adj.has(ports[0])) {
+    adj.set(ports[0], new Set());
+  }
+  if (!adj.has(ports[i])) {
+    adj.set(ports[i], new Set());
+  }
+  adj.get(ports[0])!.add(ports[i]);
+  adj.get(ports[i])!.add(ports[0]);
+
+  // Good — blank line after each block statement
+  if (!adj.has(ports[0])) {
+    adj.set(ports[0], new Set());
+  }
+
+  if (!adj.has(ports[i])) {
+    adj.set(ports[i], new Set());
+  }
+
+  adj.get(ports[0])!.add(ports[i]);
+  adj.get(ports[i])!.add(ports[0]);
+  ```
+
+- **Block-level comments:** Always add a multi-line `/** */` comment above functions and top-level constants, even if they seem self-explanatory. Write for a junior engineer — explain *what* and *why*, not just *how*. Use ASCII art diagrams and tables inside comments where they help clarify relationships, data flow, or structure. Comments must wrap at 80 characters. Never use the single-line `/** ... */` style — always use multi-line.
+
+  ```ts
+  // Bad
+  /** Maximum resampled samples per trace (≈45 seconds at 44.1 kHz, ~8 MB). */
+  const MAX_SAMPLES = 2_000_000;
+
+  // Good
+  /**
+   * Maximum number of resampled audio samples we keep
+   * per simulation trace.
+   *
+   * At 44.1 kHz this is roughly 45 seconds of audio and
+   * occupies ~8 MB as a Float32Array. Keeping a hard cap
+   * here prevents runaway memory usage when the user
+   * simulates a long transient.
+   */
+  const MAX_SAMPLES = 2_000_000;
+  ```
+
+  ```ts
+  /**
+   * Merge two sorted port arrays into a single
+   * adjacency list.
+   *
+   * Signal flow through the merge:
+   *
+   *   portA ──┐
+   *           ├──► merged adjacency set
+   *   portB ──┘
+   *
+   * Both inputs must already be sorted by net index.
+   * Duplicate entries are collapsed so each neighbour
+   * appears at most once.
+   */
+  function mergePorts(portA: Port[], portB: Port[]) {
+    // ...
+  }
+  ```
+
+- **File organization — split by domain, not by kind.** Don't create generic catch-all files that group things by what they are (e.g., a single `types.ts` for all types, a single `symbols.ts` for all symbols). Instead, split files by the domain they describe so that each file is focused and self-contained. When a file starts covering multiple unrelated domains, break it apart.
+
+  ```
+  # Bad — one file per "kind" of thing
+  src/lib/types.ts        ← every type in the project
+  src/lib/constants.ts    ← every constant
+
+  # Good — one file per domain (this is how symbols/ is organized)
+  src/lib/symbols/resistor/types.ts
+  src/lib/symbols/resistor/symbol.ts
+  src/lib/symbols/resistor/node.tsx
+  src/lib/symbols/opamp/types.ts
+  src/lib/symbols/opamp/symbol.ts
+  src/lib/symbols/opamp/node.tsx
+  ```
+
+  The test: if you need to add a new resistor variant, you should only need to touch files in one area — not a 800-line grab-bag file shared with op-amps, diodes, and audio types.
 
 ## Writing example circuits
 

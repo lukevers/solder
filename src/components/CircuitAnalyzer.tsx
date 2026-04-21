@@ -13,7 +13,7 @@ import type {
   AnalyzeResponse,
   AnalyzeTraceData,
   WaveformType,
-} from '../lib/types';
+} from '../lib/simulation-types';
 import { useStore } from '../store';
 import { ScopeCanvas, type ScopeTrace } from './ScopeCanvas';
 

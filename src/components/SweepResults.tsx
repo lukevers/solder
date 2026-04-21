@@ -1,7 +1,7 @@
 import { Hourglass, Play, Square, X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { SAMPLE_RATE } from '../lib/constants';
-import type { SweepResult } from '../lib/types';
+import type { SweepResult } from '../lib/simulation-types';
 
 const SWEEP_COLORS = [
   '#ef4444', // 0%   red

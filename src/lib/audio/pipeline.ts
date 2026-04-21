@@ -1,9 +1,31 @@
 import { SAMPLE_RATE } from '../constants';
 
+/**
+ * Buffer size for the ScriptProcessorNode used
+ * to capture live input audio.
+ */
 const BUFFER_SIZE = 2048;
 
+/**
+ * Callback type for live input buffer events.
+ */
 type OnInputBuffer = (buf: Float32Array) => void;
 
+/**
+ * Web Audio API integration layer.
+ *
+ * Handles audio playback, live microphone input
+ * capture, and .wav sample loading. Used by
+ * App.tsx to play simulated output buffers and
+ * to feed live audio into the simulation worker.
+ *
+ * Lifecycle:
+ *   1. new AudioPipeline()
+ *   2. await init(volume)
+ *   3. await loadSample('name', '/path.wav')
+ *   4. getSampleData('name') → Float32Array
+ *   5. playBuffer(outputBuffer) for playback
+ */
 export class AudioPipeline {
   private ctx: AudioContext | null = null;
   private gainNode: GainNode | null = null;
@@ -33,7 +55,12 @@ export class AudioPipeline {
     this.gainNode.connect(this.ctx.destination);
   }
 
-  /** Wait for init to complete before proceeding */
+  /**
+   * Wait for init to complete before proceeding.
+   *
+   * Call this before any operation that requires
+   * the AudioContext to be ready.
+   */
   async ready(): Promise<void> {
     await this.initPromise;
   }
@@ -116,7 +143,13 @@ export class AudioPipeline {
     silentGain.connect(this.ctx.destination);
   }
 
-  /** Start capturing from the microphone/live input. */
+  /**
+   * Start capturing audio from the microphone
+   * or line input.
+   *
+   * Uses a ScriptProcessorNode to deliver
+   * fixed-size chunks to the provided callback.
+   */
   async startLiveCapture(onInputBuffer: OnInputBuffer): Promise<void> {
     if (!this.ctx) {
       throw new Error('Pipeline not initialized');
@@ -146,7 +179,13 @@ export class AudioPipeline {
     silentGain.connect(this.ctx.destination);
   }
 
-  /** Queue a processed output buffer for playback. */
+  /**
+   * Queue a processed output buffer for
+   * gapless playback.
+   *
+   * Schedules the buffer to play immediately
+   * after the previously queued buffer ends.
+   */
   scheduleOutput(outputBuffer: Float32Array): void {
     if (!this.ctx || !this.gainNode) {
       return;
@@ -172,7 +211,12 @@ export class AudioPipeline {
     this.nextPlayTime += bufferDuration;
   }
 
-  /** Play a pre-simulated output buffer once. Calls onEnded when playback finishes naturally. */
+  /**
+   * Play a pre-simulated output buffer once.
+   *
+   * Calls `onEnded` when playback finishes
+   * naturally (not when stopped manually).
+   */
   playBuffer(buffer: Float32Array, onEnded?: () => void): void {
     if (!this.ctx || !this.gainNode) {
       return;
@@ -198,7 +242,13 @@ export class AudioPipeline {
     this.activeSource.start();
   }
 
-  /** Play a pre-simulated buffer starting at the given offset in seconds. */
+  /**
+   * Play a pre-simulated buffer starting at
+   * the given offset in seconds.
+   *
+   * Used for resume-from-position playback when
+   * the user clicks on the waveform display.
+   */
   playBufferFrom(
     buffer: Float32Array,
     offsetSeconds: number,
@@ -239,7 +289,13 @@ export class AudioPipeline {
     this.activeSource.start();
   }
 
-  /** Returns the current playback position as a fraction (0–1), or null if not playing. */
+  /**
+   * Returns the current playback position as a
+   * fraction (0–1), or null if not playing.
+   *
+   * Used by the waveform display to draw the
+   * playback cursor.
+   */
   getPlaybackFraction(): number | null {
     if (!this.ctx || !this.activeSource) {
       return null;
@@ -252,7 +308,13 @@ export class AudioPipeline {
     return currentTime / this.playbackDuration;
   }
 
-  /** Stop batch playback if currently playing. */
+  /**
+   * Stop playback if currently playing.
+   *
+   * Silently ignores the call if nothing is
+   * playing. Does not trigger the onEnded
+   * callback.
+   */
   stopPlayback(): void {
     if (this.activeSource) {
       this.activeSource.onended = null;

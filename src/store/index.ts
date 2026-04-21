@@ -1,8 +1,9 @@
 import type { Edge } from '@xyflow/react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { AudioSource, SweepResult } from '../lib/simulation-types';
 import { DEFAULT_SYMBOL, resolveOpAmpSymbol, SYMBOLS } from '../lib/symbols';
-import type { AudioSource, ComponentNode, SweepResult } from '../lib/types';
+import type { ComponentNode } from '../lib/types';
 
 type SimulationStatus = 'idle' | 'running' | 'error';
 

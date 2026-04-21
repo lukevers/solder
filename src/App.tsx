@@ -2,7 +2,6 @@ import { ChevronRight, Maximize2, Repeat, RotateCcw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useShallow } from 'zustand/react/shallow';
-import { AudioPipeline } from './lib/audio/pipeline';
 import { AudioControls } from './components/AudioControls';
 import { CircuitAnalyzer } from './components/CircuitAnalyzer';
 import { ExamplesPanel } from './components/ExamplesPanel';
@@ -17,11 +16,12 @@ import {
   type WaveformSelection,
 } from './components/WaveformDisplay';
 import { WaveformModal } from './components/WaveformModal';
+import { AudioPipeline } from './lib/audio/pipeline';
 import {
   type SimulateRequest,
   type SimulateResponse,
   SWEEP_POSITIONS,
-} from './lib/types';
+} from './lib/simulation-types';
 import { useStore } from './store';
 
 export default function App() {
@@ -314,34 +314,64 @@ export default function App() {
     setSelection(null);
   }, [setPlaying, clearOutputBuffer, setSimulatedInput]);
 
+  /**
+   * Extract the input audio buffer from the
+   * current audio source and waveform selection.
+   *
+   * Returns the buffer, its sample rate, and the
+   * effective duration. When no sample data is
+   * available, returns the defaults so a SIN
+   * test tone is used instead.
+   */
+  const extractInputBuffer = useCallback(() => {
+    const pipeline = pipelineRef.current;
+
+    if (audioSource.type !== 'sample' || !pipeline) {
+      return {
+        inputBuffer: undefined as Float32Array | undefined,
+        inputSampleRate: undefined as number | undefined,
+        duration: simulationDuration,
+      };
+    }
+
+    const data = pipeline.getSampleData(audioSource.name);
+
+    if (!data) {
+      return {
+        inputBuffer: undefined as Float32Array | undefined,
+        inputSampleRate: undefined as number | undefined,
+        duration: simulationDuration,
+      };
+    }
+
+    const sel = selectionRef.current;
+    let inputBuffer: Float32Array;
+
+    if (sel) {
+      const startSample = Math.floor(sel.start * data.length);
+      const endSample = Math.floor(sel.end * data.length);
+      inputBuffer = new Float32Array(data.subarray(startSample, endSample));
+    } else {
+      inputBuffer = data;
+    }
+
+    const inputSampleRate = pipeline.getSampleRate();
+    const duration = inputBuffer.length / inputSampleRate;
+
+    return { inputBuffer, inputSampleRate, duration };
+  }, [audioSource, simulationDuration]);
+
   const handleSimulate = useCallback(() => {
     if (!workerRef.current) {
       return;
     }
+
     try {
       setSimulationStatus('running');
       simStartRef.current = performance.now();
-      const pipeline = pipelineRef.current;
-      let inputBuffer: Float32Array | undefined;
-      let inputSampleRate: number | undefined;
-      let duration = simulationDuration;
-      if (audioSource.type === 'sample' && pipeline) {
-        const data = pipeline.getSampleData(audioSource.name);
-        if (data) {
-          const sel = selectionRef.current;
-          if (sel) {
-            const startSample = Math.floor(sel.start * data.length);
-            const endSample = Math.floor(sel.end * data.length);
-            inputBuffer = new Float32Array(
-              data.subarray(startSample, endSample),
-            );
-          } else {
-            inputBuffer = data;
-          }
-          inputSampleRate = pipeline.getSampleRate();
-          duration = inputBuffer.length / inputSampleRate;
-        }
-      }
+
+      const { inputBuffer, inputSampleRate, duration } = extractInputBuffer();
+
       const request: SimulateRequest = {
         type: 'simulate',
         nodes: nodesRef.current,
@@ -352,6 +382,7 @@ export default function App() {
         inputBuffer,
         inputSampleRate,
       };
+
       pendingInputRef.current = inputBuffer
         ? new Float32Array(inputBuffer)
         : null;
@@ -363,8 +394,7 @@ export default function App() {
   }, [
     setSimulationStatus,
     setSimulationError,
-    audioSource,
-    simulationDuration,
+    extractInputBuffer,
     inputFrequency,
     inputAmplitude,
   ]);
@@ -375,31 +405,12 @@ export default function App() {
       for (const w of sweepWorkersRef.current) {
         w.terminate();
       }
+
       sweepWorkersRef.current = [];
 
       requestSweep(nodeId);
 
-      const pipeline = pipelineRef.current;
-      let inputBuffer: Float32Array | undefined;
-      let inputSampleRate: number | undefined;
-      let duration = simulationDuration;
-      if (audioSource.type === 'sample' && pipeline) {
-        const data = pipeline.getSampleData(audioSource.name);
-        if (data) {
-          const sel = selectionRef.current;
-          if (sel) {
-            const startSample = Math.floor(sel.start * data.length);
-            const endSample = Math.floor(sel.end * data.length);
-            inputBuffer = new Float32Array(
-              data.subarray(startSample, endSample),
-            );
-          } else {
-            inputBuffer = data;
-          }
-          inputSampleRate = pipeline.getSampleRate();
-          duration = inputBuffer.length / inputSampleRate;
-        }
-      }
+      const { inputBuffer, inputSampleRate, duration } = extractInputBuffer();
 
       let completed = 0;
       let failed = false;
@@ -474,8 +485,7 @@ export default function App() {
       addSweepResult,
       completeSweep,
       failSweep,
-      audioSource,
-      simulationDuration,
+      extractInputBuffer,
       inputFrequency,
       inputAmplitude,
     ],

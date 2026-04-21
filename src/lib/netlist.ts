@@ -21,8 +21,9 @@ import {
   MOSFET_IRF510,
   MOSFET_IRF9510,
   TL072_SUBCKT,
-} from './spice-models';
-import type { ComponentNode, PotTaper, WaveformType } from './types';
+} from './models';
+import type { WaveformType } from './simulation-types';
+import type { ComponentNode, PotTaper } from './types';
 
 /**
  * Time-step rate used for SPICE transient analysis.
@@ -31,10 +32,20 @@ import type { ComponentNode, PotTaper, WaveformType } from './types';
  */
 export const SPICE_SAMPLE_RATE = 10000;
 
-/** Maximum PWL points in a single source (10 seconds at SPICE_SAMPLE_RATE). */
+/**
+ * Maximum PWL points in a single source.
+ *
+ * At SPICE_SAMPLE_RATE (10 kHz) this allows
+ * roughly 10 seconds of input audio.
+ */
 const MAX_PWL_POINTS = 100_001;
 
-/** Maximum SPICE nodes to save in analysis mode. */
+/**
+ * Maximum SPICE nodes to save in analysis mode.
+ *
+ * Limits memory usage when the circuit has many
+ * internal nodes. Only the first 64 are captured.
+ */
 const MAX_ANALYSIS_NODES = 64;
 
 /**
@@ -68,7 +79,15 @@ function buildPwlSource(
   return `Vin ${nodePos} ${nodeNeg} PWL(${pairs.join(' ')})`;
 }
 
-/** All port handles for each component type */
+/**
+ * Maps each component type to its list of port
+ * handle IDs.
+ *
+ * The netlist compiler uses this to enumerate
+ * every connectable pin on every node. Handle
+ * IDs must match the ones in the symbol library
+ * and the React node renderers.
+ */
 const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   resistor: ['a', 'b'],
   capacitor: ['a', 'b'],
@@ -88,15 +107,36 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   box: [],
 };
 
-/** Port identifier: "${nodeId}|${handleId}" */
+/**
+ * Port identifier string.
+ *
+ * Format: "${nodeId}|${handleId}"
+ * Used as the key in adjacency maps to uniquely
+ * identify each connectable pin in the circuit.
+ */
 type Port = string;
 
+/**
+ * Returns every port on every node in the circuit.
+ *
+ * Enumerates all handle IDs for each node using
+ * the COMPONENT_HANDLES lookup, producing a flat
+ * array of Port strings.
+ */
 function allPorts(nodes: Array<ComponentNode>): Array<Port> {
   return nodes.flatMap((n) =>
     (COMPONENT_HANDLES[n.type] ?? []).map((h) => `${n.id}|${h}`),
   );
 }
 
+/**
+ * Builds an undirected adjacency map from edges.
+ *
+ * Each port that appears as a source or target in
+ * an edge gets a set of its directly-connected
+ * neighbours. This is the first step in merging
+ * connected ports into shared SPICE net names.
+ */
 function buildAdjacency(edges: Array<Edge>): Map<Port, Set<Port>> {
   const adj = new Map<Port, Set<Port>>();
   const add = (p: Port) => {
@@ -118,6 +158,14 @@ function buildAdjacency(edges: Array<Edge>): Map<Port, Set<Port>> {
   return adj;
 }
 
+/**
+ * Breadth-first search that assigns a SPICE node
+ * name to every port reachable from `start`.
+ *
+ * All ports in the same connected component end up
+ * with the same `nodeId` in `portToNode`, which
+ * means they share one SPICE net.
+ */
 function bfs(
   start: Port,
   nodeId: string,
@@ -182,9 +230,11 @@ export function buildPortGroups(
       if (!adj.has(ports[0])) {
         adj.set(ports[0], new Set());
       }
+
       if (!adj.has(ports[i])) {
         adj.set(ports[i], new Set());
       }
+
       adj.get(ports[0])!.add(ports[i]);
       adj.get(ports[i])!.add(ports[0]);
     }
@@ -198,11 +248,13 @@ export function buildPortGroups(
       if (!adj.has(firstPort)) {
         adj.set(firstPort, new Set());
       }
+
       for (let i = 1; i < handles.length; i++) {
         const port: Port = `${n.id}|${handles[i]}`;
         if (!adj.has(port)) {
           adj.set(port, new Set());
         }
+
         adj.get(firstPort)!.add(port);
         adj.get(port)!.add(firstPort);
       }
@@ -229,40 +281,47 @@ export function buildPortGroups(
   return portToNode;
 }
 
-/** Format ohms as SPICE: 10000 → "10k", 1000000 → "1Meg", etc. */
+/**
+ * Format an ohm value as a SPICE-compatible string.
+ *
+ *   10000   → "10k"
+ *   1000000 → "1Meg"
+ *   470     → "470"
+ */
 export function formatResistance(ohms: number): string {
   if (ohms >= 1e6) {
     return `${parseFloat((ohms / 1e6).toPrecision(10))}Meg`;
   }
+
   if (ohms >= 1e3) {
     return `${parseFloat((ohms / 1e3).toPrecision(10))}k`;
   }
+
   return `${ohms}`;
 }
 
-/** Format farads as SPICE: 47e-9 → "47n", 100e-12 → "100p", etc. */
+/**
+ * Format a farad value as a SPICE-compatible string.
+ *
+ *   47e-9  → "47n"
+ *   100e-12 → "100p"
+ *   1e-6   → "1u"
+ */
 export function formatCapacitance(farads: number): string {
   if (farads >= 1e-3) {
     return `${parseFloat((farads * 1e3).toPrecision(10))}m`;
   }
+
   if (farads >= 1e-6) {
     return `${parseFloat((farads * 1e6).toPrecision(10))}u`;
   }
+
   if (farads >= 1e-9) {
     return `${parseFloat((farads * 1e9).toPrecision(10))}n`;
   }
+
   return `${parseFloat((farads * 1e12).toPrecision(10))}p`;
 }
-
-/**
- * Compiles a ReactFlow circuit graph into a SPICE netlist string.
- *
- * @param nodes     - ComponentNode array from the circuit store
- * @param edges     - Edge array from the circuit store
- * @param duration  - Simulation duration in seconds (default 1.0)
- * @param frequency - AudioIn sine source frequency in Hz (default 1000)
- * @param amplitude - AudioIn sine source amplitude in Volts (default 1.0)
- */
 
 /**
  * Maps a linear wiper position (0–1) to an effective resistance ratio
@@ -317,9 +376,11 @@ function buildCircuitBody(
   if (usedModels.has('TL072')) {
     lines.push(TL072_SUBCKT);
   }
+
   if (usedModels.has('LM741')) {
     lines.push(LM741_SUBCKT);
   }
+
   if (usedModels.has('LM308')) {
     lines.push(LM308_SUBCKT);
   }
@@ -328,19 +389,23 @@ function buildCircuitBody(
   const usedDiodeModels = new Set(
     nodes.filter((n) => n.type === 'diode').map((n) => n.data.model),
   );
+
   if (usedDiodeModels.has('1N914')) {
     lines.push('.model 1N914 D(Is=2.52n Rs=.568 N=1.752 Cjo=4p M=.4 tt=20n)');
   }
+
   if (usedDiodeModels.has('1N4001')) {
     lines.push(
       '.model 1N4001 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u)',
     );
   }
+
   if (usedDiodeModels.has('1N4002')) {
     lines.push(
       '.model 1N4002 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u BV=100)',
     );
   }
+
   if (usedDiodeModels.has('1N270')) {
     lines.push('.model 1N270 D(Is=200n Rs=2 N=1.1 Cjo=1p M=.5 tt=50n BV=100)');
   }
@@ -349,27 +414,35 @@ function buildCircuitBody(
   const usedBJTModels = new Set(
     nodes.filter((n) => n.type === 'bjt').map((n) => n.data.model),
   );
+
   if (usedBJTModels.has('2N3904')) {
     lines.push(BJT_2N3904);
   }
+
   if (usedBJTModels.has('2N3906')) {
     lines.push(BJT_2N3906);
   }
+
   if (usedBJTModels.has('AC128')) {
     lines.push(BJT_AC128);
   }
+
   if (usedBJTModels.has('2N5088')) {
     lines.push(BJT_2N5088);
   }
+
   if (usedBJTModels.has('2N5089')) {
     lines.push(BJT_2N5089);
   }
+
   if (usedBJTModels.has('BC108')) {
     lines.push(BJT_BC108);
   }
+
   if (usedBJTModels.has('BC549')) {
     lines.push(BJT_BC549);
   }
+
   if (usedBJTModels.has('MPSA18')) {
     lines.push(BJT_MPSA18);
   }
@@ -384,15 +457,19 @@ function buildCircuitBody(
   if (usedJFETModels.has('2N5458')) {
     lines.push(JFET_2N5458);
   }
+
   if (usedJFETModels.has('J201')) {
     lines.push(JFET_J201);
   }
+
   if (usedJFETModels.has('J113')) {
     lines.push(JFET_J113);
   }
+
   if (usedJFETModels.has('MPF102')) {
     lines.push(JFET_MPF102);
   }
+
   if (usedJFETModels.has('2N5460')) {
     lines.push(JFET_2N5460);
   }
@@ -401,15 +478,19 @@ function buildCircuitBody(
   const usedMOSFETModels = new Set(
     nodes.filter((n) => n.type === 'mosfet').map((n) => n.data.model),
   );
+
   if (usedMOSFETModels.has('BS170')) {
     lines.push(MOSFET_BS170);
   }
+
   if (usedMOSFETModels.has('IRF510')) {
     lines.push(MOSFET_IRF510);
   }
+
   if (usedMOSFETModels.has('IRF9510')) {
     lines.push(MOSFET_IRF9510);
   }
+
   if (usedMOSFETModels.has('2N7000')) {
     lines.push(MOSFET_2N7000);
   }
@@ -533,6 +614,21 @@ function buildCircuitBody(
   return { lines, portToNode, inputPos, inputNeg, outputPos, outputNeg };
 }
 
+/**
+ * Compile a circuit graph into a SPICE netlist for
+ * audio simulation.
+ *
+ * High-level flow:
+ *   1. Build shared circuit body (models +
+ *      component lines + probe)
+ *   2. Add input source (PWL from audio buffer,
+ *      or SIN test tone if no buffer)
+ *   3. Add .save for output node only
+ *   4. Add .tran transient analysis command
+ *
+ * The resulting netlist string is ready to be
+ * passed to EECircuitEngine.run().
+ */
 export function compileNetlist(
   nodes: Array<ComponentNode>,
   edges: Array<Edge>,
@@ -575,7 +671,18 @@ export function compileNetlist(
   return lines.join('\n');
 }
 
-/** Builds a SPICE voltage source line for a given waveform type. */
+/**
+ * Build a SPICE voltage source line for a given
+ * waveform type.
+ *
+ * Maps each waveform shape to the appropriate
+ * ngspice source directive:
+ *
+ *   sine     → SIN()
+ *   square   → PULSE() with fast rise/fall
+ *   triangle → PULSE() with symmetric ramps
+ *   sawtooth → PULSE() with one-sided ramp
+ */
 function buildWaveformSource(
   nodePos: string,
   nodeNeg: string,
@@ -649,19 +756,23 @@ export function getNodeLabels(
     if (spiceNode === '0' || spiceNode === 'UNCONNECTED') {
       continue;
     }
+
     const [nodeId] = port.split('|');
     const component = nodes.find((n) => n.id === nodeId);
     if (!component) {
       continue;
     }
+
     // Skip types that don't contribute useful labels
     if (component.type === 'ground' || component.type === 'jack') {
       continue;
     }
+
     const label = component.data.label;
     if (!nodeToLabels.has(spiceNode)) {
       nodeToLabels.set(spiceNode, []);
     }
+
     nodeToLabels.get(spiceNode)!.push(label);
   }
 
@@ -675,9 +786,11 @@ export function getNodeLabels(
   const inputNode = nodes.find(
     (n) => n.type === 'jack' && n.data.direction === 'in',
   );
+
   const outputNode = nodes.find(
     (n) => n.type === 'jack' && n.data.direction === 'out',
   );
+
   if (inputNode) {
     const pos = portToNode.get(`${inputNode.id}|pos`);
     if (pos && pos !== '0') {
@@ -685,6 +798,7 @@ export function getNodeLabels(
       result.set(pos, existing ? `${existing} [IN]` : 'Input');
     }
   }
+
   if (outputNode) {
     const pos = portToNode.get(`${outputNode.id}|pos`);
     if (pos && pos !== '0') {

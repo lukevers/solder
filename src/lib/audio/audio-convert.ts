@@ -3,10 +3,23 @@ import type {
   SimulationOutput,
 } from '../engines/spice-engine';
 
-/** Maximum resampled samples per trace (≈45 seconds at 44.1 kHz, ~8 MB). */
+/**
+ * Maximum resampled samples per trace.
+ *
+ * At 44.1 kHz this is roughly 45 seconds of
+ * audio and occupies ~8 MB as a Float32Array.
+ * Keeps memory usage bounded for long transients.
+ */
 const MAX_RESAMPLE_SAMPLES = 2_000_000;
 
-/** Maximum number of node traces to resample in a single analysis run. */
+/**
+ * Maximum node traces to resample in a single
+ * analysis run.
+ *
+ * Caps memory usage when the circuit has many
+ * internal nodes. Matches MAX_ANALYSIS_NODES in
+ * netlist.ts.
+ */
 const MAX_TRACES = 64;
 
 /**

@@ -5,10 +5,24 @@ import type {
   SpiceEngine,
 } from './spice-engine';
 
-/** Maximum time (ms) a single simulation is allowed to run before we abort. */
+/**
+ * Maximum time (ms) a single simulation is
+ * allowed to run before we abort.
+ *
+ * Protects against circuits that cause ngspice
+ * to hang (e.g. open circuits, convergence
+ * failures).
+ */
 const SIM_TIMEOUT_MS = 60_000;
 
-/** Maximum number of data points allowed in a single SPICE output vector. */
+/**
+ * Maximum data points allowed in a single SPICE
+ * output vector.
+ *
+ * At SPICE_SAMPLE_RATE (10 kHz) this allows
+ * ~500 seconds of simulation. Exceeding this
+ * usually means the circuit is unstable.
+ */
 const MAX_SPICE_POINTS = 5_000_000;
 
 /**
@@ -72,6 +86,15 @@ export function extractMultiNodeOutput(result: ResultType): MultiNodeOutput {
   };
 }
 
+/**
+ * WASM-based SPICE engine using eecircuit-engine.
+ *
+ * Wraps the eecircuit-engine npm package to provide
+ * the SpiceEngine interface. The WASM binary loads
+ * lazily on the first init() call. Each simulation
+ * runs with a timeout guard (SIM_TIMEOUT_MS) to
+ * catch hangs from degenerate circuits.
+ */
 export class EECircuitEngine implements SpiceEngine {
   private sim: Simulation | null = null;
 

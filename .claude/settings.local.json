@@ -82,7 +82,8 @@
       "Bash(grep -rn \"NodeDragHandler\\\\|NodeDrag\\\\b\" /Users/lukevers/Code/solder/node_modules/@xyflow/react/dist/esm/*.d.ts)",
       "Bash(xargs cat:*)",
       "Bash(curl -s -L \"https://davidlibland.github.io/posts/2020-08-30-hard-vs-soft-clipping.html\")",
-      "Bash(curl -sL -o /tmp/fuzz-face-schematic.png \"https://www.electrosmash.com/images/tech/fuzz-face/fuzz-face-original-schematic-parts.png\")"
+      "Bash(curl -sL -o /tmp/fuzz-face-schematic.png \"https://www.electrosmash.com/images/tech/fuzz-face/fuzz-face-original-schematic-parts.png\")",
+      "Bash(xargs -I {} basename {})"
     ]
   }
 }
