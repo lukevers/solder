@@ -1,5 +1,3 @@
-// src/test/examples.test.ts
-
 import { describe, expect, it } from 'vitest';
 import { EXAMPLES } from '../lib/examples';
 import { compileNetlist } from '../lib/netlist';

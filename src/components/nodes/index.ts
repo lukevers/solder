@@ -1,5 +1,3 @@
-// src/components/nodes/index.ts
-
 import { BJTNode } from './BJTNode';
 import { BoxNode } from './BoxNode';
 import { CapacitorNode } from './CapacitorNode';

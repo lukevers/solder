@@ -1,4 +1,3 @@
-// src/components/nodes/BJTNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { BJTData } from '../../lib/types';
 import {

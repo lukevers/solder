@@ -1,4 +1,3 @@
-// src/components/nodes/GroundNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import { HANDLE_STYLE, NodeShell, NodeSvg, RotatedHandle } from './NodeShell';
 

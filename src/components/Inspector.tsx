@@ -1,5 +1,3 @@
-// src/components/Inspector.tsx
-
 import type { Edge } from '@xyflow/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -50,10 +48,10 @@ function UnitInput<U extends string>({
   onUnitChange: (u: U) => void;
 }) {
   return (
-    <div className="flex rounded border border-gray-700 overflow-hidden">
+    <div className="flex overflow-hidden rounded border border-gray-700">
       <input
         type="number"
-        className="flex-1 min-w-0 bg-gray-950 text-gray-200 px-2 py-1 text-xs font-mono focus:outline-none"
+        className="min-w-0 flex-1 bg-gray-950 px-2 py-1 font-mono text-gray-200 text-xs focus:outline-none"
         value={value}
         min={min}
         onChange={(e) => onValueChange(Number(e.target.value))}
@@ -64,7 +62,7 @@ function UnitInput<U extends string>({
           type="button"
           onClick={() => onUnitChange(u)}
           className={[
-            'px-2 py-1 text-xs font-mono border-l border-gray-700',
+            'border-gray-700 border-l px-2 py-1 font-mono text-xs',
             u === unit
               ? 'bg-blue-950 text-blue-300'
               : 'bg-gray-950 text-gray-500 hover:text-gray-300',
@@ -86,7 +84,7 @@ function Field({
 }) {
   return (
     <div className="mb-3">
-      <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+      <div className="mb-1 text-gray-500 text-xs uppercase tracking-wider">
         {label}
       </div>
       {children}
@@ -346,7 +344,7 @@ function BJTInspector({
         </select>
       </Field>
       <Field label="Polarity">
-        <div className="text-xs font-mono text-gray-200">{polarity}</div>
+        <div className="font-mono text-gray-200 text-xs">{polarity}</div>
       </Field>
     </>
   );
@@ -402,7 +400,7 @@ function JFETInspector({
         </select>
       </Field>
       <Field label="Channel">
-        <div className="text-xs font-mono text-gray-200">
+        <div className="font-mono text-gray-200 text-xs">
           {polarity}-channel
         </div>
       </Field>
@@ -456,7 +454,7 @@ function MOSFETInspector({
         </select>
       </Field>
       <Field label="Channel">
-        <div className="text-xs font-mono text-gray-200">
+        <div className="font-mono text-gray-200 text-xs">
           {polarity}-channel
         </div>
       </Field>
@@ -507,7 +505,7 @@ function PotInspector({
         />
       </Field>
       <Field label="Taper">
-        <div className="flex rounded border border-gray-700 overflow-hidden">
+        <div className="flex overflow-hidden rounded border border-gray-700">
           {(
             [
               {
@@ -533,7 +531,7 @@ function PotInspector({
               title={tip}
               onClick={() => update({ taper: value })}
               className={[
-                'flex-1 px-2 py-1 text-xs font-mono font-bold border-r last:border-r-0 border-gray-700 transition-colors',
+                'flex-1 border-gray-700 border-r px-2 py-1 font-bold font-mono text-xs transition-colors last:border-r-0',
                 value === taper
                   ? 'bg-blue-950 text-blue-300'
                   : 'bg-gray-950 text-gray-500 hover:text-gray-300',
@@ -580,7 +578,7 @@ function SweepButton({
       type="button"
       onClick={() => onSweep(nodeId)}
       disabled={busy}
-      className="w-full -mt-2 mb-3 text-xs py-1.5 rounded font-mono transition-colors bg-amber-950 border border-amber-700 text-amber-300 hover:bg-amber-900 disabled:opacity-40 disabled:cursor-not-allowed"
+      className="-mt-2 mb-3 w-full rounded border border-amber-700 bg-amber-950 py-1.5 font-mono text-amber-300 text-xs transition-colors hover:bg-amber-900 disabled:cursor-not-allowed disabled:opacity-40"
     >
       {sweepStatus === 'running'
         ? 'Sweeping…'
@@ -614,7 +612,7 @@ function JackInspector({
         />
       </Field>
       <Field label="Direction">
-        <div className="text-xs font-mono text-gray-200">
+        <div className="font-mono text-gray-200 text-xs">
           {direction === 'in' ? 'Input' : 'Output'}
         </div>
       </Field>
@@ -681,7 +679,7 @@ function StickyNoteInspector({
       </Field>
       <Field label="Text">
         <textarea
-          className={`${INPUT_CLASS} resize-y min-h-[60px]`}
+          className={`${INPUT_CLASS} min-h-[60px] resize-y`}
           rows={4}
           value={text}
           onChange={(e) =>
@@ -710,7 +708,7 @@ function StickyNoteInspector({
                   width: currentWidth,
                 })
               }
-              className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase transition-colors ${
+              className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase transition-colors ${
                 currentSize === s
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
@@ -736,7 +734,7 @@ function StickyNoteInspector({
                   width: w,
                 })
               }
-              className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase transition-colors ${
+              className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase transition-colors ${
                 currentWidth === w
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
@@ -762,9 +760,9 @@ function StickyNoteInspector({
                   width: currentWidth,
                 })
               }
-              className={`w-5 h-5 rounded-full border-2 transition-colors ${
+              className={`h-5 w-5 rounded-full border-2 transition-colors ${
                 current === opt.id
-                  ? 'border-white scale-110'
+                  ? 'scale-110 border-white'
                   : 'border-gray-600 hover:border-gray-400'
               }`}
               style={{ background: opt.swatch }}
@@ -799,14 +797,14 @@ function BoxInspector({
         />
       </Field>
       <Field label="Variant">
-        <div className="flex rounded border border-gray-700 overflow-hidden">
+        <div className="flex overflow-hidden rounded border border-gray-700">
           {(['outline', 'filled', 'dashed'] as Array<BoxVariant>).map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => update({ variant: s })}
               className={[
-                'flex-1 px-1 py-1 text-xs font-mono border-r last:border-r-0 border-gray-700 transition-colors',
+                'flex-1 border-gray-700 border-r px-1 py-1 font-mono text-xs transition-colors last:border-r-0',
                 s === variant
                   ? 'bg-blue-950 text-blue-300'
                   : 'bg-gray-950 text-gray-500 hover:text-gray-300',
@@ -824,9 +822,9 @@ function BoxInspector({
               key={opt.id}
               type="button"
               onClick={() => update({ color: opt.id })}
-              className={`w-5 h-5 rounded-full border-2 transition-colors ${
+              className={`h-5 w-5 rounded-full border-2 transition-colors ${
                 color === opt.id
-                  ? 'border-white scale-110'
+                  ? 'scale-110 border-white'
                   : 'border-gray-600 hover:border-gray-400'
               }`}
               style={{ background: opt.swatch }}
@@ -849,7 +847,9 @@ function EdgeInspector({
   edges: Array<Edge>;
 }) {
   const edge = edges.find((e) => e.id === edgeId);
-  if (!edge) return null;
+  if (!edge) {
+    return null;
+  }
 
   const src = allNodes.find((n) => n.id === edge.source);
   const tgt = allNodes.find((n) => n.id === edge.target);
@@ -858,19 +858,19 @@ function EdgeInspector({
   return (
     <>
       <Field label="From">
-        <div className="text-xs font-mono text-gray-200">
+        <div className="font-mono text-gray-200 text-xs">
           {src?.data.label ?? src?.type ?? '?'}
           <span className="text-gray-500">.{edge.sourceHandle}</span>
         </div>
       </Field>
       <Field label="To">
-        <div className="text-xs font-mono text-gray-200">
+        <div className="font-mono text-gray-200 text-xs">
           {tgt?.data.label ?? tgt?.type ?? '?'}
           <span className="text-gray-500">.{edge.targetHandle}</span>
         </div>
       </Field>
       <Field label="Signal">
-        <div className="text-xs font-mono text-gray-200">
+        <div className="font-mono text-gray-200 text-xs">
           {isDC ? 'DC' : 'AC'}
         </div>
       </Field>
@@ -891,14 +891,14 @@ function RotationControl({
 
   return (
     <Field label="Rotation">
-      <div className="flex rounded border border-gray-700 overflow-hidden">
+      <div className="flex overflow-hidden rounded border border-gray-700">
         {ROTATIONS.map((r) => (
           <button
             key={r}
             type="button"
             onClick={() => rotateNode(nodeId, r)}
             className={[
-              'flex-1 px-1 py-1 text-xs font-mono border-r last:border-r-0 border-gray-700 transition-colors',
+              'flex-1 border-gray-700 border-r px-1 py-1 font-mono text-xs transition-colors last:border-r-0',
               r === rotation
                 ? 'bg-blue-950 text-blue-300'
                 : 'bg-gray-950 text-gray-500 hover:text-gray-300',
@@ -936,14 +936,14 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
   if (selectedEdgeId) {
     return (
       <div className="p-3">
-        <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">
+        <div className="mb-3 text-gray-500 text-xs uppercase tracking-wider">
           Inspector · trace
         </div>
         <EdgeInspector edgeId={selectedEdgeId} nodes={nodes} edges={edges} />
         <button
           type="button"
           onClick={() => deleteEdge(selectedEdgeId)}
-          className="flex items-center justify-center gap-1.5 w-full mt-2 text-xs py-1.5 rounded font-mono transition-colors bg-red-950 border border-red-800 text-red-400 hover:bg-red-900 hover:text-red-300"
+          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded border border-red-800 bg-red-950 py-1.5 font-mono text-red-400 text-xs transition-colors hover:bg-red-900 hover:text-red-300"
         >
           <Trash2 size={11} />
           Delete
@@ -962,7 +962,7 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
 
   return (
     <div className="p-3">
-      <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">
+      <div className="mb-3 text-gray-500 text-xs uppercase tracking-wider">
         Inspector · {selected.type}
       </div>
       {selected.type === 'resistor' && (
@@ -997,18 +997,18 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
       <button
         type="button"
         onClick={() => deleteNode(selected.id)}
-        className="flex items-center justify-center gap-1.5 w-full mt-2 text-xs py-1.5 rounded font-mono transition-colors bg-red-950 border border-red-800 text-red-400 hover:bg-red-900 hover:text-red-300"
+        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded border border-red-800 bg-red-950 py-1.5 font-mono text-red-400 text-xs transition-colors hover:bg-red-900 hover:text-red-300"
       >
         <Trash2 size={11} />
         Delete
       </button>
-      <div className="mt-2 text-[10px] text-gray-600 font-mono flex flex-col items-center">
+      <div className="mt-2 flex flex-col items-center font-mono text-[10px] text-gray-600">
         <span>
           X: {Math.round(selected.position.x)}, Y:{' '}
           {Math.round(selected.position.y)}
         </span>
         <span
-          className="cursor-pointer hover:text-gray-400 transition-colors"
+          className="cursor-pointer transition-colors hover:text-gray-400"
           title="Click to copy"
           onClick={() => navigator.clipboard.writeText(selected.id)}
         >

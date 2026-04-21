@@ -1,5 +1,3 @@
-// src/components/PedalPanel.tsx
-
 import { Activity } from 'lucide-react';
 import { useCallback, useId, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -28,7 +26,9 @@ function arcPath(
   const start = polarToXY(cx, cy, r, startDeg);
   const end = polarToXY(cx, cy, r, endDeg);
   const sweep = (endDeg - startDeg + 360) % 360;
-  if (sweep < 0.5) return '';
+  if (sweep < 0.5) {
+    return '';
+  }
   const large = sweep > 180 ? 1 : 0;
   return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
 }
@@ -79,7 +79,9 @@ function PotKnob({
 
   const onPointerMove = useCallback(
     (e: React.PointerEvent<SVGSVGElement>) => {
-      if (!dragRef.current) return;
+      if (!dragRef.current) {
+        return;
+      }
       const delta = (dragRef.current.startY - e.clientY) / 120;
       const next = Math.max(0, Math.min(1, dragRef.current.startPos + delta));
       updateNodeData(nodeId, { ...data, position: next } as PotData);
@@ -215,17 +217,17 @@ function PotKnob({
       </svg>
 
       <div className="text-center">
-        <div className="text-gray-200 text-xs font-mono font-bold tracking-wide">
+        <div className="font-bold font-mono text-gray-200 text-xs tracking-wide">
           {data.label}
         </div>
-        <div className="text-gray-500 text-[10px] font-mono">{pct}%</div>
+        <div className="font-mono text-[10px] text-gray-500">{pct}%</div>
       </div>
       {onSweep && (
         <button
           type="button"
           onClick={() => onSweep(nodeId)}
           disabled={busy}
-          className="flex items-center justify-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded transition-colors bg-amber-950/60 border border-amber-800/50 text-amber-400 hover:bg-amber-900/60 hover:border-amber-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center justify-center gap-1 rounded border border-amber-800/50 bg-amber-950/60 px-2 py-0.5 font-mono text-[10px] text-amber-400 transition-colors hover:border-amber-700 hover:bg-amber-900/60 disabled:cursor-not-allowed disabled:opacity-40"
           title="Sweep 0–100%"
         >
           <Activity size={10} />
@@ -250,15 +252,17 @@ export function PedalPanel({
 
   const [open, setOpen] = useState(true);
 
-  if (pots.length === 0) return null;
+  if (pots.length === 0) {
+    return null;
+  }
 
   return (
-    <div className="border-b border-gray-800">
+    <div className="border-gray-800 border-b">
       {/* Collapse toggle */}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 w-full px-3 py-2 text-[10px] font-mono font-bold text-gray-500 uppercase tracking-widest hover:text-gray-300 transition-colors"
+        className="flex w-full items-center gap-1.5 px-3 py-2 font-bold font-mono text-[10px] text-gray-500 uppercase tracking-widest transition-colors hover:text-gray-300"
       >
         <svg
           width="10"
@@ -280,11 +284,11 @@ export function PedalPanel({
 
       {open && (
         /* Pedal enclosure */
-        <div className="mx-3 mb-3 rounded-lg bg-gray-950 border border-gray-700 p-3 shadow-inner">
+        <div className="mx-3 mb-3 rounded-lg border border-gray-700 bg-gray-950 p-3 shadow-inner">
           {/* Decorative screws top */}
-          <div className="flex justify-between mb-3">
-            <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
-            <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
+          <div className="mb-3 flex justify-between">
+            <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
+            <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
           </div>
 
           {/* Knob grid */}
@@ -300,9 +304,9 @@ export function PedalPanel({
           </div>
 
           {/* Bottom screws */}
-          <div className="flex justify-between mt-3">
-            <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
-            <div className="w-2 h-2 rounded-full bg-gray-700 border border-gray-600" />
+          <div className="mt-3 flex justify-between">
+            <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
+            <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
           </div>
         </div>
       )}

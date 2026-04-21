@@ -1,4 +1,3 @@
-// src/components/nodes/StickyNoteNode.tsx
 import type { NodeProps } from '@xyflow/react';
 import type {
   StickyNoteColor,
@@ -96,7 +95,7 @@ export function StickyNoteNode({ id, data, selected }: NodeProps) {
       style={{ width: w, minHeight: 80 }}
     >
       <div
-        className="rounded overflow-hidden"
+        className="overflow-hidden rounded"
         style={{
           width: w,
           minHeight: 80,
@@ -108,7 +107,7 @@ export function StickyNoteNode({ id, data, selected }: NodeProps) {
         }}
       >
         <div
-          className="px-1 py-0.5 text-[5px] font-mono font-bold tracking-wider uppercase leading-tight"
+          className="px-1 py-0.5 font-bold font-mono text-[5px] uppercase leading-tight tracking-wider"
           style={{
             background: selected ? c.borderSelected : c.header,
             color: c.text,
@@ -117,7 +116,7 @@ export function StickyNoteNode({ id, data, selected }: NodeProps) {
           {d.label}
         </div>
         <div
-          className={`px-2 py-1.5 font-sans whitespace-pre-wrap break-words ${sizeClass}`}
+          className={`whitespace-pre-wrap break-words px-2 py-1.5 font-sans ${sizeClass}`}
           style={{ color: c.text }}
         >
           {d.text}

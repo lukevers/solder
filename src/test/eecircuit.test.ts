@@ -1,4 +1,3 @@
-// src/test/eecircuit.test.ts
 import type { ResultType } from 'eecircuit-engine';
 import { describe, expect, it } from 'vitest';
 import {

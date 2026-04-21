@@ -1,4 +1,3 @@
-// src/components/nodes/NodeShell.tsx
 import {
   Handle,
   type HandleProps,
@@ -30,9 +29,12 @@ function resolveOffset(
   value: string | number | undefined,
   dimension: number,
 ): number | undefined {
-  if (value === undefined) return undefined;
-  if (typeof value === 'string' && value.endsWith('%'))
+  if (value === undefined) {
+    return undefined;
+  }
+  if (typeof value === 'string' && value.endsWith('%')) {
     return (parseFloat(value) / 100) * dimension;
+  }
   return Number(value);
 }
 
@@ -43,11 +45,15 @@ function transformHandleStyle(
   origW: number,
   origH: number,
 ): React.CSSProperties {
-  if (!rotation || !style) return style ?? {};
+  if (!rotation || !style) {
+    return style ?? {};
+  }
 
   const hasTop = 'top' in style && style.top !== undefined;
   const hasLeft = 'left' in style && style.left !== undefined;
-  if (!hasTop && !hasLeft) return style;
+  if (!hasTop && !hasLeft) {
+    return style;
+  }
 
   const { top: rawTop, left: rawLeft, ...rest } = style;
   const T = resolveOffset(rawTop, origH);
@@ -102,7 +108,9 @@ const NodeRotationContext = createContext<RotationCtx>({
 
 export function RotatedHandle(props: HandleProps) {
   const { rotation, origWidth, origHeight } = useContext(NodeRotationContext);
-  if (!rotation) return <Handle {...props} />;
+  if (!rotation) {
+    return <Handle {...props} />;
+  }
 
   const newPosition = rotatePosition(props.position, rotation);
   const newStyle = transformHandleStyle(
@@ -147,7 +155,7 @@ export function NodeShell({ id, width, height, children }: NodeShellProps) {
     >
       <div
         onClick={() => selectNode(id)}
-        className="relative flex items-center justify-center cursor-pointer"
+        className="relative flex cursor-pointer items-center justify-center"
         style={{ width: effW, height: effH }}
       >
         {children}

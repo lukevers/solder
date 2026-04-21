@@ -1,4 +1,3 @@
-// src/lib/types.ts
 import type { Edge, XYPosition } from '@xyflow/react';
 
 export type { XYPosition };

@@ -1,4 +1,3 @@
-// src/components/nodes/PowerNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { PowerData } from '../../lib/types';
 import {

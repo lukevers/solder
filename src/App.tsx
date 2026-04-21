@@ -1,4 +1,3 @@
-// src/App.tsx
 import { ChevronRight, Maximize2, Repeat, RotateCcw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -106,7 +105,9 @@ export default function App() {
   const viewResetKeyRef = useRef(viewResetKey);
   useEffect(() => {
     // Skip the initial render
-    if (viewResetKeyRef.current === viewResetKey) return;
+    if (viewResetKeyRef.current === viewResetKey) {
+      return;
+    }
     viewResetKeyRef.current = viewResetKey;
     setPlaying(false);
     setPlayingOriginal(false);
@@ -117,7 +118,9 @@ export default function App() {
     function onKeyDown(e: KeyboardEvent) {
       // Skip when typing in an input/textarea
       const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+        return;
+      }
 
       const mod = e.metaKey || e.ctrlKey;
       if (mod) {
@@ -133,9 +136,13 @@ export default function App() {
 
       if (e.key === 'r' || e.key === 'R') {
         const { selectedNodeId, nodes, rotateNode } = useStore.getState();
-        if (!selectedNodeId) return;
+        if (!selectedNodeId) {
+          return;
+        }
         const node = nodes.find((n) => n.id === selectedNodeId);
-        if (!node) return;
+        if (!node) {
+          return;
+        }
         const cur = node.rotation ?? 0;
         const next = e.shiftKey ? (cur - 90 + 360) % 360 : (cur + 90) % 360;
         rotateNode(selectedNodeId, next);
@@ -211,7 +218,9 @@ export default function App() {
     const pipeline = new AudioPipeline();
     pipelineRef.current = pipeline;
     pipeline.init(volume).then(() => {
-      if (!cancelled) setSourceBuffer(null);
+      if (!cancelled) {
+        setSourceBuffer(null);
+      }
     });
     return () => {
       cancelled = true;
@@ -229,9 +238,13 @@ export default function App() {
     const name = audioSource.name;
     let cancelled = false;
     const pipeline = pipelineRef.current;
-    if (!pipeline) return;
+    if (!pipeline) {
+      return;
+    }
     pipeline.loadSample(name).then(() => {
-      if (!cancelled) setSourceBuffer(pipeline.getSampleData(name));
+      if (!cancelled) {
+        setSourceBuffer(pipeline.getSampleData(name));
+      }
     });
     return () => {
       cancelled = true;
@@ -246,7 +259,9 @@ export default function App() {
   // Unified playback effect — only one of playing/playingOriginal is true at a time
   useEffect(() => {
     const pipeline = pipelineRef.current;
-    if (!pipeline) return;
+    if (!pipeline) {
+      return;
+    }
 
     function playWithLoop(buf: Float32Array, onStop: () => void) {
       const onEnded = () => {
@@ -300,7 +315,9 @@ export default function App() {
   }, [setPlaying, clearOutputBuffer, setSimulatedInput]);
 
   const handleSimulate = useCallback(() => {
-    if (!workerRef.current) return;
+    if (!workerRef.current) {
+      return;
+    }
     try {
       setSimulationStatus('running');
       simStartRef.current = performance.now();
@@ -355,7 +372,9 @@ export default function App() {
   const handleSweep = useCallback(
     (nodeId: string) => {
       // Terminate any previous sweep workers
-      for (const w of sweepWorkersRef.current) w.terminate();
+      for (const w of sweepWorkersRef.current) {
+        w.terminate();
+      }
       sweepWorkersRef.current = [];
 
       requestSweep(nodeId);
@@ -401,29 +420,39 @@ export default function App() {
         );
 
         worker.onmessage = (e: MessageEvent<SimulateResponse>) => {
-          if (failed) return;
+          if (failed) {
+            return;
+          }
           const msg = e.data;
           if (msg.type === 'result') {
             addSweepResult({ position, outputBuffer: msg.outputBuffer });
             completed++;
             if (completed === total) {
               completeSweep();
-              for (const w of sweepWorkersRef.current) w.terminate();
+              for (const w of sweepWorkersRef.current) {
+                w.terminate();
+              }
               sweepWorkersRef.current = [];
             }
           } else {
             failed = true;
             failSweep(msg.message);
-            for (const w of sweepWorkersRef.current) w.terminate();
+            for (const w of sweepWorkersRef.current) {
+              w.terminate();
+            }
             sweepWorkersRef.current = [];
           }
         };
 
         worker.onerror = (e: ErrorEvent) => {
-          if (failed) return;
+          if (failed) {
+            return;
+          }
           failed = true;
           failSweep(e.message ?? 'Sweep worker crashed');
-          for (const w of sweepWorkersRef.current) w.terminate();
+          for (const w of sweepWorkersRef.current) {
+            w.terminate();
+          }
           sweepWorkersRef.current = [];
         };
 
@@ -455,7 +484,9 @@ export default function App() {
   // Handle sweep playback
   useEffect(() => {
     const pipeline = pipelineRef.current;
-    if (!pipeline) return;
+    if (!pipeline) {
+      return;
+    }
     if (sweepPlayingIndex != null && sweepResults[sweepPlayingIndex]) {
       const buf = sweepResults[sweepPlayingIndex].outputBuffer;
       pipeline.playBuffer(buf, () => setSweepPlayingIndex(null));
@@ -465,12 +496,14 @@ export default function App() {
   // Clean up sweep workers on unmount
   useEffect(() => {
     return () => {
-      for (const w of sweepWorkersRef.current) w.terminate();
+      for (const w of sweepWorkersRef.current) {
+        w.terminate();
+      }
     };
   }, []);
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex h-screen flex-col overflow-hidden">
       <Toolbar
         onSimulate={handleSimulate}
         onToggleExamples={() => setShowExamples((v) => !v)}
@@ -492,7 +525,7 @@ export default function App() {
           <button
             type="button"
             onClick={() => setSidebarOpen((o) => !o)}
-            className="absolute -left-5 top-3 z-10 w-5 h-8 bg-gray-900 border border-gray-800 border-r-0 rounded-l flex items-center justify-center text-gray-500 hover:text-gray-300 transition-colors"
+            className="absolute top-3 -left-5 z-10 flex h-8 w-5 items-center justify-center rounded-l border border-gray-800 border-r-0 bg-gray-900 text-gray-500 transition-colors hover:text-gray-300"
             aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
           >
             <ChevronRight
@@ -503,10 +536,10 @@ export default function App() {
         </div>
 
         {sidebarOpen && (
-          <div className="w-52 bg-gray-900 border-l border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
+          <div className="flex w-52 flex-shrink-0 flex-col overflow-y-auto border-gray-800 border-l bg-gray-900">
             <PedalPanel onSweep={handleSweep} />
             <Inspector onSweep={handleSweep} />
-            <div className="border-t border-gray-800" />
+            <div className="border-gray-800 border-t" />
             {sweepResults.length > 0 || sweepStatus === 'running' ? (
               <SweepResults
                 results={sweepResults}
@@ -531,7 +564,7 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setWaveformOpen((o) => !o)}
-                      className="flex items-center gap-1.5 px-3 py-2 text-xs text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 text-gray-500 text-xs uppercase tracking-wider transition-colors hover:text-gray-300"
                     >
                       <svg
                         width="10"
@@ -561,13 +594,13 @@ export default function App() {
                       }}
                       onMouseLeave={() => setWaveformTooltip(null)}
                     >
-                      <div className="w-4 h-4 rounded-full border border-gray-600 text-gray-500 flex items-center justify-center text-[10px] cursor-help leading-none select-none">
+                      <div className="flex h-4 w-4 cursor-help select-none items-center justify-center rounded-full border border-gray-600 text-[10px] text-gray-500 leading-none">
                         i
                       </div>
                       {waveformTooltip &&
                         createPortal(
                           <div
-                            className="fixed w-52 bg-gray-800 border border-gray-600 rounded p-2.5 text-xs text-gray-300 font-sans shadow-xl z-[9999] pointer-events-none"
+                            className="pointer-events-none fixed z-[9999] w-52 rounded border border-gray-600 bg-gray-800 p-2.5 font-sans text-gray-300 text-xs shadow-xl"
                             style={{
                               left: Math.min(
                                 waveformTooltip.x,
@@ -592,7 +625,7 @@ export default function App() {
                         setPlayingOriginal(false);
                         setShowWaveformModal(true);
                       }}
-                      className="px-3 text-gray-500 hover:text-gray-200 transition-colors"
+                      className="px-3 text-gray-500 transition-colors hover:text-gray-200"
                       aria-label="Expand waveform"
                     >
                       <Maximize2 size={13} />
@@ -610,14 +643,14 @@ export default function App() {
                       }
                     />
                     {(sourceBuffer || outputBuffer) && (
-                      <div className="flex mt-2 rounded border border-gray-700 overflow-hidden">
+                      <div className="mt-2 flex overflow-hidden rounded border border-gray-700">
                         <button
                           type="button"
                           onClick={() => setLooping((v) => !v)}
-                          className={`flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono transition-colors ${
+                          className={`flex flex-1 items-center justify-center gap-1 py-1 font-mono text-xs transition-colors ${
                             looping
                               ? 'bg-blue-950 text-blue-400'
-                              : 'bg-gray-800 hover:bg-gray-700 text-gray-500 hover:text-gray-300'
+                              : 'bg-gray-800 text-gray-500 hover:bg-gray-700 hover:text-gray-300'
                           }`}
                           aria-label={looping ? 'Disable loop' : 'Enable loop'}
                         >
@@ -628,7 +661,7 @@ export default function App() {
                           type="button"
                           onClick={handleReset}
                           disabled={!outputBuffer && !selection}
-                          className="flex-1 flex items-center justify-center gap-1 text-xs py-1 font-mono bg-gray-800 text-gray-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-gray-700 hover:enabled:text-gray-300"
+                          className="flex flex-1 items-center justify-center gap-1 bg-gray-800 py-1 font-mono text-gray-500 text-xs transition-colors hover:enabled:bg-gray-700 hover:enabled:text-gray-300 disabled:cursor-not-allowed disabled:opacity-30"
                         >
                           <RotateCcw size={10} /> Reset
                         </button>
@@ -638,7 +671,7 @@ export default function App() {
                 )}
               </div>
             )}
-            <div className="border-t border-gray-800" />
+            <div className="border-gray-800 border-t" />
             <AudioControls />
           </div>
         )}

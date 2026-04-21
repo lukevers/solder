@@ -1,4 +1,3 @@
-// src/test/spice-engine.test.ts
 import { describe, expect, it } from 'vitest';
 import { MockSpiceEngine } from '../lib/engines/mock';
 

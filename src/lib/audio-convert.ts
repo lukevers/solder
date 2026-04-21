@@ -1,4 +1,3 @@
-// src/lib/audio-convert.ts
 import type { MultiNodeOutput, SimulationOutput } from './spice-engine';
 
 /** Maximum resampled samples per trace (≈45 seconds at 44.1 kHz, ~8 MB). */
@@ -16,7 +15,9 @@ export function voltageToAudioBuffer(
   sampleRate: number,
 ): Float32Array {
   const { timeValues, voltageValues } = output;
-  if (timeValues.length === 0) return new Float32Array(0);
+  if (timeValues.length === 0) {
+    return new Float32Array(0);
+  }
 
   const maxTime = timeValues[timeValues.length - 1];
   const n = Math.min(
@@ -29,7 +30,9 @@ export function voltageToAudioBuffer(
   for (let i = 0; i < n; i++) {
     const t = i / sampleRate;
     // Advance j so that timeValues[j] <= t < timeValues[j+1]
-    while (j < timeValues.length - 2 && timeValues[j + 1] <= t) j++;
+    while (j < timeValues.length - 2 && timeValues[j + 1] <= t) {
+      j++;
+    }
 
     const t0 = timeValues[j];
     const t1 = timeValues[j + 1] ?? t0;
@@ -46,9 +49,13 @@ export function voltageToAudioBuffer(
 
   // Normalise: divide by peak absolute value, floor at 0.01 to avoid ÷0
   let peak = 0;
-  for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(result[i]));
+  for (let i = 0; i < n; i++) {
+    peak = Math.max(peak, Math.abs(result[i]));
+  }
   const scale = 1 / Math.max(peak, 0.01);
-  for (let i = 0; i < n; i++) result[i] *= scale;
+  for (let i = 0; i < n; i++) {
+    result[i] *= scale;
+  }
 
   return result;
 }
@@ -62,7 +69,9 @@ function resampleTrace(
   voltageValues: Float64Array,
   sampleRate: number,
 ): Float32Array {
-  if (timeValues.length === 0) return new Float32Array(0);
+  if (timeValues.length === 0) {
+    return new Float32Array(0);
+  }
   const maxTime = timeValues[timeValues.length - 1];
   const n = Math.min(
     Math.max(1, Math.round(maxTime * sampleRate)),
@@ -72,7 +81,9 @@ function resampleTrace(
   let j = 0;
   for (let i = 0; i < n; i++) {
     const t = i / sampleRate;
-    while (j < timeValues.length - 2 && timeValues[j + 1] <= t) j++;
+    while (j < timeValues.length - 2 && timeValues[j + 1] <= t) {
+      j++;
+    }
     const t0 = timeValues[j];
     const t1 = timeValues[j + 1] ?? t0;
     const v0 = voltageValues[j];
@@ -98,7 +109,9 @@ export function resampleAllTraces(
   const result = new Map<string, Float32Array>();
   let count = 0;
   for (const [name, values] of output.traces) {
-    if (count >= MAX_TRACES) break;
+    if (count >= MAX_TRACES) {
+      break;
+    }
     result.set(name, resampleTrace(output.timeValues, values, sampleRate));
     count++;
   }

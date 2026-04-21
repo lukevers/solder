@@ -1,4 +1,3 @@
-// src/components/nodes/MOSFETNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { MOSFETData } from '../../lib/types';
 import {

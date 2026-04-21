@@ -1,4 +1,3 @@
-// src/components/nodes/BoxNode.tsx
 import { type NodeProps, NodeResizer } from '@xyflow/react';
 import type { BoxData, BoxVariant, StickyNoteColor } from '../../lib/types';
 import { useStore } from '../../store';

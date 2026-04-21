@@ -1,5 +1,3 @@
-// src/components/CircuitAnalyzer.tsx
-
 import {
   ChevronDown,
   ChevronLeft,
@@ -137,7 +135,9 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
   // Resize drag handlers
   useEffect(() => {
     function onMouseMove(e: MouseEvent) {
-      if (!dragRef.current) return;
+      if (!dragRef.current) {
+        return;
+      }
       const delta = dragRef.current.startY - e.clientY;
       setCanvasHeight(
         Math.max(MIN_CANVAS_HEIGHT, dragRef.current.startH + delta),
@@ -201,7 +201,9 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
     // then create a fresh one. This prevents stale results from arriving.
     createWorker();
     const worker = workerRef.current;
-    if (!worker) return;
+    if (!worker) {
+      return;
+    }
 
     const gen = ++analysisGenRef.current;
     setStatus('running');
@@ -209,7 +211,9 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
 
     worker.onmessage = (e: MessageEvent<AnalyzeResponse>) => {
       // Discard results from a superseded analysis run
-      if (gen !== analysisGenRef.current) return;
+      if (gen !== analysisGenRef.current) {
+        return;
+      }
       const msg = e.data;
       if (msg.type === 'result') {
         setStatus('idle');
@@ -220,9 +224,13 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
             const isIn = label.includes('[IN]') || label === 'Input';
             const isOut = label.includes('[OUT]') || label === 'Output';
             let color: string;
-            if (isIn) color = '#60a5fa';
-            else if (isOut) color = '#4ade80';
-            else color = TRACE_COLORS[otherIdx++ % TRACE_COLORS.length];
+            if (isIn) {
+              color = '#60a5fa';
+            } else if (isOut) {
+              color = '#4ade80';
+            } else {
+              color = TRACE_COLORS[otherIdx++ % TRACE_COLORS.length];
+            }
             return {
               node: t.node,
               label,
@@ -240,7 +248,9 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
     };
 
     worker.onerror = (e: ErrorEvent) => {
-      if (gen !== analysisGenRef.current) return;
+      if (gen !== analysisGenRef.current) {
+        return;
+      }
       setStatus('error');
       setError(e.message ?? 'Worker crashed');
     };
@@ -297,17 +307,21 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
   );
 
   const sweepPotLabel = useMemo(() => {
-    if (!sweepNodeId) return null;
+    if (!sweepNodeId) {
+      return null;
+    }
     const pot = nodes.find((n) => n.id === sweepNodeId);
     return pot?.data.label ?? null;
   }, [sweepNodeId, nodes]);
 
   const scopeTraces: Array<ScopeTrace> = useMemo(() => {
     const t: Array<ScopeTrace> = [];
-    if (showScopeInput && simulatedInput)
+    if (showScopeInput && simulatedInput) {
       t.push({ color: '#60a5fa', values: simulatedInput });
-    if (showScopeOutput && outputBuffer)
+    }
+    if (showScopeOutput && outputBuffer) {
       t.push({ color: '#4ade80', values: outputBuffer });
+    }
     for (let i = 0; i < sweepResults.length; i++) {
       if (showSweepTraces[i]) {
         t.push({
@@ -333,7 +347,9 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
     for (const t of activeTraces) {
       for (let i = 0; i < t.values.length; i++) {
         const abs = Math.abs(t.values[i]);
-        if (abs > peak) peak = abs;
+        if (abs > peak) {
+          peak = abs;
+        }
       }
     }
     const padded = Math.max(peak, 0.01) + 0.25;
@@ -361,10 +377,10 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
   const durationOptions = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5];
 
   return (
-    <div className="flex flex-col bg-[#080c08] border-t border-[#1a2e1a] flex-shrink-0">
+    <div className="flex flex-shrink-0 flex-col border-[#1a2e1a] border-t bg-[#080c08]">
       {/* Resize handle */}
       <div
-        className="h-1.5 cursor-ns-resize hover:bg-[#1e3a1e] transition-colors flex items-center justify-center"
+        className="flex h-1.5 cursor-ns-resize items-center justify-center transition-colors hover:bg-[#1e3a1e]"
         onMouseDown={(e) => {
           e.preventDefault();
           dragRef.current = { startY: e.clientY, startH: canvasHeight };
@@ -373,16 +389,16 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
         }}
         onDoubleClick={() => setCanvasHeight(MIN_CANVAS_HEIGHT)}
       >
-        <div className="w-8 h-0.5 rounded bg-[#2a4a2a]" />
+        <div className="h-0.5 w-8 rounded bg-[#2a4a2a]" />
       </div>
 
       {/* Top row: tab switcher, time/div, speed, scope toggles, pause, close */}
-      <div className="flex items-center justify-between sm:justify-start sm:gap-2 md:gap-4 pl-3 pr-1 sm:pr-3 pt-0.5 pb-2 flex-wrap">
-        <div className="flex rounded border border-[#1a2e1a] overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between pt-0.5 pr-1 pb-2 pl-3 sm:justify-start sm:gap-2 sm:pr-3 md:gap-4">
+        <div className="flex overflow-hidden rounded border border-[#1a2e1a]">
           <button
             type="button"
             onClick={() => setTab('analyze')}
-            className={`text-[10px] font-mono px-2 py-0.5 transition-colors ${
+            className={`px-2 py-0.5 font-mono text-[10px] transition-colors ${
               tab === 'analyze'
                 ? 'bg-[#1a2e1a] text-[#4ade80]'
                 : 'text-[#4a7a4a] hover:text-[#6a9a6a]'
@@ -393,7 +409,7 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
           <button
             type="button"
             onClick={() => setTab('scope')}
-            className={`text-[10px] font-mono px-2 py-0.5 transition-colors ${
+            className={`px-2 py-0.5 font-mono text-[10px] transition-colors ${
               tab === 'scope'
                 ? 'bg-[#1a2e1a] text-[#4ade80]'
                 : 'text-[#4a7a4a] hover:text-[#6a9a6a]'
@@ -403,20 +419,20 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
           </button>
         </div>
 
-        <div className="flex-1 flex items-center justify-evenly sm:justify-start sm:gap-2 md:gap-4">
+        <div className="flex flex-1 items-center justify-evenly sm:justify-start sm:gap-2 md:gap-4">
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+            <span className="font-mono text-[#4a7a4a] text-[10px] uppercase tracking-wider">
               Time/Div
             </span>
             <button
               type="button"
               onClick={() => setTimeDivIdx((i) => Math.max(0, i - 1))}
               disabled={timeDivIdx === 0}
-              className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
+              className="text-[#4ade80] transition-colors hover:text-[#86efac] disabled:opacity-30"
             >
               <ChevronLeft size={14} />
             </button>
-            <span className="text-[#4ade80] font-mono text-xs w-14 text-center">
+            <span className="w-14 text-center font-mono text-[#4ade80] text-xs">
               {timeDivLabel}
             </span>
             <button
@@ -425,25 +441,25 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
                 setTimeDivIdx((i) => Math.min(TIME_DIVS.length - 1, i + 1))
               }
               disabled={timeDivIdx === TIME_DIVS.length - 1}
-              className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
+              className="text-[#4ade80] transition-colors hover:text-[#86efac] disabled:opacity-30"
             >
               <ChevronRight size={14} />
             </button>
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+            <span className="font-mono text-[#4a7a4a] text-[10px] uppercase tracking-wider">
               Speed
             </span>
             <button
               type="button"
               onClick={() => setSpeedIdx((i) => Math.max(0, i - 1))}
               disabled={speedIdx === 0}
-              className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
+              className="text-[#4ade80] transition-colors hover:text-[#86efac] disabled:opacity-30"
             >
               <ChevronLeft size={14} />
             </button>
-            <span className="text-[#4ade80] font-mono text-xs w-12 text-center">
+            <span className="w-12 text-center font-mono text-[#4ade80] text-xs">
               {SPEED_OPTIONS[speedIdx].label}
             </span>
             <button
@@ -452,7 +468,7 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
                 setSpeedIdx((i) => Math.min(SPEED_OPTIONS.length - 1, i + 1))
               }
               disabled={speedIdx === SPEED_OPTIONS.length - 1}
-              className="text-[#4ade80] hover:text-[#86efac] disabled:opacity-30 transition-colors"
+              className="text-[#4ade80] transition-colors hover:text-[#86efac] disabled:opacity-30"
             >
               <ChevronRight size={14} />
             </button>
@@ -462,7 +478,7 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
         <button
           type="button"
           onClick={() => setRunning((v) => !v)}
-          className="text-[#4ade80] hover:text-[#86efac] transition-colors pr-2"
+          className="pr-2 text-[#4ade80] transition-colors hover:text-[#86efac]"
           aria-label={running ? 'Pause' : 'Resume'}
         >
           {running ? <Pause size={14} /> : <Play size={14} />}
@@ -471,15 +487,15 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
 
       {/* Bottom row: analyze dropdowns (only when analyze tab active) */}
       {tab === 'analyze' && (
-        <div className="flex items-center justify-between sm:justify-start sm:gap-1.5 md:gap-4 pl-3 pr-1 pb-1.5 border-b border-[#1a2e1a] overflow-x-auto">
+        <div className="flex items-center justify-between overflow-x-auto border-[#1a2e1a] border-b pr-1 pb-1.5 pl-3 sm:justify-start sm:gap-1.5 md:gap-4">
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+            <span className="font-mono text-[#4a7a4a] text-[10px] uppercase tracking-wider">
               Wave
             </span>
             <select
               value={waveform}
               onChange={(e) => setWaveform(e.target.value as WaveformType)}
-              className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
+              className="rounded border border-[#1e3a1e] bg-[#0c140c] px-1.5 py-0.5 font-mono text-[#4ade80] text-xs"
             >
               {WAVEFORMS.map((w) => (
                 <option key={w.value} value={w.value}>
@@ -490,13 +506,13 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+            <span className="font-mono text-[#4a7a4a] text-[10px] uppercase tracking-wider">
               Freq
             </span>
             <select
               value={frequency}
               onChange={(e) => setFrequency(Number(e.target.value))}
-              className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
+              className="rounded border border-[#1e3a1e] bg-[#0c140c] px-1.5 py-0.5 font-mono text-[#4ade80] text-xs"
             >
               {freqOptions.map((f) => (
                 <option key={f} value={f}>
@@ -507,13 +523,13 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+            <span className="font-mono text-[#4a7a4a] text-[10px] uppercase tracking-wider">
               Amp
             </span>
             <select
               value={amplitude}
               onChange={(e) => setAmplitude(Number(e.target.value))}
-              className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
+              className="rounded border border-[#1e3a1e] bg-[#0c140c] px-1.5 py-0.5 font-mono text-[#4ade80] text-xs"
             >
               {ampOptions.map((a) => (
                 <option key={a} value={a}>
@@ -524,13 +540,13 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+            <span className="font-mono text-[#4a7a4a] text-[10px] uppercase tracking-wider">
               Dur
             </span>
             <select
               value={duration}
               onChange={(e) => setDuration(Number(e.target.value))}
-              className="bg-[#0c140c] border border-[#1e3a1e] text-[#4ade80] text-xs font-mono px-1.5 py-0.5 rounded"
+              className="rounded border border-[#1e3a1e] bg-[#0c140c] px-1.5 py-0.5 font-mono text-[#4ade80] text-xs"
             >
               {durationOptions.map((d) => (
                 <option key={d} value={d}>
@@ -544,15 +560,15 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
 
       {/* Sim-specific controls row */}
       {tab === 'scope' && (
-        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4 pl-3 pr-1 pb-1.5 border-b border-[#1a2e1a] flex-wrap">
+        <div className="flex flex-wrap items-center gap-1.5 border-[#1a2e1a] border-b pr-1 pb-1.5 pl-3 sm:gap-2 md:gap-4">
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => setShowScopeInput((v) => !v)}
-              className={`text-xs font-mono px-2 py-0.5 rounded transition-colors ${
+              className={`rounded px-2 py-0.5 font-mono text-xs transition-colors ${
                 showScopeInput
-                  ? 'bg-blue-950 text-blue-400 border border-blue-800'
-                  : 'text-gray-600 border border-gray-700 hover:text-gray-400'
+                  ? 'border border-blue-800 bg-blue-950 text-blue-400'
+                  : 'border border-gray-700 text-gray-600 hover:text-gray-400'
               }`}
               disabled={!simulatedInput}
             >
@@ -561,10 +577,10 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
             <button
               type="button"
               onClick={() => setShowScopeOutput((v) => !v)}
-              className={`text-xs font-mono px-2 py-0.5 rounded transition-colors ${
+              className={`rounded px-2 py-0.5 font-mono text-xs transition-colors ${
                 showScopeOutput
-                  ? 'bg-green-950 text-green-400 border border-green-800'
-                  : 'text-gray-600 border border-gray-700 hover:text-gray-400'
+                  ? 'border border-green-800 bg-green-950 text-green-400'
+                  : 'border border-gray-700 text-gray-600 hover:text-gray-400'
               }`}
               disabled={!outputBuffer}
             >
@@ -573,7 +589,7 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
           </div>
           {sweepResults.length > 0 && (
             <>
-              <span className="text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider">
+              <span className="font-mono text-[#4a7a4a] text-[10px] uppercase tracking-wider">
                 {sweepPotLabel ?? 'Sweep'}
               </span>
               {sweepResults.map((sr, i) => {
@@ -590,10 +606,10 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
                         [i]: !prev[i],
                       }))
                     }
-                    className={`text-xs font-mono px-2 py-0.5 rounded transition-colors border ${
+                    className={`rounded border px-2 py-0.5 font-mono text-xs transition-colors ${
                       on
                         ? 'border-opacity-60 bg-opacity-20'
-                        : 'text-gray-600 border-gray-700 hover:text-gray-400'
+                        : 'border-gray-700 text-gray-600 hover:text-gray-400'
                     }`}
                     style={
                       on
@@ -616,11 +632,11 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
 
       {/* Probe row (analyze tab only) */}
       {tab === 'analyze' && analyzeTraces.length > 0 && (
-        <div className="border-b border-[#1a2e1a]">
+        <div className="border-[#1a2e1a] border-b">
           <button
             type="button"
             onClick={() => setShowProbes((v) => !v)}
-            className="flex items-center gap-1 px-3 py-0.5 text-[10px] text-[#4a7a4a] font-mono uppercase tracking-wider hover:text-[#6a9a6a] transition-colors w-full"
+            className="flex w-full items-center gap-1 px-3 py-0.5 font-mono text-[#4a7a4a] text-[10px] uppercase tracking-wider transition-colors hover:text-[#6a9a6a]"
           >
             <ChevronDown
               size={10}
@@ -628,12 +644,12 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
             />
             Probes ({enabledAnalyzeTraces.length}/{analyzeTraces.length})
             {status === 'running' && (
-              <span className="text-amber-400 animate-pulse ml-1">
+              <span className="ml-1 animate-pulse text-amber-400">
                 Analyzing…
               </span>
             )}
             {error && (
-              <span className="text-red-400 truncate max-w-48 ml-1">
+              <span className="ml-1 max-w-48 truncate text-red-400">
                 {error}
               </span>
             )}
@@ -645,7 +661,7 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
                   key={t.node}
                   type="button"
                   onClick={() => toggleTrace(t.node)}
-                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded transition-colors border ${
+                  className={`rounded border px-1.5 py-0.5 font-mono text-[10px] transition-colors ${
                     t.enabled
                       ? 'border-opacity-60 bg-opacity-20'
                       : 'border-gray-700 text-gray-600 hover:text-gray-400'

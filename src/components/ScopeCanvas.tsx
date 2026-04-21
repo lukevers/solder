@@ -1,5 +1,3 @@
-// src/components/ScopeCanvas.tsx
-
 import { useEffect, useRef } from 'react';
 import { SAMPLE_RATE } from '../lib/constants';
 
@@ -52,14 +50,20 @@ export function ScopeCanvas({
 
   function draw() {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
     const dpr = window.devicePixelRatio ?? 1;
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
-    if (w === 0 || h === 0) return;
+    if (w === 0 || h === 0) {
+      return;
+    }
     canvas.width = w * dpr;
     canvas.height = h * dpr;
     ctx.scale(dpr, dpr);
@@ -133,8 +137,11 @@ export function ScopeCanvas({
       const y = midY - (frac * ph) / 2;
       const v = frac * yScale;
       let label: string;
-      if (yScale >= 1) label = frac === 0 ? '0' : `${v.toFixed(1)}V`;
-      else label = frac === 0 ? '0' : `${(v * 1000).toFixed(0)}mV`;
+      if (yScale >= 1) {
+        label = frac === 0 ? '0' : `${v.toFixed(1)}V`;
+      } else {
+        label = frac === 0 ? '0' : `${(v * 1000).toFixed(0)}mV`;
+      }
       ctx.fillText(label, pad.l - 4, y + 3);
     }
 
@@ -143,7 +150,9 @@ export function ScopeCanvas({
     const step = Math.max(1, Math.floor(windowSamples / (pw * 2)));
 
     for (const t of traces) {
-      if (!t.values.length) continue;
+      if (!t.values.length) {
+        continue;
+      }
       const len = t.values.length;
 
       // Glow
@@ -159,7 +168,9 @@ export function ScopeCanvas({
         if (first) {
           ctx.moveTo(x, y);
           first = false;
-        } else ctx.lineTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
       }
       ctx.stroke();
 
@@ -175,7 +186,9 @@ export function ScopeCanvas({
         if (first) {
           ctx.moveTo(x, y);
           first = false;
-        } else ctx.lineTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
       }
       ctx.stroke();
     }
@@ -219,7 +232,9 @@ export function ScopeCanvas({
   // Redraw when paused
   // biome-ignore lint/correctness/useExhaustiveDependencies: draw reads state via closure
   useEffect(() => {
-    if (running) return;
+    if (running) {
+      return;
+    }
     draw();
     const onResize = () => draw();
     window.addEventListener('resize', onResize);
@@ -229,9 +244,13 @@ export function ScopeCanvas({
   // Drag-to-pan: global mouse handlers
   useEffect(() => {
     function onMouseMove(e: MouseEvent) {
-      if (!dragRef.current) return;
+      if (!dragRef.current) {
+        return;
+      }
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      if (!canvas) {
+        return;
+      }
       const pw = canvas.clientWidth - 52; // pad.l + pad.r
       const samplesPerPx = windowSamples / Math.max(pw, 1);
       const dx = dragRef.current.startX - e.clientX;
@@ -253,7 +272,9 @@ export function ScopeCanvas({
   });
 
   function handleMouseDown(e: React.MouseEvent) {
-    if (traces.length === 0) return;
+    if (traces.length === 0) {
+      return;
+    }
     e.preventDefault();
     onPauseRef.current?.();
     dragRef.current = { startX: e.clientX, startPhase: phaseRef.current };
@@ -261,7 +282,9 @@ export function ScopeCanvas({
   }
 
   function handleWheel(e: React.WheelEvent) {
-    if (traces.length === 0) return;
+    if (traces.length === 0) {
+      return;
+    }
     e.preventDefault();
     onPauseRef.current?.();
     const scrollAmount = windowSamples * 0.1 * Math.sign(e.deltaY);
@@ -273,7 +296,7 @@ export function ScopeCanvas({
     <div style={{ height }}>
       <canvas
         ref={canvasRef}
-        className="w-full h-full"
+        className="h-full w-full"
         style={{ cursor: traces.length > 0 ? 'grab' : undefined }}
         onMouseDown={handleMouseDown}
         onWheel={handleWheel}

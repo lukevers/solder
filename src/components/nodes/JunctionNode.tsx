@@ -1,4 +1,3 @@
-// src/components/nodes/JunctionNode.tsx
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import { useStore } from '../../store';
 

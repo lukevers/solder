@@ -1,5 +1,3 @@
-// src/components/SchematicCanvas.tsx
-
 import {
   addEdge,
   applyEdgeChanges,
@@ -95,7 +93,9 @@ function SchematicCanvasInner() {
           const dy = posChange.position.y - group.boxStartPos.y;
           updated = updated.map((n) => {
             const start = group.startPositions.get(n.id);
-            if (!start) return n;
+            if (!start) {
+              return n;
+            }
             return { ...n, position: { x: start.x + dx, y: start.y + dy } };
           });
         }
@@ -108,7 +108,9 @@ function SchematicCanvasInner() {
 
   const onEdgesChange: OnEdgesChange = useCallback(
     (changes) => {
-      if (changes.some((c) => c.type === 'remove')) pushHistory();
+      if (changes.some((c) => c.type === 'remove')) {
+        pushHistory();
+      }
       setEdges(applyEdgeChanges(changes, edges));
     },
     [edges, setEdges, pushHistory],
@@ -162,7 +164,9 @@ function SchematicCanvasInner() {
       setIsConnecting(false);
       const start = connectStartRef.current;
       connectStartRef.current = null;
-      if (!start) return;
+      if (!start) {
+        return;
+      }
 
       const clientX =
         'changedTouches' in event
@@ -177,24 +181,34 @@ function SchematicCanvasInner() {
       const elements = document.elementsFromPoint(clientX, clientY);
       let edgeEl: Element | null = null;
       for (const el of elements) {
-        if (el.closest('.react-flow__connection')) continue;
+        if (el.closest('.react-flow__connection')) {
+          continue;
+        }
         const found = el.closest('.react-flow__edge');
         if (found) {
           edgeEl = found;
           break;
         }
       }
-      if (!edgeEl) return;
+      if (!edgeEl) {
+        return;
+      }
 
       const pathWithId = edgeEl.querySelector('path[id]');
-      if (!pathWithId) return;
+      if (!pathWithId) {
+        return;
+      }
       const edgeId = pathWithId.id;
 
       const edge = edges.find((e) => e.id === edgeId);
-      if (!edge) return;
+      if (!edge) {
+        return;
+      }
 
       // Don't connect to an edge that already involves this node
-      if (edge.source === start.nodeId || edge.target === start.nodeId) return;
+      if (edge.source === start.nodeId || edge.target === start.nodeId) {
+        return;
+      }
 
       // Create a junction node at the drop point and splice it into the edge
       const flowPos = screenToFlowPosition({ x: clientX, y: clientY });
@@ -224,7 +238,9 @@ function SchematicCanvasInner() {
       const jCy = snapped.y;
       const pickSide = (nodeId: string, type: 'source' | 'target') => {
         const n = nodes.find((nd) => nd.id === nodeId);
-        if (!n) return type === 'source' ? 'sb' : 'tb';
+        if (!n) {
+          return type === 'source' ? 'sb' : 'tb';
+        }
         const dx = n.position.x - jCx;
         const dy = n.position.y - jCy;
         let dir: string;
@@ -295,7 +311,9 @@ function SchematicCanvasInner() {
         const boxBottom = boxTop + (node.measured?.height ?? 0);
 
         const inside = nodes.filter((n) => {
-          if (n.id === node.id) return false;
+          if (n.id === node.id) {
+            return false;
+          }
           const cx = n.position.x + (n.measured?.width ?? 0) / 2;
           const cy = n.position.y + (n.measured?.height ?? 0) / 2;
           return cx > boxLeft && cx < boxRight && cy > boxTop && cy < boxBottom;

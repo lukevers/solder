@@ -1,5 +1,3 @@
-// src/components/nodes/OpAmpNode.tsx
-//
 // Renders an op-amp node entirely from its SymbolDef — no model-specific
 // branching here. The symbol drives pin placement and body style.
 //

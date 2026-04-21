@@ -1,4 +1,3 @@
-// src/components/nodes/CapPolarNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { CapacitorData } from '../../lib/types';
 import { formatFarads } from '../../lib/units';

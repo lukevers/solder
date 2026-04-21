@@ -15,15 +15,30 @@ export const RES_MULTIPLIERS: Record<ResUnit, number> = {
 };
 
 export function detectCapUnit(farads: number): CapUnit {
-  if (farads < 1e-9) return 'pF';
-  if (farads < 1e-6) return 'nF';
-  if (farads < 1e-3) return 'µF';
+  if (farads < 1e-9) {
+    return 'pF';
+  }
+
+  if (farads < 1e-6) {
+    return 'nF';
+  }
+
+  if (farads < 1e-3) {
+    return 'µF';
+  }
+
   return 'mF';
 }
 
 export function detectResUnit(ohms: number): ResUnit {
-  if (ohms < 1_000) return 'Ω';
-  if (ohms < 1_000_000) return 'kΩ';
+  if (ohms < 1_000) {
+    return 'Ω';
+  }
+
+  if (ohms < 1_000_000) {
+    return 'kΩ';
+  }
+
   return 'MΩ';
 }
 

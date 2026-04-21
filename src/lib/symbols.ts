@@ -1,5 +1,3 @@
-// src/lib/symbols.ts
-//
 // Symbol library — defines schematic symbols for circuit components,
 // independent of the electrical model. Inspired by KiCad's symbol library.
 //

@@ -1,4 +1,3 @@
-// src/components/WaveformDisplay.tsx
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { SAMPLE_RATE } from '../lib/constants';
 
@@ -59,9 +58,13 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
 
     function draw(split: number, cursor?: number | null) {
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      if (!canvas) {
+        return;
+      }
       const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) {
+        return;
+      }
 
       const dpr = window.devicePixelRatio ?? 1;
       const layoutWidth =
@@ -126,15 +129,20 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
       }
 
       function drawBuffer(buf: Float32Array, color: string) {
-        if (!ctx) return;
+        if (!ctx) {
+          return;
+        }
         ctx.beginPath();
         ctx.strokeStyle = color;
         ctx.lineWidth = 1;
         for (let i = 0; i < buf.length; i++) {
           const x = padL + (i / buf.length) * plotW;
           const y = plotMidY - (buf[i] * plotH) / 2.5;
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
         }
         ctx.stroke();
       }
@@ -154,10 +162,16 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
                 [outputBuffer, '#22c55e', false],
               ];
         for (const [buf, color, dimmed] of pairs) {
-          if (!buf) continue;
-          if (dimmed) ctx.globalAlpha = 0.3;
+          if (!buf) {
+            continue;
+          }
+          if (dimmed) {
+            ctx.globalAlpha = 0.3;
+          }
           drawBuffer(buf, color);
-          if (dimmed) ctx.globalAlpha = 1;
+          if (dimmed) {
+            ctx.globalAlpha = 1;
+          }
         }
       } else {
         // Split mode with clip regions
@@ -171,7 +185,9 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
             ctx.clip();
           }
           drawBuffer(outputBuffer, '#22c55e');
-          if (bothBuffers) ctx.restore();
+          if (bothBuffers) {
+            ctx.restore();
+          }
         }
 
         if (inputBuffer) {
@@ -182,7 +198,9 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
             ctx.clip();
           }
           drawBuffer(inputBuffer, '#3b82f6');
-          if (bothBuffers) ctx.restore();
+          if (bothBuffers) {
+            ctx.restore();
+          }
         }
 
         if (bothBuffers) {
@@ -264,7 +282,9 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
 
     function getFraction(e: React.PointerEvent<HTMLCanvasElement>): number {
       const canvas = canvasRef.current;
-      if (!canvas) return 0.5;
+      if (!canvas) {
+        return 0.5;
+      }
       const rect = canvas.getBoundingClientRect();
       const plotW = rect.width - padL;
       const x = e.clientX - rect.left - padL;
@@ -289,7 +309,9 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
         draw(splitRef.current, frac);
         return;
       }
-      if (!inputBuffer && !outputBuffer) return;
+      if (!inputBuffer && !outputBuffer) {
+        return;
+      }
       draggingRef.current = true;
       isSelectingRef.current = false;
       const frac = getFraction(e);
@@ -326,7 +348,9 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
         }
         return;
       }
-      if (!draggingRef.current) return;
+      if (!draggingRef.current) {
+        return;
+      }
       const frac = getFraction(e);
       const dist = Math.abs(frac - seekStartRef.current);
 
@@ -399,7 +423,7 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
           ref={canvasRef}
           width={176}
           height={height}
-          className="rounded border border-gray-800 w-full"
+          className="w-full rounded border border-gray-800"
           style={{
             cursor: onSeek
               ? 'grab'
@@ -415,7 +439,7 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
           onPointerCancel={onPointerCancel}
         />
         {!onSeek && hasAny && (
-          <div className="flex items-center justify-between text-xs font-mono gap-1">
+          <div className="flex items-center justify-between gap-1 font-mono text-xs">
             {inputBuffer && (
               <button
                 type="button"
@@ -423,7 +447,7 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
                   splitRef.current = 0;
                   draw(0);
                 }}
-                className="px-2 py-0.5 rounded border transition-colors"
+                className="rounded border px-2 py-0.5 transition-colors"
                 style={{
                   color: '#3b82f6',
                   borderColor: '#3b82f6',
@@ -440,7 +464,7 @@ export const WaveformDisplay = forwardRef<WaveformDisplayHandle, Props>(
                   splitRef.current = 1;
                   draw(1);
                 }}
-                className="px-2 py-0.5 rounded border transition-colors"
+                className="rounded border px-2 py-0.5 transition-colors"
                 style={{
                   color: '#22c55e',
                   borderColor: '#22c55e',

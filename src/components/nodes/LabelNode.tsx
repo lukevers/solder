@@ -1,4 +1,3 @@
-// src/components/nodes/LabelNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { LabelData } from '../../lib/types';
 import { NodeShell, NodeSvg, RotatedHandle } from './NodeShell';

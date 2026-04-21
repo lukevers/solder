@@ -1,5 +1,3 @@
-// src/components/ExamplesPanel.tsx
-
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { EXAMPLES, type ExampleCategory } from '../lib/examples';
@@ -10,7 +8,9 @@ const GRID = 10;
 
 function snapNodes(nodes: Array<ComponentNode>): Array<ComponentNode> {
   return nodes.map((n) => {
-    if (n.type === 'stickynote' || n.type === 'box') return n;
+    if (n.type === 'stickynote' || n.type === 'box') {
+      return n;
+    }
     return {
       ...n,
       position: {
@@ -51,15 +51,18 @@ export function ExamplesPanel() {
   const toggleTag = (tag: string) => {
     setActiveTags((prev) => {
       const next = new Set(prev);
-      if (next.has(tag)) next.delete(tag);
-      else next.add(tag);
+      if (next.has(tag)) {
+        next.delete(tag);
+      } else {
+        next.add(tag);
+      }
       return next;
     });
   };
 
   return (
-    <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto flex-shrink-0">
-      <div className="flex border-b border-gray-800">
+    <div className="flex w-64 flex-shrink-0 flex-col overflow-y-auto border-gray-800 border-r bg-gray-900">
+      <div className="flex border-gray-800 border-b">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -68,10 +71,10 @@ export function ExamplesPanel() {
               setActiveTab(tab.id);
               setActiveTags(new Set());
             }}
-            className={`flex-1 text-xs font-mono py-2 transition-colors ${
+            className={`flex-1 py-2 font-mono text-xs transition-colors ${
               activeTab === tab.id
-                ? 'text-gray-200 border-b-2 border-blue-500'
-                : 'text-gray-500 hover:text-gray-400 border-b-2 border-transparent'
+                ? 'border-blue-500 border-b-2 text-gray-200'
+                : 'border-transparent border-b-2 text-gray-500 hover:text-gray-400'
             }`}
           >
             {tab.label}
@@ -79,16 +82,16 @@ export function ExamplesPanel() {
         ))}
       </div>
       {allTags.length > 0 && (
-        <div className="flex flex-wrap gap-1 px-3 py-2 border-b border-gray-800">
+        <div className="flex flex-wrap gap-1 border-gray-800 border-b px-3 py-2">
           {allTags.map((tag) => (
             <button
               key={tag}
               type="button"
               onClick={() => toggleTag(tag)}
-              className={`text-[10px] font-mono px-1.5 py-0.5 rounded transition-colors ${
+              className={`rounded px-1.5 py-0.5 font-mono text-[10px] transition-colors ${
                 activeTags.has(tag)
-                  ? 'bg-blue-900 text-blue-300 border border-blue-700'
-                  : 'bg-gray-800 text-gray-500 border border-transparent hover:text-gray-400'
+                  ? 'border border-blue-700 bg-blue-900 text-blue-300'
+                  : 'border border-transparent bg-gray-800 text-gray-500 hover:text-gray-400'
               }`}
             >
               {tag}
@@ -105,15 +108,15 @@ export function ExamplesPanel() {
               loadCircuit(snapNodes(ex.nodes), ex.edges);
               renameTab(activeTabId, ex.name);
             }}
-            className="text-left px-3 py-2.5 hover:bg-gray-800/50 transition-colors group"
+            className="group px-3 py-2.5 text-left transition-colors hover:bg-gray-800/50"
           >
-            <div className="text-sm text-gray-200 font-mono font-bold truncate">
+            <div className="truncate font-bold font-mono text-gray-200 text-sm">
               {ex.name}
             </div>
-            <div className="text-xs text-gray-500 truncate mt-0.5">
+            <div className="mt-0.5 truncate text-gray-500 text-xs">
               {ex.description}
             </div>
-            <div className="text-[10px] text-gray-600 font-mono mt-1 truncate">
+            <div className="mt-1 truncate font-mono text-[10px] text-gray-600">
               {ex.tags.join(' \u00b7 ')}
             </div>
           </button>

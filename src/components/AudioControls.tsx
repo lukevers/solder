@@ -1,5 +1,3 @@
-// src/components/AudioControls.tsx
-
 import { useShallow } from 'zustand/react/shallow';
 import { useStore } from '../store';
 
@@ -15,14 +13,14 @@ export function AudioControls() {
 
   return (
     <div className="p-3">
-      <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
+      <div className="mb-2 text-gray-500 text-xs uppercase tracking-wider">
         Audio Source
       </div>
       <div className="flex flex-col gap-1.5">
         {SAMPLES.map((name) => (
           <label
             key={name}
-            className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer"
+            className="flex cursor-pointer items-center gap-2 text-gray-300 text-xs"
           >
             <input
               type="radio"
@@ -36,7 +34,7 @@ export function AudioControls() {
             Sample: {name}
           </label>
         ))}
-        <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
+        <label className="flex cursor-pointer items-center gap-2 text-gray-300 text-xs">
           <input
             type="radio"
             name="audio-source"

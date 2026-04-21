@@ -1,4 +1,3 @@
-// src/components/edges/SignalEdge.tsx
 import {
   EdgeLabelRenderer,
   type EdgeProps,

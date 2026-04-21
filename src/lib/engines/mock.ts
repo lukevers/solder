@@ -1,4 +1,3 @@
-// src/lib/engines/mock.ts
 import type { SimulationOutput, SpiceEngine } from '../spice-engine';
 
 export class MockSpiceEngine implements SpiceEngine {

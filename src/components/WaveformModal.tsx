@@ -1,4 +1,3 @@
-// src/components/WaveformModal.tsx
 import { Pause, Play, Repeat, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AudioPipeline } from '../audio/pipeline';
@@ -10,7 +9,9 @@ import {
 } from './WaveformDisplay';
 
 function formatTime(seconds: number): string {
-  if (seconds >= 1) return `${seconds.toFixed(1)}s`;
+  if (seconds >= 1) {
+    return `${seconds.toFixed(1)}s`;
+  }
   return `${Math.round(seconds * 1000)}ms`;
 }
 
@@ -59,7 +60,9 @@ export function WaveformModal({
     activeSignalRef.current = activeSignal;
   }, [activeSignal]);
   useEffect(() => {
-    if (!outputBuffer) setActiveSignal('input');
+    if (!outputBuffer) {
+      setActiveSignal('input');
+    }
   }, [outputBuffer]);
 
   const playFromRef = useRef<
@@ -69,8 +72,12 @@ export function WaveformModal({
   const playFrom = useCallback(
     (signal: 'input' | 'output', fraction: number) => {
       let buffer = signal === 'input' ? inputBuffer : outputBuffer;
-      if (!buffer) buffer = signal === 'input' ? outputBuffer : inputBuffer;
-      if (!buffer || !pipeline) return;
+      if (!buffer) {
+        buffer = signal === 'input' ? outputBuffer : inputBuffer;
+      }
+      if (!buffer || !pipeline) {
+        return;
+      }
 
       const sel = selectionRef.current;
       const totalDuration = buffer.length / SAMPLE_RATE;
@@ -130,8 +137,11 @@ export function WaveformModal({
   }, [pipeline]);
 
   const handlePlayPause = useCallback(() => {
-    if (isPlayingRef.current) handleStop();
-    else handlePlay();
+    if (isPlayingRef.current) {
+      handleStop();
+    } else {
+      handlePlay();
+    }
   }, [handlePlay, handleStop]);
 
   const handlePlayPauseRef = useRef(handlePlayPause);
@@ -139,7 +149,9 @@ export function WaveformModal({
 
   const handleSignalChange = useCallback(
     (signal: 'input' | 'output') => {
-      if (signal === activeSignalRef.current) return;
+      if (signal === activeSignalRef.current) {
+        return;
+      }
       setActiveSignal(signal);
       activeSignalRef.current = signal;
       if (isPlayingRef.current && pipeline) {
@@ -180,7 +192,9 @@ export function WaveformModal({
 
   // RAF loop for animated cursor during playback
   useEffect(() => {
-    if (!isPlaying || !pipeline) return;
+    if (!isPlaying || !pipeline) {
+      return;
+    }
     let raf: number;
     function tick() {
       const rawFrac = pipeline!.getPlaybackFraction();
@@ -201,7 +215,9 @@ export function WaveformModal({
   // Keyboard shortcuts
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+      }
       if (e.key === ' ') {
         e.preventDefault();
         handlePlayPauseRef.current();
@@ -242,33 +258,33 @@ export function WaveformModal({
       onClick={onClose}
     >
       <div
-        className="bg-gray-900 border border-gray-700 rounded-lg p-5 shadow-2xl"
+        className="rounded-lg border border-gray-700 bg-gray-900 p-5 shadow-2xl"
         style={{ width: 680 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 uppercase tracking-wider font-mono">
+            <span className="font-mono text-gray-400 text-xs uppercase tracking-wider">
               Waveform
             </span>
-            <div className="relative group">
-              <div className="w-4 h-4 rounded-full border border-gray-600 text-gray-500 flex items-center justify-center text-xs cursor-help leading-none select-none">
+            <div className="group relative">
+              <div className="flex h-4 w-4 cursor-help select-none items-center justify-center rounded-full border border-gray-600 text-gray-500 text-xs leading-none">
                 i
               </div>
-              <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-6 w-64 bg-gray-800 border border-gray-600 rounded p-3 text-xs text-gray-300 font-sans opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10 shadow-xl">
+              <div className="pointer-events-none absolute top-6 left-1/2 z-10 w-64 -translate-x-1/2 rounded border border-gray-600 bg-gray-800 p-3 font-sans text-gray-300 text-xs opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100">
                 <p className="mb-2">
-                  <span className="text-gray-400 font-mono">Y axis</span> —
+                  <span className="font-mono text-gray-400">Y axis</span> —
                   normalized amplitude, from -1.0 (full negative) to +1.0 (full
                   positive). In digital audio, ±1.0 is the maximum level before
                   clipping.
                 </p>
                 <p className="mb-2">
-                  <span className="text-gray-400 font-mono">X axis</span> — time
+                  <span className="font-mono text-gray-400">X axis</span> — time
                   in milliseconds (ms) or seconds (s).
                 </p>
                 <p>
-                  <span className="text-gray-400 font-mono">Click</span> to
-                  seek. <span className="text-gray-400 font-mono">Drag</span> to
+                  <span className="font-mono text-gray-400">Click</span> to
+                  seek. <span className="font-mono text-gray-400">Drag</span> to
                   select a region for simulation.
                 </p>
               </div>
@@ -277,7 +293,7 @@ export function WaveformModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-200 transition-colors leading-none"
+            className="text-gray-500 leading-none transition-colors hover:text-gray-200"
             aria-label="Close"
           >
             <X size={16} />
@@ -298,12 +314,12 @@ export function WaveformModal({
         />
 
         {hasAny && (
-          <div className="flex items-center justify-between mt-3">
+          <div className="mt-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handlePlayPause}
-                className="w-8 h-8 flex items-center justify-center rounded border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded border border-gray-600 text-gray-300 transition-colors hover:border-gray-400 hover:text-white"
                 aria-label={isPlaying ? 'Pause' : 'Play'}
               >
                 {isPlaying ? <Pause size={14} /> : <Play size={14} />}
@@ -312,10 +328,10 @@ export function WaveformModal({
               <button
                 type="button"
                 onClick={onToggleLoop}
-                className={`w-8 h-8 flex items-center justify-center rounded border transition-colors ${
+                className={`flex h-8 w-8 items-center justify-center rounded border transition-colors ${
                   looping
                     ? 'border-blue-500 text-blue-400'
-                    : 'border-gray-600 text-gray-500 hover:text-gray-300 hover:border-gray-400'
+                    : 'border-gray-600 text-gray-500 hover:border-gray-400 hover:text-gray-300'
                 }`}
                 aria-label={looping ? 'Disable loop' : 'Enable loop'}
               >
@@ -323,7 +339,7 @@ export function WaveformModal({
               </button>
 
               {selection && totalDuration > 0 && (
-                <div className="flex items-center gap-1.5 text-xs font-mono">
+                <div className="flex items-center gap-1.5 font-mono text-xs">
                   <span className="text-blue-400">
                     {formatTime(selection.start * totalDuration)} —{' '}
                     {formatTime(selection.end * totalDuration)}
@@ -332,7 +348,7 @@ export function WaveformModal({
                     <button
                       type="button"
                       onClick={() => onSelectionChange(null)}
-                      className="text-gray-500 hover:text-gray-300 transition-colors leading-none"
+                      className="text-gray-500 leading-none transition-colors hover:text-gray-300"
                       aria-label="Clear selection"
                     >
                       <X size={12} />
@@ -343,11 +359,11 @@ export function WaveformModal({
             </div>
 
             {hasBoth && (
-              <div className="flex items-center gap-1 text-xs font-mono">
+              <div className="flex items-center gap-1 font-mono text-xs">
                 <button
                   type="button"
                   onClick={() => handleSignalChange('input')}
-                  className="px-2 py-0.5 rounded border transition-colors"
+                  className="rounded border px-2 py-0.5 transition-colors"
                   style={{
                     color: '#3b82f6',
                     borderColor:
@@ -363,7 +379,7 @@ export function WaveformModal({
                 <button
                   type="button"
                   onClick={() => handleSignalChange('output')}
-                  className="px-2 py-0.5 rounded border transition-colors"
+                  className="rounded border px-2 py-0.5 transition-colors"
                   style={{
                     color: '#22c55e',
                     borderColor:

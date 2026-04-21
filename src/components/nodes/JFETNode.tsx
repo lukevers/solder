@@ -1,4 +1,3 @@
-// src/components/nodes/JFETNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { JFETData } from '../../lib/types';
 import {

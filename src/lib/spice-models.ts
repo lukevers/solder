@@ -1,5 +1,3 @@
-// src/lib/spice-models.ts
-
 /**
  * TL072 operational amplifier macromodel subcircuit.
  * Based on the Texas Instruments / ngspice distribution macromodel.

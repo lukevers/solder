@@ -1,4 +1,3 @@
-// src/test/audio-convert.test.ts
 import { describe, expect, it } from 'vitest';
 import { voltageToAudioBuffer } from '../lib/audio-convert';
 import type { SimulationOutput } from '../lib/spice-engine';

@@ -1,4 +1,3 @@
-// src/lib/netlist.ts
 import type { Edge } from '@xyflow/react';
 import {
   BJT_2N3904,
@@ -101,10 +100,14 @@ function allPorts(nodes: Array<ComponentNode>): Array<Port> {
 function buildAdjacency(edges: Array<Edge>): Map<Port, Set<Port>> {
   const adj = new Map<Port, Set<Port>>();
   const add = (p: Port) => {
-    if (!adj.has(p)) adj.set(p, new Set());
+    if (!adj.has(p)) {
+      adj.set(p, new Set());
+    }
   };
   for (const e of edges) {
-    if (!e.sourceHandle || !e.targetHandle) continue;
+    if (!e.sourceHandle || !e.targetHandle) {
+      continue;
+    }
     const src: Port = `${e.source}|${e.sourceHandle}`;
     const tgt: Port = `${e.target}|${e.targetHandle}`;
     add(src);
@@ -150,7 +153,9 @@ export function buildPortGroups(
   const visited = new Set<Port>();
 
   for (const p of allPorts(nodes)) {
-    if (!adj.has(p)) adj.set(p, new Set());
+    if (!adj.has(p)) {
+      adj.set(p, new Set());
+    }
   }
 
   // Merge power and label nodes with the same label into the same net
@@ -160,18 +165,26 @@ export function buildPortGroups(
   for (const n of nodes) {
     if (n.type === 'power') {
       const key = `pwr:${n.data.label}`;
-      if (!globalByLabel.has(key)) globalByLabel.set(key, []);
+      if (!globalByLabel.has(key)) {
+        globalByLabel.set(key, []);
+      }
       globalByLabel.get(key)!.push(`${n.id}|pos`);
     } else if (n.type === 'label') {
       const key = `lbl:${n.data.label}`;
-      if (!globalByLabel.has(key)) globalByLabel.set(key, []);
+      if (!globalByLabel.has(key)) {
+        globalByLabel.set(key, []);
+      }
       globalByLabel.get(key)!.push(`${n.id}|net`);
     }
   }
   for (const ports of globalByLabel.values()) {
     for (let i = 1; i < ports.length; i++) {
-      if (!adj.has(ports[0])) adj.set(ports[0], new Set());
-      if (!adj.has(ports[i])) adj.set(ports[i], new Set());
+      if (!adj.has(ports[0])) {
+        adj.set(ports[0], new Set());
+      }
+      if (!adj.has(ports[i])) {
+        adj.set(ports[i], new Set());
+      }
       adj.get(ports[0])!.add(ports[i]);
       adj.get(ports[i])!.add(ports[0]);
     }
@@ -182,10 +195,14 @@ export function buildPortGroups(
     if (n.type === 'junction') {
       const handles = COMPONENT_HANDLES.junction;
       const firstPort: Port = `${n.id}|${handles[0]}`;
-      if (!adj.has(firstPort)) adj.set(firstPort, new Set());
+      if (!adj.has(firstPort)) {
+        adj.set(firstPort, new Set());
+      }
       for (let i = 1; i < handles.length; i++) {
         const port: Port = `${n.id}|${handles[i]}`;
-        if (!adj.has(port)) adj.set(port, new Set());
+        if (!adj.has(port)) {
+          adj.set(port, new Set());
+        }
         adj.get(firstPort)!.add(port);
         adj.get(port)!.add(firstPort);
       }
@@ -214,16 +231,26 @@ export function buildPortGroups(
 
 /** Format ohms as SPICE: 10000 → "10k", 1000000 → "1Meg", etc. */
 export function formatResistance(ohms: number): string {
-  if (ohms >= 1e6) return `${parseFloat((ohms / 1e6).toPrecision(10))}Meg`;
-  if (ohms >= 1e3) return `${parseFloat((ohms / 1e3).toPrecision(10))}k`;
+  if (ohms >= 1e6) {
+    return `${parseFloat((ohms / 1e6).toPrecision(10))}Meg`;
+  }
+  if (ohms >= 1e3) {
+    return `${parseFloat((ohms / 1e3).toPrecision(10))}k`;
+  }
   return `${ohms}`;
 }
 
 /** Format farads as SPICE: 47e-9 → "47n", 100e-12 → "100p", etc. */
 export function formatCapacitance(farads: number): string {
-  if (farads >= 1e-3) return `${parseFloat((farads * 1e3).toPrecision(10))}m`;
-  if (farads >= 1e-6) return `${parseFloat((farads * 1e6).toPrecision(10))}u`;
-  if (farads >= 1e-9) return `${parseFloat((farads * 1e9).toPrecision(10))}n`;
+  if (farads >= 1e-3) {
+    return `${parseFloat((farads * 1e3).toPrecision(10))}m`;
+  }
+  if (farads >= 1e-6) {
+    return `${parseFloat((farads * 1e6).toPrecision(10))}u`;
+  }
+  if (farads >= 1e-9) {
+    return `${parseFloat((farads * 1e9).toPrecision(10))}n`;
+  }
   return `${parseFloat((farads * 1e12).toPrecision(10))}p`;
 }
 
@@ -287,59 +314,105 @@ function buildCircuitBody(
   const usedModels = new Set(
     nodes.filter((n) => n.type === 'opamp').map((n) => n.data.model),
   );
-  if (usedModels.has('TL072')) lines.push(TL072_SUBCKT);
-  if (usedModels.has('LM741')) lines.push(LM741_SUBCKT);
-  if (usedModels.has('LM308')) lines.push(LM308_SUBCKT);
+  if (usedModels.has('TL072')) {
+    lines.push(TL072_SUBCKT);
+  }
+  if (usedModels.has('LM741')) {
+    lines.push(LM741_SUBCKT);
+  }
+  if (usedModels.has('LM308')) {
+    lines.push(LM308_SUBCKT);
+  }
 
   // Diode model statements — inline for standard models
   const usedDiodeModels = new Set(
     nodes.filter((n) => n.type === 'diode').map((n) => n.data.model),
   );
-  if (usedDiodeModels.has('1N914'))
+  if (usedDiodeModels.has('1N914')) {
     lines.push('.model 1N914 D(Is=2.52n Rs=.568 N=1.752 Cjo=4p M=.4 tt=20n)');
-  if (usedDiodeModels.has('1N4001'))
+  }
+  if (usedDiodeModels.has('1N4001')) {
     lines.push(
       '.model 1N4001 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u)',
     );
-  if (usedDiodeModels.has('1N4002'))
+  }
+  if (usedDiodeModels.has('1N4002')) {
     lines.push(
       '.model 1N4002 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u BV=100)',
     );
-  if (usedDiodeModels.has('1N270'))
+  }
+  if (usedDiodeModels.has('1N270')) {
     lines.push('.model 1N270 D(Is=200n Rs=2 N=1.1 Cjo=1p M=.5 tt=50n BV=100)');
+  }
 
   // BJT model statements
   const usedBJTModels = new Set(
     nodes.filter((n) => n.type === 'bjt').map((n) => n.data.model),
   );
-  if (usedBJTModels.has('2N3904')) lines.push(BJT_2N3904);
-  if (usedBJTModels.has('2N3906')) lines.push(BJT_2N3906);
-  if (usedBJTModels.has('AC128')) lines.push(BJT_AC128);
-  if (usedBJTModels.has('2N5088')) lines.push(BJT_2N5088);
-  if (usedBJTModels.has('2N5089')) lines.push(BJT_2N5089);
-  if (usedBJTModels.has('BC108')) lines.push(BJT_BC108);
-  if (usedBJTModels.has('BC549')) lines.push(BJT_BC549);
-  if (usedBJTModels.has('MPSA18')) lines.push(BJT_MPSA18);
+  if (usedBJTModels.has('2N3904')) {
+    lines.push(BJT_2N3904);
+  }
+  if (usedBJTModels.has('2N3906')) {
+    lines.push(BJT_2N3906);
+  }
+  if (usedBJTModels.has('AC128')) {
+    lines.push(BJT_AC128);
+  }
+  if (usedBJTModels.has('2N5088')) {
+    lines.push(BJT_2N5088);
+  }
+  if (usedBJTModels.has('2N5089')) {
+    lines.push(BJT_2N5089);
+  }
+  if (usedBJTModels.has('BC108')) {
+    lines.push(BJT_BC108);
+  }
+  if (usedBJTModels.has('BC549')) {
+    lines.push(BJT_BC549);
+  }
+  if (usedBJTModels.has('MPSA18')) {
+    lines.push(BJT_MPSA18);
+  }
 
   // JFET model statements
   const usedJFETModels = new Set(
     nodes.filter((n) => n.type === 'jfet').map((n) => n.data.model),
   );
-  if (usedJFETModels.has('2N5457')) lines.push(JFET_2N5457);
-  if (usedJFETModels.has('2N5458')) lines.push(JFET_2N5458);
-  if (usedJFETModels.has('J201')) lines.push(JFET_J201);
-  if (usedJFETModels.has('J113')) lines.push(JFET_J113);
-  if (usedJFETModels.has('MPF102')) lines.push(JFET_MPF102);
-  if (usedJFETModels.has('2N5460')) lines.push(JFET_2N5460);
+  if (usedJFETModels.has('2N5457')) {
+    lines.push(JFET_2N5457);
+  }
+  if (usedJFETModels.has('2N5458')) {
+    lines.push(JFET_2N5458);
+  }
+  if (usedJFETModels.has('J201')) {
+    lines.push(JFET_J201);
+  }
+  if (usedJFETModels.has('J113')) {
+    lines.push(JFET_J113);
+  }
+  if (usedJFETModels.has('MPF102')) {
+    lines.push(JFET_MPF102);
+  }
+  if (usedJFETModels.has('2N5460')) {
+    lines.push(JFET_2N5460);
+  }
 
   // MOSFET model statements
   const usedMOSFETModels = new Set(
     nodes.filter((n) => n.type === 'mosfet').map((n) => n.data.model),
   );
-  if (usedMOSFETModels.has('BS170')) lines.push(MOSFET_BS170);
-  if (usedMOSFETModels.has('IRF510')) lines.push(MOSFET_IRF510);
-  if (usedMOSFETModels.has('IRF9510')) lines.push(MOSFET_IRF9510);
-  if (usedMOSFETModels.has('2N7000')) lines.push(MOSFET_2N7000);
+  if (usedMOSFETModels.has('BS170')) {
+    lines.push(MOSFET_BS170);
+  }
+  if (usedMOSFETModels.has('IRF510')) {
+    lines.push(MOSFET_IRF510);
+  }
+  if (usedMOSFETModels.has('IRF9510')) {
+    lines.push(MOSFET_IRF9510);
+  }
+  if (usedMOSFETModels.has('2N7000')) {
+    lines.push(MOSFET_2N7000);
+  }
 
   // Find input and output jack nodes
   const inputNode = nodes.find(
@@ -349,8 +422,12 @@ function buildCircuitBody(
     (n) => n.type === 'jack' && n.data.direction === 'out',
   );
 
-  if (!inputNode) throw new Error('Circuit has no input jack');
-  if (!outputNode) throw new Error('Circuit has no output jack');
+  if (!inputNode) {
+    throw new Error('Circuit has no input jack');
+  }
+  if (!outputNode) {
+    throw new Error('Circuit has no output jack');
+  }
 
   const inputPos = getNode(inputNode.id, 'pos');
   const inputNeg = getNode(inputNode.id, 'neg');
@@ -569,14 +646,22 @@ export function getNodeLabels(
   const nodeToLabels = new Map<string, Array<string>>();
 
   for (const [port, spiceNode] of portToNode) {
-    if (spiceNode === '0' || spiceNode === 'UNCONNECTED') continue;
+    if (spiceNode === '0' || spiceNode === 'UNCONNECTED') {
+      continue;
+    }
     const [nodeId] = port.split('|');
     const component = nodes.find((n) => n.id === nodeId);
-    if (!component) continue;
+    if (!component) {
+      continue;
+    }
     // Skip types that don't contribute useful labels
-    if (component.type === 'ground' || component.type === 'jack') continue;
+    if (component.type === 'ground' || component.type === 'jack') {
+      continue;
+    }
     const label = component.data.label;
-    if (!nodeToLabels.has(spiceNode)) nodeToLabels.set(spiceNode, []);
+    if (!nodeToLabels.has(spiceNode)) {
+      nodeToLabels.set(spiceNode, []);
+    }
     nodeToLabels.get(spiceNode)!.push(label);
   }
 

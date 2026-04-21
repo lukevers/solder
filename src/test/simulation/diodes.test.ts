@@ -105,7 +105,9 @@ describe('diode clipping (half-wave rectifier)', () => {
     const skip = Math.floor(output.voltageValues.length * 0.1);
     let minVal = 0;
     for (let i = skip; i < output.voltageValues.length; i++) {
-      if (output.voltageValues[i] < minVal) minVal = output.voltageValues[i];
+      if (output.voltageValues[i] < minVal) {
+        minVal = output.voltageValues[i];
+      }
     }
     // Small negative leakage is OK but should be close to 0
     expect(minVal).toBeGreaterThan(-0.05);
@@ -455,8 +457,12 @@ describe('anti-parallel diode symmetry', () => {
     let posMax = 0;
     let negMin = 0;
     for (let i = 0; i < steady.length; i++) {
-      if (steady[i] > posMax) posMax = steady[i];
-      if (steady[i] < negMin) negMin = steady[i];
+      if (steady[i] > posMax) {
+        posMax = steady[i];
+      }
+      if (steady[i] < negMin) {
+        negMin = steady[i];
+      }
     }
 
     // Both diodes are identical → symmetric clipping

@@ -1,5 +1,3 @@
-// src/test/netlist.test.ts
-
 import type { Edge } from '@xyflow/react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import {

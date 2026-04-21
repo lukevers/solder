@@ -282,7 +282,9 @@ describe('cap_polar as coupling capacitor', () => {
     const skip = Math.floor(output.voltageValues.length * 0.3);
     const steady = output.voltageValues.slice(skip);
     let sum = 0;
-    for (let i = 0; i < steady.length; i++) sum += steady[i];
+    for (let i = 0; i < steady.length; i++) {
+      sum += steady[i];
+    }
     const dcOffset = Math.abs(sum / steady.length);
 
     // DC offset should be small (cap blocks DC)

@@ -1,5 +1,3 @@
-// src/audio/pipeline.ts
-
 import { SAMPLE_RATE } from '../lib/constants';
 
 const BUFFER_SIZE = 2048;
@@ -50,16 +48,26 @@ export class AudioPipeline {
   }
 
   setVolume(volume: number): void {
-    if (this.gainNode) this.gainNode.gain.value = volume;
+    if (this.gainNode) {
+      this.gainNode.gain.value = volume;
+    }
   }
 
   async loadSample(name: string): Promise<void> {
     await this.ready();
-    if (!this.ctx) return; // destroyed before init resolved
-    if (this.sampleBuffers.has(name)) return;
+    if (!this.ctx) {
+      return; // destroyed before init resolved
+    }
+
+    if (this.sampleBuffers.has(name)) {
+      return;
+    }
+
     const res = await fetch(`/samples/${name}.wav`);
-    if (!res.ok)
+    if (!res.ok) {
       throw new Error(`Failed to load sample "${name}": HTTP ${res.status}`);
+    }
+
     const arrayBuf = await res.arrayBuffer();
     const audioBuf = await this.ctx.decodeAudioData(arrayBuf);
     this.sampleBuffers.set(name, audioBuf);
@@ -70,10 +78,15 @@ export class AudioPipeline {
    * Calls onInputBuffer each time a new 2048-sample chunk is ready.
    */
   startSampleCapture(name: string, onInputBuffer: OnInputBuffer): void {
-    if (!this.ctx) throw new Error('Pipeline not initialized');
+    if (!this.ctx) {
+      throw new Error('Pipeline not initialized');
+    }
+
     this.ctx.resume();
     const buf = this.sampleBuffers.get(name);
-    if (!buf) throw new Error(`Sample "${name}" not loaded`);
+    if (!buf) {
+      throw new Error(`Sample "${name}" not loaded`);
+    }
 
     this.onInputBuffer = onInputBuffer;
     this.sampleOffset = 0;
@@ -81,15 +94,20 @@ export class AudioPipeline {
     // Use a ScriptProcessorNode to drive the callback at buffer boundaries
     this.scriptNode = this.ctx.createScriptProcessor(BUFFER_SIZE, 1, 1);
     this.scriptNode.onaudioprocess = () => {
-      if (!buf || !this.onInputBuffer) return;
+      if (!buf || !this.onInputBuffer) {
+        return;
+      }
+
       const chunk = new Float32Array(BUFFER_SIZE);
       const channelData = buf.getChannelData(0);
       for (let i = 0; i < BUFFER_SIZE; i++) {
         chunk[i] = channelData[this.sampleOffset % channelData.length];
         this.sampleOffset++;
       }
+
       this.onInputBuffer(chunk);
     };
+
     // Connect to destination silently (script processor needs to be in graph)
     const silentGain = this.ctx.createGain();
     this.silentGain = silentGain;
@@ -100,7 +118,10 @@ export class AudioPipeline {
 
   /** Start capturing from the microphone/live input. */
   async startLiveCapture(onInputBuffer: OnInputBuffer): Promise<void> {
-    if (!this.ctx) throw new Error('Pipeline not initialized');
+    if (!this.ctx) {
+      throw new Error('Pipeline not initialized');
+    }
+
     await this.ctx.resume();
     this.onInputBuffer = onInputBuffer;
     this.stream = await navigator.mediaDevices.getUserMedia({
@@ -110,7 +131,9 @@ export class AudioPipeline {
     this.mediaSource = this.ctx.createMediaStreamSource(this.stream);
     this.scriptNode = this.ctx.createScriptProcessor(BUFFER_SIZE, 1, 1);
     this.scriptNode.onaudioprocess = (e) => {
-      if (!this.onInputBuffer) return;
+      if (!this.onInputBuffer) {
+        return;
+      }
       const chunk = new Float32Array(BUFFER_SIZE);
       chunk.set(e.inputBuffer.getChannelData(0));
       this.onInputBuffer(chunk);
@@ -125,7 +148,9 @@ export class AudioPipeline {
 
   /** Queue a processed output buffer for playback. */
   scheduleOutput(outputBuffer: Float32Array): void {
-    if (!this.ctx || !this.gainNode) return;
+    if (!this.ctx || !this.gainNode) {
+      return;
+    }
     this.ctx.resume();
     const audioBuffer = this.ctx.createBuffer(
       1,
@@ -149,7 +174,9 @@ export class AudioPipeline {
 
   /** Play a pre-simulated output buffer once. Calls onEnded when playback finishes naturally. */
   playBuffer(buffer: Float32Array, onEnded?: () => void): void {
-    if (!this.ctx || !this.gainNode) return;
+    if (!this.ctx || !this.gainNode) {
+      return;
+    }
     void this.ctx.resume();
     this.stopPlayback();
     const audioBuffer = this.ctx.createBuffer(
@@ -177,7 +204,9 @@ export class AudioPipeline {
     offsetSeconds: number,
     onEnded?: () => void,
   ): void {
-    if (!this.ctx || !this.gainNode) return;
+    if (!this.ctx || !this.gainNode) {
+      return;
+    }
     void this.ctx.resume();
     this.stopPlayback();
     const sampleRate = this.ctx.sampleRate;
@@ -212,10 +241,14 @@ export class AudioPipeline {
 
   /** Returns the current playback position as a fraction (0–1), or null if not playing. */
   getPlaybackFraction(): number | null {
-    if (!this.ctx || !this.activeSource) return null;
+    if (!this.ctx || !this.activeSource) {
+      return null;
+    }
     const elapsed = this.ctx.currentTime - this.playbackStartTime;
     const currentTime = this.playbackOffset + elapsed;
-    if (currentTime >= this.playbackDuration) return null;
+    if (currentTime >= this.playbackDuration) {
+      return null;
+    }
     return currentTime / this.playbackDuration;
   }
 

@@ -1,4 +1,3 @@
-// src/components/nodes/JackNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { JackData } from '../../lib/types';
 import { NodeShell, NodeSvg, NodeText, RotatedHandle } from './NodeShell';

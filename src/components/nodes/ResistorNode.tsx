@@ -1,4 +1,3 @@
-// src/components/nodes/ResistorNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { ResistorData } from '../../lib/types';
 import { formatOhms } from '../../lib/units';

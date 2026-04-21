@@ -1,5 +1,3 @@
-// src/components/Toolbar.tsx
-
 import {
   Download,
   FolderOpen,
@@ -38,7 +36,9 @@ function FlyoutButton({
   const flyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
     if (btnRef.current) {
       const r = btnRef.current.getBoundingClientRect();
       setPos({ top: r.bottom + 6, left: r.left + r.width / 2 });
@@ -56,12 +56,12 @@ function FlyoutButton({
   }, [open]);
 
   return (
-    <div className="relative group flex-shrink-0">
+    <div className="group relative flex-shrink-0">
       <button
         ref={btnRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
+        className={`rounded border bg-gray-800 px-2 py-1 font-mono text-xs transition-colors hover:bg-gray-700 ${
           active || open
             ? 'border-blue-500 text-blue-300'
             : 'border-gray-700 text-gray-300'
@@ -70,7 +70,7 @@ function FlyoutButton({
         {label}
       </button>
       {!open && (
-        <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+        <div className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded border border-gray-600 bg-gray-800 px-2 py-1 font-sans text-gray-200 text-xs opacity-0 transition-opacity duration-150 group-hover:opacity-100">
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
           {tooltip}
         </div>
@@ -98,7 +98,7 @@ function FlyoutButton({
                   onSelect(item.label);
                   setOpen(false);
                 }}
-                className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
+                className="whitespace-nowrap rounded border border-gray-600 bg-gray-800 px-2.5 py-1 font-mono text-gray-200 text-xs transition-colors hover:bg-gray-700"
               >
                 {item.label}
               </button>
@@ -151,12 +151,12 @@ function TransistorFlyout({
     : null;
 
   return (
-    <div className="relative group flex-shrink-0">
+    <div className="group relative flex-shrink-0">
       <button
         ref={btnRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={`bg-gray-800 hover:bg-gray-700 border text-xs px-2 py-1 rounded font-mono transition-colors ${
+        className={`rounded border bg-gray-800 px-2 py-1 font-mono text-xs transition-colors hover:bg-gray-700 ${
           open
             ? 'border-blue-500 text-blue-300'
             : 'border-gray-700 text-gray-300'
@@ -165,7 +165,7 @@ function TransistorFlyout({
         Q
       </button>
       {!open && (
-        <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+        <div className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded border border-gray-600 bg-gray-800 px-2 py-1 font-sans text-gray-200 text-xs opacity-0 transition-opacity duration-150 group-hover:opacity-100">
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
           Transistor
         </div>
@@ -191,7 +191,7 @@ function TransistorFlyout({
                   key={g.group}
                   type="button"
                   onClick={() => setActiveGroup(g.group)}
-                  className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors flex items-center justify-between gap-3"
+                  className="flex items-center justify-between gap-3 whitespace-nowrap rounded border border-gray-600 bg-gray-800 px-2.5 py-1 font-mono text-gray-200 text-xs transition-colors hover:bg-gray-700"
                 >
                   {g.group}
                   <span className="text-gray-500">›</span>
@@ -202,7 +202,7 @@ function TransistorFlyout({
                 <button
                   type="button"
                   onClick={() => setActiveGroup(null)}
-                  className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-400 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors flex items-center gap-1"
+                  className="flex items-center gap-1 whitespace-nowrap rounded border border-gray-600 bg-gray-800 px-2.5 py-1 font-mono text-gray-400 text-xs transition-colors hover:bg-gray-700"
                 >
                   <span>‹</span> {activeGroup}
                 </button>
@@ -214,7 +214,7 @@ function TransistorFlyout({
                       onSelect(item);
                       setOpen(false);
                     }}
-                    className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-200 text-xs px-2.5 py-1 rounded font-mono whitespace-nowrap transition-colors"
+                    className="whitespace-nowrap rounded border border-gray-600 bg-gray-800 px-2.5 py-1 font-mono text-gray-200 text-xs transition-colors hover:bg-gray-700"
                   >
                     {item.label}
                   </button>
@@ -301,7 +301,9 @@ type PaletteItem = (typeof PALETTE)[number];
 
 function nextLabel(defaultLabel: string, nodes: Array<ComponentNode>): string {
   const match = defaultLabel.match(/^([A-Za-z]+)(\d+)$/);
-  if (!match) return defaultLabel;
+  if (!match) {
+    return defaultLabel;
+  }
   const prefix = match[1];
   const re = new RegExp(`^${prefix}(\\d+)$`, 'i');
   let max = 0;
@@ -309,7 +311,9 @@ function nextLabel(defaultLabel: string, nodes: Array<ComponentNode>): string {
     const lbl = (node.data as { label?: string }).label;
     if (typeof lbl === 'string') {
       const m = lbl.match(re);
-      if (m) max = Math.max(max, parseInt(m[1], 10));
+      if (m) {
+        max = Math.max(max, parseInt(m[1], 10));
+      }
     }
   }
   return `${prefix}${max + 1}`;
@@ -529,7 +533,9 @@ export function Toolbar({
   const renameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (editingTabId) renameInputRef.current?.focus();
+    if (editingTabId) {
+      renameInputRef.current?.focus();
+    }
   }, [editingTabId]);
 
   function handleAdd(
@@ -568,7 +574,9 @@ export function Toolbar({
   }
 
   function commitRename(id: string) {
-    if (editingName.trim()) renameTab(id, editingName.trim());
+    if (editingName.trim()) {
+      renameTab(id, editingName.trim());
+    }
     setEditingTabId(null);
   }
 
@@ -576,7 +584,9 @@ export function Toolbar({
 
   function handleExport() {
     const activeTab = tabs.find((t) => t.id === activeTabId);
-    if (!activeTab) return;
+    if (!activeTab) {
+      return;
+    }
     // Use the live nodes/edges from the store, not the stale tab snapshot
     // (tabs only flush on tab-switch / add / close)
     const json = exportCircuit({ ...activeTab, nodes, edges });
@@ -597,7 +607,9 @@ export function Toolbar({
   async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
-    if (!file) return;
+    if (!file) {
+      return;
+    }
     try {
       const text = await file.text();
       const {
@@ -613,11 +625,11 @@ export function Toolbar({
   }
 
   return (
-    <div className="flex flex-col flex-shrink-0 bg-gray-900 border-b border-gray-800">
+    <div className="flex flex-shrink-0 flex-col border-gray-800 border-b bg-gray-900">
       {/* Logo row: logo + tab strip */}
-      <div className="flex items-stretch h-8 border-b border-gray-800 overflow-hidden overflow-x-auto">
+      <div className="flex h-8 items-stretch overflow-hidden overflow-x-auto border-gray-800 border-b">
         {/* Logo */}
-        <div className="flex items-center gap-1.5 px-3 border-r border-gray-800 flex-shrink-0">
+        <div className="flex flex-shrink-0 items-center gap-1.5 border-gray-800 border-r px-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"
@@ -649,21 +661,21 @@ export function Toolbar({
               />
             </g>
           </svg>
-          <span className="text-blue-400 font-bold text-sm">solder</span>
+          <span className="font-bold text-blue-400 text-sm">solder</span>
         </div>
 
         {/* Tab strip */}
-        <div className="flex items-stretch flex-1 min-w-0 overflow-x-auto overflow-y-hidden">
+        <div className="flex min-w-0 flex-1 items-stretch overflow-x-auto overflow-y-hidden">
           {tabs.map((tab) => {
             const isActive = tab.id === activeTabId;
             return (
               <div
                 key={tab.id}
                 onClick={() => switchTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 cursor-pointer text-xs font-sans transition-colors flex-shrink-0 ${
+                className={`flex flex-shrink-0 cursor-pointer items-center gap-1.5 px-3 font-sans text-xs transition-colors ${
                   isActive
-                    ? 'bg-gray-800 text-gray-100 border-b-2 border-blue-500 -mb-px'
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800 border-b-2 border-transparent -mb-px'
+                    ? '-mb-px border-blue-500 border-b-2 bg-gray-800 text-gray-100'
+                    : '-mb-px border-transparent border-b-2 text-gray-400 hover:bg-gray-800 hover:text-gray-200'
                 }`}
               >
                 {editingTabId === tab.id ? (
@@ -673,12 +685,15 @@ export function Toolbar({
                     onChange={(e) => setEditingName(e.target.value)}
                     onBlur={() => commitRename(tab.id)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') commitRename(tab.id);
-                      else if (e.key === 'Escape') setEditingTabId(null);
+                      if (e.key === 'Enter') {
+                        commitRename(tab.id);
+                      } else if (e.key === 'Escape') {
+                        setEditingTabId(null);
+                      }
                       e.stopPropagation();
                     }}
                     onClick={(e) => e.stopPropagation()}
-                    className="bg-gray-700 text-gray-100 text-xs px-1 rounded w-24 outline-none border border-blue-500"
+                    className="w-24 rounded border border-blue-500 bg-gray-700 px-1 text-gray-100 text-xs outline-none"
                   />
                 ) : (
                   <span onDoubleClick={(e) => startRename(tab.id, tab.name, e)}>
@@ -692,7 +707,7 @@ export function Toolbar({
                       e.stopPropagation();
                       closeTab(tab.id);
                     }}
-                    className="text-gray-600 hover:text-gray-300 leading-none transition-colors"
+                    className="text-gray-600 leading-none transition-colors hover:text-gray-300"
                     aria-label={`Close ${tab.name}`}
                   >
                     <X size={10} />
@@ -706,7 +721,7 @@ export function Toolbar({
           <button
             type="button"
             onClick={addTab}
-            className="px-3 text-gray-500 hover:text-gray-200 hover:bg-gray-800 text-sm transition-colors flex-shrink-0"
+            className="flex-shrink-0 px-3 text-gray-500 text-sm transition-colors hover:bg-gray-800 hover:text-gray-200"
             aria-label="New tab"
           >
             <Plus size={14} />
@@ -714,11 +729,11 @@ export function Toolbar({
         </div>
 
         {/* Examples / Export / Import — top-right of top bar */}
-        <div className="flex items-stretch border-l border-gray-800 flex-shrink-0">
+        <div className="flex flex-shrink-0 items-stretch border-gray-800 border-l">
           <button
             type="button"
             onClick={handleExport}
-            className="flex items-center gap-1 text-xs px-2.5 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors font-sans"
+            className="flex items-center gap-1 px-2.5 font-sans text-gray-400 text-xs transition-colors hover:bg-gray-800 hover:text-gray-200"
           >
             <Upload size={12} />
             <span className="hidden sm:inline">Export</span>
@@ -726,7 +741,7 @@ export function Toolbar({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1 text-xs px-2.5 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors font-sans"
+            className="flex items-center gap-1 px-2.5 font-sans text-gray-400 text-xs transition-colors hover:bg-gray-800 hover:text-gray-200"
           >
             <Download size={12} />
             <span className="hidden sm:inline">Import</span>
@@ -734,10 +749,10 @@ export function Toolbar({
           <button
             type="button"
             onClick={onToggleExamples}
-            className={`flex items-center gap-1 text-xs px-2.5 transition-colors font-sans ${
+            className={`flex items-center gap-1 px-2.5 font-sans text-xs transition-colors ${
               showExamples
                 ? 'bg-indigo-950 text-indigo-300'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-gray-200'
             }`}
           >
             <FolderOpen size={12} />
@@ -755,18 +770,18 @@ export function Toolbar({
       />
 
       {/* On mobile: two rows (actions middle, palette bottom). On sm+: one row. */}
-      <div className="flex flex-col sm:flex-row sm:items-center border-b border-gray-800 sm:border-b-0">
+      <div className="flex flex-col border-gray-800 border-b sm:flex-row sm:items-center sm:border-b-0">
         {/* ── Actions row (middle on mobile, right on desktop) ── */}
-        <div className="flex items-center gap-2 px-2 py-1.5 border-b border-gray-800 sm:border-b-0 sm:order-last sm:ml-auto flex-shrink-0 justify-between">
+        <div className="flex flex-shrink-0 items-center justify-between gap-2 border-gray-800 border-b px-2 py-1.5 sm:order-last sm:ml-auto sm:border-b-0">
           {/* Input / Output button group */}
-          <div className="flex rounded border border-gray-700 flex-shrink-0">
+          <div className="flex flex-shrink-0 rounded border border-gray-700">
             {/* Input play/stop */}
             {hasSourceBuffer &&
               (playingOriginal ? (
                 <button
                   type="button"
                   onClick={onStop}
-                  className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
+                  className="flex items-center gap-1 whitespace-nowrap bg-gray-800 px-3 py-1 font-bold font-mono text-red-400 text-xs transition-colors hover:bg-gray-700"
                 >
                   <Square size={10} />
                   <span>Input</span>
@@ -778,7 +793,7 @@ export function Toolbar({
                   disabled={
                     simulationStatus === 'running' || sweepStatus === 'running'
                   }
-                  className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-blue-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
+                  className="flex items-center gap-1 whitespace-nowrap bg-gray-800 px-3 py-1 font-bold font-mono text-blue-400 text-xs transition-colors hover:bg-gray-700 disabled:opacity-40"
                 >
                   <Play size={10} />
                   <span>Input</span>
@@ -792,7 +807,7 @@ export function Toolbar({
               <button
                 type="button"
                 disabled
-                className="flex items-center gap-1 bg-gray-800 disabled:opacity-50 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
+                className="flex items-center gap-1 whitespace-nowrap bg-gray-800 px-3 py-1 font-bold font-mono text-amber-400 text-xs transition-colors disabled:opacity-50"
               >
                 <Hourglass size={10} />
                 <span>
@@ -803,7 +818,7 @@ export function Toolbar({
               <button
                 type="button"
                 onClick={onStop}
-                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-red-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
+                className="flex items-center gap-1 whitespace-nowrap bg-gray-800 px-3 py-1 font-bold font-mono text-red-400 text-xs transition-colors hover:bg-gray-700"
               >
                 <Square size={10} />
                 <span>Stop</span>
@@ -812,7 +827,7 @@ export function Toolbar({
               <button
                 type="button"
                 onClick={onPlayOutput}
-                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-green-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
+                className="flex items-center gap-1 whitespace-nowrap bg-gray-800 px-3 py-1 font-bold font-mono text-green-400 text-xs transition-colors hover:bg-gray-700"
               >
                 <Play size={10} />
                 <span>Output</span>
@@ -821,7 +836,7 @@ export function Toolbar({
               <button
                 type="button"
                 onClick={onSimulate}
-                className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-amber-400 text-xs px-3 py-1 font-mono font-bold whitespace-nowrap transition-colors"
+                className="flex items-center gap-1 whitespace-nowrap bg-gray-800 px-3 py-1 font-bold font-mono text-amber-400 text-xs transition-colors hover:bg-gray-700"
               >
                 <Play size={10} />
                 <span>Simulate</span>
@@ -833,10 +848,10 @@ export function Toolbar({
           <button
             type="button"
             onClick={onToggleAnalyzer}
-            className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded font-mono transition-colors flex-shrink-0 ${
+            className={`flex flex-shrink-0 items-center gap-1 rounded px-2.5 py-1 font-mono text-xs transition-colors ${
               showAnalyzer
-                ? 'bg-green-950 border border-green-800 text-green-400'
-                : 'bg-transparent border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200'
+                ? 'border border-green-800 bg-green-950 text-green-400'
+                : 'border border-gray-700 bg-transparent text-gray-400 hover:border-gray-500 hover:text-gray-200'
             }`}
           >
             <ScanLine size={12} />
@@ -845,7 +860,7 @@ export function Toolbar({
         </div>
 
         {/* ── Palette row (bottom on mobile, left on desktop) ── */}
-        <div className="flex items-center gap-2 px-2 py-1.5 overflow-x-auto sm:order-first sm:flex-1 overflow-y-hidden">
+        <div className="flex items-center gap-2 overflow-x-auto overflow-y-hidden px-2 py-1.5 sm:order-first sm:flex-1">
           {/* Component palette */}
           <FlyoutButton
             label="JACK"
@@ -868,15 +883,15 @@ export function Toolbar({
 
             return (
               <Fragment key={item.type}>
-                <div className="relative group flex-shrink-0">
+                <div className="group relative flex-shrink-0">
                   <button
                     type="button"
                     onClick={() => handleAdd(item)}
-                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs px-2 py-1 rounded font-mono transition-colors"
+                    className="rounded border border-gray-700 bg-gray-800 px-2 py-1 font-mono text-gray-300 text-xs transition-colors hover:bg-gray-700"
                   >
                     {item.label}
                   </button>
-                  <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+                  <div className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded border border-gray-600 bg-gray-800 px-2 py-1 font-sans text-gray-200 text-xs opacity-0 transition-opacity duration-150 group-hover:opacity-100">
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
                     {item.tooltip}
                   </div>
@@ -887,7 +902,7 @@ export function Toolbar({
           })}
 
           {/* Sticky Note */}
-          <div className="relative group flex-shrink-0 self-stretch">
+          <div className="group relative flex-shrink-0 self-stretch">
             <button
               type="button"
               onClick={() =>
@@ -898,11 +913,11 @@ export function Toolbar({
                   defaultData: { label: 'Note', text: '' },
                 })
               }
-              className="h-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-xs px-2 py-1 rounded font-mono transition-colors flex items-center"
+              className="flex h-full items-center rounded border border-gray-700 bg-gray-800 px-2 py-1 font-mono text-gray-300 text-xs transition-colors hover:bg-gray-700"
             >
               <MessageSquareText size={14} />
             </button>
-            <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 border border-gray-600 text-gray-200 text-xs font-sans whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+            <div className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded border border-gray-600 bg-gray-800 px-2 py-1 font-sans text-gray-200 text-xs opacity-0 transition-opacity duration-150 group-hover:opacity-100">
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-600" />
               Sticky Note
             </div>

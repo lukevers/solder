@@ -1,5 +1,3 @@
-// src/lib/spice-engine.ts
-
 export type SimulationOutput = {
   timeValues: Float64Array; // seconds, one entry per ngspice output step
   voltageValues: Float64Array; // volts at the probed output node, same length

@@ -1,4 +1,3 @@
-// src/components/nodes/PotNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { PotData } from '../../lib/types';
 import { formatOhms } from '../../lib/units';

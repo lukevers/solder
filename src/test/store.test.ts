@@ -1,4 +1,3 @@
-// src/test/store.test.ts
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Tab } from '../store';
 import { useStore } from '../store';

@@ -160,8 +160,12 @@ describe('RAT example circuit', () => {
     let min = Infinity;
     let max = -Infinity;
     for (const v of steady) {
-      if (v < min) min = v;
-      if (v > max) max = v;
+      if (v < min) {
+        min = v;
+      }
+      if (v > max) {
+        max = v;
+      }
     }
     // AC swing should be at least 10mV (the input is 0.1V through a gain stage)
     const swing = max - min;
@@ -273,7 +277,9 @@ describe('RC time constant (analytical validation)', () => {
     const duration = 0.001; // 1ms = 10x tau, enough to see the full curve
     const numSamples = Math.round(sampleRate * duration);
     const buf = new Float32Array(numSamples);
-    for (let i = 1; i < numSamples; i++) buf[i] = 1.0; // step at t=0
+    for (let i = 1; i < numSamples; i++) {
+      buf[i] = 1.0; // step at t=0
+    }
 
     const netlist = compileNetlist(
       nodes,

@@ -1,5 +1,3 @@
-// src/components/SweepResults.tsx
-
 import { Hourglass, Play, Square, X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { SAMPLE_RATE } from '../lib/constants';
@@ -33,9 +31,13 @@ function SweepWaveformCanvas({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || results.length === 0) return;
+    if (!canvas || results.length === 0) {
+      return;
+    }
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
     const dpr = window.devicePixelRatio ?? 1;
     const w = canvas.getBoundingClientRect().width || canvas.offsetWidth;
@@ -63,8 +65,11 @@ function SweepWaveformCanvas({
       for (let s = 0; s < buf.length; s++) {
         const x = (s / buf.length) * w;
         const y = midY - (buf[s] * h) / 2.5;
-        if (s === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        if (s === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
       }
       ctx.stroke();
       ctx.globalAlpha = 1;
@@ -76,7 +81,7 @@ function SweepWaveformCanvas({
       ref={canvasRef}
       width={176}
       height={80}
-      className="rounded border border-gray-800 w-full"
+      className="w-full rounded border border-gray-800"
     />
   );
 }
@@ -96,17 +101,17 @@ export function SweepResults({
 
   return (
     <div className="p-3">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-gray-500 uppercase tracking-wider">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-gray-500 text-xs uppercase tracking-wider">
           Pot Sweep
           {status === 'running' && (
-            <span className="text-amber-400 ml-1">({results.length}/5)</span>
+            <span className="ml-1 text-amber-400">({results.length}/5)</span>
           )}
         </span>
         <button
           type="button"
           onClick={onClear}
-          className="text-gray-500 hover:text-gray-200 transition-colors"
+          className="text-gray-500 transition-colors hover:text-gray-200"
           aria-label="Close sweep results"
         >
           <X size={13} />
@@ -114,7 +119,7 @@ export function SweepResults({
       </div>
 
       {status === 'running' && results.length === 0 ? (
-        <div className="flex items-center justify-center gap-2 h-20 rounded border border-gray-800 bg-gray-950 text-amber-400 text-xs font-mono">
+        <div className="flex h-20 items-center justify-center gap-2 rounded border border-gray-800 bg-gray-950 font-mono text-amber-400 text-xs">
           <Hourglass size={12} /> Simulating 5 variants…
         </div>
       ) : (
@@ -133,14 +138,14 @@ export function SweepResults({
                 key={r.position}
                 type="button"
                 onClick={() => (isPlaying ? onStop() : onPlay(i))}
-                className={`flex items-center gap-2 text-xs font-mono px-2 py-1 rounded border transition-colors ${
+                className={`flex items-center gap-2 rounded border px-2 py-1 font-mono text-xs transition-colors ${
                   isPlaying
-                    ? 'bg-gray-800 border-gray-600'
-                    : 'bg-gray-950 border-gray-800 hover:border-gray-600'
+                    ? 'border-gray-600 bg-gray-800'
+                    : 'border-gray-800 bg-gray-950 hover:border-gray-600'
                 }`}
               >
                 <span
-                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  className="h-2 w-2 flex-shrink-0 rounded-full"
                   style={{ backgroundColor: color }}
                 />
                 <span className="text-gray-300">{pct}%</span>
@@ -157,7 +162,7 @@ export function SweepResults({
       )}
 
       {duration && (
-        <div className="mt-1 text-xs font-mono text-gray-600 text-center">
+        <div className="mt-1 text-center font-mono text-gray-600 text-xs">
           {duration}s each
         </div>
       )}

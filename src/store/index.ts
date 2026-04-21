@@ -1,5 +1,3 @@
-// src/store/index.ts
-
 import type { Edge } from '@xyflow/react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -18,7 +16,9 @@ const MAX_HISTORY = 50;
  */
 function ensureMeasured(nodes: Array<ComponentNode>): Array<ComponentNode> {
   return nodes.map((n) => {
-    if (n.measured?.width && n.measured?.height) return n;
+    if (n.measured?.width && n.measured?.height) {
+      return n;
+    }
 
     let w: number | undefined;
     let h: number | undefined;
@@ -91,7 +91,9 @@ function ensureMeasured(nodes: Array<ComponentNode>): Array<ComponentNode> {
       }
     }
 
-    if (!w || !h) return n;
+    if (!w || !h) {
+      return n;
+    }
 
     const rot = n.rotation ?? 0;
     const is90or270 = rot === 90 || rot === 270;
@@ -192,7 +194,9 @@ function nextTabName(tabs: Array<Tab>): string {
   let max = 0;
   for (const t of tabs) {
     const m = t.name.match(/^Circuit (\d+)$/);
-    if (m) max = Math.max(max, Number.parseInt(m[1], 10));
+    if (m) {
+      max = Math.max(max, Number.parseInt(m[1], 10));
+    }
   }
   return `Circuit ${max + 1}`;
 }
@@ -393,7 +397,9 @@ export const useStore = create<StoreState>()(
         }),
       switchTab: (id) =>
         set((s) => {
-          if (s.activeTabId === id) return {};
+          if (s.activeTabId === id) {
+            return {};
+          }
           const flushed = flushActive(s);
           const target = flushed.find((t) => t.id === id)!;
           return {
@@ -580,7 +586,9 @@ export const useStore = create<StoreState>()(
         })),
       undo: () => {
         const { past, nodes, edges, future } = get();
-        if (past.length === 0) return;
+        if (past.length === 0) {
+          return;
+        }
         const prev = past[past.length - 1];
         set({
           past: past.slice(0, -1),
@@ -593,7 +601,9 @@ export const useStore = create<StoreState>()(
       },
       redo: () => {
         const { past, nodes, edges, future } = get();
-        if (future.length === 0) return;
+        if (future.length === 0) {
+          return;
+        }
         const next = future[0];
         set({
           past: [...past, { nodes, edges }],
@@ -671,13 +681,17 @@ export const useStore = create<StoreState>()(
         activeTabId: state.activeTabId,
       }),
       onRehydrateStorage: () => (state) => {
-        if (!state) return;
+        if (!state) {
+          return;
+        }
         state.tabs = state.tabs.map((t) => ({
           ...defaultSimState,
           ...t,
         }));
         const active = state.tabs.find((t) => t.id === state.activeTabId);
-        if (!active) return;
+        if (!active) {
+          return;
+        }
         state.nodes = active.nodes;
         state.edges = active.edges;
         state.selectedNodeId = active.selectedNodeId;

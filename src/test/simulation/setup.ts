@@ -1,5 +1,3 @@
-// src/test/simulation/setup.ts
-//
 // Shared setup for all simulation integration tests.
 //
 // These tests run real SPICE simulations via the eecircuit-engine WASM binary
@@ -130,7 +128,9 @@ export function peak(values: ArrayLike<number>, skipFraction = 0): number {
   let max = 0;
   for (let i = start; i < values.length; i++) {
     const a = Math.abs(values[i]);
-    if (a > max) max = a;
+    if (a > max) {
+      max = a;
+    }
   }
   return max;
 }
@@ -161,8 +161,12 @@ export function acSwing(values: ArrayLike<number>, skipFraction = 0.2): number {
   let min = Infinity;
   let max = -Infinity;
   for (let i = start; i < values.length; i++) {
-    if (values[i] < min) min = values[i];
-    if (values[i] > max) max = values[i];
+    if (values[i] < min) {
+      min = values[i];
+    }
+    if (values[i] > max) {
+      max = values[i];
+    }
   }
   return max - min;
 }

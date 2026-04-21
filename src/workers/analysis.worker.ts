@@ -1,5 +1,3 @@
-// src/workers/analysis.worker.ts
-
 import { resampleAllTraces } from '../lib/audio-convert';
 import { SAMPLE_RATE } from '../lib/constants';
 import { EECircuitEngine } from '../lib/engines/eecircuit';
@@ -12,8 +10,12 @@ const MAX_TRACE_BYTES = 128 * 1024 * 1024;
 const engine = new EECircuitEngine();
 
 self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
-  if (e.data.type !== 'analyze') return;
+  if (e.data.type !== 'analyze') {
+    return;
+  }
+
   const { nodes, edges, duration, frequency, amplitude, waveform } = e.data;
+
   try {
     await engine.init();
     const { netlist } = compileAnalysisNetlist(
@@ -24,6 +26,7 @@ self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
       amplitude,
       waveform,
     );
+
     const output = await engine.runAnalysis(netlist);
 
     // Pre-flight memory estimate: traceCount * samplesPerTrace * 4 bytes
@@ -49,6 +52,7 @@ self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
       traces,
       sampleRate: SAMPLE_RATE,
     };
+
     self.postMessage(response, {
       transfer: transferables as Array<Transferable>,
     });
@@ -57,6 +61,7 @@ self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
       type: 'error',
       message: err instanceof Error ? err.message : String(err),
     };
+
     self.postMessage(response);
   }
 };

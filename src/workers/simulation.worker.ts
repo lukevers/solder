@@ -1,5 +1,3 @@
-// src/workers/simulation.worker.ts
-
 import { voltageToAudioBuffer } from '../lib/audio-convert';
 import { EECircuitEngine } from '../lib/engines/eecircuit';
 import { compileNetlist } from '../lib/netlist';
@@ -12,7 +10,10 @@ const SAMPLE_RATE = 44100;
 const engine: SpiceEngine = new EECircuitEngine();
 
 self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
-  if (e.data.type !== 'simulate') return;
+  if (e.data.type !== 'simulate') {
+    return;
+  }
+
   const {
     nodes,
     edges,
@@ -22,6 +23,7 @@ self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
     inputBuffer,
     inputSampleRate,
   } = e.data;
+
   try {
     await engine.init();
     const netlist = compileNetlist(
@@ -33,12 +35,14 @@ self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
       inputBuffer,
       inputSampleRate,
     );
+
     const output = await engine.run(netlist);
     const audioBuffer = voltageToAudioBuffer(output, SAMPLE_RATE);
     const response: SimulateResponse = {
       type: 'result',
       outputBuffer: audioBuffer,
     };
+
     self.postMessage(response, {
       transfer: [audioBuffer.buffer] as Array<Transferable>,
     });
@@ -47,6 +51,7 @@ self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
       type: 'error',
       message: err instanceof Error ? err.message : String(err),
     };
+
     self.postMessage(response);
   }
 };

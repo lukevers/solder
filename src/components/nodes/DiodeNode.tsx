@@ -1,4 +1,3 @@
-// src/components/nodes/DiodeNode.tsx
 import { type NodeProps, Position } from '@xyflow/react';
 import type { DiodeData } from '../../lib/types';
 import {
