@@ -76,3 +76,69 @@ pnpm test:ui      # Run tests with interactive Vitest UI
 - `src/lib/audio/pipeline.ts` loads decoded sample audio from
   `/public/samples/` and provides playback helpers for the waveform and
   simulator UI.
+
+## WAV Simulation Flow
+
+```text
++-----------------------------------------------------------+
+| 1. Sample source                                          |
+|    /public/samples/<name>.wav                             |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 2. Browser audio decode                                   |
+|    AudioPipeline.fetch() + decodeAudioData()              |
+|    -> Float32Array input buffer @ 44.1 kHz                |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 3. Optional input trim                                    |
+|    Waveform selection keeps only the chosen region        |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 4. Main-thread request                                    |
+|    App.tsx posts SimulateRequest to simulation worker     |
+|    with: nodes, edges, inputBuffer, inputSampleRate       |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 5. Netlist compilation in worker                          |
+|    compileNetlist(...)                                    |
+|    - downsample input to SPICE_SAMPLE_RATE = 10 kHz       |
+|    - build PWL source: Vin pos neg PWL(t0 v0 t1 v1 ...)   |
+|    - inline active device models                          |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 6. SPICE simulation                                       |
+|    EECircuitEngine / ngspice WASM runs transient analysis |
+|    -> variable-step trace: time[] + outputVoltage[]       |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 7. Audio reconstruction                                   |
+|    voltageToAudioBuffer(...)                              |
+|    -> resample SPICE output back to 44.1 kHz              |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 8. Output buffer                                          |
+|    Float32Array stored in Zustand                         |
++-----------------------------------------------------------+
+                   |                           |
+                   |                           |
+                   v                           v
++--------------------------------+   +--------------------------------+
+| 9a. Visual result              |   | 9b. Audible result             |
+|     Waveform display overlays  |   |     AudioPipeline.playBuffer() |
+|     input vs output            |   |     plays simulated output     |
++--------------------------------+   +--------------------------------+
+```
