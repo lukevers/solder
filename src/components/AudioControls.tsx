@@ -43,7 +43,7 @@ export function AudioControls({
   return (
     <div className="p-3">
       <div className="mb-2 text-gray-500 text-xs uppercase tracking-wider">
-        Audio Source
+        WAV Samples
       </div>
       <div className="flex flex-col gap-1.5">
         {SAMPLES.map((name) => (

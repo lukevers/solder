@@ -239,4 +239,45 @@ describe('PWL with long audio buffer', () => {
     const audio = voltageToAudioBuffer(output, sampleRate);
     expect(audio.length).toBeGreaterThan(4000);
   });
+
+  it('preserves multi-second PWL duration without truncating at the parser', async () => {
+    const { nodes, edges } = makeCircuit(
+      [],
+      [
+        {
+          id: 'e1',
+          source: 'in',
+          sourceHandle: 'pos',
+          target: 'out',
+          targetHandle: 'pos',
+        },
+      ],
+    );
+
+    const sampleRate = 44100;
+    const duration = 0.5;
+    const numSamples = Math.round(sampleRate * duration);
+    const buf = new Float32Array(numSamples);
+
+    for (let i = 0; i < numSamples; i++) {
+      buf[i] = Math.sin(2 * Math.PI * 220 * (i / sampleRate));
+    }
+
+    const netlist = compileNetlist(
+      nodes,
+      edges,
+      duration,
+      220,
+      1.0,
+      buf,
+      sampleRate,
+    );
+    const output = await engine.run(netlist);
+    const audio = voltageToAudioBuffer(output, sampleRate);
+
+    expect(output.timeValues[output.timeValues.length - 1]).toBeGreaterThan(
+      duration * 0.95,
+    );
+    expect(audio.length).toBeGreaterThan(sampleRate * duration * 0.95);
+  });
 });

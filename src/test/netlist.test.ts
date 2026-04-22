@@ -742,7 +742,45 @@ describe('compileNetlist with PWL input buffer', () => {
     const pwlMatch = netlist.match(/PWL\(([^)]+)\)/);
     expect(pwlMatch).not.toBeNull();
     // First time-voltage pair should start at t=0
-    expect(pwlMatch![1]).toMatch(/^0\.0000e\+0/);
+    expect(pwlMatch![1]).toMatch(/\+\s+0\.0000e\+0/);
+  });
+
+  it('splits long PWL sources across SPICE continuation lines', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'jack',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT', direction: 'in' },
+      },
+      {
+        id: 'out1',
+        type: 'jack',
+        position: { x: 100, y: 0 },
+        data: { label: 'OUTPUT', direction: 'out' },
+      },
+    ];
+    const sampleRate = 44100;
+    const duration = 0.5;
+    const numSamples = Math.round(sampleRate * duration);
+    const buf = new Float32Array(numSamples);
+
+    for (let i = 0; i < numSamples; i++) {
+      buf[i] = Math.sin(2 * Math.PI * 440 * (i / sampleRate));
+    }
+
+    const netlist = compileNetlist(
+      nodes,
+      [],
+      duration,
+      440,
+      1.0,
+      buf,
+      sampleRate,
+    );
+
+    expect(netlist).toMatch(/Vin \S+ \S+ PWL\(/);
+    expect(netlist).toMatch(/\n\+ [^\n]+\n\+ [^\n]+\)/);
   });
 });
 

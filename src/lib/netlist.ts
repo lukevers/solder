@@ -45,6 +45,20 @@ export const SPICE_SAMPLE_RATE = 10000;
 const MAX_PWL_POINTS = 100_001;
 
 /**
+ * Maximum number of time/value pairs we emit on a
+ * single SPICE continuation line for PWL sources.
+ *
+ * Multi-second audio sources expand into tens of
+ * thousands of PWL breakpoints. Emitting all of
+ * them on one line can exceed the parser's line
+ * length limit and silently truncate the source
+ * after a few tenths of a second. We keep each
+ * line short and rely on SPICE `+` continuations
+ * so the entire sample survives parsing.
+ */
+const MAX_PWL_PAIRS_PER_LINE = 128;
+
+/**
  * Maximum SPICE nodes to save in analysis mode.
  *
  * Limits memory usage when the circuit has many
@@ -78,6 +92,7 @@ function buildPwlSource(
   );
   const ratio = inputSampleRate / SPICE_SAMPLE_RATE;
   const pairs: Array<string> = [];
+
   for (let i = 0; i < numPoints; i++) {
     const t = i / SPICE_SAMPLE_RATE;
     const srcIdx = i * ratio;
@@ -88,7 +103,16 @@ function buildPwlSource(
       (inputBuffer[lo] ?? 0) * (1 - frac) + (inputBuffer[hi] ?? 0) * frac;
     pairs.push(`${t.toExponential(4)} ${(v * amplitude).toFixed(6)}`);
   }
-  return `Vin ${nodePos} ${nodeNeg} PWL(${pairs.join(' ')})`;
+
+  const lines = [`Vin ${nodePos} ${nodeNeg} PWL(`];
+
+  for (let i = 0; i < pairs.length; i += MAX_PWL_PAIRS_PER_LINE) {
+    const chunk = pairs.slice(i, i + MAX_PWL_PAIRS_PER_LINE).join(' ');
+    const suffix = i + MAX_PWL_PAIRS_PER_LINE >= pairs.length ? ')' : '';
+    lines.push(`+ ${chunk}${suffix}`);
+  }
+
+  return lines.join('\n');
 }
 
 /**

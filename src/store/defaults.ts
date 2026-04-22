@@ -165,7 +165,7 @@ export const initialState = {
   simulationElapsed: null as StoreState['simulationElapsed'],
   simulatedInput: null as StoreState['simulatedInput'],
   inputFrequency: 1000,
-  inputAmplitude: 1.0,
+  inputAmplitude: 0.1,
   sweepNodeId: null as StoreState['sweepNodeId'],
   sweepStatus: 'idle' as StoreState['sweepStatus'],
   sweepResults: [] as StoreState['sweepResults'],

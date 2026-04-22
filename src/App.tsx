@@ -180,6 +180,21 @@ export default function App() {
   }, [selection]);
 
   /**
+   * Clear the current waveform selection from
+   * both React state and the mutable ref used by
+   * simulation/playback callbacks.
+   *
+   * Several callbacks read selectionRef.current
+   * synchronously. Clearing only the state leaves
+   * a short window where those callbacks can
+   * still use a stale slice of the source audio.
+   */
+  const clearSelection = useCallback(() => {
+    selectionRef.current = null;
+    setSelection(null);
+  }, []);
+
+  /**
    * Lazily create the AudioContext after a user
    * gesture.
    *
@@ -251,6 +266,7 @@ export default function App() {
         setSimulationStatus('idle');
         setOutputBuffer(msg.outputBuffer, elapsed);
         setSimulatedInput(pendingInputRef.current);
+        clearSelection();
         pendingInputRef.current = null;
       } else {
         setSimulationStatus('error');
@@ -269,6 +285,7 @@ export default function App() {
     setOutputBuffer,
     setSimulationError,
     setSimulatedInput,
+    clearSelection,
   ]);
 
   // Initialize audio pipeline container once on mount.
@@ -333,9 +350,19 @@ export default function App() {
     };
   }, [audioReady, initializeAudio]);
 
-  // Load sample and update sourceBuffer whenever audioSource changes
+  /**
+   * Load the selected sample and invalidate any
+   * derived simulation state when the input
+   * source changes.
+   *
+   * Simulated output is tied to the previously
+   * selected source audio, so keeping it around
+   * after a source switch shows stale results and
+   * mismatched waveform overlays.
+   */
   useEffect(() => {
-    setSelection(null);
+    clearOutputBuffer();
+    clearSelection();
 
     if (!audioReady) {
       setSourceBuffer(null);
@@ -380,7 +407,14 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [audioReady, audioSource, getAudioSourceKey, setSimulationError]);
+  }, [
+    audioReady,
+    audioSource,
+    clearSelection,
+    clearOutputBuffer,
+    getAudioSourceKey,
+    setSimulationError,
+  ]);
 
   // Sync volume changes
   useEffect(() => {
@@ -452,8 +486,8 @@ export default function App() {
     setPlayingOriginal(false);
     clearOutputBuffer();
     setSimulatedInput(null);
-    setSelection(null);
-  }, [setPlaying, clearOutputBuffer, setSimulatedInput]);
+    clearSelection();
+  }, [setPlaying, clearOutputBuffer, clearSelection, setSimulatedInput]);
 
   /**
    * Extract the input audio buffer from the
@@ -463,6 +497,13 @@ export default function App() {
    * effective duration. When no sample data is
    * available, returns the defaults so a SIN
    * test tone is used instead.
+   *
+   * Once an output waveform is visible we ignore
+   * any previous selection, because the UI is now
+   * showing the simulated slice rather than the
+   * full source waveform. Reusing a hidden
+   * selection here makes later simulations and
+   * playback look arbitrarily truncated.
    */
   const extractInputBuffer = useCallback(() => {
     const pipeline = pipelineRef.current;
@@ -485,7 +526,7 @@ export default function App() {
       };
     }
 
-    const sel = selectionRef.current;
+    const sel = outputBuffer ? null : selectionRef.current;
     let inputBuffer: Float32Array;
 
     if (sel) {
@@ -500,7 +541,7 @@ export default function App() {
     const duration = inputBuffer.length / inputSampleRate;
 
     return { inputBuffer, inputSampleRate, duration };
-  }, [getAudioSourceKey, simulationDuration]);
+  }, [getAudioSourceKey, outputBuffer, simulationDuration]);
 
   const handleSimulate = useCallback(async () => {
     if (!workerRef.current) {
@@ -704,7 +745,7 @@ export default function App() {
           name: sample.name,
         });
         setSourceBuffer(pipeline.getSampleData(sample.id));
-        setSelection(null);
+        clearSelection();
       } catch (err) {
         setSimulationError(
           err instanceof Error
@@ -713,7 +754,13 @@ export default function App() {
         );
       }
     },
-    [addLocalSample, initializeAudio, setAudioSource, setSimulationError],
+    [
+      addLocalSample,
+      clearSelection,
+      initializeAudio,
+      setAudioSource,
+      setSimulationError,
+    ],
   );
 
   /**

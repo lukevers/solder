@@ -12,6 +12,7 @@
 import type { Edge } from '@xyflow/react';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { EXAMPLES } from '../../examples';
+import { voltageToAudioBuffer } from '../../lib/audio/audio-convert';
 import { compileNetlist } from '../../lib/netlist';
 import type { ComponentNode } from '../../lib/types';
 import { engine, makeCircuit, peak } from './setup';
@@ -171,6 +172,40 @@ describe('RAT example circuit', () => {
     const swing = max - min;
     expect(swing).toBeGreaterThan(0.01);
   });
+
+  it('preserves bass-length and guitar-length audio-driven simulations at pedal-level input gain', async () => {
+    const sampleRate = 44100;
+    const sampleDurations = [3.24771, 4.376961];
+
+    for (const duration of sampleDurations) {
+      const numSamples = Math.round(sampleRate * duration);
+      const inputBuffer = new Float32Array(numSamples);
+
+      for (let i = 0; i < numSamples; i++) {
+        inputBuffer[i] = Math.sin(2 * Math.PI * 220 * (i / sampleRate));
+      }
+
+      const netlist = compileNetlist(
+        rat.nodes,
+        rat.edges,
+        duration,
+        220,
+        0.1,
+        inputBuffer,
+        sampleRate,
+      );
+      const output = await engine.run(netlist);
+      const audio = voltageToAudioBuffer(output, sampleRate);
+
+      expect(
+        output.timeValues[output.timeValues.length - 1],
+        `rat duration ${duration}`,
+      ).toBeGreaterThan(duration * 0.95);
+      expect(audio.length, `rat audio ${duration}`).toBeGreaterThan(
+        sampleRate * duration * 0.95,
+      );
+    }
+  }, 30000);
 });
 
 // ┌────────────────────────────────────────────────────────────────────┐

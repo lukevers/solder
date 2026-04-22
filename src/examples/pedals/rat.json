@@ -2,224 +2,425 @@
   "version": 1,
   "id": "procorat",
   "name": "ProCo RAT",
-  "description": "Classic distortion pedal. LM308 inverting gain stage with 1N914 hard clipping in feedback, RC tone control.",
-  "tags": ["distortion", "fuzz", "guitar"],
+  "description": "ElectroSmash-style ProCo RAT with LM308 clipper, 1N914 hard clipping, reverse Filter network, and 2N5458 source-follower output buffer.",
+  "tags": ["distortion", "pedal", "guitar"],
   "category": "pedals",
   "nodes": [
     {
       "id": "rat-in",
       "type": "jack",
-      "position": { "x": 40, "y": 320 },
+      "position": { "x": 40, "y": 360 },
       "data": { "label": "INPUT", "direction": "in" }
     },
     {
-      "id": "rat-gnd_in",
+      "id": "rat-gnd-in",
       "type": "ground",
-      "position": { "x": 100, "y": 440 },
+      "position": { "x": 100, "y": 500 },
       "data": { "label": "GND" }
-    },
-    {
-      "id": "rat-c1",
-      "type": "capacitor",
-      "position": { "x": 200, "y": 320 },
-      "data": { "label": "C1", "farads": 4.7e-8 }
     },
     {
       "id": "rat-r1",
       "type": "resistor",
-      "position": { "x": 330, "y": 320 },
-      "data": { "label": "R1", "ohms": 47 }
+      "position": { "x": 110, "y": 440 },
+      "rotation": 90,
+      "data": { "label": "R1", "ohms": 1000000 }
+    },
+    {
+      "id": "rat-jct-in",
+      "type": "junction",
+      "position": { "x": 120, "y": 370 },
+      "data": { "label": "J_IN" }
+    },
+    {
+      "id": "rat-c1",
+      "type": "capacitor",
+      "position": { "x": 220, "y": 360 },
+      "data": { "label": "C1", "farads": 2.2e-8 }
+    },
+    {
+      "id": "rat-jct-pre",
+      "type": "junction",
+      "position": { "x": 340, "y": 370 },
+      "data": { "label": "J_PRE" }
     },
     {
       "id": "rat-r2",
       "type": "resistor",
-      "position": { "x": 480, "y": 320 },
-      "data": { "label": "R2", "ohms": 1000 }
+      "position": { "x": 350, "y": 250 },
+      "rotation": 90,
+      "data": { "label": "R2", "ohms": 1000000 }
+    },
+    {
+      "id": "rat-r3",
+      "type": "resistor",
+      "position": { "x": 460, "y": 360 },
+      "data": { "label": "R3", "ohms": 1000 }
+    },
+    {
+      "id": "rat-jct-inplus",
+      "type": "junction",
+      "position": { "x": 600, "y": 330 },
+      "data": { "label": "J_IN+" }
+    },
+    {
+      "id": "rat-c2",
+      "type": "capacitor",
+      "position": { "x": 600, "y": 440 },
+      "rotation": 90,
+      "data": { "label": "C2", "farads": 1e-9 }
+    },
+    {
+      "id": "rat-gnd-c2",
+      "type": "ground",
+      "position": { "x": 600, "y": 560 },
+      "data": { "label": "GND" }
     },
     {
       "id": "rat-jct-inv",
       "type": "junction",
-      "position": { "x": 620, "y": 330 },
-      "data": { "label": "J1" }
+      "position": { "x": 650, "y": 390 },
+      "data": { "label": "J_INV" }
     },
     {
       "id": "rat-u1",
       "type": "opamp",
-      "position": { "x": 720, "y": 300 },
-      "data": { "label": "U1", "model": "TL072" }
-    },
-    {
-      "id": "rat-vcc2",
-      "type": "power",
-      "position": { "x": 740, "y": 220 },
-      "data": { "label": "VCC", "volts": 9 }
-    },
-    {
-      "id": "rat-gnd_u",
-      "type": "ground",
-      "position": { "x": 740, "y": 440 },
-      "data": { "label": "GND" }
+      "position": { "x": 760, "y": 300 },
+      "data": { "label": "U1", "model": "LM308" }
     },
     {
       "id": "rat-jct-out",
       "type": "junction",
-      "position": { "x": 860, "y": 330 },
-      "data": { "label": "J2" }
+      "position": { "x": 940, "y": 320 },
+      "data": { "label": "J_OUT" }
     },
     {
-      "id": "rat-vcc",
-      "type": "power",
-      "position": { "x": 440, "y": 20 },
-      "data": { "label": "VCC", "volts": 9 }
-    },
-    {
-      "id": "rat-rbias1",
-      "type": "resistor",
-      "position": { "x": 440, "y": 80 },
-      "rotation": 90,
-      "data": { "label": "R3", "ohms": 47000 }
-    },
-    {
-      "id": "rat-jct-bias",
-      "type": "junction",
-      "position": { "x": 450, "y": 180 },
-      "data": { "label": "J_bias" }
-    },
-    {
-      "id": "rat-rbias2",
-      "type": "resistor",
-      "position": { "x": 510, "y": 180 },
-      "data": { "label": "R4", "ohms": 47000 }
-    },
-    {
-      "id": "rat-gnd_b",
-      "type": "ground",
-      "position": { "x": 590, "y": 240 },
-      "data": { "label": "GND" }
-    },
-    {
-      "id": "rat-jct-fb-out",
-      "type": "junction",
-      "position": { "x": 860, "y": 120 },
-      "data": { "label": "J_fb" }
-    },
-    {
-      "id": "rat-rfb",
-      "type": "resistor",
-      "position": { "x": 740, "y": 100 },
-      "data": { "label": "R5", "ohms": 2200 }
-    },
-    {
-      "id": "rat-rdist",
+      "id": "rat-dist",
       "type": "pot",
-      "position": { "x": 620, "y": 60 },
+      "position": { "x": 700, "y": 110 },
       "data": {
         "label": "DIST",
-        "ohms": 500000,
-        "position": 0.5,
-        "taper": "linear"
+        "ohms": 100000,
+        "position": 0.65,
+        "taper": "log"
       }
     },
     {
-      "id": "rat-cfb",
+      "id": "rat-c4",
       "type": "capacitor",
-      "position": { "x": 740, "y": 30 },
-      "data": { "label": "C2", "farads": 1e-10 }
+      "position": { "x": 980, "y": 110 },
+      "data": { "label": "C4", "farads": 1e-10 }
     },
     {
-      "id": "rat-jct-fb-in",
-      "type": "junction",
-      "position": { "x": 620, "y": 140 },
-      "data": { "label": "J_fb_in" }
+      "id": "rat-c3",
+      "type": "capacitor",
+      "position": { "x": 740, "y": 220 },
+      "data": { "label": "C3", "farads": 3e-11 }
     },
     {
-      "id": "rat-jct-d-left",
+      "id": "rat-jct-comp",
       "type": "junction",
-      "position": { "x": 620, "y": 460 },
-      "data": { "label": "J_d1" }
+      "position": { "x": 900, "y": 220 },
+      "data": { "label": "J_COMP" }
     },
     {
-      "id": "rat-jct-d-right",
+      "id": "rat-c5",
+      "type": "cap_polar",
+      "position": { "x": 560, "y": 500 },
+      "rotation": 90,
+      "data": { "label": "C5", "farads": 2.2e-6 }
+    },
+    {
+      "id": "rat-r4",
+      "type": "resistor",
+      "position": { "x": 560, "y": 620 },
+      "rotation": 90,
+      "data": { "label": "R4", "ohms": 47 }
+    },
+    {
+      "id": "rat-gnd-r4",
+      "type": "ground",
+      "position": { "x": 560, "y": 740 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "rat-c6",
+      "type": "cap_polar",
+      "position": { "x": 700, "y": 500 },
+      "rotation": 90,
+      "data": { "label": "C6", "farads": 4.7e-6 }
+    },
+    {
+      "id": "rat-r5",
+      "type": "resistor",
+      "position": { "x": 700, "y": 620 },
+      "rotation": 90,
+      "data": { "label": "R5", "ohms": 560 }
+    },
+    {
+      "id": "rat-gnd-r5",
+      "type": "ground",
+      "position": { "x": 700, "y": 740 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "rat-c7",
+      "type": "cap_polar",
+      "position": { "x": 1060, "y": 320 },
+      "data": { "label": "C7", "farads": 4.7e-6 }
+    },
+    {
+      "id": "rat-r6",
+      "type": "resistor",
+      "position": { "x": 1190, "y": 320 },
+      "data": { "label": "R6", "ohms": 1000 }
+    },
+    {
+      "id": "rat-jct-clip",
       "type": "junction",
-      "position": { "x": 860, "y": 460 },
-      "data": { "label": "J_d2" }
+      "position": { "x": 1330, "y": 330 },
+      "data": { "label": "J_CLIP" }
     },
     {
       "id": "rat-d1",
       "type": "diode",
-      "position": { "x": 700, "y": 440 },
+      "position": { "x": 1270, "y": 500 },
+      "rotation": 90,
       "data": { "label": "D1", "model": "1N914" }
     },
     {
       "id": "rat-d2",
       "type": "diode",
-      "position": { "x": 780, "y": 490 },
-      "rotation": 180,
+      "position": { "x": 1390, "y": 500 },
+      "rotation": 270,
       "data": { "label": "D2", "model": "1N914" }
     },
     {
-      "id": "rat-jct-tone",
-      "type": "junction",
-      "position": { "x": 940, "y": 330 },
-      "data": { "label": "J3" }
+      "id": "rat-gnd-clip",
+      "type": "ground",
+      "position": { "x": 1330, "y": 660 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "rat-r7",
+      "type": "resistor",
+      "position": { "x": 1460, "y": 330 },
+      "data": { "label": "R7", "ohms": 1500 }
     },
     {
       "id": "rat-filter",
       "type": "pot",
-      "position": { "x": 920, "y": 400 },
+      "position": { "x": 1610, "y": 330 },
       "data": {
         "label": "FILTER",
         "ohms": 100000,
-        "position": 0.5,
-        "taper": "linear"
+        "position": 0.45,
+        "taper": "log"
       }
     },
     {
-      "id": "rat-ctone",
-      "type": "capacitor",
-      "position": { "x": 940, "y": 520 },
-      "rotation": 90,
-      "data": { "label": "C3", "farads": 3.3e-9 }
+      "id": "rat-jct-toneout",
+      "type": "junction",
+      "position": { "x": 1770, "y": 330 },
+      "data": { "label": "J_TONE" }
     },
     {
-      "id": "rat-gnd_t",
+      "id": "rat-c8",
+      "type": "capacitor",
+      "position": { "x": 1770, "y": 540 },
+      "rotation": 90,
+      "data": { "label": "C8", "farads": 3.3e-9 }
+    },
+    {
+      "id": "rat-gnd-c8",
       "type": "ground",
-      "position": { "x": 940, "y": 620 },
+      "position": { "x": 1770, "y": 660 },
       "data": { "label": "GND" }
     },
     {
-      "id": "rat-cout",
+      "id": "rat-c9",
+      "type": "capacitor",
+      "position": { "x": 1900, "y": 330 },
+      "data": { "label": "C9", "farads": 2.2e-8 }
+    },
+    {
+      "id": "rat-jct-gate",
+      "type": "junction",
+      "position": { "x": 2060, "y": 330 },
+      "data": { "label": "J_GATE" }
+    },
+    {
+      "id": "rat-r8",
+      "type": "resistor",
+      "position": { "x": 2060, "y": 470 },
+      "rotation": 90,
+      "data": { "label": "R8", "ohms": 1000000 }
+    },
+    {
+      "id": "rat-gnd-r8",
+      "type": "ground",
+      "position": { "x": 2060, "y": 590 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "rat-q1",
+      "type": "jfet",
+      "position": { "x": 2160, "y": 290 },
+      "data": { "label": "Q1", "polarity": "N", "model": "2N5458" }
+    },
+    {
+      "id": "rat-jct-source",
+      "type": "junction",
+      "position": { "x": 2300, "y": 360 },
+      "data": { "label": "J_SRC" }
+    },
+    {
+      "id": "rat-r9",
+      "type": "resistor",
+      "position": { "x": 2300, "y": 490 },
+      "rotation": 90,
+      "data": { "label": "R9", "ohms": 10000 }
+    },
+    {
+      "id": "rat-gnd-r9",
+      "type": "ground",
+      "position": { "x": 2300, "y": 610 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "rat-c10",
       "type": "cap_polar",
-      "position": { "x": 1040, "y": 320 },
-      "data": { "label": "C4", "farads": 1e-6 }
+      "position": { "x": 2440, "y": 360 },
+      "data": { "label": "C10", "farads": 1e-6 }
     },
     {
       "id": "rat-vol",
       "type": "pot",
-      "position": { "x": 1180, "y": 320 },
+      "position": { "x": 2580, "y": 360 },
       "data": {
-        "label": "VOL",
+        "label": "VOLUME",
         "ohms": 100000,
         "position": 0.8,
         "taper": "log"
       }
     },
     {
-      "id": "rat-gnd_v",
+      "id": "rat-gnd-vol",
       "type": "ground",
-      "position": { "x": 1240, "y": 420 },
+      "position": { "x": 2640, "y": 490 },
       "data": { "label": "GND" }
     },
     {
       "id": "rat-out",
       "type": "jack",
-      "position": { "x": 1360, "y": 320 },
+      "position": { "x": 2760, "y": 360 },
       "data": { "label": "OUTPUT", "direction": "out" }
     },
     {
-      "id": "rat-gnd_out",
+      "id": "rat-gnd-out",
       "type": "ground",
-      "position": { "x": 1340, "y": 420 },
+      "position": { "x": 2760, "y": 490 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "rat-vbat",
+      "type": "power",
+      "position": { "x": 620, "y": 20 },
+      "data": { "label": "VBAT", "volts": 9 }
+    },
+    {
+      "id": "rat-r10",
+      "type": "resistor",
+      "position": { "x": 760, "y": 20 },
+      "data": { "label": "R10", "ohms": 47 }
+    },
+    {
+      "id": "rat-jct-vcc",
+      "type": "junction",
+      "position": { "x": 920, "y": 30 },
+      "data": { "label": "J_VCC" }
+    },
+    {
+      "id": "rat-jct-vcc-op",
+      "type": "junction",
+      "position": { "x": 860, "y": 250 },
+      "data": { "label": "J_VCC_OP" }
+    },
+    {
+      "id": "rat-jct-vcc-q1",
+      "type": "junction",
+      "position": { "x": 2220, "y": 220 },
+      "data": { "label": "J_VCC_Q1" }
+    },
+    {
+      "id": "rat-c11",
+      "type": "cap_polar",
+      "position": { "x": 920, "y": 150 },
+      "rotation": 90,
+      "data": { "label": "C11", "farads": 0.0001 }
+    },
+    {
+      "id": "rat-c12",
+      "type": "capacitor",
+      "position": { "x": 1020, "y": 150 },
+      "rotation": 90,
+      "data": { "label": "C12", "farads": 1e-7 }
+    },
+    {
+      "id": "rat-gnd-vcc",
+      "type": "ground",
+      "position": { "x": 970, "y": 280 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "rat-r11",
+      "type": "resistor",
+      "position": { "x": 1120, "y": 100 },
+      "rotation": 90,
+      "data": { "label": "R11", "ohms": 100000 }
+    },
+    {
+      "id": "rat-jct-vref",
+      "type": "junction",
+      "position": { "x": 1120, "y": 220 },
+      "data": { "label": "VREF" }
+    },
+    {
+      "id": "rat-jct-vref-pre",
+      "type": "junction",
+      "position": { "x": 380, "y": 190 },
+      "data": { "label": "VREF_IN" }
+    },
+    {
+      "id": "rat-r12",
+      "type": "resistor",
+      "position": { "x": 1120, "y": 340 },
+      "rotation": 90,
+      "data": { "label": "R12", "ohms": 100000 }
+    },
+    {
+      "id": "rat-c13",
+      "type": "cap_polar",
+      "position": { "x": 1220, "y": 220 },
+      "rotation": 90,
+      "data": { "label": "C13", "farads": 1e-6 }
+    },
+    {
+      "id": "rat-gnd-vref",
+      "type": "ground",
+      "position": { "x": 1170, "y": 460 },
+      "data": { "label": "GND" }
+    },
+    {
+      "id": "rat-d3",
+      "type": "diode",
+      "position": { "x": 620, "y": 120 },
+      "rotation": 90,
+      "data": { "label": "D3", "model": "1N4002" }
+    },
+    {
+      "id": "rat-gnd-d3",
+      "type": "ground",
+      "position": { "x": 620, "y": 240 },
       "data": { "label": "GND" }
     }
   ],
@@ -228,253 +429,526 @@
       "id": "rat-e1",
       "source": "rat-in",
       "sourceHandle": "pos",
+      "target": "rat-jct-in",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "rat-e2",
+      "source": "rat-jct-in",
+      "sourceHandle": "sr",
       "target": "rat-c1",
       "targetHandle": "a"
     },
     {
-      "id": "rat-e_in_gnd",
-      "source": "rat-in",
-      "sourceHandle": "neg",
-      "target": "rat-gnd_in",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "rat-e2",
-      "source": "rat-c1",
-      "sourceHandle": "b",
+      "id": "rat-e3",
+      "source": "rat-jct-in",
+      "sourceHandle": "sb",
       "target": "rat-r1",
       "targetHandle": "a"
     },
     {
-      "id": "rat-e3",
+      "id": "rat-e4",
       "source": "rat-r1",
       "sourceHandle": "b",
-      "target": "rat-r2",
-      "targetHandle": "a"
+      "target": "rat-gnd-in",
+      "targetHandle": "gnd"
     },
     {
-      "id": "rat-e4",
-      "source": "rat-r2",
+      "id": "rat-e5",
+      "source": "rat-in",
+      "sourceHandle": "neg",
+      "target": "rat-gnd-in",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e6",
+      "source": "rat-c1",
       "sourceHandle": "b",
-      "target": "rat-jct-inv",
+      "target": "rat-jct-pre",
       "targetHandle": "tl"
     },
     {
-      "id": "rat-e4b",
+      "id": "rat-e7",
+      "source": "rat-jct-pre",
+      "sourceHandle": "st",
+      "target": "rat-r2",
+      "targetHandle": "b"
+    },
+    {
+      "id": "rat-e8",
+      "source": "rat-jct-pre",
+      "sourceHandle": "sr",
+      "target": "rat-r3",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e9",
+      "source": "rat-r3",
+      "sourceHandle": "b",
+      "target": "rat-jct-inplus",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "rat-e10",
+      "source": "rat-jct-inplus",
+      "sourceHandle": "sr",
+      "target": "rat-u1",
+      "targetHandle": "in_pos"
+    },
+    {
+      "id": "rat-e11",
+      "source": "rat-jct-inplus",
+      "sourceHandle": "sb",
+      "target": "rat-c2",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e12",
+      "source": "rat-c2",
+      "sourceHandle": "b",
+      "target": "rat-gnd-c2",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e13",
       "source": "rat-jct-inv",
       "sourceHandle": "sr",
       "target": "rat-u1",
       "targetHandle": "in_neg"
     },
     {
-      "id": "rat-e_bias_vcc",
-      "source": "rat-vcc",
-      "sourceHandle": "pos",
-      "target": "rat-rbias1",
+      "id": "rat-e14",
+      "source": "rat-jct-inv",
+      "sourceHandle": "st",
+      "target": "rat-dist",
+      "targetHandle": "ccw"
+    },
+    {
+      "id": "rat-e15",
+      "source": "rat-dist",
+      "sourceHandle": "wiper",
+      "target": "rat-dist",
+      "targetHandle": "cw"
+    },
+    {
+      "id": "rat-e16",
+      "source": "rat-jct-out",
+      "sourceHandle": "st",
+      "target": "rat-dist",
+      "targetHandle": "wiper"
+    },
+    {
+      "id": "rat-e17",
+      "source": "rat-jct-inv",
+      "sourceHandle": "sl",
+      "target": "rat-c4",
       "targetHandle": "a"
     },
     {
-      "id": "rat-e_bias_r3",
-      "source": "rat-rbias1",
+      "id": "rat-e18",
+      "source": "rat-c4",
       "sourceHandle": "b",
-      "target": "rat-jct-bias",
-      "targetHandle": "tt"
-    },
-    {
-      "id": "rat-e_bias_r4",
-      "source": "rat-jct-bias",
-      "sourceHandle": "sr",
-      "target": "rat-rbias2",
-      "targetHandle": "a"
-    },
-    {
-      "id": "rat-e_bias_gnd",
-      "source": "rat-rbias2",
-      "sourceHandle": "b",
-      "target": "rat-gnd_b",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "rat-e_bias_inpos",
-      "source": "rat-jct-bias",
-      "sourceHandle": "sb",
-      "target": "rat-u1",
-      "targetHandle": "in_pos"
-    },
-    {
-      "id": "rat-e_vcc_u",
-      "source": "rat-vcc2",
-      "sourceHandle": "pos",
-      "target": "rat-u1",
-      "targetHandle": "vcc"
-    },
-    {
-      "id": "rat-e_gnd_u",
-      "source": "rat-gnd_u",
-      "sourceHandle": "gnd",
-      "target": "rat-u1",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "rat-e_u1_out",
-      "source": "rat-u1",
-      "sourceHandle": "out",
       "target": "rat-jct-out",
       "targetHandle": "tl"
     },
     {
-      "id": "rat-e_out_fb",
-      "source": "rat-jct-out",
-      "sourceHandle": "st",
-      "target": "rat-jct-fb-out",
+      "id": "rat-e19",
+      "source": "rat-c3",
+      "sourceHandle": "b",
+      "target": "rat-u1",
+      "targetHandle": "null_neg"
+    },
+    {
+      "id": "rat-e20",
+      "source": "rat-jct-comp",
+      "sourceHandle": "sl",
+      "target": "rat-c3",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e21",
+      "source": "rat-jct-comp",
+      "sourceHandle": "sr",
+      "target": "rat-u1",
+      "targetHandle": "comp"
+    },
+    {
+      "id": "rat-e22",
+      "source": "rat-jct-inv",
+      "sourceHandle": "sb",
+      "target": "rat-c5",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "rat-e23",
+      "source": "rat-c5",
+      "sourceHandle": "neg",
+      "target": "rat-r4",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e24",
+      "source": "rat-r4",
+      "sourceHandle": "b",
+      "target": "rat-gnd-r4",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e25",
+      "source": "rat-jct-inv",
+      "sourceHandle": "sb",
+      "target": "rat-c6",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "rat-e26",
+      "source": "rat-c6",
+      "sourceHandle": "neg",
+      "target": "rat-r5",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e27",
+      "source": "rat-r5",
+      "sourceHandle": "b",
+      "target": "rat-gnd-r5",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e28",
+      "source": "rat-u1",
+      "sourceHandle": "out",
+      "target": "rat-jct-out",
       "targetHandle": "tb"
     },
     {
-      "id": "rat-e_fb_r5",
-      "source": "rat-jct-fb-out",
-      "sourceHandle": "sl",
-      "target": "rat-rfb",
-      "targetHandle": "b"
-    },
-    {
-      "id": "rat-e_r5_dist",
-      "source": "rat-rfb",
-      "sourceHandle": "a",
-      "target": "rat-rdist",
-      "targetHandle": "cw"
-    },
-    {
-      "id": "rat-e_dist_fbin",
-      "source": "rat-rdist",
-      "sourceHandle": "wiper",
-      "target": "rat-jct-fb-in",
-      "targetHandle": "tr"
-    },
-    {
-      "id": "rat-e_fb_c2",
-      "source": "rat-jct-fb-out",
-      "sourceHandle": "st",
-      "target": "rat-cfb",
-      "targetHandle": "b"
-    },
-    {
-      "id": "rat-e_c2_fbin",
-      "source": "rat-cfb",
-      "sourceHandle": "a",
-      "target": "rat-jct-fb-in",
-      "targetHandle": "tt"
-    },
-    {
-      "id": "rat-e_fbin_inv",
-      "source": "rat-jct-fb-in",
-      "sourceHandle": "sb",
-      "target": "rat-jct-inv",
-      "targetHandle": "tt"
-    },
-    {
-      "id": "rat-e_inv_dleft",
-      "source": "rat-jct-inv",
-      "sourceHandle": "sb",
-      "target": "rat-jct-d-left",
-      "targetHandle": "tt"
-    },
-    {
-      "id": "rat-e_out_dright",
+      "id": "rat-e29",
       "source": "rat-jct-out",
-      "sourceHandle": "sb",
-      "target": "rat-jct-d-right",
-      "targetHandle": "tt"
+      "sourceHandle": "sr",
+      "target": "rat-c7",
+      "targetHandle": "pos"
     },
     {
-      "id": "rat-e_dl_d1",
-      "source": "rat-jct-d-left",
-      "sourceHandle": "sr",
+      "id": "rat-e30",
+      "source": "rat-c7",
+      "sourceHandle": "neg",
+      "target": "rat-r6",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e31",
+      "source": "rat-r6",
+      "sourceHandle": "b",
+      "target": "rat-jct-clip",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "rat-e32",
+      "source": "rat-jct-clip",
+      "sourceHandle": "sb",
       "target": "rat-d1",
       "targetHandle": "a"
     },
     {
-      "id": "rat-e_d1_dr",
+      "id": "rat-e33",
       "source": "rat-d1",
       "sourceHandle": "k",
-      "target": "rat-jct-d-right",
-      "targetHandle": "tl"
+      "target": "rat-gnd-clip",
+      "targetHandle": "gnd"
     },
     {
-      "id": "rat-e_dr_d2",
-      "source": "rat-jct-d-right",
-      "sourceHandle": "sl",
+      "id": "rat-e34",
+      "source": "rat-gnd-clip",
+      "sourceHandle": "gnd",
       "target": "rat-d2",
       "targetHandle": "a"
     },
     {
-      "id": "rat-e_d2_dl",
+      "id": "rat-e35",
       "source": "rat-d2",
       "sourceHandle": "k",
-      "target": "rat-jct-d-left",
-      "targetHandle": "tr"
+      "target": "rat-jct-clip",
+      "targetHandle": "tt"
     },
     {
-      "id": "rat-e_out_tone",
-      "source": "rat-jct-out",
+      "id": "rat-e36",
+      "source": "rat-jct-clip",
       "sourceHandle": "sr",
-      "target": "rat-jct-tone",
-      "targetHandle": "tl"
+      "target": "rat-r7",
+      "targetHandle": "a"
     },
     {
-      "id": "rat-e_tone_filter",
-      "source": "rat-jct-tone",
-      "sourceHandle": "sb",
+      "id": "rat-e37",
+      "source": "rat-r7",
+      "sourceHandle": "b",
+      "target": "rat-filter",
+      "targetHandle": "ccw"
+    },
+    {
+      "id": "rat-e38",
+      "source": "rat-filter",
+      "sourceHandle": "wiper",
       "target": "rat-filter",
       "targetHandle": "cw"
     },
     {
-      "id": "rat-e_filter_ctone",
+      "id": "rat-e39",
       "source": "rat-filter",
       "sourceHandle": "wiper",
-      "target": "rat-ctone",
+      "target": "rat-jct-toneout",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "rat-e40",
+      "source": "rat-jct-toneout",
+      "sourceHandle": "sb",
+      "target": "rat-c8",
       "targetHandle": "a"
     },
     {
-      "id": "rat-e_ctone_gnd",
-      "source": "rat-ctone",
+      "id": "rat-e41",
+      "source": "rat-c8",
       "sourceHandle": "b",
-      "target": "rat-gnd_t",
+      "target": "rat-gnd-c8",
       "targetHandle": "gnd"
     },
     {
-      "id": "rat-e_tone_cout",
-      "source": "rat-jct-tone",
+      "id": "rat-e42",
+      "source": "rat-jct-toneout",
       "sourceHandle": "sr",
-      "target": "rat-cout",
+      "target": "rat-c9",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e43",
+      "source": "rat-c9",
+      "sourceHandle": "b",
+      "target": "rat-jct-gate",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "rat-e44",
+      "source": "rat-jct-gate",
+      "sourceHandle": "sr",
+      "target": "rat-q1",
+      "targetHandle": "g"
+    },
+    {
+      "id": "rat-e45",
+      "source": "rat-jct-gate",
+      "sourceHandle": "sb",
+      "target": "rat-r8",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e46",
+      "source": "rat-r8",
+      "sourceHandle": "b",
+      "target": "rat-gnd-r8",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e47",
+      "source": "rat-q1",
+      "sourceHandle": "s",
+      "target": "rat-jct-source",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "rat-e48",
+      "source": "rat-jct-source",
+      "sourceHandle": "sb",
+      "target": "rat-r9",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e49",
+      "source": "rat-r9",
+      "sourceHandle": "b",
+      "target": "rat-gnd-r9",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e50",
+      "source": "rat-jct-source",
+      "sourceHandle": "sr",
+      "target": "rat-c10",
       "targetHandle": "pos"
     },
     {
-      "id": "rat-e_cout_vol",
-      "source": "rat-cout",
+      "id": "rat-e51",
+      "source": "rat-c10",
       "sourceHandle": "neg",
       "target": "rat-vol",
       "targetHandle": "ccw"
     },
     {
-      "id": "rat-e_vol_out",
+      "id": "rat-e52",
+      "source": "rat-vol",
+      "sourceHandle": "cw",
+      "target": "rat-gnd-vol",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e53",
       "source": "rat-vol",
       "sourceHandle": "wiper",
       "target": "rat-out",
       "targetHandle": "pos"
     },
     {
-      "id": "rat-e_vol_gnd",
-      "source": "rat-vol",
-      "sourceHandle": "cw",
-      "target": "rat-gnd_v",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "rat-e_out_gnd",
-      "source": "rat-gnd_out",
+      "id": "rat-e54",
+      "source": "rat-gnd-out",
       "sourceHandle": "gnd",
       "target": "rat-out",
       "targetHandle": "neg"
+    },
+    {
+      "id": "rat-e55",
+      "source": "rat-vbat",
+      "sourceHandle": "pos",
+      "target": "rat-r10",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e56",
+      "source": "rat-r10",
+      "sourceHandle": "b",
+      "target": "rat-jct-vcc",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "rat-e57",
+      "source": "rat-jct-vcc",
+      "sourceHandle": "sb",
+      "target": "rat-c11",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "rat-e58",
+      "source": "rat-c11",
+      "sourceHandle": "neg",
+      "target": "rat-gnd-vcc",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e59",
+      "source": "rat-jct-vcc",
+      "sourceHandle": "sb",
+      "target": "rat-c12",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e60",
+      "source": "rat-c12",
+      "sourceHandle": "b",
+      "target": "rat-gnd-vcc",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e61",
+      "source": "rat-jct-vcc",
+      "sourceHandle": "sr",
+      "target": "rat-jct-vcc-op",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "rat-e61b",
+      "source": "rat-jct-vcc",
+      "sourceHandle": "st",
+      "target": "rat-r11",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e61c",
+      "source": "rat-jct-vcc",
+      "sourceHandle": "sl",
+      "target": "rat-jct-vcc-q1",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "rat-e62",
+      "source": "rat-r11",
+      "sourceHandle": "b",
+      "target": "rat-jct-vref",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "rat-e63",
+      "source": "rat-jct-vref",
+      "sourceHandle": "sb",
+      "target": "rat-r12",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e64",
+      "source": "rat-r12",
+      "sourceHandle": "b",
+      "target": "rat-gnd-vref",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e65",
+      "source": "rat-jct-vref",
+      "sourceHandle": "sr",
+      "target": "rat-c13",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "rat-e66",
+      "source": "rat-c13",
+      "sourceHandle": "neg",
+      "target": "rat-gnd-vref",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e66b",
+      "source": "rat-jct-vref",
+      "sourceHandle": "sl",
+      "target": "rat-jct-vref-pre",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "rat-e67b",
+      "source": "rat-jct-vref-pre",
+      "sourceHandle": "sl",
+      "target": "rat-r2",
+      "targetHandle": "a"
+    },
+    {
+      "id": "rat-e68",
+      "source": "rat-jct-vcc-op",
+      "sourceHandle": "sb",
+      "target": "rat-u1",
+      "targetHandle": "vcc"
+    },
+    {
+      "id": "rat-e69",
+      "source": "rat-gnd-vcc",
+      "sourceHandle": "gnd",
+      "target": "rat-u1",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "rat-e70",
+      "source": "rat-q1",
+      "sourceHandle": "d",
+      "target": "rat-jct-vcc-q1",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "rat-e71",
+      "source": "rat-vbat",
+      "sourceHandle": "pos",
+      "target": "rat-d3",
+      "targetHandle": "k"
+    },
+    {
+      "id": "rat-e72",
+      "source": "rat-gnd-d3",
+      "sourceHandle": "gnd",
+      "target": "rat-d3",
+      "targetHandle": "a"
     }
   ]
 }
