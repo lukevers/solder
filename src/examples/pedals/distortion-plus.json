@@ -155,15 +155,9 @@
       "data": {
         "label": "DIST",
         "ohms": 1000000,
-        "position": 0.5,
+        "position": 0.8,
         "taper": "linear"
       }
-    },
-    {
-      "id": "mxr-gnd_dist_w",
-      "type": "ground",
-      "position": { "x": 420, "y": 220 },
-      "data": { "label": "GND" }
     },
     {
       "id": "mxr-gnd_dist_ccw",
@@ -438,14 +432,7 @@
       "source": "mxr-r3",
       "sourceHandle": "a",
       "target": "mxr-dist",
-      "targetHandle": "cw"
-    },
-    {
-      "id": "mxr-e_dist_wiper_gnd",
-      "source": "mxr-dist",
-      "sourceHandle": "wiper",
-      "target": "mxr-gnd_dist_w",
-      "targetHandle": "gnd"
+      "targetHandle": "wiper"
     },
     {
       "id": "mxr-e_dist_ccw_gnd",

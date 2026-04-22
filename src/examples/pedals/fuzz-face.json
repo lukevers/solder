@@ -626,7 +626,7 @@
     },
     {
       "source": "ff-fuzz",
-      "sourceHandle": "ccw",
+      "sourceHandle": "cw",
       "target": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
       "targetHandle": "tt",
       "id": "xy-edge__ff-fuzzccw-33b9bcdb-7b8a-473d-867a-6437f01e6550tt"
@@ -656,7 +656,7 @@
       "source": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
       "sourceHandle": "sb",
       "target": "ff-fuzz",
-      "targetHandle": "cw",
+      "targetHandle": "ccw",
       "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sb-ff-fuzzcw"
     },
     {

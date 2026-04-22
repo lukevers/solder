@@ -688,6 +688,63 @@ describe('Fuzz Face preset (AC128 PNP)', () => {
     const swing = acSwing(output.voltageValues, 0.2);
     expect(swing).toBeGreaterThan(0.01);
   });
+
+  it('FUZZ control increases gain as the feedback bypass opens up', async () => {
+    const fuzzFace = await import('../../examples/pedals/fuzz-face.json');
+
+    const lowFuzzNodes = structuredClone(
+      fuzzFace.nodes,
+    ) as Array<ComponentNode>;
+    const highFuzzNodes = structuredClone(
+      fuzzFace.nodes,
+    ) as Array<ComponentNode>;
+
+    const lowFuzzPot = lowFuzzNodes.find((n) => n.id === 'ff-fuzz');
+    const highFuzzPot = highFuzzNodes.find((n) => n.id === 'ff-fuzz');
+
+    if (!lowFuzzPot || !highFuzzPot) {
+      throw new Error('Fuzz Face example is missing the FUZZ pot');
+    }
+
+    if (lowFuzzPot.type !== 'pot' || highFuzzPot.type !== 'pot') {
+      throw new Error('ff-fuzz must remain a potentiometer');
+    }
+
+    lowFuzzPot.data.position = 0;
+    highFuzzPot.data.position = 1;
+
+    const lowFuzzCircuit = makeCircuit(
+      lowFuzzNodes,
+      fuzzFace.edges as Array<Edge>,
+    );
+    const highFuzzCircuit = makeCircuit(
+      highFuzzNodes,
+      fuzzFace.edges as Array<Edge>,
+    );
+
+    const lowFuzzNetlist = compileNetlist(
+      lowFuzzCircuit.nodes,
+      lowFuzzCircuit.edges,
+      0.01,
+      1000,
+      0.001,
+    );
+    const highFuzzNetlist = compileNetlist(
+      highFuzzCircuit.nodes,
+      highFuzzCircuit.edges,
+      0.01,
+      1000,
+      0.001,
+    );
+
+    const lowFuzzOutput = await engine.run(lowFuzzNetlist);
+    const highFuzzOutput = await engine.run(highFuzzNetlist);
+
+    const lowFuzzPeak = peak(lowFuzzOutput.voltageValues, 0.2);
+    const highFuzzPeak = peak(highFuzzOutput.voltageValues, 0.2);
+
+    expect(highFuzzPeak).toBeGreaterThan(lowFuzzPeak * 1.5);
+  });
 });
 
 // ┌────────────────────────────────────────────────────────────────────┐
@@ -714,5 +771,122 @@ describe('MXR Distortion+ preset (LM741 + 1N270)', () => {
 
     const swing = acSwing(output.voltageValues, 0.2);
     expect(swing).toBeGreaterThan(0.01);
+  });
+
+  it('DIST control changes gain across the ElectroSmash-style feedback path', async () => {
+    const distortionPlus = await import(
+      '../../examples/pedals/distortion-plus.json'
+    );
+
+    const lowGainNodes = structuredClone(
+      distortionPlus.nodes,
+    ) as Array<ComponentNode>;
+    const highGainNodes = structuredClone(
+      distortionPlus.nodes,
+    ) as Array<ComponentNode>;
+
+    const lowGainPot = lowGainNodes.find((n) => n.id === 'mxr-dist');
+    const highGainPot = highGainNodes.find((n) => n.id === 'mxr-dist');
+
+    if (!lowGainPot || !highGainPot) {
+      throw new Error('Distortion+ example is missing the DIST pot');
+    }
+
+    if (lowGainPot.type !== 'pot' || highGainPot.type !== 'pot') {
+      throw new Error('mxr-dist must remain a potentiometer');
+    }
+
+    lowGainPot.data.position = 0;
+    highGainPot.data.position = 1;
+
+    const lowGainCircuit = makeCircuit(
+      lowGainNodes,
+      distortionPlus.edges as Array<Edge>,
+    );
+    const highGainCircuit = makeCircuit(
+      highGainNodes,
+      distortionPlus.edges as Array<Edge>,
+    );
+
+    const lowGainNetlist = compileNetlist(
+      lowGainCircuit.nodes,
+      lowGainCircuit.edges,
+      0.01,
+      1000,
+      0.001,
+    );
+    const highGainNetlist = compileNetlist(
+      highGainCircuit.nodes,
+      highGainCircuit.edges,
+      0.01,
+      1000,
+      0.001,
+    );
+
+    const lowGainOutput = await engine.run(lowGainNetlist);
+    const highGainOutput = await engine.run(highGainNetlist);
+
+    const lowGainPeak = peak(lowGainOutput.voltageValues, 0.2);
+    const highGainPeak = peak(highGainOutput.voltageValues, 0.2);
+
+    expect(highGainPeak).toBeGreaterThan(lowGainPeak * 5);
+  });
+
+  it('default DIST setting is audibly hotter than a low-drive setting', async () => {
+    const distortionPlus = await import(
+      '../../examples/pedals/distortion-plus.json'
+    );
+
+    const lowDriveNodes = structuredClone(
+      distortionPlus.nodes,
+    ) as Array<ComponentNode>;
+    const defaultDriveNodes = structuredClone(
+      distortionPlus.nodes,
+    ) as Array<ComponentNode>;
+
+    const lowDrivePot = lowDriveNodes.find((n) => n.id === 'mxr-dist');
+    const defaultDrivePot = defaultDriveNodes.find((n) => n.id === 'mxr-dist');
+
+    if (!lowDrivePot || !defaultDrivePot) {
+      throw new Error('Distortion+ example is missing the DIST pot');
+    }
+
+    if (lowDrivePot.type !== 'pot' || defaultDrivePot.type !== 'pot') {
+      throw new Error('mxr-dist must remain a potentiometer');
+    }
+
+    lowDrivePot.data.position = 0;
+
+    const lowDriveCircuit = makeCircuit(
+      lowDriveNodes,
+      distortionPlus.edges as Array<Edge>,
+    );
+    const defaultDriveCircuit = makeCircuit(
+      defaultDriveNodes,
+      distortionPlus.edges as Array<Edge>,
+    );
+
+    const lowDriveNetlist = compileNetlist(
+      lowDriveCircuit.nodes,
+      lowDriveCircuit.edges,
+      0.01,
+      1000,
+      0.1,
+    );
+    const defaultDriveNetlist = compileNetlist(
+      defaultDriveCircuit.nodes,
+      defaultDriveCircuit.edges,
+      0.01,
+      1000,
+      0.1,
+    );
+
+    const lowDriveOutput = await engine.run(lowDriveNetlist);
+    const defaultDriveOutput = await engine.run(defaultDriveNetlist);
+
+    const lowDrivePeak = peak(lowDriveOutput.voltageValues, 0.2);
+    const defaultDrivePeak = peak(defaultDriveOutput.voltageValues, 0.2);
+
+    expect(defaultDrivePeak).toBeGreaterThan(lowDrivePeak * 1.5);
   });
 });
