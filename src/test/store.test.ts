@@ -26,6 +26,7 @@ beforeEach(() => {
   useStore.setState({
     tabs: [RESET_TAB],
     activeTabId: 'test-tab-1',
+    examplesActiveCategory: 'pedals',
     nodes: [],
     edges: [],
     selectedNodeId: null,
@@ -232,6 +233,11 @@ describe('tabsSlice', () => {
     useStore.getState().switchTab(activeTabId);
     expect(useStore.getState().nodes).toEqual(nodes);
     expect(useStore.getState().activeTabId).toBe(activeTabId);
+  });
+
+  it('setExamplesActiveCategory stores the selected examples category', () => {
+    useStore.getState().setExamplesActiveCategory('circuits');
+    expect(useStore.getState().examplesActiveCategory).toBe('circuits');
   });
 });
 

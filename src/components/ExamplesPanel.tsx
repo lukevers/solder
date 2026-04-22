@@ -27,17 +27,26 @@ const TABS: Array<{ id: ExampleCategory; label: string }> = [
 ];
 
 export function ExamplesPanel() {
-  const [activeTab, setActiveTab] = useState<ExampleCategory>('pedals');
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
-  const { loadCircuit, renameTab, activeTabId } = useStore(
+  const {
+    loadCircuit,
+    renameTab,
+    activeTabId,
+    activeCategory,
+    setExamplesActiveCategory,
+  } = useStore(
     useShallow((s) => ({
       loadCircuit: s.loadCircuit,
       renameTab: s.renameTab,
       activeTabId: s.activeTabId,
+      activeCategory: s.examplesActiveCategory,
+      setExamplesActiveCategory: s.setExamplesActiveCategory,
     })),
   );
 
-  const categoryExamples = EXAMPLES.filter((ex) => ex.category === activeTab);
+  const categoryExamples = EXAMPLES.filter(
+    (ex) => ex.category === activeCategory,
+  );
 
   const allTags = Array.from(
     new Set(categoryExamples.flatMap((ex) => ex.tags)),
@@ -68,11 +77,11 @@ export function ExamplesPanel() {
             key={tab.id}
             type="button"
             onClick={() => {
-              setActiveTab(tab.id);
+              setExamplesActiveCategory(tab.id);
               setActiveTags(new Set());
             }}
             className={`flex-1 py-2 font-mono text-xs transition-colors ${
-              activeTab === tab.id
+              activeCategory === tab.id
                 ? 'border-blue-500 border-b-2 text-gray-200'
                 : 'border-transparent border-b-2 text-gray-500 hover:text-gray-400'
             }`}

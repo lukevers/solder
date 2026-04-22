@@ -1,6 +1,7 @@
 import type { Edge } from '@xyflow/react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { ExampleCategory } from '../examples';
 import type { AudioSource, SweepResult } from '../lib/simulation-types';
 import { DEFAULT_SYMBOL, resolveOpAmpSymbol, SYMBOLS } from '../lib/symbols';
 import type { ComponentNode } from '../lib/types';
@@ -265,6 +266,8 @@ type StoreState = {
   switchTab: (id: string) => void;
   closeTab: (id: string) => void;
   renameTab: (id: string, name: string) => void;
+  examplesActiveCategory: ExampleCategory;
+  setExamplesActiveCategory: (category: ExampleCategory) => void;
 
   /** Incremented on tab switch, close, or loadCircuit to trigger fitView */
   viewResetKey: number;
@@ -339,6 +342,7 @@ const initialState = {
   // tab slice
   tabs: [firstTab] as Array<Tab>,
   activeTabId: firstTab.id,
+  examplesActiveCategory: 'pedals' as ExampleCategory,
   viewResetKey: 0,
 
   viewport: { x: 0, y: 0, zoom: 1 },
@@ -454,6 +458,8 @@ export const useStore = create<StoreState>()(
         set((s) => ({
           tabs: s.tabs.map((t) => (t.id === id ? { ...t, name } : t)),
         })),
+      setExamplesActiveCategory: (examplesActiveCategory) =>
+        set({ examplesActiveCategory }),
 
       // circuit
       addNode: (node) =>
@@ -680,6 +686,7 @@ export const useStore = create<StoreState>()(
           }) => rest,
         ),
         activeTabId: state.activeTabId,
+        examplesActiveCategory: state.examplesActiveCategory,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) {
