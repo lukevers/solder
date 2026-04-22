@@ -5,7 +5,7 @@ A visual circuit editor and audio effects simulator. Place and connect circuit c
 ## Features
 
 **Circuit Editor**
-- Drag-and-drop component palette: resistors, capacitors, op-amps (TL072, LM741), diodes (1N914, 1N4001, 1N270), BJTs, JFETs, MOSFETs, potentiometers, power supplies, ground
+- Click-to-add component palette: resistors, capacitors, op-amps (TL072, LM741), diodes (1N914, 1N4001, 1N270), BJTs, JFETs, MOSFETs, potentiometers, power supplies, ground
 - Net labels for KiCad-style global connections (place multiple labels with the same name and they share a net automatically)
 - KiCad-style power pins (multiple GND/VCC symbols share the same net without explicit wires)
 - Drop connections onto existing wires to join a net
@@ -17,7 +17,7 @@ A visual circuit editor and audio effects simulator. Place and connect circuit c
 
 **Simulation**
 - Compiles circuit to SPICE netlist and runs transient analysis via ngspice WASM ([eecircuit-engine](https://www.npmjs.com/package/eecircuit-engine))
-- Use guitar/bass samples, a SIN test tone, or live microphone input
+- Use guitar/bass samples or a SIN test tone
 - Select a region of the input waveform to simulate only a portion
 
 **Audio Playback & Waveform**

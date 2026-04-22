@@ -24,16 +24,18 @@ npx vitest run -t "addNode appends a node"
 **Solder** is a visual circuit editor and audio effects simulator built with React 19 + TypeScript + Vite. Users place and connect circuit components (resistors, capacitors, op-amps, etc.) on a schematic canvas, and the app compiles that to a SPICE netlist to simulate audio signal processing via ngspice WASM.
 
 ### State (`src/store/index.ts`)
-Single Zustand store with three slices:
-- **Circuit slice** — nodes, edges, selectedNodeId; undo/redo with 50-item snapshot history
-- **Audio slice** — audioSource, volume, playing state
-- **Simulation slice** — simulationStatus, outputBuffer, simulationError
+Single Zustand store with tab, circuit, history,
+audio, and simulation state:
+- **Tab state** — open tabs, active tab, viewport reset key
+- **Circuit state** — nodes, edges, selection; undo/redo with 50-item snapshot history
+- **Audio state** — audioSource, volume, playing state
+- **Simulation state** — simulationStatus, outputBuffer, simulationError
 
 Any circuit mutation (add/delete node, connect/disconnect edge, update component value, undo/redo) clears `outputBuffer` and resets `simulationStatus` to `idle`. Node position/selection changes do NOT invalidate.
 
 ### Core data flow
 1. User edits circuit on the `SchematicCanvas` (XYFlow/`@xyflow/react`)
-2. User clicks Simulate — `App.tsx` reads the decoded guitar sample `Float32Array` from `AudioPipeline` and posts a `SimulateRequest` to the Web Worker
+2. User clicks Simulate — `App.tsx` reads the selected sample's decoded `Float32Array` from `AudioPipeline` and posts a `SimulateRequest` to the Web Worker
 3. Worker calls `compileNetlist()` which downsamples the audio buffer to `SPICE_SAMPLE_RATE` (10 kHz) and builds a PWL voltage source; if no buffer, uses a SIN test tone
 4. Worker calls `engine.run(netlist)` — ngspice WASM (`eecircuit-engine`) runs the full transient simulation
 5. `voltageToAudioBuffer()` linearly interpolates the variable-step SPICE output back up to 44100 Hz
@@ -47,7 +49,7 @@ Any circuit mutation (add/delete node, connect/disconnect edge, update component
 - `src/lib/audio/audio-convert.ts` — `voltageToAudioBuffer`: interpolates SPICE output to fixed sample rate
 - `src/lib/engines/eecircuit.ts` — `EECircuitEngine` wrapping `eecircuit-engine` npm package
 - `src/lib/circuit-io.ts` — JSON import/export for circuits
-- `src/lib/examples/` — preset circuits (e.g., `rat.ts`)
+- `src/examples/` — preset circuits as JSON
 
 ### Symbol library (`src/lib/symbols/`)
 Organized by component domain — each subdirectory co-locates a component's symbol definition, React node renderer, and data types:
@@ -87,12 +89,14 @@ Connections can also be dropped directly onto existing wires (edges) to join tha
 ### Component nodes (`src/lib/symbols/<component>/node.tsx`)
 One renderer per circuit element type, co-located with its symbol definition. Each exports a single React component (e.g., `ResistorNode`, `OpAmpNode`, `BJTNode`). Shared rendering primitives (`NodeShell`, `RotatedHandle`, `NodeSvg`, `NodeText`) live in `src/lib/symbols/node-shell.tsx`.
 
-### Audio pipeline (`src/audio/pipeline.ts`)
-Web Audio API integration: loads `.wav` samples from `/public/samples/`, exposes `getSampleData(name)` to get raw `Float32Array`, uses `ScriptProcessorNode` for live input buffer callbacks.
+### Audio pipeline (`src/lib/audio/pipeline.ts`)
+Web Audio API integration for sample loading and playback. Loads `.wav`
+samples from `/public/samples/` and exposes `getSampleData(name)` to get
+raw `Float32Array` data.
 
 ## Tooling
 - **Linter/Formatter:** Biome (`biome.json`) — single quotes, 2-space indent; VSCode extension `biomejs.biome` recommended
-- **Icons:** [Lucide React](https://lucide.dev) (`lucide-react`) — use Lucide icons for all UI icons (toolbar buttons, modal controls, etc.). Do NOT use inline SVGs or emoji/text symbols for icons. Circuit node renderers in `src/components/nodes/` use inline SVG for schematic drawings, which is fine — those are not UI icons.
+- **Icons:** [Lucide React](https://lucide.dev) (`lucide-react`) — use Lucide icons for all UI icons (toolbar buttons, modal controls, etc.). Do NOT use inline SVGs or emoji/text symbols for icons. Circuit node renderers in `src/lib/symbols/` use inline SVG for schematic drawings, which is fine — those are not UI icons.
 - **CSS:** Tailwind CSS + PostCSS
 - **Tests:** Vitest with jsdom; `@testing-library/react` and `@testing-library/jest-dom` matchers; test files live in `src/test/`
 
@@ -286,7 +290,8 @@ All passive components (resistor, capacitor, cap_polar, diode, pot) plus ground,
 
 ## Writing example circuits
 
-Example circuits live in `src/lib/examples/` as JSON and are registered in `index.ts`. Key rules:
+Example circuits live in `src/examples/` as JSON and are registered in
+`index.ts`. Key rules:
 
 - **Edge direction must match handle types.** An edge's `sourceHandle` must exist as a `type="source"` handle on the source node, and `targetHandle` as `type="target"` on the target node. Mismatches produce React Flow error #008 and visually broken edges. With bidirectional handles this is usually fine, but junction handles are strictly directional (`s*` = source only, `t*` = target only).
 - **`measured` is injected automatically** by `loadCircuit` → `ensureMeasured()`. You do NOT need to include `measured` in example JSON files.
