@@ -1,15 +1,10 @@
-import { useShallow } from 'zustand/react/shallow';
-import { useStore } from '../store';
+import { useAudioActions, useAudioState } from '../store/hooks';
 
 const SAMPLES = ['guitar', 'bass'];
 
 export function AudioControls() {
-  const { audioSource, setAudioSource } = useStore(
-    useShallow((s) => ({
-      audioSource: s.audioSource,
-      setAudioSource: s.setAudioSource,
-    })),
-  );
+  const { audioSource } = useAudioState();
+  const { setAudioSource } = useAudioActions();
 
   return (
     <div className="p-3">

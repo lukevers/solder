@@ -24,8 +24,23 @@ export class AudioPipeline {
   private initPromise: Promise<void> | null = null;
 
   async init(volume: number): Promise<void> {
-    this.initPromise = this._init(volume);
-    return this.initPromise;
+    if (this.ctx && this.gainNode) {
+      this.gainNode.gain.value = volume;
+      return;
+    }
+
+    if (!this.initPromise) {
+      this.initPromise = this._init(volume).catch((err) => {
+        this.initPromise = null;
+        throw err;
+      });
+    }
+
+    await this.initPromise;
+
+    if (this.gainNode) {
+      this.gainNode.gain.value = volume;
+    }
   }
 
   private async _init(volume: number): Promise<void> {

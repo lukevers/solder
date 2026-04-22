@@ -1,22 +1,9 @@
-import { useShallow } from 'zustand/react/shallow';
-import { useStore } from '../store';
+import { useCircuitState, useSimulationState } from '../store/hooks';
 
 export function StatusBar() {
-  const {
-    nodes,
-    simulationStatus,
-    simulationError,
-    outputBuffer,
-    simulationElapsed,
-  } = useStore(
-    useShallow((s) => ({
-      nodes: s.nodes,
-      simulationStatus: s.simulationStatus,
-      simulationError: s.simulationError,
-      outputBuffer: s.outputBuffer,
-      simulationElapsed: s.simulationElapsed,
-    })),
-  );
+  const { nodes } = useCircuitState();
+  const { simulationStatus, simulationError, outputBuffer, simulationElapsed } =
+    useSimulationState();
 
   const statusColor =
     simulationStatus === 'error'

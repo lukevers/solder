@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 import { EXAMPLES, type ExampleCategory } from '../examples';
 import type { ComponentNode } from '../lib/types';
-import { useStore } from '../store';
+import {
+  useCircuitActions,
+  useExamplesState,
+  useTabActions,
+} from '../store/hooks';
 
 const GRID = 10;
 
@@ -28,24 +31,12 @@ const TABS: Array<{ id: ExampleCategory; label: string }> = [
 
 export function ExamplesPanel() {
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
-  const {
-    loadCircuit,
-    renameTab,
-    activeTabId,
-    activeCategory,
-    setExamplesActiveCategory,
-  } = useStore(
-    useShallow((s) => ({
-      loadCircuit: s.loadCircuit,
-      renameTab: s.renameTab,
-      activeTabId: s.activeTabId,
-      activeCategory: s.examplesActiveCategory,
-      setExamplesActiveCategory: s.setExamplesActiveCategory,
-    })),
-  );
+  const { activeTabId, examplesActiveCategory } = useExamplesState();
+  const { renameTab, setExamplesActiveCategory } = useTabActions();
+  const { loadCircuit } = useCircuitActions();
 
   const categoryExamples = EXAMPLES.filter(
-    (ex) => ex.category === activeCategory,
+    (ex) => ex.category === examplesActiveCategory,
   );
 
   const allTags = Array.from(
@@ -81,7 +72,7 @@ export function ExamplesPanel() {
               setActiveTags(new Set());
             }}
             className={`flex-1 py-2 font-mono text-xs transition-colors ${
-              activeCategory === tab.id
+              examplesActiveCategory === tab.id
                 ? 'border-blue-500 border-b-2 text-gray-200'
                 : 'border-transparent border-b-2 text-gray-500 hover:text-gray-400'
             }`}

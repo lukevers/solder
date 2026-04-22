@@ -33,6 +33,43 @@ audio, and simulation state:
 
 Any circuit mutation (add/delete node, connect/disconnect edge, update component value, undo/redo) clears `outputBuffer` and resets `simulationStatus` to `idle`. Node position/selection changes do NOT invalidate.
 
+### Store architecture
+The app uses **one** Zustand store at runtime, but the implementation is
+split by domain under `src/store/`:
+
+```
+src/store/
+  index.ts              — root store composition + persist config
+  types.ts              — shared store/tab types
+  defaults.ts           — initial state + default tab/runtime values
+  helpers.ts            — shared orchestration helpers (`flushActive`, etc.)
+  tabs-slice.ts         — tab lifecycle + viewport/extras
+  circuit-slice.ts      — active circuit mutations
+  history-slice.ts      — undo/redo
+  simulation-slice.ts   — simulation + sweep runtime state
+  audio-slice.ts        — audio source/playback state
+  hooks.ts              — domain-specific selector hooks
+```
+
+Guidelines:
+- Keep cross-domain editor state in the single store. Do **not** split tab,
+  circuit, simulation, or audio into separate runtime stores unless the app
+  architecture changes substantially.
+- Prefer adding or reusing domain hooks from `src/store/hooks.ts`
+  (`useCircuitState`, `useSimulationActions`, `useViewportState`, etc.)
+  instead of creating new ad hoc `useStore(useShallow(...))` selectors in
+  components.
+- If a component needs more than 2-3 store fields, that is usually a sign it
+  should use or introduce a named domain hook.
+- Prefer narrow hooks (`useExamplesState`, `useViewportState`,
+  `useTabBarState`) over broad subscriptions when only one part of the store
+  is needed.
+- Use raw `useStore(...)` directly only for tiny single-field subscriptions or
+  deliberate `useStore.getState()` escape hatches.
+- The active workspace is mirrored at the store root. Anything touching tab
+  switching, persistence, or workspace hydration must go through the shared
+  store helpers rather than duplicating that orchestration in components.
+
 ### Core data flow
 1. User edits circuit on the `SchematicCanvas` (XYFlow/`@xyflow/react`)
 2. User clicks Simulate — `App.tsx` reads the selected sample's decoded `Float32Array` from `AudioPipeline` and posts a `SimulateRequest` to the Web Worker
@@ -45,39 +82,61 @@ Any circuit mutation (add/delete node, connect/disconnect edge, update component
 ### Key lib files
 - `src/lib/types.ts` — discriminated union `ComponentNode` type for all circuit elements; re-exports per-domain data types
 - `src/lib/netlist.ts` — circuit → SPICE netlist compiler (`compileNetlist`, `buildPortGroups`, `SPICE_SAMPLE_RATE`)
-- `src/lib/models/` — SPICE model definitions (TL072, LM741, LM308 subcircuits + transistor .model statements)
+- `src/lib/models/` — unified component-domain library: symbols, node renderers, per-domain data types, and SPICE model definitions
 - `src/lib/audio/audio-convert.ts` — `voltageToAudioBuffer`: interpolates SPICE output to fixed sample rate
 - `src/lib/engines/eecircuit.ts` — `EECircuitEngine` wrapping `eecircuit-engine` npm package
 - `src/lib/circuit-io.ts` — JSON import/export for circuits
 - `src/examples/` — preset circuits as JSON
 
-### Symbol library (`src/lib/symbols/`)
-Organized by component domain — each subdirectory co-locates a component's symbol definition, React node renderer, and data types:
+### Component Library (`src/lib/models/`)
+Organized by component domain — each subdirectory co-locates a component's
+symbol definition, React node renderer, data types, and any SPICE model
+definitions needed for that domain:
 
 ```
-src/lib/symbols/
+src/lib/models/
   types.ts           — shared SymbolDef, SymbolPin types
   node-shell.tsx     — shared rendering utilities (NodeShell, RotatedHandle, etc.)
-  index.ts           — barrel: SYMBOLS registry, DEFAULT_SYMBOL, nodeTypes, resolveOpAmpSymbol
-  resistor/          — symbol.ts + node.tsx + types.ts + index.ts
-  capacitor/         — symbol.ts + node.tsx + types.ts + index.ts
-  cap-polar/         — symbol.ts + node.tsx + index.ts (reuses CapacitorData)
-  opamp/             — symbol.ts + node.tsx + types.ts + index.ts
-  diode/             — symbol.ts + node.tsx + types.ts + index.ts
-  bjt/               — symbol.ts + node.tsx + types.ts + index.ts
-  jfet/              — symbol.ts + node.tsx + types.ts + index.ts
-  mosfet/            — symbol.ts + node.tsx + types.ts + index.ts
-  pot/               — symbol.ts + node.tsx + types.ts + index.ts
-  power/             — symbol.ts + node.tsx + types.ts + index.ts
-  ground/            — symbol.ts + node.tsx + types.ts + index.ts
-  jack/              — symbol.ts + node.tsx + types.ts + index.ts
-  junction/          — node.tsx + types.ts + index.ts (no symbol)
-  label/             — node.tsx + types.ts + index.ts (no symbol)
-  stickynote/        — node.tsx + types.ts + index.ts (no symbol)
-  box/               — node.tsx + types.ts + index.ts (no symbol)
+  spice.ts           — shared SPICE model serialization helpers
+  index.ts           — worker-safe barrel: only types, symbol defs, SPICE models, and helpers
+  symbol-registry.ts — worker-safe SYMBOLS/DEFAULT_SYMBOL metadata + resolveOpAmpSymbol
+  registry.ts        — browser-only XYFlow nodeTypes registry
+  resistor/          — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  capacitor/         — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  cap-polar/         — symbol.ts + node.tsx + model.ts + index.ts
+  opamp/             — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  diode/             — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  bjt/               — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  jfet/              — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  mosfet/            — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  pot/               — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  power/             — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  ground/            — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  jack/              — symbol.ts + node.tsx + types.ts + model.ts + index.ts
+  junction/          — node.tsx + types.ts + model.ts + index.ts (no symbol)
+  label/             — node.tsx + types.ts + model.ts + index.ts (no symbol)
+  stickynote/        — node.tsx + types.ts + model.ts + index.ts (no symbol)
+  box/               — node.tsx + types.ts + model.ts + index.ts (no symbol)
 ```
 
-Adding a new component: create a new subdirectory with `symbol.ts`, `node.tsx`, `types.ts`, and `index.ts`. Register the symbol in `SYMBOLS` and the node renderer in `nodeTypes` in the parent `index.ts`.
+Adding a new component: create a new subdirectory with `symbol.ts`,
+`node.tsx`, `types.ts`, `model.ts`, and `index.ts`. Register the symbol in
+`SYMBOLS` in `symbol-registry.ts` and the node renderer in `nodeTypes` in
+`registry.ts`.
+
+Worker/import boundary rules:
+- `src/lib/models/index.ts` is shared with the simulation and analysis
+  workers. Keep it free of React components, Zustand store imports, and
+  any `.tsx` dependency path.
+- Do not re-export through component directory `index.ts` files from the
+  worker-safe barrel if those directory barrels also export `node.tsx`
+  renderers. Re-export `types.ts`, `symbol.ts`, and `model.ts` directly.
+- Browser-only renderer wiring belongs in `src/lib/models/registry.ts`.
+  Symbol metadata used by both workers and the UI belongs in
+  `src/lib/models/symbol-registry.ts`.
+- If a worker starts failing in dev with `window is not defined` from
+  `@react-refresh`, assume a React/TSX module leaked into the worker import
+  graph and inspect recent barrel exports first.
 
 ### KiCad-style power pins
 Ground and Power nodes act as global net labels (like KiCad power flags). Users can place multiple instances:
@@ -86,17 +145,26 @@ Ground and Power nodes act as global net labels (like KiCad power flags). Users 
 
 Connections can also be dropped directly onto existing wires (edges) to join that net without targeting a specific handle.
 
-### Component nodes (`src/lib/symbols/<component>/node.tsx`)
-One renderer per circuit element type, co-located with its symbol definition. Each exports a single React component (e.g., `ResistorNode`, `OpAmpNode`, `BJTNode`). Shared rendering primitives (`NodeShell`, `RotatedHandle`, `NodeSvg`, `NodeText`) live in `src/lib/symbols/node-shell.tsx`.
+### Component nodes (`src/lib/models/<component>/node.tsx`)
+One renderer per circuit element type, co-located with its symbol definition. Each exports a single React component (e.g., `ResistorNode`, `OpAmpNode`, `BJTNode`). Shared rendering primitives (`NodeShell`, `RotatedHandle`, `NodeSvg`, `NodeText`) live in `src/lib/models/node-shell.tsx`.
 
 ### Audio pipeline (`src/lib/audio/pipeline.ts`)
 Web Audio API integration for sample loading and playback. Loads `.wav`
 samples from `/public/samples/` and exposes `getSampleData(name)` to get
 raw `Float32Array` data.
 
+Browser audio policy:
+- Do not create `AudioContext` on app mount. Browsers will warn and may leave
+  the context suspended until the user interacts with the page.
+- Initialize or resume audio only after a user gesture (pointer/key press, or
+  the click that starts playback/simulation).
+- If a feature depends on decoded sample audio, make that action await audio
+  initialization and sample loading instead of assuming the pipeline is ready
+  during initial render.
+
 ## Tooling
 - **Linter/Formatter:** Biome (`biome.json`) — single quotes, 2-space indent; VSCode extension `biomejs.biome` recommended
-- **Icons:** [Lucide React](https://lucide.dev) (`lucide-react`) — use Lucide icons for all UI icons (toolbar buttons, modal controls, etc.). Do NOT use inline SVGs or emoji/text symbols for icons. Circuit node renderers in `src/lib/symbols/` use inline SVG for schematic drawings, which is fine — those are not UI icons.
+- **Icons:** [Lucide React](https://lucide.dev) (`lucide-react`) — use Lucide icons for all UI icons (toolbar buttons, modal controls, etc.). Do NOT use inline SVGs or emoji/text symbols for icons. Circuit node renderers in `src/lib/models/` use inline SVG for schematic drawings, which is fine — those are not UI icons.
 - **CSS:** Tailwind CSS + PostCSS
 - **Tests:** Vitest with jsdom; `@testing-library/react` and `@testing-library/jest-dom` matchers; test files live in `src/test/`
 
@@ -154,7 +222,7 @@ All passive components (resistor, capacitor, cap_polar, diode, pot) plus ground,
 | Power | `pos` (bottom) | source (+ hidden target) |
 
 ### `measured` dimensions on load
-`loadCircuit` in the store injects `measured: { width, height }` on every node using `ensureMeasured()`. This gives XYFlow node dimensions before DOM measurement, so edge handle positions are correct on the first render. Without this, edges appear "floating" (disconnected from handles) until XYFlow's ResizeObserver fires. Component dimensions are looked up from the `SYMBOLS` registry in `src/lib/symbols/`; rotation (90/270) swaps width and height.
+`loadCircuit` in the store injects `measured: { width, height }` on every node using `ensureMeasured()`. This gives XYFlow node dimensions before DOM measurement, so edge handle positions are correct on the first render. Without this, edges appear "floating" (disconnected from handles) until XYFlow's ResizeObserver fires. Component dimensions are looked up from the `SYMBOLS` registry in `src/lib/models/`; rotation (90/270) swaps width and height.
 
 ## Code style
 
@@ -277,13 +345,13 @@ All passive components (resistor, capacitor, cap_polar, diode, pot) plus ground,
   src/lib/types.ts        ← every type in the project
   src/lib/constants.ts    ← every constant
 
-  # Good — one file per domain (this is how symbols/ is organized)
-  src/lib/symbols/resistor/types.ts
-  src/lib/symbols/resistor/symbol.ts
-  src/lib/symbols/resistor/node.tsx
-  src/lib/symbols/opamp/types.ts
-  src/lib/symbols/opamp/symbol.ts
-  src/lib/symbols/opamp/node.tsx
+  # Good — one file per domain (this is how models/ is organized)
+  src/lib/models/resistor/types.ts
+  src/lib/models/resistor/symbol.ts
+  src/lib/models/resistor/node.tsx
+  src/lib/models/opamp/types.ts
+  src/lib/models/opamp/symbol.ts
+  src/lib/models/opamp/node.tsx
   ```
 
   The test: if you need to add a new resistor variant, you should only need to touch files in one area — not a 800-line grab-bag file shared with op-amps, diodes, and audio types.

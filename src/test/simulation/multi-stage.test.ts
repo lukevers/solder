@@ -30,11 +30,14 @@ beforeAll(async () => {
 // │                   │                                                │
 // │                  ═╪═ C3                                            │
 // │                   │                                                │
+// │                 [Rb] 1MΩ                                           │
+// │                   │                                                │
 // │                  GND                                               │
 // │                                                                    │
 // │  C1 = coupling cap (high-pass, blocks DC)                          │
 // │  R1 + C3 = low-pass stage                                          │
 // │  R2 + C2 = another high-pass coupling to output                    │
+// │  Rb = DC return path so the AC-coupled chain is biasable           │
 // │                                                                    │
 // │  Overall: bandpass behavior — blocks very low and very high        │
 // │  frequencies, passes the midrange.                                 │
@@ -63,6 +66,12 @@ describe('multi-stage circuit', () => {
         type: 'capacitor',
         position: { x: 250, y: 50 },
         data: { label: 'C3', farads: 100e-9 },
+      },
+      {
+        id: 'rb',
+        type: 'resistor',
+        position: { x: 320, y: 80 },
+        data: { label: 'Rb', ohms: 1000000 },
       },
       {
         id: 'r2',
@@ -110,6 +119,20 @@ describe('multi-stage circuit', () => {
       {
         id: 'e4',
         source: 'c3',
+        sourceHandle: 'b',
+        target: 'g1',
+        targetHandle: 'gnd',
+      },
+      {
+        id: 'e4b',
+        source: 'r1',
+        sourceHandle: 'b',
+        target: 'rb',
+        targetHandle: 'a',
+      },
+      {
+        id: 'e4c',
+        source: 'rb',
         sourceHandle: 'b',
         target: 'g1',
         targetHandle: 'gnd',

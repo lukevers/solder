@@ -16,18 +16,24 @@ import {
   useUpdateNodeInternals,
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
-import { nodeTypes } from '../lib/symbols';
+import { nodeTypes } from '../lib/models/registry';
 import type { ComponentNode } from '../lib/types';
 import { isEdgeDC } from '../lib/types';
 import { useStore } from '../store';
+import {
+  useCircuitActions,
+  useCircuitState,
+  useHistoryActions,
+  useTabActions,
+  useViewportState,
+} from '../store/hooks';
 import { edgeTypes } from './edges';
 
 /** Triggers fitView when tabs switch, close, or a circuit/example is loaded */
 function FitViewOnChange() {
   const { fitView } = useReactFlow();
   const updateNodeInternals = useUpdateNodeInternals();
-  const viewResetKey = useStore((s) => s.viewResetKey);
+  const { viewResetKey } = useViewportState();
 
   useEffect(() => {
     void viewResetKey;
@@ -56,27 +62,10 @@ export function SchematicCanvas() {
 
 function SchematicCanvasInner() {
   const { screenToFlowPosition } = useReactFlow();
-  const {
-    nodes,
-    edges,
-    setNodes,
-    setEdges,
-    selectNode,
-    selectEdge,
-    pushHistory,
-    setViewport,
-  } = useStore(
-    useShallow((s) => ({
-      nodes: s.nodes,
-      edges: s.edges,
-      setNodes: s.setNodes,
-      setEdges: s.setEdges,
-      selectNode: s.selectNode,
-      selectEdge: s.selectEdge,
-      pushHistory: s.pushHistory,
-      setViewport: s.setViewport,
-    })),
-  );
+  const { nodes, edges } = useCircuitState();
+  const { setNodes, setEdges, selectNode, selectEdge } = useCircuitActions();
+  const { pushHistory } = useHistoryActions();
+  const { setViewport } = useTabActions();
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {

@@ -1,7 +1,6 @@
 import { ChevronRight, Maximize2, Repeat, RotateCcw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useShallow } from 'zustand/react/shallow';
 import { AudioControls } from './components/AudioControls';
 import { CircuitAnalyzer } from './components/CircuitAnalyzer';
 import { ExamplesPanel } from './components/ExamplesPanel';
@@ -23,67 +22,46 @@ import {
   SWEEP_POSITIONS,
 } from './lib/simulation-types';
 import { useStore } from './store';
+import {
+  useAudioActions,
+  useAudioState,
+  useCircuitState,
+  useHistoryActions,
+  useSimulationActions,
+  useSimulationState,
+  useSweepActions,
+  useSweepState,
+  useViewportState,
+} from './store/hooks';
 
 export default function App() {
+  const { nodes, edges } = useCircuitState();
   const {
-    nodes,
-    edges,
     outputBuffer,
-    volume,
-    playing,
-    audioSource,
     simulationDuration,
+    simulatedInput,
     inputFrequency,
     inputAmplitude,
+  } = useSimulationState();
+  const {
     setSimulationStatus,
     setOutputBuffer,
     clearOutputBuffer,
     setSimulationError,
-    setPlaying,
-    undo,
-    redo,
-    sweepResults,
-    sweepStatus,
-    sweepPlayingIndex,
+    setSimulatedInput,
+  } = useSimulationActions();
+  const { audioSource, volume, playing } = useAudioState();
+  const { setPlaying } = useAudioActions();
+  const { undo, redo } = useHistoryActions();
+  const { sweepResults, sweepStatus, sweepPlayingIndex } = useSweepState();
+  const {
     requestSweep,
     addSweepResult,
     completeSweep,
     failSweep,
     clearSweep,
     setSweepPlayingIndex,
-    simulatedInput,
-    setSimulatedInput,
-  } = useStore(
-    useShallow((s) => ({
-      nodes: s.nodes,
-      edges: s.edges,
-      outputBuffer: s.outputBuffer,
-      volume: s.volume,
-      playing: s.playing,
-      audioSource: s.audioSource,
-      simulationDuration: s.simulationDuration,
-      inputFrequency: s.inputFrequency,
-      inputAmplitude: s.inputAmplitude,
-      setSimulationStatus: s.setSimulationStatus,
-      setOutputBuffer: s.setOutputBuffer,
-      clearOutputBuffer: s.clearOutputBuffer,
-      setSimulationError: s.setSimulationError,
-      setPlaying: s.setPlaying,
-      undo: s.undo,
-      redo: s.redo,
-      sweepResults: s.sweepResults,
-      sweepStatus: s.sweepStatus,
-      sweepPlayingIndex: s.sweepPlayingIndex,
-      requestSweep: s.requestSweep,
-      addSweepResult: s.addSweepResult,
-      completeSweep: s.completeSweep,
-      failSweep: s.failSweep,
-      clearSweep: s.clearSweep,
-      setSweepPlayingIndex: s.setSweepPlayingIndex,
-      simulatedInput: s.simulatedInput,
-      setSimulatedInput: s.setSimulatedInput,
-    })),
-  );
+  } = useSweepActions();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showExamples, setShowExamples] = useState(false);
@@ -91,6 +69,7 @@ export default function App() {
   const [showAnalyzer, setShowAnalyzer] = useState(false);
   const [sourceBuffer, setSourceBuffer] = useState<Float32Array | null>(null);
   const [playingOriginal, setPlayingOriginal] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
   const [selection, setSelection] = useState<WaveformSelection | null>(null);
   const [looping, setLooping] = useState(false);
   const [waveformOpen, setWaveformOpen] = useState(true);
@@ -101,7 +80,7 @@ export default function App() {
   const loopingRef = useRef(false);
   const pendingInputRef = useRef<Float32Array | null>(null);
 
-  const viewResetKey = useStore((s) => s.viewResetKey);
+  const { viewResetKey } = useViewportState();
   const viewResetKeyRef = useRef(viewResetKey);
   useEffect(() => {
     // Skip the initial render
@@ -174,6 +153,51 @@ export default function App() {
     selectionRef.current = selection;
   }, [selection]);
 
+  /**
+   * Lazily create the AudioContext after a user
+   * gesture.
+   *
+   * Browsers block auto-starting audio on page
+   * load, so we defer initialization until the
+   * user interacts with the app.
+   */
+  const initializeAudio = useCallback(async () => {
+    const pipeline = pipelineRef.current;
+    if (!pipeline) {
+      return null;
+    }
+
+    await pipeline.init(volume);
+    setAudioReady(true);
+    return pipeline;
+  }, [volume]);
+
+  /**
+   * Ensure the currently-selected sample is
+   * decoded and cached before an action needs it.
+   *
+   * This keeps simulation and playback working
+   * even when the very first user gesture is the
+   * button click that requested audio.
+   */
+  const ensureSelectedSampleLoaded = useCallback(async () => {
+    if (audioSource.type !== 'sample') {
+      setSourceBuffer(null);
+      return null;
+    }
+
+    const pipeline = await initializeAudio();
+    if (!pipeline) {
+      return null;
+    }
+
+    await pipeline.loadSample(audioSource.name);
+
+    const buffer = pipeline.getSampleData(audioSource.name);
+    setSourceBuffer(buffer);
+    return buffer;
+  }, [audioSource, initializeAudio]);
+
   // Initialize worker
   useEffect(() => {
     workerRef.current = new Worker(
@@ -211,45 +235,79 @@ export default function App() {
     setSimulatedInput,
   ]);
 
-  // Initialize audio pipeline
-  // biome-ignore lint/correctness/useExhaustiveDependencies: init runs once on mount
+  // Initialize audio pipeline container once on mount.
   useEffect(() => {
-    let cancelled = false;
     const pipeline = new AudioPipeline();
     pipelineRef.current = pipeline;
-    pipeline.init(volume).then(() => {
-      if (!cancelled) {
-        setSourceBuffer(null);
-      }
-    });
+
     return () => {
-      cancelled = true;
       pipeline.destroy();
+      pipelineRef.current = null;
     };
   }, []);
+
+  /**
+   * Prime the audio pipeline on the first user
+   * gesture so the browser allows the context to
+   * start without warnings.
+   */
+  useEffect(() => {
+    if (audioReady) {
+      return;
+    }
+
+    function onFirstGesture() {
+      void initializeAudio();
+    }
+
+    window.addEventListener('pointerdown', onFirstGesture, { passive: true });
+    window.addEventListener('keydown', onFirstGesture);
+
+    return () => {
+      window.removeEventListener('pointerdown', onFirstGesture);
+      window.removeEventListener('keydown', onFirstGesture);
+    };
+  }, [audioReady, initializeAudio]);
 
   // Load sample and update sourceBuffer whenever audioSource changes
   useEffect(() => {
     setSelection(null);
+
     if (audioSource.type !== 'sample') {
       setSourceBuffer(null);
       return;
     }
+
+    if (!audioReady) {
+      setSourceBuffer(null);
+      return;
+    }
+
     const name = audioSource.name;
     let cancelled = false;
     const pipeline = pipelineRef.current;
+
     if (!pipeline) {
       return;
     }
-    pipeline.loadSample(name).then(() => {
-      if (!cancelled) {
-        setSourceBuffer(pipeline.getSampleData(name));
-      }
-    });
+
+    pipeline
+      .loadSample(name)
+      .then(() => {
+        if (!cancelled) {
+          setSourceBuffer(pipeline.getSampleData(name));
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setSimulationError(err instanceof Error ? err.message : String(err));
+        }
+      });
+
     return () => {
       cancelled = true;
     };
-  }, [audioSource]);
+  }, [audioReady, audioSource, setSimulationError]);
 
   // Sync volume changes
   useEffect(() => {
@@ -291,15 +349,25 @@ export default function App() {
     }
   }, [playing, playingOriginal, outputBuffer, sourceBuffer, setPlaying]);
 
-  const handlePlayOriginal = useCallback(() => {
+  const handlePlayOriginal = useCallback(async () => {
+    const inputBuffer = await ensureSelectedSampleLoaded();
+    if (!inputBuffer) {
+      return;
+    }
+
     setPlaying(false);
     setPlayingOriginal(true);
-  }, [setPlaying]);
+  }, [ensureSelectedSampleLoaded, setPlaying]);
 
-  const handlePlayOutput = useCallback(() => {
+  const handlePlayOutput = useCallback(async () => {
+    const pipeline = await initializeAudio();
+    if (!pipeline) {
+      return;
+    }
+
     setPlayingOriginal(false);
     setPlaying(true);
-  }, [setPlaying]);
+  }, [initializeAudio, setPlaying]);
 
   const handleStop = useCallback(() => {
     setPlaying(false);
@@ -361,12 +429,16 @@ export default function App() {
     return { inputBuffer, inputSampleRate, duration };
   }, [audioSource, simulationDuration]);
 
-  const handleSimulate = useCallback(() => {
+  const handleSimulate = useCallback(async () => {
     if (!workerRef.current) {
       return;
     }
 
     try {
+      if (audioSource.type === 'sample') {
+        await ensureSelectedSampleLoaded();
+      }
+
       setSimulationStatus('running');
       simStartRef.current = performance.now();
 
@@ -392,6 +464,8 @@ export default function App() {
       setSimulationError(err instanceof Error ? err.message : String(err));
     }
   }, [
+    audioSource.type,
+    ensureSelectedSampleLoaded,
     setSimulationStatus,
     setSimulationError,
     extractInputBuffer,
@@ -400,7 +474,7 @@ export default function App() {
   ]);
 
   const handleSweep = useCallback(
-    (nodeId: string) => {
+    async (nodeId: string) => {
       // Terminate any previous sweep workers
       for (const w of sweepWorkersRef.current) {
         w.terminate();
@@ -409,6 +483,10 @@ export default function App() {
       sweepWorkersRef.current = [];
 
       requestSweep(nodeId);
+
+      if (audioSource.type === 'sample') {
+        await ensureSelectedSampleLoaded();
+      }
 
       const { inputBuffer, inputSampleRate, duration } = extractInputBuffer();
 
@@ -481,10 +559,12 @@ export default function App() {
       }
     },
     [
+      audioSource.type,
       requestSweep,
       addSweepResult,
       completeSweep,
       failSweep,
+      ensureSelectedSampleLoaded,
       extractInputBuffer,
       inputFrequency,
       inputAmplitude,

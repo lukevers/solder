@@ -12,10 +12,19 @@ import {
 } from 'lucide-react';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useShallow } from 'zustand/react/shallow';
 import { exportCircuit, importCircuit } from '../lib/circuit-io';
 import type { ComponentNode } from '../lib/types';
-import { useStore } from '../store';
+import {
+  useAudioState,
+  useCircuitActions,
+  useCircuitState,
+  useSimulationActions,
+  useSimulationState,
+  useSweepState,
+  useTabActions,
+  useTabBarState,
+  useViewportState,
+} from '../store/hooks';
 
 function FlyoutButton({
   label,
@@ -490,43 +499,15 @@ export function Toolbar({
   onToggleAnalyzer,
   showAnalyzer,
 }: ToolbarProps) {
-  const {
-    addNode,
-    simulationStatus,
-    sweepStatus,
-    tabs,
-    activeTabId,
-    nodes,
-    edges,
-    viewport,
-    addTab,
-    closeTab,
-    switchTab,
-    renameTab,
-    loadCircuit,
-    setSimulationError,
-    outputBuffer,
-    playing,
-  } = useStore(
-    useShallow((s) => ({
-      addNode: s.addNode,
-      simulationStatus: s.simulationStatus,
-      sweepStatus: s.sweepStatus,
-      tabs: s.tabs,
-      activeTabId: s.activeTabId,
-      nodes: s.nodes,
-      edges: s.edges,
-      viewport: s.viewport,
-      addTab: s.addTab,
-      closeTab: s.closeTab,
-      switchTab: s.switchTab,
-      renameTab: s.renameTab,
-      loadCircuit: s.loadCircuit,
-      setSimulationError: s.setSimulationError,
-      outputBuffer: s.outputBuffer,
-      playing: s.playing,
-    })),
-  );
+  const { tabs, activeTabId } = useTabBarState();
+  const { viewport } = useViewportState();
+  const { addTab, closeTab, switchTab, renameTab } = useTabActions();
+  const { nodes, edges } = useCircuitState();
+  const { addNode, loadCircuit } = useCircuitActions();
+  const { simulationStatus, outputBuffer } = useSimulationState();
+  const { setSimulationError } = useSimulationActions();
+  const { sweepStatus } = useSweepState();
+  const { playing } = useAudioState();
 
   const [editingTabId, setEditingTabId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');

@@ -2,7 +2,7 @@
 // and circuit state.
 //
 // Data types are defined per-domain under
-// src/lib/symbols/<component>/types.ts and
+// src/lib/models/<component>/types.ts and
 // re-exported here for backward compatibility.
 
 import type { Edge, XYPosition } from '@xyflow/react';
@@ -11,44 +11,44 @@ export type { XYPosition };
 
 // ── Re-exported component data types ────────────────────
 
-export type { BJTData, BJTModel } from './symbols/bjt/types';
-export type { BoxData, BoxVariant } from './symbols/box/types';
-export type { CapacitorData } from './symbols/capacitor/types';
-export type { DiodeData } from './symbols/diode/types';
-export type { GroundData } from './symbols/ground/types';
-export type { JackData } from './symbols/jack/types';
-export type { JFETData, JFETModel } from './symbols/jfet/types';
-export type { JunctionData } from './symbols/junction/types';
-export type { LabelData } from './symbols/label/types';
-export type { MOSFETData, MOSFETModel } from './symbols/mosfet/types';
-export type { OpAmpData } from './symbols/opamp/types';
-export type { PotData, PotTaper } from './symbols/pot/types';
-export type { PowerData } from './symbols/power/types';
-export type { ResistorData } from './symbols/resistor/types';
+export type { BJTData, BJTModel } from './models/bjt/types';
+export type { BoxData, BoxVariant } from './models/box/types';
+export type { CapacitorData } from './models/capacitor/types';
+export type { DiodeData } from './models/diode/types';
+export type { GroundData } from './models/ground/types';
+export type { JackData } from './models/jack/types';
+export type { JFETData, JFETModel } from './models/jfet/types';
+export type { JunctionData } from './models/junction/types';
+export type { LabelData } from './models/label/types';
+export type { MOSFETData, MOSFETModel } from './models/mosfet/types';
+export type { OpAmpData } from './models/opamp/types';
+export type { PotData, PotTaper } from './models/pot/types';
+export type { PowerData } from './models/power/types';
+export type { ResistorData } from './models/resistor/types';
 export type {
   StickyNoteColor,
   StickyNoteData,
   StickyNoteSize,
   StickyNoteWidth,
-} from './symbols/stickynote/types';
+} from './models/stickynote/types';
 
 // ── Imports for the discriminated union ─────────────────
 
-import type { BJTData } from './symbols/bjt/types';
-import type { BoxData } from './symbols/box/types';
-import type { CapacitorData } from './symbols/capacitor/types';
-import type { DiodeData } from './symbols/diode/types';
-import type { GroundData } from './symbols/ground/types';
-import type { JackData } from './symbols/jack/types';
-import type { JFETData } from './symbols/jfet/types';
-import type { JunctionData } from './symbols/junction/types';
-import type { LabelData } from './symbols/label/types';
-import type { MOSFETData } from './symbols/mosfet/types';
-import type { OpAmpData } from './symbols/opamp/types';
-import type { PotData } from './symbols/pot/types';
-import type { PowerData } from './symbols/power/types';
-import type { ResistorData } from './symbols/resistor/types';
-import type { StickyNoteData } from './symbols/stickynote/types';
+import type { BJTData } from './models/bjt/types';
+import type { BoxData } from './models/box/types';
+import type { CapacitorData } from './models/capacitor/types';
+import type { DiodeData } from './models/diode/types';
+import type { GroundData } from './models/ground/types';
+import type { JackData } from './models/jack/types';
+import type { JFETData } from './models/jfet/types';
+import type { JunctionData } from './models/junction/types';
+import type { LabelData } from './models/label/types';
+import type { MOSFETData } from './models/mosfet/types';
+import type { OpAmpData } from './models/opamp/types';
+import type { PotData } from './models/pot/types';
+import type { PowerData } from './models/power/types';
+import type { ResistorData } from './models/resistor/types';
+import type { StickyNoteData } from './models/stickynote/types';
 
 // ── Node union ──────────────────────────────────────────
 

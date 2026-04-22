@@ -58,9 +58,21 @@ pnpm test:ui      # Run tests with interactive Vitest UI
 - **UI:** React 19 + TypeScript + Vite
 - **Canvas:** [XYFlow / React Flow](https://reactflow.dev) for the schematic editor
 - **State:** Zustand with undo/redo history
-- **Audio:** Web Audio API for playback, ScriptProcessorNode for capture
+- **Audio:** Web Audio API for sample loading and playback
 - **Simulation:** ngspice WASM via eecircuit-engine, running in a Web Worker
 - **Styling:** Tailwind CSS
 - **Icons:** [Lucide React](https://lucide.dev)
 - **Linting:** Biome (single quotes, 2-space indent)
 - **Testing:** Vitest + jsdom + Testing Library
+
+## Architecture Notes
+
+- `src/lib/models/` is the unified component-domain library. Each
+  component folder co-locates its symbol definition, React node renderer,
+  data types, and any SPICE `model.ts` definitions that domain needs.
+- `src/lib/netlist.ts` compiles the current circuit graph into a SPICE
+  netlist and inlines only the device models required by the active
+  circuit.
+- `src/lib/audio/pipeline.ts` loads decoded sample audio from
+  `/public/samples/` and provides playback helpers for the waveform and
+  simulator UI.

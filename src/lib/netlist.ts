@@ -8,6 +8,10 @@ import {
   BJT_BC108,
   BJT_BC549,
   BJT_MPSA18,
+  DIODE_1N270,
+  DIODE_1N914,
+  DIODE_1N4001,
+  DIODE_1N4002,
   JFET_2N5457,
   JFET_2N5458,
   JFET_2N5460,
@@ -47,6 +51,14 @@ const MAX_PWL_POINTS = 100_001;
  * internal nodes. Only the first 64 are captured.
  */
 const MAX_ANALYSIS_NODES = 64;
+
+/**
+ * Convert a model or subcircuit object into the
+ * exact SPICE text to inline into the netlist.
+ */
+function renderSpiceDefinition(definition: { toString(): string }): string {
+  return definition.toString();
+}
 
 /**
  * Builds a PWL (piecewise-linear) voltage source line by downsampling
@@ -374,15 +386,15 @@ function buildCircuitBody(
     nodes.filter((n) => n.type === 'opamp').map((n) => n.data.model),
   );
   if (usedModels.has('TL072')) {
-    lines.push(TL072_SUBCKT);
+    lines.push(renderSpiceDefinition(TL072_SUBCKT));
   }
 
   if (usedModels.has('LM741')) {
-    lines.push(LM741_SUBCKT);
+    lines.push(renderSpiceDefinition(LM741_SUBCKT));
   }
 
   if (usedModels.has('LM308')) {
-    lines.push(LM308_SUBCKT);
+    lines.push(renderSpiceDefinition(LM308_SUBCKT));
   }
 
   // Diode model statements — inline for standard models
@@ -391,23 +403,19 @@ function buildCircuitBody(
   );
 
   if (usedDiodeModels.has('1N914')) {
-    lines.push('.model 1N914 D(Is=2.52n Rs=.568 N=1.752 Cjo=4p M=.4 tt=20n)');
+    lines.push(renderSpiceDefinition(DIODE_1N914));
   }
 
   if (usedDiodeModels.has('1N4001')) {
-    lines.push(
-      '.model 1N4001 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u)',
-    );
+    lines.push(renderSpiceDefinition(DIODE_1N4001));
   }
 
   if (usedDiodeModels.has('1N4002')) {
-    lines.push(
-      '.model 1N4002 D(Is=14.11n N=1.984 Rs=33.89m Cjo=25.89p M=.4 tt=5.7u BV=100)',
-    );
+    lines.push(renderSpiceDefinition(DIODE_1N4002));
   }
 
   if (usedDiodeModels.has('1N270')) {
-    lines.push('.model 1N270 D(Is=200n Rs=2 N=1.1 Cjo=1p M=.5 tt=50n BV=100)');
+    lines.push(renderSpiceDefinition(DIODE_1N270));
   }
 
   // BJT model statements
@@ -416,35 +424,35 @@ function buildCircuitBody(
   );
 
   if (usedBJTModels.has('2N3904')) {
-    lines.push(BJT_2N3904);
+    lines.push(renderSpiceDefinition(BJT_2N3904));
   }
 
   if (usedBJTModels.has('2N3906')) {
-    lines.push(BJT_2N3906);
+    lines.push(renderSpiceDefinition(BJT_2N3906));
   }
 
   if (usedBJTModels.has('AC128')) {
-    lines.push(BJT_AC128);
+    lines.push(renderSpiceDefinition(BJT_AC128));
   }
 
   if (usedBJTModels.has('2N5088')) {
-    lines.push(BJT_2N5088);
+    lines.push(renderSpiceDefinition(BJT_2N5088));
   }
 
   if (usedBJTModels.has('2N5089')) {
-    lines.push(BJT_2N5089);
+    lines.push(renderSpiceDefinition(BJT_2N5089));
   }
 
   if (usedBJTModels.has('BC108')) {
-    lines.push(BJT_BC108);
+    lines.push(renderSpiceDefinition(BJT_BC108));
   }
 
   if (usedBJTModels.has('BC549')) {
-    lines.push(BJT_BC549);
+    lines.push(renderSpiceDefinition(BJT_BC549));
   }
 
   if (usedBJTModels.has('MPSA18')) {
-    lines.push(BJT_MPSA18);
+    lines.push(renderSpiceDefinition(BJT_MPSA18));
   }
 
   // JFET model statements
@@ -452,26 +460,26 @@ function buildCircuitBody(
     nodes.filter((n) => n.type === 'jfet').map((n) => n.data.model),
   );
   if (usedJFETModels.has('2N5457')) {
-    lines.push(JFET_2N5457);
+    lines.push(renderSpiceDefinition(JFET_2N5457));
   }
   if (usedJFETModels.has('2N5458')) {
-    lines.push(JFET_2N5458);
+    lines.push(renderSpiceDefinition(JFET_2N5458));
   }
 
   if (usedJFETModels.has('J201')) {
-    lines.push(JFET_J201);
+    lines.push(renderSpiceDefinition(JFET_J201));
   }
 
   if (usedJFETModels.has('J113')) {
-    lines.push(JFET_J113);
+    lines.push(renderSpiceDefinition(JFET_J113));
   }
 
   if (usedJFETModels.has('MPF102')) {
-    lines.push(JFET_MPF102);
+    lines.push(renderSpiceDefinition(JFET_MPF102));
   }
 
   if (usedJFETModels.has('2N5460')) {
-    lines.push(JFET_2N5460);
+    lines.push(renderSpiceDefinition(JFET_2N5460));
   }
 
   // MOSFET model statements
@@ -480,19 +488,19 @@ function buildCircuitBody(
   );
 
   if (usedMOSFETModels.has('BS170')) {
-    lines.push(MOSFET_BS170);
+    lines.push(renderSpiceDefinition(MOSFET_BS170));
   }
 
   if (usedMOSFETModels.has('IRF510')) {
-    lines.push(MOSFET_IRF510);
+    lines.push(renderSpiceDefinition(MOSFET_IRF510));
   }
 
   if (usedMOSFETModels.has('IRF9510')) {
-    lines.push(MOSFET_IRF9510);
+    lines.push(renderSpiceDefinition(MOSFET_IRF9510));
   }
 
   if (usedMOSFETModels.has('2N7000')) {
-    lines.push(MOSFET_2N7000);
+    lines.push(renderSpiceDefinition(MOSFET_2N7000));
   }
 
   // Find input and output jack nodes

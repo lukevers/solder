@@ -6,7 +6,6 @@ import {
   Play,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 import { getNodeLabels } from '../lib/netlist';
 import type {
   AnalyzeRequest,
@@ -14,7 +13,11 @@ import type {
   AnalyzeTraceData,
   WaveformType,
 } from '../lib/simulation-types';
-import { useStore } from '../store';
+import {
+  useCircuitState,
+  useSimulationState,
+  useSweepState,
+} from '../store/hooks';
 import { ScopeCanvas, type ScopeTrace } from './ScopeCanvas';
 
 const TIME_DIVS = [0.5, 1, 2, 5, 10, 20, 50, 100];
@@ -85,23 +88,9 @@ type Props = {
 };
 
 export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
-  const {
-    nodes,
-    edges,
-    sweepResults,
-    sweepNodeId,
-    simulationStatus,
-    sweepStatus,
-  } = useStore(
-    useShallow((s) => ({
-      nodes: s.nodes,
-      edges: s.edges,
-      sweepResults: s.sweepResults,
-      sweepNodeId: s.sweepNodeId,
-      simulationStatus: s.simulationStatus,
-      sweepStatus: s.sweepStatus,
-    })),
-  );
+  const { nodes, edges } = useCircuitState();
+  const { simulationStatus } = useSimulationState();
+  const { sweepResults, sweepNodeId, sweepStatus } = useSweepState();
 
   const [tab, setTab] = useState<Tab>('analyze');
 
