@@ -34,16 +34,6 @@ export function AudioControls() {
             Sample: {name}
           </label>
         ))}
-        <label className="flex cursor-pointer items-center gap-2 text-gray-300 text-xs">
-          <input
-            type="radio"
-            name="audio-source"
-            checked={audioSource.type === 'live'}
-            onChange={() => setAudioSource({ type: 'live' })}
-            className="accent-blue-500"
-          />
-          🎙 Live input
-        </label>
       </div>
     </div>
   );

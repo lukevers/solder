@@ -77,10 +77,10 @@ export type SweepResult = {
 /**
  * Describes where the input audio comes from.
  *
- *   sample — a pre-loaded .wav file (by name)
- *   live   — real-time microphone / line input
+ * Simulation currently uses pre-loaded sample
+ * files only.
  */
-export type AudioSource = { type: 'sample'; name: string } | { type: 'live' };
+export type AudioSource = { type: 'sample'; name: string };
 
 // ── Circuit analysis ─────────────────────────────────────
 

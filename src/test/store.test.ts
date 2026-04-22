@@ -106,8 +106,11 @@ describe('audioSlice', () => {
   });
 
   it('setAudioSource updates source', () => {
-    useStore.getState().setAudioSource({ type: 'live' });
-    expect(useStore.getState().audioSource).toEqual({ type: 'live' });
+    useStore.getState().setAudioSource({ type: 'sample', name: 'bass' });
+    expect(useStore.getState().audioSource).toEqual({
+      type: 'sample',
+      name: 'bass',
+    });
   });
 });
 
@@ -526,7 +529,10 @@ describe('trivial setters', () => {
   });
 
   it('setAudioSource updates source', () => {
-    useStore.getState().setAudioSource({ type: 'live' });
-    expect(useStore.getState().audioSource).toEqual({ type: 'live' });
+    useStore.getState().setAudioSource({ type: 'sample', name: 'bass' });
+    expect(useStore.getState().audioSource).toEqual({
+      type: 'sample',
+      name: 'bass',
+    });
   });
 });
