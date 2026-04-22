@@ -96,6 +96,56 @@ export class AudioPipeline {
   }
 
   /**
+   * Decode a user-provided WAV file and cache it
+   * under a caller-chosen sample id.
+   *
+   * Local uploads share the same decoded-buffer
+   * map as bundled samples so playback and
+   * simulation can look them up through one path.
+   */
+  async loadFileSample(id: string, file: File): Promise<void> {
+    const arrayBuf = await file.arrayBuffer();
+    await this.loadArrayBufferSample(id, arrayBuf);
+  }
+
+  /**
+   * Decode a raw WAV/PCM ArrayBuffer and cache it
+   * under a caller-chosen sample id.
+   *
+   * This is used by the IndexedDB restore path,
+   * where we persist bytes across refreshes but
+   * lazily decode only when needed.
+   */
+  async loadArrayBufferSample(id: string, data: ArrayBuffer): Promise<void> {
+    await this.ready();
+    if (!this.ctx) {
+      return;
+    }
+
+    const audioBuf = await this.ctx.decodeAudioData(data);
+    this.sampleBuffers.set(id, audioBuf);
+  }
+
+  /**
+   * Remove a decoded sample from the runtime
+   * cache.
+   *
+   * Used when the user deletes a locally-uploaded
+   * sample from the audio-source panel.
+   */
+  removeSample(id: string): void {
+    this.sampleBuffers.delete(id);
+  }
+
+  /**
+   * Returns true when a decoded sample is already
+   * cached in memory.
+   */
+  hasSample(id: string): boolean {
+    return this.sampleBuffers.has(id);
+  }
+
+  /**
    * Play a pre-simulated output buffer once.
    *
    * Calls `onEnded` when playback finishes

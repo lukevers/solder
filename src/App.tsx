@@ -15,6 +15,12 @@ import {
   type WaveformSelection,
 } from './components/WaveformDisplay';
 import { WaveformModal } from './components/WaveformModal';
+import {
+  deleteLocalSample as deletePersistedLocalSample,
+  getLocalSampleBuffer,
+  listLocalSamples,
+  saveLocalSample,
+} from './lib/audio/local-sample-store';
 import { AudioPipeline } from './lib/audio/pipeline';
 import {
   type SimulateRequest,
@@ -51,7 +57,13 @@ export default function App() {
     setSimulatedInput,
   } = useSimulationActions();
   const { audioSource, volume, playing } = useAudioState();
-  const { setPlaying } = useAudioActions();
+  const {
+    setAudioSource,
+    setLocalSamples,
+    addLocalSample,
+    removeLocalSample,
+    setPlaying,
+  } = useAudioActions();
   const { undo, redo } = useHistoryActions();
   const { sweepResults, sweepStatus, sweepPlayingIndex } = useSweepState();
   const {
@@ -79,6 +91,20 @@ export default function App() {
   } | null>(null);
   const loopingRef = useRef(false);
   const pendingInputRef = useRef<Float32Array | null>(null);
+
+  /**
+   * Convert the selected audio source into the
+   * cache key used by `AudioPipeline`.
+   *
+   * Bundled samples use their filename stem while
+   * local uploads use a generated UUID.
+   */
+  const getAudioSourceKey = useCallback(
+    (source = audioSource) => {
+      return source.type === 'sample' ? source.name : source.id;
+    },
+    [audioSource],
+  );
 
   const { viewResetKey } = useViewportState();
   const viewResetKeyRef = useRef(viewResetKey);
@@ -181,22 +207,32 @@ export default function App() {
    * button click that requested audio.
    */
   const ensureSelectedSampleLoaded = useCallback(async () => {
-    if (audioSource.type !== 'sample') {
-      setSourceBuffer(null);
-      return null;
-    }
-
     const pipeline = await initializeAudio();
     if (!pipeline) {
       return null;
     }
 
-    await pipeline.loadSample(audioSource.name);
+    if (audioSource.type === 'sample') {
+      await pipeline.loadSample(audioSource.name);
+    } else if (!pipeline.hasSample(getAudioSourceKey())) {
+      const persistedBuffer = await getLocalSampleBuffer(getAudioSourceKey());
 
-    const buffer = pipeline.getSampleData(audioSource.name);
+      if (!persistedBuffer) {
+        throw new Error(
+          `Local sample "${audioSource.name}" could not be found in persisted storage.`,
+        );
+      }
+
+      await pipeline.loadArrayBufferSample(
+        getAudioSourceKey(),
+        persistedBuffer,
+      );
+    }
+
+    const buffer = pipeline.getSampleData(getAudioSourceKey());
     setSourceBuffer(buffer);
     return buffer;
-  }, [audioSource, initializeAudio]);
+  }, [audioSource, getAudioSourceKey, initializeAudio]);
 
   // Initialize worker
   useEffect(() => {
@@ -247,6 +283,34 @@ export default function App() {
   }, []);
 
   /**
+   * Restore persisted local-sample metadata from
+   * IndexedDB on boot.
+   *
+   * We hydrate only the sidebar list here. WAV
+   * bytes remain on disk until the user actually
+   * selects or simulates a local sample.
+   */
+  useEffect(() => {
+    let cancelled = false;
+
+    void listLocalSamples()
+      .then((samples) => {
+        if (!cancelled) {
+          setLocalSamples(samples);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setLocalSamples([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [setLocalSamples]);
+
+  /**
    * Prime the audio pipeline on the first user
    * gesture so the browser allows the context to
    * start without warnings.
@@ -273,17 +337,12 @@ export default function App() {
   useEffect(() => {
     setSelection(null);
 
-    if (audioSource.type !== 'sample') {
-      setSourceBuffer(null);
-      return;
-    }
-
     if (!audioReady) {
       setSourceBuffer(null);
       return;
     }
 
-    const name = audioSource.name;
+    const key = getAudioSourceKey();
     let cancelled = false;
     const pipeline = pipelineRef.current;
 
@@ -291,11 +350,25 @@ export default function App() {
       return;
     }
 
-    pipeline
-      .loadSample(name)
+    const loadPromise =
+      audioSource.type === 'sample'
+        ? pipeline.loadSample(audioSource.name)
+        : pipeline.hasSample(key)
+          ? Promise.resolve()
+          : getLocalSampleBuffer(key).then((persistedBuffer) => {
+              if (!persistedBuffer) {
+                throw new Error(
+                  `Local sample "${audioSource.name}" could not be found in persisted storage.`,
+                );
+              }
+
+              return pipeline.loadArrayBufferSample(key, persistedBuffer);
+            });
+
+    loadPromise
       .then(() => {
         if (!cancelled) {
-          setSourceBuffer(pipeline.getSampleData(name));
+          setSourceBuffer(pipeline.getSampleData(key));
         }
       })
       .catch((err) => {
@@ -307,7 +380,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [audioReady, audioSource, setSimulationError]);
+  }, [audioReady, audioSource, getAudioSourceKey, setSimulationError]);
 
   // Sync volume changes
   useEffect(() => {
@@ -394,7 +467,7 @@ export default function App() {
   const extractInputBuffer = useCallback(() => {
     const pipeline = pipelineRef.current;
 
-    if (audioSource.type !== 'sample' || !pipeline) {
+    if (!pipeline) {
       return {
         inputBuffer: undefined as Float32Array | undefined,
         inputSampleRate: undefined as number | undefined,
@@ -402,7 +475,7 @@ export default function App() {
       };
     }
 
-    const data = pipeline.getSampleData(audioSource.name);
+    const data = pipeline.getSampleData(getAudioSourceKey());
 
     if (!data) {
       return {
@@ -427,7 +500,7 @@ export default function App() {
     const duration = inputBuffer.length / inputSampleRate;
 
     return { inputBuffer, inputSampleRate, duration };
-  }, [audioSource, simulationDuration]);
+  }, [getAudioSourceKey, simulationDuration]);
 
   const handleSimulate = useCallback(async () => {
     if (!workerRef.current) {
@@ -435,7 +508,10 @@ export default function App() {
     }
 
     try {
-      if (audioSource.type === 'sample') {
+      if (
+        audioSource.type === 'sample' ||
+        audioSource.type === 'local-sample'
+      ) {
         await ensureSelectedSampleLoaded();
       }
 
@@ -484,7 +560,10 @@ export default function App() {
 
       requestSweep(nodeId);
 
-      if (audioSource.type === 'sample') {
+      if (
+        audioSource.type === 'sample' ||
+        audioSource.type === 'local-sample'
+      ) {
         await ensureSelectedSampleLoaded();
       }
 
@@ -582,6 +661,79 @@ export default function App() {
       pipeline.playBuffer(buf, () => setSweepPlayingIndex(null));
     }
   }, [sweepPlayingIndex, sweepResults, setSweepPlayingIndex]);
+
+  /**
+   * Decode and register a user-selected WAV file
+   * as a runtime-only sample option.
+   *
+   * Successful uploads become the active input
+   * source immediately so the user can preview or
+   * simulate them without extra clicks.
+   */
+  const handleUploadLocalSample = useCallback(
+    async (file: File) => {
+      if (!file.name.toLowerCase().endsWith('.wav')) {
+        setSimulationError('Only .wav files are supported for local uploads.');
+        return;
+      }
+
+      try {
+        const pipeline = await initializeAudio();
+        if (!pipeline) {
+          return;
+        }
+
+        const id = crypto.randomUUID();
+        const data = await file.arrayBuffer();
+
+        const sample = {
+          id,
+          name: file.name.replace(/\.wav$/i, ''),
+        };
+
+        await saveLocalSample({
+          ...sample,
+          data: data.slice(0),
+        });
+
+        await pipeline.loadArrayBufferSample(id, data);
+        addLocalSample(sample);
+        setAudioSource({
+          type: 'local-sample',
+          id: sample.id,
+          name: sample.name,
+        });
+        setSourceBuffer(pipeline.getSampleData(sample.id));
+        setSelection(null);
+      } catch (err) {
+        setSimulationError(
+          err instanceof Error
+            ? `Failed to load WAV file: ${err.message}`
+            : `Failed to load WAV file: ${String(err)}`,
+        );
+      }
+    },
+    [addLocalSample, initializeAudio, setAudioSource, setSimulationError],
+  );
+
+  /**
+   * Remove a user-uploaded sample from both the
+   * runtime store and the decoded audio cache.
+   *
+   * If the deleted sample is currently selected,
+   * the store falls back to the bundled guitar
+   * sample.
+   */
+  const handleRemoveLocalSample = useCallback(
+    async (id: string) => {
+      setPlaying(false);
+      setPlayingOriginal(false);
+      await deletePersistedLocalSample(id);
+      pipelineRef.current?.removeSample(id);
+      removeLocalSample(id);
+    },
+    [removeLocalSample, setPlaying],
+  );
 
   // Clean up sweep workers on unmount
   useEffect(() => {
@@ -762,7 +914,10 @@ export default function App() {
               </div>
             )}
             <div className="border-gray-800 border-t" />
-            <AudioControls />
+            <AudioControls
+              onUploadLocalSample={handleUploadLocalSample}
+              onRemoveLocalSample={handleRemoveLocalSample}
+            />
           </div>
         )}
       </div>

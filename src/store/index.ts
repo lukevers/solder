@@ -30,6 +30,7 @@ const persistOptions: PersistOptions<StoreState, PersistedStoreState> = {
     tabs: flushActive(state).map(stripTabRuntimeState),
     activeTabId: state.activeTabId,
     examplesActiveCategory: state.examplesActiveCategory,
+    audioSource: state.audioSource,
   }),
   onRehydrateStorage: () => (state) => {
     if (!state) {

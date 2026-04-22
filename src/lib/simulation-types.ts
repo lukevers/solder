@@ -80,7 +80,14 @@ export type SweepResult = {
  * Simulation currently uses pre-loaded sample
  * files only.
  */
-export type AudioSource = { type: 'sample'; name: string };
+export type LocalSample = {
+  id: string;
+  name: string;
+};
+
+export type AudioSource =
+  | { type: 'sample'; name: string }
+  | { type: 'local-sample'; id: string; name: string };
 
 // ── Circuit analysis ─────────────────────────────────────
 

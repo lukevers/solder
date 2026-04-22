@@ -28,7 +28,7 @@ Single Zustand store with tab, circuit, history,
 audio, and simulation state:
 - **Tab state** — open tabs, active tab, viewport reset key
 - **Circuit state** — nodes, edges, selection; undo/redo with 50-item snapshot history
-- **Audio state** — audioSource, volume, playing state
+- **Audio state** — audioSource, localSamples, volume, playing state
 - **Simulation state** — simulationStatus, outputBuffer, simulationError
 
 Any circuit mutation (add/delete node, connect/disconnect edge, update component value, undo/redo) clears `outputBuffer` and resets `simulationStatus` to `idle`. Node position/selection changes do NOT invalidate.
@@ -72,7 +72,10 @@ Guidelines:
 
 ### Core data flow
 1. User edits circuit on the `SchematicCanvas` (XYFlow/`@xyflow/react`)
-2. User clicks Simulate — `App.tsx` reads the selected sample's decoded `Float32Array` from `AudioPipeline` and posts a `SimulateRequest` to the Web Worker
+2. User clicks Simulate — `App.tsx` resolves the selected audio source
+   (bundled sample, persisted local WAV, or none), reads the decoded
+   `Float32Array` from `AudioPipeline`, and posts a `SimulateRequest` to
+   the Web Worker
 3. Worker calls `compileNetlist()` which downsamples the audio buffer to `SPICE_SAMPLE_RATE` (10 kHz) and builds a PWL voltage source; if no buffer, uses a SIN test tone
 4. Worker calls `engine.run(netlist)` — ngspice WASM (`eecircuit-engine`) runs the full transient simulation
 5. `voltageToAudioBuffer()` linearly interpolates the variable-step SPICE output back up to 44100 Hz
@@ -84,6 +87,8 @@ Guidelines:
 - `src/lib/netlist.ts` — circuit → SPICE netlist compiler (`compileNetlist`, `buildPortGroups`, `SPICE_SAMPLE_RATE`)
 - `src/lib/models/` — unified component-domain library: symbols, node renderers, per-domain data types, and SPICE model definitions
 - `src/lib/audio/audio-convert.ts` — `voltageToAudioBuffer`: interpolates SPICE output to fixed sample rate
+- `src/lib/audio/local-sample-store.ts` — IndexedDB persistence for uploaded
+  local WAV samples
 - `src/lib/engines/eecircuit.ts` — `EECircuitEngine` wrapping `eecircuit-engine` npm package
 - `src/lib/circuit-io.ts` — JSON import/export for circuits
 - `src/examples/` — preset circuits as JSON
@@ -161,6 +166,15 @@ Browser audio policy:
 - If a feature depends on decoded sample audio, make that action await audio
   initialization and sample loading instead of assuming the pipeline is ready
   during initial render.
+
+Local sample persistence:
+- User-uploaded WAV files are persisted in IndexedDB via
+  `src/lib/audio/local-sample-store.ts`, not in Zustand's persisted
+  localStorage payload.
+- Persist only lightweight metadata and the selected `audioSource` in the
+  Zustand store. Do not try to serialize raw WAV bytes into the store.
+- Restore the sidebar sample list from IndexedDB on boot, but decode audio
+  lazily on selection/playback/simulation so refreshes stay cheap.
 
 ## Tooling
 - **Linter/Formatter:** Biome (`biome.json`) — single quotes, 2-space indent; VSCode extension `biomejs.biome` recommended
@@ -307,21 +321,18 @@ All passive components (resistor, capacitor, cap_polar, diode, pot) plus ground,
 
   // Good
   /**
-   * Maximum number of resampled audio samples we keep
-   * per simulation trace.
+   * Maximum number of resampled audio samples we keep per simulation trace.
    *
-   * At 44.1 kHz this is roughly 45 seconds of audio and
-   * occupies ~8 MB as a Float32Array. Keeping a hard cap
-   * here prevents runaway memory usage when the user
-   * simulates a long transient.
+   * At 44.1 kHz this is roughly 45 seconds of audio and occupies ~8 MB as a
+   * Float32Array. Keeping a hard cap here prevents runaway memory usage when
+   * the user simulates a long transient.
    */
   const MAX_SAMPLES = 2_000_000;
   ```
 
   ```ts
   /**
-   * Merge two sorted port arrays into a single
-   * adjacency list.
+   * Merge two sorted port arrays into a single adjacency list.
    *
    * Signal flow through the merge:
    *
@@ -329,9 +340,8 @@ All passive components (resistor, capacitor, cap_polar, diode, pot) plus ground,
    *           ├──► merged adjacency set
    *   portB ──┘
    *
-   * Both inputs must already be sorted by net index.
-   * Duplicate entries are collapsed so each neighbour
-   * appears at most once.
+   * Both inputs must already be sorted by net index. Duplicate entries are
+   * collapsed so each neighbour appears at most once.
    */
   function mergePorts(portA: Port[], portB: Port[]) {
     // ...

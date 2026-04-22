@@ -17,7 +17,7 @@ A visual circuit editor and audio effects simulator. Place and connect circuit c
 
 **Simulation**
 - Compiles circuit to SPICE netlist and runs transient analysis via ngspice WASM ([eecircuit-engine](https://www.npmjs.com/package/eecircuit-engine))
-- Use guitar/bass samples or a SIN test tone
+- Use bundled guitar/bass samples, upload local WAV files, or fall back to a SIN test tone
 - Select a region of the input waveform to simulate only a portion
 
 **Audio Playback & Waveform**
@@ -25,6 +25,7 @@ A visual circuit editor and audio effects simulator. Place and connect circuit c
 - Waveform display with input/output overlay comparison
 - Expandable modal with seek (click), scrub (drag), and region selection
 - Animated playback cursor tied to audio position
+- Local WAV uploads persist across refreshes in the browser
 
 **Example Circuits**
 - Pedals: ProCo RAT, Fuzz Face, MXR Distortion+
@@ -76,6 +77,9 @@ pnpm test:ui      # Run tests with interactive Vitest UI
 - `src/lib/audio/pipeline.ts` loads decoded sample audio from
   `/public/samples/` and provides playback helpers for the waveform and
   simulator UI.
+- `src/lib/audio/local-sample-store.ts` persists uploaded WAV bytes in
+  IndexedDB so local samples survive page refreshes without bloating the
+  Zustand/localStorage payload.
 
 ## WAV Simulation Flow
 

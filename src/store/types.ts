@@ -1,7 +1,11 @@
 import type { Edge } from '@xyflow/react';
 import type { StateCreator } from 'zustand';
 import type { ExampleCategory } from '../examples';
-import type { AudioSource, SweepResult } from '../lib/simulation-types';
+import type {
+  AudioSource,
+  LocalSample,
+  SweepResult,
+} from '../lib/simulation-types';
 import type { ComponentNode } from '../lib/types';
 
 export type SimulationStatus = 'idle' | 'running' | 'error';
@@ -87,9 +91,13 @@ export type StoreState = {
   clearSweep: () => void;
   setSweepPlayingIndex: (index: number | null) => void;
   audioSource: AudioSource;
+  localSamples: Array<LocalSample>;
   volume: number;
   playing: boolean;
   setAudioSource: (source: AudioSource) => void;
+  setLocalSamples: (samples: Array<LocalSample>) => void;
+  addLocalSample: (sample: LocalSample) => void;
+  removeLocalSample: (id: string) => void;
   setVolume: (v: number) => void;
   setPlaying: (playing: boolean) => void;
 };
@@ -114,6 +122,7 @@ export type PersistedStoreState = {
   tabs: Array<PersistedTab>;
   activeTabId: string;
   examplesActiveCategory: ExampleCategory;
+  audioSource: AudioSource;
 };
 
 export type StoreSlice<T> = StateCreator<StoreState, [], [], T>;

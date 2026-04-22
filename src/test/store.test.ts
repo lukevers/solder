@@ -38,6 +38,7 @@ beforeEach(() => {
     outputBuffer: null,
     simulationError: null,
     audioSource: { type: 'sample', name: 'guitar' },
+    localSamples: [],
     volume: 0.7,
     playing: false,
   });
@@ -100,8 +101,9 @@ describe('simulationSlice', () => {
 
 describe('audioSlice', () => {
   it('starts with guitar sample, not playing', () => {
-    const { audioSource, volume, playing } = useStore.getState();
+    const { audioSource, localSamples, volume, playing } = useStore.getState();
     expect(audioSource).toEqual({ type: 'sample', name: 'guitar' });
+    expect(localSamples).toEqual([]);
     expect(volume).toBe(0.7);
     expect(playing).toBe(false);
   });
@@ -111,6 +113,30 @@ describe('audioSlice', () => {
     expect(useStore.getState().audioSource).toEqual({
       type: 'sample',
       name: 'bass',
+    });
+  });
+
+  it('addLocalSample appends a runtime-only sample entry', () => {
+    useStore.getState().addLocalSample({ id: 'local-1', name: 'snare-hit' });
+    expect(useStore.getState().localSamples).toEqual([
+      { id: 'local-1', name: 'snare-hit' },
+    ]);
+  });
+
+  it('removeLocalSample deletes the sample and falls back when selected', () => {
+    useStore.getState().addLocalSample({ id: 'local-1', name: 'snare-hit' });
+    useStore.getState().setAudioSource({
+      type: 'local-sample',
+      id: 'local-1',
+      name: 'snare-hit',
+    });
+
+    useStore.getState().removeLocalSample('local-1');
+
+    expect(useStore.getState().localSamples).toEqual([]);
+    expect(useStore.getState().audioSource).toEqual({
+      type: 'sample',
+      name: 'guitar',
     });
   });
 });

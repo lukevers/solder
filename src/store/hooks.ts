@@ -184,6 +184,7 @@ const selectSweepActions = (state: StoreState) => ({
  */
 const selectAudioState = (state: StoreState) => ({
   audioSource: state.audioSource,
+  localSamples: state.localSamples,
   volume: state.volume,
   playing: state.playing,
 });
@@ -196,6 +197,9 @@ const selectAudioState = (state: StoreState) => ({
  */
 const selectAudioActions = (state: StoreState) => ({
   setAudioSource: state.setAudioSource,
+  setLocalSamples: state.setLocalSamples,
+  addLocalSample: state.addLocalSample,
+  removeLocalSample: state.removeLocalSample,
   setVolume: state.setVolume,
   setPlaying: state.setPlaying,
 });

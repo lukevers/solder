@@ -2,7 +2,12 @@ import type { StoreSlice, StoreState } from './types';
 
 type AudioSlice = Pick<
   StoreState,
-  'setAudioSource' | 'setVolume' | 'setPlaying'
+  | 'setAudioSource'
+  | 'setLocalSamples'
+  | 'addLocalSample'
+  | 'removeLocalSample'
+  | 'setVolume'
+  | 'setPlaying'
 >;
 
 /**
@@ -14,6 +19,19 @@ type AudioSlice = Pick<
  */
 export const createAudioSlice: StoreSlice<AudioSlice> = (set) => ({
   setAudioSource: (audioSource) => set({ audioSource }),
+  setLocalSamples: (localSamples) => set({ localSamples }),
+  addLocalSample: (sample) =>
+    set((state) => ({
+      localSamples: [...state.localSamples, sample],
+    })),
+  removeLocalSample: (id) =>
+    set((state) => ({
+      localSamples: state.localSamples.filter((sample) => sample.id !== id),
+      audioSource:
+        state.audioSource.type === 'local-sample' && state.audioSource.id === id
+          ? { type: 'sample', name: 'guitar' }
+          : state.audioSource,
+    })),
   setVolume: (volume) => set({ volume }),
   setPlaying: (playing) => set({ playing }),
 });

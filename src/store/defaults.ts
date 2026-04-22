@@ -172,6 +172,7 @@ export const initialState = {
   sweepError: null as StoreState['sweepError'],
   sweepPlayingIndex: null as StoreState['sweepPlayingIndex'],
   audioSource: { type: 'sample', name: 'guitar' } as AudioSource,
+  localSamples: [] as StoreState['localSamples'],
   volume: 0.7,
   playing: false,
 } satisfies Partial<StoreState>;
