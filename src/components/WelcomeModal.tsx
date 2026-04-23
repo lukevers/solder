@@ -1,6 +1,7 @@
 import { FolderOpen, MousePointer2, Play, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { APP_VERSION } from '../lib/app-version';
+import { Button } from './Button';
 import { SolderLogo } from './SolderLogo';
 
 type WelcomeModalProps = {
@@ -152,13 +153,9 @@ export function WelcomeModal({ open, onClose }: WelcomeModalProps) {
           <div className="font-mono text-[11px] text-gray-500 uppercase tracking-wider">
             version: {APP_VERSION}
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded border border-gray-700 bg-gray-800 px-3 py-1.5 font-mono text-[11px] text-gray-200 uppercase tracking-wider transition-colors hover:bg-gray-700"
-          >
+          <Button onClick={onClose} size="sm" tone="neutral">
             Open Editor
-          </button>
+          </Button>
         </div>
       </div>
     </div>

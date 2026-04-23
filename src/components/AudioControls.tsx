@@ -3,6 +3,7 @@ import { type ChangeEvent, useRef } from 'react';
 import { BUNDLED_SAMPLE_NAMES } from '../lib/constants';
 import { AUDIO_SOURCE_TYPE } from '../lib/simulation-types';
 import { useAudioActions, useAudioState } from '../store/hooks';
+import { Button } from './Button';
 
 type AudioControlsProps = {
   onUploadLocalSample: (file: File) => void;
@@ -66,14 +67,15 @@ export function AudioControls({
         <div className="text-gray-500 text-xs uppercase tracking-wider">
           WAV Files
         </div>
-        <button
-          type="button"
+        <Button
           onClick={() => fileInputRef.current?.click()}
-          className="flex items-center gap-1 rounded border border-gray-700 bg-gray-800 px-2 py-1 font-mono text-[10px] text-gray-300 uppercase tracking-wider transition-colors hover:bg-gray-700"
+          size="xs"
+          tone="muted"
+          className="flex items-center gap-1"
         >
           <Upload size={10} />
           Upload
-        </button>
+        </Button>
         <input
           ref={fileInputRef}
           type="file"
