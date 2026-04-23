@@ -1,3 +1,4 @@
+import { SWEEP_STATUS } from './constants';
 import { clearSim } from './defaults';
 import type { StoreSlice, StoreState } from './types';
 
@@ -41,7 +42,7 @@ export const createSimulationSlice: StoreSlice<SimulationSlice> = (set) => ({
   requestSweep: (nodeId) =>
     set({
       sweepNodeId: nodeId,
-      sweepStatus: 'running',
+      sweepStatus: SWEEP_STATUS.running,
       sweepResults: [],
       sweepError: null,
       sweepPlayingIndex: null,
@@ -54,14 +55,15 @@ export const createSimulationSlice: StoreSlice<SimulationSlice> = (set) => ({
       ),
     })),
 
-  completeSweep: () => set({ sweepStatus: 'done' }),
+  completeSweep: () => set({ sweepStatus: SWEEP_STATUS.done }),
 
-  failSweep: (error) => set({ sweepStatus: 'idle', sweepError: error }),
+  failSweep: (error) =>
+    set({ sweepStatus: SWEEP_STATUS.idle, sweepError: error }),
 
   clearSweep: () =>
     set({
       sweepNodeId: null,
-      sweepStatus: 'idle',
+      sweepStatus: SWEEP_STATUS.idle,
       sweepResults: [],
       sweepError: null,
       sweepPlayingIndex: null,

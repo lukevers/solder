@@ -1,5 +1,12 @@
 import type { ExampleCircuit } from '../examples';
-import { clearSim, defaultSimState, defaultTab, nextTabName } from './defaults';
+import { TAB_ORIGIN_KIND } from './constants';
+import {
+  clearSim,
+  defaultSimState,
+  defaultTab,
+  FIRST_CIRCUIT_NAME,
+  nextTabName,
+} from './defaults';
 import {
   ensureMeasured,
   fingerprintCircuit,
@@ -33,7 +40,7 @@ function createExampleTab(example: ExampleCircuit): Tab {
     id: crypto.randomUUID(),
     name: example.name,
     origin: {
-      kind: 'example',
+      kind: TAB_ORIGIN_KIND.example,
       exampleId: example.id,
       exampleName: example.name,
       fingerprint,
@@ -59,11 +66,11 @@ function isPristineReplaceableActiveTab(
   state: StoreState,
   activeTab: Tab,
 ): boolean {
-  if (activeTab.origin.kind === 'custom') {
+  if (activeTab.origin.kind === TAB_ORIGIN_KIND.custom) {
     return false;
   }
 
-  if (activeTab.origin.kind === 'example') {
+  if (activeTab.origin.kind === TAB_ORIGIN_KIND.example) {
     if (activeTab.name !== activeTab.origin.exampleName) {
       return false;
     }
@@ -174,7 +181,7 @@ export const createTabsSlice: StoreSlice<TabsSlice> = (set) => ({
       const remainingTabs = flushedTabs.filter((tab) => tab.id !== id);
 
       if (remainingTabs.length === 0) {
-        const newTab = defaultTab('Circuit 1', 'starter');
+        const newTab = defaultTab(FIRST_CIRCUIT_NAME, TAB_ORIGIN_KIND.starter);
 
         return {
           tabs: [newTab],

@@ -13,6 +13,12 @@ import type {
   AnalyzeTraceData,
   WaveformType,
 } from '../lib/simulation-types';
+import { WORKER_MESSAGE_TYPE } from '../lib/simulation-types';
+import {
+  SIMULATION_STATUS,
+  type SimulationStatus,
+  SWEEP_STATUS,
+} from '../store/constants';
 import {
   useCircuitState,
   useSimulationState,
@@ -101,7 +107,9 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
   const [duration, setDuration] = useState(0.05);
 
   // Analysis state
-  const [status, setStatus] = useState<'idle' | 'running' | 'error'>('idle');
+  const [status, setStatus] = useState<SimulationStatus>(
+    SIMULATION_STATUS.idle,
+  );
   const [error, setError] = useState<string | null>(null);
   const [analyzeTraces, setAnalyzeTraces] = useState<Array<AnalyzeTrace>>([]);
 
@@ -195,7 +203,7 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
     }
 
     const gen = ++analysisGenRef.current;
-    setStatus('running');
+    setStatus(SIMULATION_STATUS.running);
     setError(null);
 
     worker.onmessage = (e: MessageEvent<AnalyzeResponse>) => {
@@ -204,8 +212,8 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
         return;
       }
       const msg = e.data;
-      if (msg.type === 'result') {
-        setStatus('idle');
+      if (msg.type === WORKER_MESSAGE_TYPE.result) {
+        setStatus(SIMULATION_STATUS.idle);
         let otherIdx = 0;
         const newTraces: Array<AnalyzeTrace> = msg.traces.map(
           (t: AnalyzeTraceData) => {
@@ -231,7 +239,7 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
         );
         setAnalyzeTraces(newTraces);
       } else {
-        setStatus('error');
+        setStatus(SIMULATION_STATUS.error);
         setError(msg.message);
       }
     };
@@ -240,12 +248,12 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
       if (gen !== analysisGenRef.current) {
         return;
       }
-      setStatus('error');
+      setStatus(SIMULATION_STATUS.error);
       setError(e.message ?? 'Worker crashed');
     };
 
     const request: AnalyzeRequest = {
-      type: 'analyze',
+      type: WORKER_MESSAGE_TYPE.analyze,
       nodes,
       edges,
       duration,
@@ -348,7 +356,8 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
 
   const hasSweepEnabled = Object.values(showSweepTraces).some(Boolean);
   const isSimulating =
-    simulationStatus === 'running' || sweepStatus === 'running';
+    simulationStatus === SIMULATION_STATUS.running ||
+    sweepStatus === SWEEP_STATUS.running;
   const hasNoScopeData = !outputBuffer && !simulatedInput && !hasSweepEnabled;
   const scopeEmpty = tab === 'scope' && hasNoScopeData;
   const analyzeEmpty = tab === 'analyze' && activeTraces.length === 0;
@@ -632,7 +641,7 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
               className={`transition-transform ${showProbes ? '' : '-rotate-90'}`}
             />
             Probes ({enabledAnalyzeTraces.length}/{analyzeTraces.length})
-            {status === 'running' && (
+            {status === SIMULATION_STATUS.running && (
               <span className="ml-1 animate-pulse text-amber-400">
                 Analyzing…
               </span>

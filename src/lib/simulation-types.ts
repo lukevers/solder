@@ -8,6 +8,30 @@ import type { Edge } from '@xyflow/react';
 
 import type { ComponentNode } from './types';
 
+/**
+ * Worker message kinds shared between the main thread and background workers.
+ *
+ * Reusing these constants avoids mismatches between the request/response types
+ * and the runtime `type` checks in worker handlers.
+ */
+export const WORKER_MESSAGE_TYPE = {
+  simulate: 'simulate',
+  analyze: 'analyze',
+  result: 'result',
+  error: 'error',
+} as const;
+
+/**
+ * Runtime values for audio source selection.
+ *
+ * The store, UI, and app shell all branch on these values, so they should be
+ * defined once instead of repeated as ad hoc string literals.
+ */
+export const AUDIO_SOURCE_TYPE = {
+  sample: 'sample',
+  localSample: 'local-sample',
+} as const;
+
 // ── Simulation ───────────────────────────────────────────
 
 /**
@@ -20,7 +44,7 @@ import type { ComponentNode } from './types';
  * engine, and returns a SimulateResponse.
  */
 export type SimulateRequest = {
-  type: 'simulate';
+  type: typeof WORKER_MESSAGE_TYPE.simulate;
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
   duration: number;
@@ -48,8 +72,8 @@ export type SimulateRequest = {
  * human-readable message.
  */
 export type SimulateResponse =
-  | { type: 'result'; outputBuffer: Float32Array }
-  | { type: 'error'; message: string };
+  | { type: typeof WORKER_MESSAGE_TYPE.result; outputBuffer: Float32Array }
+  | { type: typeof WORKER_MESSAGE_TYPE.error; message: string };
 
 // ── Pot sweep ────────────────────────────────────────────
 
@@ -86,8 +110,8 @@ export type LocalSample = {
 };
 
 export type AudioSource =
-  | { type: 'sample'; name: string }
-  | { type: 'local-sample'; id: string; name: string };
+  | { type: typeof AUDIO_SOURCE_TYPE.sample; name: string }
+  | { type: typeof AUDIO_SOURCE_TYPE.localSample; id: string; name: string };
 
 // ── Circuit analysis ─────────────────────────────────────
 
@@ -104,7 +128,7 @@ export type WaveformType = 'sine' | 'square' | 'triangle' | 'sawtooth';
  * and captures multiple node voltages.
  */
 export type AnalyzeRequest = {
-  type: 'analyze';
+  type: typeof WORKER_MESSAGE_TYPE.analyze;
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
   duration: number;
@@ -131,8 +155,8 @@ export type AnalyzeTraceData = {
  */
 export type AnalyzeResponse =
   | {
-      type: 'result';
+      type: typeof WORKER_MESSAGE_TYPE.result;
       traces: Array<AnalyzeTraceData>;
       sampleRate: number;
     }
-  | { type: 'error'; message: string };
+  | { type: typeof WORKER_MESSAGE_TYPE.error; message: string };

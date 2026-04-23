@@ -2,7 +2,11 @@ import { resampleAllTraces } from '../lib/audio/audio-convert';
 import { SAMPLE_RATE } from '../lib/constants';
 import { EECircuitEngine } from '../lib/engines/eecircuit';
 import { compileAnalysisNetlist } from '../lib/netlist';
-import type { AnalyzeRequest, AnalyzeResponse } from '../lib/simulation-types';
+import {
+  type AnalyzeRequest,
+  type AnalyzeResponse,
+  WORKER_MESSAGE_TYPE,
+} from '../lib/simulation-types';
 
 /** Maximum total bytes we allow the resampled trace set to occupy (~128 MB). */
 const MAX_TRACE_BYTES = 128 * 1024 * 1024;
@@ -10,7 +14,7 @@ const MAX_TRACE_BYTES = 128 * 1024 * 1024;
 const engine = new EECircuitEngine();
 
 self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
-  if (e.data.type !== 'analyze') {
+  if (e.data.type !== WORKER_MESSAGE_TYPE.analyze) {
     return;
   }
 
@@ -48,7 +52,7 @@ self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
 
     const transferables = traces.map((t) => t.values.buffer);
     const response: AnalyzeResponse = {
-      type: 'result',
+      type: WORKER_MESSAGE_TYPE.result,
       traces,
       sampleRate: SAMPLE_RATE,
     };
@@ -58,7 +62,7 @@ self.onmessage = async (e: MessageEvent<AnalyzeRequest>) => {
     });
   } catch (err) {
     const response: AnalyzeResponse = {
-      type: 'error',
+      type: WORKER_MESSAGE_TYPE.error,
       message: err instanceof Error ? err.message : String(err),
     };
 

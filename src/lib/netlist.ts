@@ -26,6 +26,7 @@ import {
   MOSFET_IRF9510,
   TL072_SUBCKT,
 } from './models';
+import { JACK_DIRECTION } from './models/jack/types';
 import type { WaveformType } from './simulation-types';
 import type { ComponentNode, PotTaper } from './types';
 
@@ -529,10 +530,10 @@ function buildCircuitBody(
 
   // Find input and output jack nodes
   const inputNode = nodes.find(
-    (n) => n.type === 'jack' && n.data.direction === 'in',
+    (n) => n.type === 'jack' && n.data.direction === JACK_DIRECTION.in,
   );
   const outputNode = nodes.find(
-    (n) => n.type === 'jack' && n.data.direction === 'out',
+    (n) => n.type === 'jack' && n.data.direction === JACK_DIRECTION.out,
   );
 
   if (!inputNode) {
@@ -816,11 +817,11 @@ export function getNodeLabels(
 
   // Mark input/output nodes
   const inputNode = nodes.find(
-    (n) => n.type === 'jack' && n.data.direction === 'in',
+    (n) => n.type === 'jack' && n.data.direction === JACK_DIRECTION.in,
   );
 
   const outputNode = nodes.find(
-    (n) => n.type === 'jack' && n.data.direction === 'out',
+    (n) => n.type === 'jack' && n.data.direction === JACK_DIRECTION.out,
   );
 
   if (inputNode) {

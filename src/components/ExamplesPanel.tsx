@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { EXAMPLES, type ExampleCategory } from '../examples';
+import { EXAMPLE_CATEGORY, EXAMPLES, type ExampleCategory } from '../examples';
 import type { ComponentNode } from '../lib/types';
 import { useExamplesState, useTabActions } from '../store/hooks';
 
@@ -21,8 +21,8 @@ function snapNodes(nodes: Array<ComponentNode>): Array<ComponentNode> {
 }
 
 const TABS: Array<{ id: ExampleCategory; label: string }> = [
-  { id: 'pedals', label: 'Pedals' },
-  { id: 'circuits', label: 'Circuits' },
+  { id: EXAMPLE_CATEGORY.pedals, label: 'Pedals' },
+  { id: EXAMPLE_CATEGORY.circuits, label: 'Circuits' },
 ];
 
 export function ExamplesPanel() {

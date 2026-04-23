@@ -366,6 +366,15 @@ All passive components (resistor, capacitor, cap_polar, diode, pot) plus ground,
 
   The test: if you need to add a new resistor variant, you should only need to touch files in one area — not a 800-line grab-bag file shared with op-amps, diodes, and audio types.
 
+- **Repeated hardcoded strings:** If a non-trivial string literal appears in
+  more than one place, replace it with a named constant, a `const` object, or
+  a type/enum derived from a single source of truth. Prefer the narrowest
+  useful scope:
+  domain-local constants for strings only used in one area, exported constants
+  for strings shared across modules, and union types derived from those
+  constants for state/status/category values. Do not keep retyping the same
+  status, kind, direction, label, or category string inline across the repo.
+
 ## Writing example circuits
 
 Example circuits live in `src/examples/` as JSON and are registered in

@@ -1,6 +1,16 @@
-import type { AudioSource } from '../lib/simulation-types';
+import { EXAMPLE_CATEGORY } from '../examples';
+import { CIRCUIT_LABEL, DEFAULT_BUNDLED_SAMPLE_NAME } from '../lib/constants';
+import { JACK_DIRECTION } from '../lib/models/jack/types';
+import { AUDIO_SOURCE_TYPE, type AudioSource } from '../lib/simulation-types';
+import { SIMULATION_STATUS, SWEEP_STATUS, TAB_ORIGIN_KIND } from './constants';
 import { fingerprintCircuit } from './helpers';
 import type { StoreState, Tab } from './types';
+
+/**
+ * Name used for the seeded starter tab shown on first load and after the last
+ * tab is closed.
+ */
+export const FIRST_CIRCUIT_NAME = 'Circuit 1';
 
 /**
  * Maximum number of undo snapshots we retain in memory for the
@@ -24,12 +34,12 @@ export const MAX_HISTORY = 50;
  */
 export const defaultSimState = {
   outputBuffer: null as StoreState['outputBuffer'],
-  simulationStatus: 'idle' as StoreState['simulationStatus'],
+  simulationStatus: SIMULATION_STATUS.idle as StoreState['simulationStatus'],
   simulationError: null as StoreState['simulationError'],
   simulationElapsed: null as StoreState['simulationElapsed'],
   simulatedInput: null as StoreState['simulatedInput'],
   sweepNodeId: null as StoreState['sweepNodeId'],
-  sweepStatus: 'idle' as StoreState['sweepStatus'],
+  sweepStatus: SWEEP_STATUS.idle as StoreState['sweepStatus'],
   sweepResults: [] as StoreState['sweepResults'],
   sweepError: null as StoreState['sweepError'],
   sweepPlayingIndex: null as StoreState['sweepPlayingIndex'],
@@ -53,7 +63,9 @@ export const clearSim = { ...defaultSimState };
  */
 export function defaultTab(
   name: string,
-  originKind: 'custom' | 'starter' = 'custom',
+  originKind:
+    | typeof TAB_ORIGIN_KIND.custom
+    | typeof TAB_ORIGIN_KIND.starter = TAB_ORIGIN_KIND.custom,
 ): Tab {
   const id = crypto.randomUUID();
   const nodes = [
@@ -61,25 +73,25 @@ export function defaultTab(
       id: `${id}-in`,
       type: 'jack' as const,
       position: { x: 100, y: 200 },
-      data: { label: 'INPUT', direction: 'in' as const },
+      data: { label: CIRCUIT_LABEL.input, direction: JACK_DIRECTION.in },
     },
     {
       id: `${id}-gnd-in`,
       type: 'ground' as const,
       position: { x: 140, y: 320 },
-      data: { label: 'GND' },
+      data: { label: CIRCUIT_LABEL.ground },
     },
     {
       id: `${id}-out`,
       type: 'jack' as const,
       position: { x: 400, y: 200 },
-      data: { label: 'OUTPUT', direction: 'out' as const },
+      data: { label: CIRCUIT_LABEL.output, direction: JACK_DIRECTION.out },
     },
     {
       id: `${id}-gnd-out`,
       type: 'ground' as const,
       position: { x: 340, y: 320 },
-      data: { label: 'GND' },
+      data: { label: CIRCUIT_LABEL.ground },
     },
   ];
   const edges = [
@@ -106,13 +118,13 @@ export function defaultTab(
     },
   ];
   const origin =
-    originKind === 'starter'
+    originKind === TAB_ORIGIN_KIND.starter
       ? {
-          kind: 'starter' as const,
+          kind: TAB_ORIGIN_KIND.starter as const,
           defaultName: name,
           fingerprint: fingerprintCircuit(nodes, edges),
         }
-      : { kind: 'custom' as const };
+      : { kind: TAB_ORIGIN_KIND.custom as const };
 
   return {
     id,
@@ -152,7 +164,7 @@ export function nextTabName(tabs: Array<Tab>): string {
  * Initial tab used both for the first session and for store reset
  * cases where the user closes the last remaining tab.
  */
-export const firstTab = defaultTab('Circuit 1', 'starter');
+export const firstTab = defaultTab(FIRST_CIRCUIT_NAME, TAB_ORIGIN_KIND.starter);
 
 /**
  * Non-action store fields that seed the root Zustand store before
@@ -164,7 +176,7 @@ export const firstTab = defaultTab('Circuit 1', 'starter');
 export const initialState = {
   tabs: [firstTab],
   activeTabId: firstTab.id,
-  examplesActiveCategory: 'pedals' as const,
+  examplesActiveCategory: EXAMPLE_CATEGORY.pedals as const,
   viewResetKey: 0,
   viewport: { x: 0, y: 0, zoom: 1 },
   nodes: firstTab.nodes,
@@ -173,7 +185,7 @@ export const initialState = {
   selectedEdgeId: null as StoreState['selectedEdgeId'],
   past: [] as StoreState['past'],
   future: [] as StoreState['future'],
-  simulationStatus: 'idle' as StoreState['simulationStatus'],
+  simulationStatus: SIMULATION_STATUS.idle as StoreState['simulationStatus'],
   outputBuffer: null as StoreState['outputBuffer'],
   simulationError: null as StoreState['simulationError'],
   simulationDuration: 0.1,
@@ -182,11 +194,14 @@ export const initialState = {
   inputFrequency: 1000,
   inputAmplitude: 0.1,
   sweepNodeId: null as StoreState['sweepNodeId'],
-  sweepStatus: 'idle' as StoreState['sweepStatus'],
+  sweepStatus: SWEEP_STATUS.idle as StoreState['sweepStatus'],
   sweepResults: [] as StoreState['sweepResults'],
   sweepError: null as StoreState['sweepError'],
   sweepPlayingIndex: null as StoreState['sweepPlayingIndex'],
-  audioSource: { type: 'sample', name: 'guitar' } as AudioSource,
+  audioSource: {
+    type: AUDIO_SOURCE_TYPE.sample,
+    name: DEFAULT_BUNDLED_SAMPLE_NAME,
+  } as AudioSource,
   localSamples: [] as StoreState['localSamples'],
   volume: 0.7,
   playing: false,

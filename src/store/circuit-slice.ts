@@ -1,4 +1,5 @@
 import type { ComponentNode } from '../lib/types';
+import { TAB_ORIGIN_KIND } from './constants';
 import { clearSim, MAX_HISTORY } from './defaults';
 import { ensureMeasured } from './helpers';
 import type { StoreSlice, StoreState } from './types';
@@ -137,7 +138,7 @@ export const createCircuitSlice: StoreSlice<CircuitSlice> = (set) => ({
         tab.id === state.activeTabId
           ? {
               ...tab,
-              origin: { kind: 'custom' as const },
+              origin: { kind: TAB_ORIGIN_KIND.custom as const },
               nodes: measuredNodes,
               edges,
               selectedNodeId: null,

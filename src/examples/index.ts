@@ -10,7 +10,22 @@ import distortionPlus from './pedals/distortion-plus.json';
 import fuzzFace from './pedals/fuzz-face.json';
 import rat from './pedals/rat.json';
 
-export type ExampleCategory = 'pedals' | 'circuits';
+/**
+ * Stable runtime values for example categories.
+ *
+ * The examples panel, store defaults, and persisted state all refer to these
+ * category ids, so the strings should not be repeated inline.
+ */
+export const EXAMPLE_CATEGORY = {
+  pedals: 'pedals',
+  circuits: 'circuits',
+} as const;
+
+/**
+ * Union type for the example categories shown in the sidebar.
+ */
+export type ExampleCategory =
+  (typeof EXAMPLE_CATEGORY)[keyof typeof EXAMPLE_CATEGORY];
 
 export type ExampleCircuit = {
   id: string;

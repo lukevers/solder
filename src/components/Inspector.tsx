@@ -2,6 +2,7 @@ import type { Edge } from '@xyflow/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { JACK_DIRECTION } from '../lib/models/jack/types';
 import {
   type BJTData,
   type BJTModel,
@@ -28,6 +29,7 @@ import {
   type ResUnit,
 } from '../lib/units';
 import { useStore } from '../store';
+import { SIMULATION_STATUS, SWEEP_STATUS } from '../store/constants';
 
 const INPUT_CLASS =
   'w-full bg-gray-950 border border-gray-700 text-gray-200 px-2 py-1 rounded text-xs font-mono';
@@ -571,7 +573,9 @@ function SweepButton({
       simulationStatus: s.simulationStatus,
     })),
   );
-  const busy = sweepStatus === 'running' || simulationStatus === 'running';
+  const busy =
+    sweepStatus === SWEEP_STATUS.running ||
+    simulationStatus === SIMULATION_STATUS.running;
 
   return (
     <button
@@ -580,9 +584,9 @@ function SweepButton({
       disabled={busy}
       className="-mt-2 mb-3 w-full rounded border border-amber-700 bg-amber-950 py-1.5 font-mono text-amber-300 text-xs transition-colors hover:bg-amber-900 disabled:cursor-not-allowed disabled:opacity-40"
     >
-      {sweepStatus === 'running'
+      {sweepStatus === SWEEP_STATUS.running
         ? 'Sweeping…'
-        : simulationStatus === 'running'
+        : simulationStatus === SIMULATION_STATUS.running
           ? 'Simulating…'
           : 'Sweep 0–100%'}
     </button>
@@ -613,7 +617,7 @@ function JackInspector({
       </Field>
       <Field label="Direction">
         <div className="font-mono text-gray-200 text-xs">
-          {direction === 'in' ? 'Input' : 'Output'}
+          {direction === JACK_DIRECTION.in ? 'Input' : 'Output'}
         </div>
       </Field>
     </>

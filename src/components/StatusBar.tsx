@@ -1,3 +1,5 @@
+import { SAMPLE_RATE } from '../lib/constants';
+import { SIMULATION_STATUS } from '../store/constants';
 import { useCircuitState, useSimulationState } from '../store/hooks';
 
 export function StatusBar() {
@@ -6,19 +8,19 @@ export function StatusBar() {
     useSimulationState();
 
   const statusColor =
-    simulationStatus === 'error'
+    simulationStatus === SIMULATION_STATUS.error
       ? 'text-red-400'
-      : simulationStatus === 'running'
+      : simulationStatus === SIMULATION_STATUS.running
         ? 'text-yellow-400'
         : 'text-green-400';
 
   const statusLabel =
-    simulationStatus === 'error'
+    simulationStatus === SIMULATION_STATUS.error
       ? `● error: ${simulationError ?? 'unknown'}`
-      : simulationStatus === 'running'
+      : simulationStatus === SIMULATION_STATUS.running
         ? '● simulating…'
         : outputBuffer
-          ? `● ready · ${(outputBuffer.length / 44100).toFixed(1)} s${simulationElapsed != null ? ` (took ${simulationElapsed.toFixed(1)}s)` : ''}`
+          ? `● ready · ${(outputBuffer.length / SAMPLE_RATE).toFixed(1)} s${simulationElapsed != null ? ` (took ${simulationElapsed.toFixed(1)}s)` : ''}`
           : '● ready';
 
   return (
@@ -27,7 +29,7 @@ export function StatusBar() {
       <span className="hidden sm:inline">components: {nodes.length}</span>
       <span className="hidden sm:inline">ngspice · WASM</span>
       <div className="flex-1" />
-      <span className="hidden sm:inline">44100 Hz</span>
+      <span className="hidden sm:inline">{SAMPLE_RATE} Hz</span>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { CIRCUIT_LABEL } from '../../constants';
 import type { SymbolDef } from '../types';
 
 /**
@@ -22,7 +23,7 @@ export const SYM_GROUND: SymbolDef = {
     {
       id: 'gnd',
       number: 1,
-      name: 'GND',
+      name: CIRCUIT_LABEL.ground,
       side: 'top',
       offset: '50%',
       kind: 'power',

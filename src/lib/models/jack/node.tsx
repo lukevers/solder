@@ -1,13 +1,13 @@
 import { type NodeProps, Position } from '@xyflow/react';
 import { NodeShell, NodeSvg, NodeText, RotatedHandle } from '../node-shell';
-import type { JackData } from './types';
+import { JACK_DIRECTION, type JackData } from './types';
 
 interface JackNodeProps extends NodeProps {
   data: JackData;
 }
 
 export function JackNode({ id, data, selected }: JackNodeProps) {
-  const isIn = data.direction === 'in';
+  const isIn = data.direction === JACK_DIRECTION.in;
   const color = isIn ? '#3b82f6' : '#22c55e';
   const stroke = selected ? '#60a5fa' : color;
 

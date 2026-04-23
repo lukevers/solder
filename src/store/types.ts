@@ -7,8 +7,11 @@ import type {
   SweepResult,
 } from '../lib/simulation-types';
 import type { ComponentNode } from '../lib/types';
-
-export type SimulationStatus = 'idle' | 'running' | 'error';
+import type {
+  SimulationStatus,
+  SweepStatus,
+  TAB_ORIGIN_KIND,
+} from './constants';
 
 export type Snapshot = {
   nodes: Array<ComponentNode>;
@@ -23,14 +26,14 @@ export type Snapshot = {
  * example click should replace the active tab or open a new one.
  */
 export type TabOrigin =
-  | { kind: 'custom' }
+  | { kind: typeof TAB_ORIGIN_KIND.custom }
   | {
-      kind: 'starter';
+      kind: typeof TAB_ORIGIN_KIND.starter;
       defaultName: string;
       fingerprint: string;
     }
   | {
-      kind: 'example';
+      kind: typeof TAB_ORIGIN_KIND.example;
       exampleId: string;
       exampleName: string;
       fingerprint: string;
@@ -51,7 +54,7 @@ export type Tab = {
   simulationElapsed: number | null;
   simulatedInput: Float32Array | null;
   sweepNodeId: string | null;
-  sweepStatus: 'idle' | 'running' | 'done';
+  sweepStatus: SweepStatus;
   sweepResults: Array<SweepResult>;
   sweepError: string | null;
   sweepPlayingIndex: number | null;
@@ -103,7 +106,7 @@ export type StoreState = {
   setSimulationError: (msg: string) => void;
   setSimulatedInput: (buf: Float32Array | null) => void;
   sweepNodeId: string | null;
-  sweepStatus: 'idle' | 'running' | 'done';
+  sweepStatus: SweepStatus;
   sweepResults: Array<SweepResult>;
   sweepError: string | null;
   sweepPlayingIndex: number | null;

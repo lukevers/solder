@@ -1,14 +1,8 @@
 import { Music2, Trash2, Upload } from 'lucide-react';
 import { type ChangeEvent, useRef } from 'react';
+import { BUNDLED_SAMPLE_NAMES } from '../lib/constants';
+import { AUDIO_SOURCE_TYPE } from '../lib/simulation-types';
 import { useAudioActions, useAudioState } from '../store/hooks';
-
-/**
- * Built-in bundled samples shipped with the app.
- *
- * These names map directly to `/public/samples/*.wav`
- * and are loaded on demand through `AudioPipeline`.
- */
-const SAMPLES = ['guitar', 'bass'];
 
 type AudioControlsProps = {
   onUploadLocalSample: (file: File) => void;
@@ -46,7 +40,7 @@ export function AudioControls({
         WAV Samples
       </div>
       <div className="flex flex-col gap-1.5">
-        {SAMPLES.map((name) => (
+        {BUNDLED_SAMPLE_NAMES.map((name) => (
           <label
             key={name}
             className="flex cursor-pointer items-center gap-2 text-gray-300 text-xs"
@@ -55,9 +49,12 @@ export function AudioControls({
               type="radio"
               name="audio-source"
               checked={
-                audioSource.type === 'sample' && audioSource.name === name
+                audioSource.type === AUDIO_SOURCE_TYPE.sample &&
+                audioSource.name === name
               }
-              onChange={() => setAudioSource({ type: 'sample', name })}
+              onChange={() =>
+                setAudioSource({ type: AUDIO_SOURCE_TYPE.sample, name })
+              }
               className="accent-blue-500"
             />
             Sample: {name}
@@ -103,12 +100,12 @@ export function AudioControls({
                   type="radio"
                   name="audio-source"
                   checked={
-                    audioSource.type === 'local-sample' &&
+                    audioSource.type === AUDIO_SOURCE_TYPE.localSample &&
                     audioSource.id === sample.id
                   }
                   onChange={() =>
                     setAudioSource({
-                      type: 'local-sample',
+                      type: AUDIO_SOURCE_TYPE.localSample,
                       id: sample.id,
                       name: sample.name,
                     })

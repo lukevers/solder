@@ -3,6 +3,7 @@ import { useCallback, useId, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { PotData } from '../lib/types';
 import { useStore } from '../store';
+import { SIMULATION_STATUS, SWEEP_STATUS } from '../store/constants';
 
 // ─── Arc helpers ─────────────────────────────────────────────────────────────
 
@@ -63,7 +64,9 @@ function PotKnob({
       simulationStatus: s.simulationStatus,
     })),
   );
-  const busy = sweepStatus === 'running' || simulationStatus === 'running';
+  const busy =
+    sweepStatus === SWEEP_STATUS.running ||
+    simulationStatus === SIMULATION_STATUS.running;
   const dragRef = useRef<{ startY: number; startPos: number } | null>(null);
   const uid = useId();
   const skirtGradId = `knob-skirt-${uid}`;

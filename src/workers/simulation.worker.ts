@@ -1,4 +1,5 @@
 import { voltageToAudioBuffer } from '../lib/audio/audio-convert';
+import { SAMPLE_RATE } from '../lib/constants';
 import { EECircuitEngine } from '../lib/engines/eecircuit';
 import type { SpiceEngine } from '../lib/engines/spice-engine';
 import { compileNetlist } from '../lib/netlist';
@@ -6,14 +7,13 @@ import type {
   SimulateRequest,
   SimulateResponse,
 } from '../lib/simulation-types';
-
-const SAMPLE_RATE = 44100;
+import { WORKER_MESSAGE_TYPE } from '../lib/simulation-types';
 
 // Engine is created once; WASM loads lazily on first init() call
 const engine: SpiceEngine = new EECircuitEngine();
 
 self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
-  if (e.data.type !== 'simulate') {
+  if (e.data.type !== WORKER_MESSAGE_TYPE.simulate) {
     return;
   }
 
@@ -42,7 +42,7 @@ self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
     const output = await engine.run(netlist);
     const audioBuffer = voltageToAudioBuffer(output, SAMPLE_RATE);
     const response: SimulateResponse = {
-      type: 'result',
+      type: WORKER_MESSAGE_TYPE.result,
       outputBuffer: audioBuffer,
     };
 
@@ -51,7 +51,7 @@ self.onmessage = async (e: MessageEvent<SimulateRequest>) => {
     });
   } catch (err) {
     const response: SimulateResponse = {
-      type: 'error',
+      type: WORKER_MESSAGE_TYPE.error,
       message: err instanceof Error ? err.message : String(err),
     };
 

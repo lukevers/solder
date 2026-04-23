@@ -1,3 +1,4 @@
+import { CIRCUIT_LABEL } from '../../constants';
 import type { SymbolDef } from '../types';
 
 /**
@@ -33,7 +34,7 @@ export const SYM_JACK_IN: SymbolDef = {
     {
       id: 'neg',
       number: 2,
-      name: 'GND',
+      name: CIRCUIT_LABEL.ground,
       side: 'right',
       offset: 44,
       kind: 'power',
@@ -75,7 +76,7 @@ export const SYM_JACK_OUT: SymbolDef = {
     {
       id: 'neg',
       number: 2,
-      name: 'GND',
+      name: CIRCUIT_LABEL.ground,
       side: 'left',
       offset: 44,
       kind: 'power',

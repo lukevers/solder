@@ -13,7 +13,10 @@ import {
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { exportCircuit, importCircuit } from '../lib/circuit-io';
+import { CIRCUIT_LABEL } from '../lib/constants';
+import { JACK_DIRECTION } from '../lib/models/jack/types';
 import type { ComponentNode } from '../lib/types';
+import { SIMULATION_STATUS, SWEEP_STATUS } from '../store/constants';
 import {
   useAudioState,
   useCircuitActions,
@@ -248,13 +251,13 @@ const PALETTE: Array<{
     label: 'V+',
     tooltip: 'Power Supply',
     type: 'power',
-    defaultData: { label: 'VCC', volts: 9 },
+    defaultData: { label: CIRCUIT_LABEL.power, volts: 9 },
   },
   {
-    label: 'GND',
+    label: CIRCUIT_LABEL.ground,
     tooltip: 'Ground',
     type: 'ground',
-    defaultData: { label: 'GND' },
+    defaultData: { label: CIRCUIT_LABEL.ground },
   },
   {
     label: 'R',
@@ -338,13 +341,19 @@ const JACK_ITEMS: Array<{
     label: 'IN',
     tooltip: 'Audio Input Jack',
     type: 'jack',
-    defaultData: { label: 'INPUT', direction: 'in' },
+    defaultData: {
+      label: CIRCUIT_LABEL.input,
+      direction: JACK_DIRECTION.in,
+    },
   },
   {
     label: 'OUT',
     tooltip: 'Audio Output Jack',
     type: 'jack',
-    defaultData: { label: 'OUTPUT', direction: 'out' },
+    defaultData: {
+      label: CIRCUIT_LABEL.output,
+      direction: JACK_DIRECTION.out,
+    },
   },
 ];
 
@@ -772,7 +781,8 @@ export function Toolbar({
                   type="button"
                   onClick={onPlayOriginal}
                   disabled={
-                    simulationStatus === 'running' || sweepStatus === 'running'
+                    simulationStatus === SIMULATION_STATUS.running ||
+                    sweepStatus === SWEEP_STATUS.running
                   }
                   className="flex items-center gap-1 whitespace-nowrap bg-gray-800 px-3 py-1 font-bold font-mono text-blue-400 text-xs transition-colors hover:bg-gray-700 disabled:opacity-40"
                 >
@@ -784,7 +794,8 @@ export function Toolbar({
             {hasSourceBuffer && <div className="w-px bg-gray-700" />}
 
             {/* Simulate / Output play / Stop */}
-            {simulationStatus === 'running' || sweepStatus === 'running' ? (
+            {simulationStatus === SIMULATION_STATUS.running ||
+            sweepStatus === SWEEP_STATUS.running ? (
               <button
                 type="button"
                 disabled
@@ -792,7 +803,9 @@ export function Toolbar({
               >
                 <Hourglass size={10} />
                 <span>
-                  {sweepStatus === 'running' ? 'Sweeping…' : 'Simulating…'}
+                  {sweepStatus === SWEEP_STATUS.running
+                    ? 'Sweeping…'
+                    : 'Simulating…'}
                 </span>
               </button>
             ) : outputBuffer && playing ? (

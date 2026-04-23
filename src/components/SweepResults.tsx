@@ -2,6 +2,8 @@ import { Hourglass, Play, Square, X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { SAMPLE_RATE } from '../lib/constants';
 import type { SweepResult } from '../lib/simulation-types';
+import type { SweepStatus } from '../store/constants';
+import { SWEEP_STATUS } from '../store/constants';
 
 const SWEEP_COLORS = [
   '#ef4444', // 0%   red
@@ -13,7 +15,7 @@ const SWEEP_COLORS = [
 
 type Props = {
   results: Array<SweepResult>;
-  status: 'idle' | 'running' | 'done';
+  status: SweepStatus;
   playingIndex: number | null;
   onPlay: (index: number) => void;
   onStop: () => void;
@@ -104,7 +106,7 @@ export function SweepResults({
       <div className="mb-2 flex items-center justify-between">
         <span className="text-gray-500 text-xs uppercase tracking-wider">
           Pot Sweep
-          {status === 'running' && (
+          {status === SWEEP_STATUS.running && (
             <span className="ml-1 text-amber-400">({results.length}/5)</span>
           )}
         </span>
@@ -118,7 +120,7 @@ export function SweepResults({
         </button>
       </div>
 
-      {status === 'running' && results.length === 0 ? (
+      {status === SWEEP_STATUS.running && results.length === 0 ? (
         <div className="flex h-20 items-center justify-center gap-2 rounded border border-gray-800 bg-gray-950 font-mono text-amber-400 text-xs">
           <Hourglass size={12} /> Simulating 5 variants…
         </div>

@@ -1,3 +1,5 @@
+import { DEFAULT_BUNDLED_SAMPLE_NAME } from '../lib/constants';
+import { AUDIO_SOURCE_TYPE } from '../lib/simulation-types';
 import type { StoreSlice, StoreState } from './types';
 
 type AudioSlice = Pick<
@@ -28,8 +30,12 @@ export const createAudioSlice: StoreSlice<AudioSlice> = (set) => ({
     set((state) => ({
       localSamples: state.localSamples.filter((sample) => sample.id !== id),
       audioSource:
-        state.audioSource.type === 'local-sample' && state.audioSource.id === id
-          ? { type: 'sample', name: 'guitar' }
+        state.audioSource.type === AUDIO_SOURCE_TYPE.localSample &&
+        state.audioSource.id === id
+          ? {
+              type: AUDIO_SOURCE_TYPE.sample,
+              name: DEFAULT_BUNDLED_SAMPLE_NAME,
+            }
           : state.audioSource,
     })),
   setVolume: (volume) => set({ volume }),

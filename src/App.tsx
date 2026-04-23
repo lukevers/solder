@@ -23,11 +23,14 @@ import {
 } from './lib/audio/local-sample-store';
 import { AudioPipeline } from './lib/audio/pipeline';
 import {
+  AUDIO_SOURCE_TYPE,
   type SimulateRequest,
   type SimulateResponse,
   SWEEP_POSITIONS,
+  WORKER_MESSAGE_TYPE,
 } from './lib/simulation-types';
 import { useStore } from './store';
+import { SIMULATION_STATUS, SWEEP_STATUS } from './store/constants';
 import {
   useAudioActions,
   useAudioState,
@@ -101,7 +104,7 @@ export default function App() {
    */
   const getAudioSourceKey = useCallback(
     (source = audioSource) => {
-      return source.type === 'sample' ? source.name : source.id;
+      return source.type === AUDIO_SOURCE_TYPE.sample ? source.name : source.id;
     },
     [audioSource],
   );
@@ -227,7 +230,7 @@ export default function App() {
       return null;
     }
 
-    if (audioSource.type === 'sample') {
+    if (audioSource.type === AUDIO_SOURCE_TYPE.sample) {
       await pipeline.loadSample(audioSource.name);
     } else if (!pipeline.hasSample(getAudioSourceKey())) {
       const persistedBuffer = await getLocalSampleBuffer(getAudioSourceKey());
@@ -257,24 +260,24 @@ export default function App() {
     );
     workerRef.current.onmessage = (e: MessageEvent<SimulateResponse>) => {
       const msg = e.data;
-      if (msg.type === 'result') {
+      if (msg.type === WORKER_MESSAGE_TYPE.result) {
         const elapsed =
           simStartRef.current != null
             ? (performance.now() - simStartRef.current) / 1000
             : undefined;
         simStartRef.current = null;
-        setSimulationStatus('idle');
+        setSimulationStatus(SIMULATION_STATUS.idle);
         setOutputBuffer(msg.outputBuffer, elapsed);
         setSimulatedInput(pendingInputRef.current);
         clearSelection();
         pendingInputRef.current = null;
       } else {
-        setSimulationStatus('error');
+        setSimulationStatus(SIMULATION_STATUS.error);
         setSimulationError(msg.message);
       }
     };
     workerRef.current.onerror = (e: ErrorEvent) => {
-      setSimulationStatus('error');
+      setSimulationStatus(SIMULATION_STATUS.error);
       setSimulationError(e.message ?? 'Worker crashed');
     };
     return () => {
@@ -378,7 +381,7 @@ export default function App() {
     }
 
     const loadPromise =
-      audioSource.type === 'sample'
+      audioSource.type === AUDIO_SOURCE_TYPE.sample
         ? pipeline.loadSample(audioSource.name)
         : pipeline.hasSample(key)
           ? Promise.resolve()
@@ -550,13 +553,13 @@ export default function App() {
 
     try {
       if (
-        audioSource.type === 'sample' ||
-        audioSource.type === 'local-sample'
+        audioSource.type === AUDIO_SOURCE_TYPE.sample ||
+        audioSource.type === AUDIO_SOURCE_TYPE.localSample
       ) {
         await ensureSelectedSampleLoaded();
       }
 
-      setSimulationStatus('running');
+      setSimulationStatus(SIMULATION_STATUS.running);
       simStartRef.current = performance.now();
 
       const { inputBuffer, inputSampleRate, duration } = extractInputBuffer();
@@ -577,7 +580,7 @@ export default function App() {
         : null;
       workerRef.current.postMessage(request);
     } catch (err) {
-      setSimulationStatus('error');
+      setSimulationStatus(SIMULATION_STATUS.error);
       setSimulationError(err instanceof Error ? err.message : String(err));
     }
   }, [
@@ -602,8 +605,8 @@ export default function App() {
       requestSweep(nodeId);
 
       if (
-        audioSource.type === 'sample' ||
-        audioSource.type === 'local-sample'
+        audioSource.type === AUDIO_SOURCE_TYPE.sample ||
+        audioSource.type === AUDIO_SOURCE_TYPE.localSample
       ) {
         await ensureSelectedSampleLoaded();
       }
@@ -633,7 +636,7 @@ export default function App() {
             return;
           }
           const msg = e.data;
-          if (msg.type === 'result') {
+          if (msg.type === WORKER_MESSAGE_TYPE.result) {
             addSweepResult({ position, outputBuffer: msg.outputBuffer });
             completed++;
             if (completed === total) {
@@ -740,7 +743,7 @@ export default function App() {
         await pipeline.loadArrayBufferSample(id, data);
         addLocalSample(sample);
         setAudioSource({
-          type: 'local-sample',
+          type: AUDIO_SOURCE_TYPE.localSample,
           id: sample.id,
           name: sample.name,
         });
@@ -829,7 +832,7 @@ export default function App() {
             <PedalPanel onSweep={handleSweep} />
             <Inspector onSweep={handleSweep} />
             <div className="border-gray-800 border-t" />
-            {sweepResults.length > 0 || sweepStatus === 'running' ? (
+            {sweepResults.length > 0 || sweepStatus === SWEEP_STATUS.running ? (
               <SweepResults
                 results={sweepResults}
                 status={sweepStatus}
