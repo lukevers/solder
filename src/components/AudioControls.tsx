@@ -87,8 +87,7 @@ export function AudioControls({
 
       {localSamples.length === 0 ? (
         <div className="rounded border border-gray-800 border-dashed px-3 py-2 text-gray-500 text-xs">
-          Upload a WAV file to simulate your own sample. Local uploads last for
-          the current browser session.
+          Upload WAV files to simulate your own samples.
         </div>
       ) : (
         <div className="flex flex-col gap-1.5">
