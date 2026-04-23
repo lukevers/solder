@@ -31,12 +31,10 @@ const selectTabBarState = (state: StoreState) => ({
 /**
  * Selector for examples-panel routing state.
  *
- * The examples panel only needs to know which workspace tab is active
- * and which example category is selected, so this keeps its
- * subscription intentionally small.
+ * The examples panel only needs to know which example category is selected, so
+ * this keeps its subscription intentionally small.
  */
 const selectExamplesState = (state: StoreState) => ({
-  activeTabId: state.activeTabId,
   examplesActiveCategory: state.examplesActiveCategory,
 });
 
@@ -61,6 +59,7 @@ const selectViewportState = (state: StoreState) => ({
  */
 const selectTabActions = (state: StoreState) => ({
   addTab: state.addTab,
+  openExample: state.openExample,
   switchTab: state.switchTab,
   closeTab: state.closeTab,
   renameTab: state.renameTab,
@@ -228,7 +227,7 @@ export function useTabBarState() {
  * Read the state required by the examples panel.
  *
  * Keeping this separate from the full tab hook makes the examples UI
- * subscribe only to the active workspace id and selected category.
+ * subscribe only to the selected example category.
  */
 export function useExamplesState() {
   return useStore(useShallow(selectExamplesState));

@@ -1,16 +1,81 @@
+import type { ExampleCircuit } from '../examples';
 import { clearSim, defaultSimState, defaultTab, nextTabName } from './defaults';
-import { flushActive, simStateFromTab } from './helpers';
-import type { StoreSlice, StoreState } from './types';
+import {
+  ensureMeasured,
+  fingerprintCircuit,
+  flushActive,
+  simStateFromTab,
+} from './helpers';
+import type { StoreSlice, StoreState, Tab } from './types';
 
 type TabsSlice = Pick<
   StoreState,
   | 'addTab'
+  | 'openExample'
   | 'switchTab'
   | 'closeTab'
   | 'renameTab'
   | 'setExamplesActiveCategory'
   | 'setViewport'
 >;
+
+/**
+ * Create a tab snapshot seeded from an example circuit definition.
+ *
+ * Example tabs carry a structural fingerprint of the untouched payload so the
+ * store can later decide whether another example click should reuse this tab.
+ */
+function createExampleTab(example: ExampleCircuit): Tab {
+  const nodes = ensureMeasured(example.nodes);
+  const fingerprint = fingerprintCircuit(nodes, example.edges);
+
+  return {
+    id: crypto.randomUUID(),
+    name: example.name,
+    origin: {
+      kind: 'example',
+      exampleId: example.id,
+      exampleName: example.name,
+      fingerprint,
+    },
+    nodes,
+    edges: example.edges,
+    selectedNodeId: null,
+    past: [],
+    future: [],
+    ...defaultSimState,
+  };
+}
+
+/**
+ * Return true when the active tab is still the untouched version of a
+ * replaceable seeded circuit.
+ *
+ * Seeded tabs currently include examples and the very first starter circuit.
+ * Renaming either one counts as a change so a later example click opens a new
+ * tab instead of silently discarding that custom title.
+ */
+function isPristineReplaceableActiveTab(
+  state: StoreState,
+  activeTab: Tab,
+): boolean {
+  if (activeTab.origin.kind === 'custom') {
+    return false;
+  }
+
+  if (activeTab.origin.kind === 'example') {
+    if (activeTab.name !== activeTab.origin.exampleName) {
+      return false;
+    }
+  } else if (activeTab.name !== activeTab.origin.defaultName) {
+    return false;
+  }
+
+  return (
+    fingerprintCircuit(state.nodes, state.edges) ===
+    activeTab.origin.fingerprint
+  );
+}
 
 /**
  * Actions responsible for tab lifecycle, workspace switching, and
@@ -33,6 +98,48 @@ export const createTabsSlice: StoreSlice<TabsSlice> = (set) => ({
         nodes: newTab.nodes,
         edges: newTab.edges,
         selectedNodeId: null,
+        past: [],
+        future: [],
+        ...clearSim,
+      };
+    }),
+
+  openExample: (example) =>
+    set((state) => {
+      const activeTab = state.tabs.find((tab) => tab.id === state.activeTabId)!;
+
+      if (isPristineReplaceableActiveTab(state, activeTab)) {
+        const replacementTab = {
+          ...createExampleTab(example),
+          id: activeTab.id,
+        };
+
+        return {
+          tabs: state.tabs.map((tab) =>
+            tab.id === state.activeTabId ? replacementTab : tab,
+          ),
+          nodes: replacementTab.nodes,
+          edges: replacementTab.edges,
+          selectedNodeId: null,
+          selectedEdgeId: null,
+          past: [],
+          future: [],
+          viewResetKey: state.viewResetKey + 1,
+          ...clearSim,
+        };
+      }
+
+      const flushedTabs = flushActive(state);
+      const newTab = createExampleTab(example);
+
+      return {
+        tabs: [...flushedTabs, newTab],
+        activeTabId: newTab.id,
+        viewResetKey: state.viewResetKey + 1,
+        nodes: newTab.nodes,
+        edges: newTab.edges,
+        selectedNodeId: null,
+        selectedEdgeId: null,
         past: [],
         future: [],
         ...clearSim,
@@ -67,7 +174,7 @@ export const createTabsSlice: StoreSlice<TabsSlice> = (set) => ({
       const remainingTabs = flushedTabs.filter((tab) => tab.id !== id);
 
       if (remainingTabs.length === 0) {
-        const newTab = defaultTab('Circuit 1');
+        const newTab = defaultTab('Circuit 1', 'starter');
 
         return {
           tabs: [newTab],

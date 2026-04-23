@@ -1,12 +1,140 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import type { ExampleCircuit } from '../examples';
 import type { Tab } from '../store';
 import { useStore } from '../store';
+import { fingerprintCircuit } from '../store/helpers';
 
 const RESET_TAB: Tab = {
   id: 'test-tab-1',
   name: 'Circuit 1',
+  origin: { kind: 'custom' },
   nodes: [],
   edges: [],
+  selectedNodeId: null,
+  past: [],
+  future: [],
+  outputBuffer: null,
+  simulationStatus: 'idle',
+  simulationError: null,
+  simulationElapsed: null,
+  simulatedInput: null,
+  sweepNodeId: null,
+  sweepStatus: 'idle',
+  sweepResults: [],
+  sweepError: null,
+  sweepPlayingIndex: null,
+};
+
+/**
+ * Small example fixture used to verify example-tab open/replace behavior.
+ *
+ * The nodes intentionally use simple passive parts so the tests stay focused
+ * on tab lifecycle rather than circuit complexity.
+ */
+const EXAMPLE_A: ExampleCircuit = {
+  id: 'example-a',
+  name: 'Example A',
+  description: 'Test example A',
+  tags: ['test'],
+  category: 'circuits',
+  nodes: [
+    {
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 1000 },
+    },
+  ],
+  edges: [],
+};
+
+/**
+ * Second example fixture used to distinguish replace-vs-new-tab behavior.
+ */
+const EXAMPLE_B: ExampleCircuit = {
+  id: 'example-b',
+  name: 'Example B',
+  description: 'Test example B',
+  tags: ['test'],
+  category: 'circuits',
+  nodes: [
+    {
+      id: 'c1',
+      type: 'capacitor',
+      position: { x: 20, y: 0 },
+      data: { label: 'C1', farads: 1e-9 },
+    },
+  ],
+  edges: [],
+};
+
+/**
+ * Starter-tab fixture that matches the seeded circuit shown on first load.
+ *
+ * The fingerprint mirrors the untouched contents so tests can exercise the
+ * store's replaceable-starter logic without relying on random ids.
+ */
+const STARTER_TAB_NODES: Tab['nodes'] = [
+  {
+    id: 'starter-in',
+    type: 'jack',
+    position: { x: 100, y: 200 },
+    data: { label: 'INPUT', direction: 'in' },
+  },
+  {
+    id: 'starter-gnd-in',
+    type: 'ground',
+    position: { x: 140, y: 320 },
+    data: { label: 'GND' },
+  },
+  {
+    id: 'starter-out',
+    type: 'jack',
+    position: { x: 400, y: 200 },
+    data: { label: 'OUTPUT', direction: 'out' },
+  },
+  {
+    id: 'starter-gnd-out',
+    type: 'ground',
+    position: { x: 340, y: 320 },
+    data: { label: 'GND' },
+  },
+];
+
+const STARTER_TAB_EDGES: Tab['edges'] = [
+  {
+    id: 'starter-edge',
+    source: 'starter-in',
+    sourceHandle: 'pos',
+    target: 'starter-out',
+    targetHandle: 'pos',
+  },
+  {
+    id: 'starter-edge-in-gnd',
+    source: 'starter-in',
+    sourceHandle: 'neg',
+    target: 'starter-gnd-in',
+    targetHandle: 'gnd',
+  },
+  {
+    id: 'starter-edge-out-gnd',
+    source: 'starter-gnd-out',
+    sourceHandle: 'gnd',
+    target: 'starter-out',
+    targetHandle: 'neg',
+  },
+];
+
+const STARTER_TAB: Tab = {
+  id: 'starter-tab-1',
+  name: 'Circuit 1',
+  origin: {
+    kind: 'starter',
+    defaultName: 'Circuit 1',
+    fingerprint: fingerprintCircuit(STARTER_TAB_NODES, STARTER_TAB_EDGES),
+  },
+  nodes: STARTER_TAB_NODES,
+  edges: STARTER_TAB_EDGES,
   selectedNodeId: null,
   past: [],
   future: [],
@@ -265,6 +393,124 @@ describe('tabsSlice', () => {
     useStore.getState().setExamplesActiveCategory('circuits');
     expect(useStore.getState().examplesActiveCategory).toBe('circuits');
   });
+
+  it('openExample opens a new tab when the active tab is not an example', () => {
+    useStore.getState().openExample(EXAMPLE_A);
+
+    const { tabs, activeTabId, nodes } = useStore.getState();
+    const activeTab = tabs.find((tab) => tab.id === activeTabId)!;
+
+    expect(tabs).toHaveLength(2);
+    expect(tabs[0].id).toBe('test-tab-1');
+    expect(activeTab.name).toBe('Example A');
+    expect(activeTab.origin).toMatchObject({
+      kind: 'example',
+      exampleId: 'example-a',
+      exampleName: 'Example A',
+    });
+    expect(nodes[0].id).toBe('r1');
+  });
+
+  it('openExample replaces the untouched starter tab', () => {
+    useStore.setState({
+      tabs: [STARTER_TAB],
+      activeTabId: STARTER_TAB.id,
+      nodes: STARTER_TAB.nodes,
+      edges: STARTER_TAB.edges,
+      selectedNodeId: null,
+      selectedEdgeId: null,
+      past: [],
+      future: [],
+    });
+
+    useStore.getState().openExample(EXAMPLE_A);
+
+    const { tabs, activeTabId } = useStore.getState();
+    const activeTab = tabs.find((tab) => tab.id === activeTabId)!;
+
+    expect(tabs).toHaveLength(1);
+    expect(activeTabId).toBe(STARTER_TAB.id);
+    expect(activeTab.name).toBe('Example A');
+    expect(activeTab.origin).toMatchObject({
+      kind: 'example',
+      exampleId: 'example-a',
+    });
+  });
+
+  it('openExample replaces the active tab when it is an untouched example', () => {
+    useStore.getState().openExample(EXAMPLE_A);
+
+    const firstExampleTabId = useStore.getState().activeTabId;
+
+    useStore.getState().openExample(EXAMPLE_B);
+
+    const { tabs, activeTabId, nodes } = useStore.getState();
+    const activeTab = tabs.find((tab) => tab.id === activeTabId)!;
+
+    expect(tabs).toHaveLength(2);
+    expect(activeTabId).toBe(firstExampleTabId);
+    expect(activeTab.name).toBe('Example B');
+    expect(activeTab.origin).toMatchObject({
+      kind: 'example',
+      exampleId: 'example-b',
+      exampleName: 'Example B',
+    });
+    expect(nodes[0].id).toBe('c1');
+  });
+
+  it('openExample creates a new tab when the active example has changed', () => {
+    useStore.getState().openExample(EXAMPLE_A);
+
+    const firstExampleTabId = useStore.getState().activeTabId;
+
+    useStore.getState().addNode({
+      id: 'r2',
+      type: 'resistor',
+      position: { x: 40, y: 0 },
+      data: { label: 'R2', ohms: 2200 },
+    });
+
+    useStore.getState().openExample(EXAMPLE_B);
+
+    const { tabs, activeTabId } = useStore.getState();
+
+    expect(tabs).toHaveLength(3);
+    expect(activeTabId).not.toBe(firstExampleTabId);
+    expect(
+      tabs.find((tab) => tab.id === firstExampleTabId)?.nodes,
+    ).toHaveLength(2);
+    expect(tabs.find((tab) => tab.id === activeTabId)?.name).toBe('Example B');
+  });
+
+  it('openExample creates a new tab when the starter tab has changed', () => {
+    useStore.setState({
+      tabs: [STARTER_TAB],
+      activeTabId: STARTER_TAB.id,
+      nodes: STARTER_TAB.nodes,
+      edges: STARTER_TAB.edges,
+      selectedNodeId: null,
+      selectedEdgeId: null,
+      past: [],
+      future: [],
+    });
+
+    useStore.getState().addNode({
+      id: 'r2',
+      type: 'resistor',
+      position: { x: 200, y: 200 },
+      data: { label: 'R2', ohms: 2200 },
+    });
+
+    useStore.getState().openExample(EXAMPLE_A);
+
+    const { tabs, activeTabId } = useStore.getState();
+
+    expect(tabs).toHaveLength(2);
+    expect(activeTabId).not.toBe(STARTER_TAB.id);
+    expect(tabs.find((tab) => tab.id === STARTER_TAB.id)?.nodes).toHaveLength(
+      5,
+    );
+  });
 });
 
 describe('undo / redo', () => {
@@ -516,11 +762,12 @@ describe('tab switching preserves state', () => {
 
 describe('loadCircuit', () => {
   it('replaces nodes and edges, clears history and output', () => {
+    useStore.getState().openExample(EXAMPLE_A);
     useStore.getState().addNode({
-      id: 'r1',
+      id: 'r-extra',
       type: 'resistor',
       position: { x: 0, y: 0 },
-      data: { label: 'R1', ohms: 1000 },
+      data: { label: 'Rextra', ohms: 1000 },
     });
     useStore.getState().setOutputBuffer(new Float32Array([1]));
 
@@ -541,6 +788,11 @@ describe('loadCircuit', () => {
     expect(useStore.getState().outputBuffer).toBeNull();
     expect(useStore.getState().past).toEqual([]);
     expect(useStore.getState().future).toEqual([]);
+    expect(
+      useStore
+        .getState()
+        .tabs.find((tab) => tab.id === useStore.getState().activeTabId)?.origin,
+    ).toEqual({ kind: 'custom' });
   });
 });
 

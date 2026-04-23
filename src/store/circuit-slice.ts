@@ -137,6 +137,7 @@ export const createCircuitSlice: StoreSlice<CircuitSlice> = (set) => ({
         tab.id === state.activeTabId
           ? {
               ...tab,
+              origin: { kind: 'custom' as const },
               nodes: measuredNodes,
               edges,
               selectedNodeId: null,

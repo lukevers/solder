@@ -6,6 +6,7 @@ import type { Tab } from '../store';
 const SAMPLE_TAB: Tab = {
   id: 'tab-1',
   name: 'My Circuit',
+  origin: { kind: 'custom' },
   nodes: [
     {
       id: 'n1',

@@ -7,6 +7,22 @@ import type { ComponentNode } from '../lib/types';
 import type { PersistedTab, StoreState, Tab } from './types';
 
 /**
+ * Edge fields that reflect live canvas interaction rather than saved circuit
+ * structure.
+ *
+ * The example-tab replacement rule should ignore these transient flags so a
+ * mere selection state does not mark the tab as "changed".
+ */
+const TRANSIENT_EDGE_FIELDS = new Set([
+  'selected',
+  'deletable',
+  'focusable',
+  'reconnectable',
+  'updatable',
+  'zIndex',
+]);
+
+/**
  * Inject `measured` dimensions onto nodes that lack them so XYFlow
  * can resolve handle positions on the first render.
  *
@@ -104,6 +120,36 @@ export function ensureMeasured(
         height: is90or270 ? width : height,
       },
     };
+  });
+}
+
+/**
+ * Build a stable string fingerprint for a circuit snapshot.
+ *
+ * The fingerprint intentionally strips XYFlow-only bookkeeping such as
+ * measured dimensions and selection flags. That keeps the "untouched example"
+ * check focused on user-visible circuit structure and placement.
+ */
+export function fingerprintCircuit(
+  nodes: Array<ComponentNode>,
+  edges: Array<PersistedTab['edges'][number]>,
+): string {
+  const normalizedNodes = nodes.map((node) => {
+    const { measured: _measured, ...rest } = node;
+    return rest;
+  });
+
+  const normalizedEdges = edges.map((edge) => {
+    const filteredEntries = Object.entries(edge).filter(
+      ([key]) => !TRANSIENT_EDGE_FIELDS.has(key),
+    );
+
+    return Object.fromEntries(filteredEntries);
+  });
+
+  return JSON.stringify({
+    nodes: normalizedNodes,
+    edges: normalizedEdges,
   });
 }
 

@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { EXAMPLES, type ExampleCategory } from '../examples';
 import type { ComponentNode } from '../lib/types';
-import {
-  useCircuitActions,
-  useExamplesState,
-  useTabActions,
-} from '../store/hooks';
+import { useExamplesState, useTabActions } from '../store/hooks';
 
 const GRID = 10;
 
@@ -31,9 +27,8 @@ const TABS: Array<{ id: ExampleCategory; label: string }> = [
 
 export function ExamplesPanel() {
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
-  const { activeTabId, examplesActiveCategory } = useExamplesState();
-  const { renameTab, setExamplesActiveCategory } = useTabActions();
-  const { loadCircuit } = useCircuitActions();
+  const { examplesActiveCategory } = useExamplesState();
+  const { openExample, setExamplesActiveCategory } = useTabActions();
 
   const categoryExamples = EXAMPLES.filter(
     (ex) => ex.category === examplesActiveCategory,
@@ -105,8 +100,10 @@ export function ExamplesPanel() {
             key={ex.id}
             type="button"
             onClick={() => {
-              loadCircuit(snapNodes(ex.nodes), ex.edges);
-              renameTab(activeTabId, ex.name);
+              openExample({
+                ...ex,
+                nodes: snapNodes(ex.nodes),
+              });
             }}
             className="group px-3 py-2.5 text-left transition-colors hover:bg-gray-800/50"
           >

@@ -1,4 +1,5 @@
 import type { AudioSource } from '../lib/simulation-types';
+import { fingerprintCircuit } from './helpers';
 import type { StoreState, Tab } from './types';
 
 /**
@@ -50,61 +51,75 @@ export const clearSim = { ...defaultSimState };
  * grounded negative terminals so the user can simulate immediately
  * without first wiring safety nets required by ngspice.
  */
-export function defaultTab(name: string): Tab {
+export function defaultTab(
+  name: string,
+  originKind: 'custom' | 'starter' = 'custom',
+): Tab {
   const id = crypto.randomUUID();
+  const nodes = [
+    {
+      id: `${id}-in`,
+      type: 'jack' as const,
+      position: { x: 100, y: 200 },
+      data: { label: 'INPUT', direction: 'in' as const },
+    },
+    {
+      id: `${id}-gnd-in`,
+      type: 'ground' as const,
+      position: { x: 140, y: 320 },
+      data: { label: 'GND' },
+    },
+    {
+      id: `${id}-out`,
+      type: 'jack' as const,
+      position: { x: 400, y: 200 },
+      data: { label: 'OUTPUT', direction: 'out' as const },
+    },
+    {
+      id: `${id}-gnd-out`,
+      type: 'ground' as const,
+      position: { x: 340, y: 320 },
+      data: { label: 'GND' },
+    },
+  ];
+  const edges = [
+    {
+      id: `${id}-edge`,
+      source: `${id}-in`,
+      sourceHandle: 'pos',
+      target: `${id}-out`,
+      targetHandle: 'pos',
+    },
+    {
+      id: `${id}-edge-in-gnd`,
+      source: `${id}-in`,
+      sourceHandle: 'neg',
+      target: `${id}-gnd-in`,
+      targetHandle: 'gnd',
+    },
+    {
+      id: `${id}-edge-out-gnd`,
+      source: `${id}-gnd-out`,
+      sourceHandle: 'gnd',
+      target: `${id}-out`,
+      targetHandle: 'neg',
+    },
+  ];
+  const origin =
+    originKind === 'starter'
+      ? {
+          kind: 'starter' as const,
+          defaultName: name,
+          fingerprint: fingerprintCircuit(nodes, edges),
+        }
+      : { kind: 'custom' as const };
 
   return {
     id,
     name,
-    nodes: [
-      {
-        id: `${id}-in`,
-        type: 'jack',
-        position: { x: 100, y: 200 },
-        data: { label: 'INPUT', direction: 'in' },
-      },
-      {
-        id: `${id}-gnd-in`,
-        type: 'ground',
-        position: { x: 140, y: 320 },
-        data: { label: 'GND' },
-      },
-      {
-        id: `${id}-out`,
-        type: 'jack',
-        position: { x: 400, y: 200 },
-        data: { label: 'OUTPUT', direction: 'out' },
-      },
-      {
-        id: `${id}-gnd-out`,
-        type: 'ground',
-        position: { x: 340, y: 320 },
-        data: { label: 'GND' },
-      },
-    ],
-    edges: [
-      {
-        id: `${id}-edge`,
-        source: `${id}-in`,
-        sourceHandle: 'pos',
-        target: `${id}-out`,
-        targetHandle: 'pos',
-      },
-      {
-        id: `${id}-edge-in-gnd`,
-        source: `${id}-in`,
-        sourceHandle: 'neg',
-        target: `${id}-gnd-in`,
-        targetHandle: 'gnd',
-      },
-      {
-        id: `${id}-edge-out-gnd`,
-        source: `${id}-gnd-out`,
-        sourceHandle: 'gnd',
-        target: `${id}-out`,
-        targetHandle: 'neg',
-      },
-    ],
+    origin,
+    nodes,
+    edges,
     selectedNodeId: null,
     past: [],
     future: [],
@@ -137,7 +152,7 @@ export function nextTabName(tabs: Array<Tab>): string {
  * Initial tab used both for the first session and for store reset
  * cases where the user closes the last remaining tab.
  */
-export const firstTab = defaultTab('Circuit 1');
+export const firstTab = defaultTab('Circuit 1', 'starter');
 
 /**
  * Non-action store fields that seed the root Zustand store before

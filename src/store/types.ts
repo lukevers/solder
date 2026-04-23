@@ -1,6 +1,6 @@
 import type { Edge } from '@xyflow/react';
 import type { StateCreator } from 'zustand';
-import type { ExampleCategory } from '../examples';
+import type { ExampleCategory, ExampleCircuit } from '../examples';
 import type {
   AudioSource,
   LocalSample,
@@ -15,9 +15,31 @@ export type Snapshot = {
   edges: Array<Edge>;
 };
 
+/**
+ * Provenance metadata for a tab's current circuit contents.
+ *
+ * Example tabs carry the originating example id plus a fingerprint of the
+ * untouched example payload. That lets the store decide whether a later
+ * example click should replace the active tab or open a new one.
+ */
+export type TabOrigin =
+  | { kind: 'custom' }
+  | {
+      kind: 'starter';
+      defaultName: string;
+      fingerprint: string;
+    }
+  | {
+      kind: 'example';
+      exampleId: string;
+      exampleName: string;
+      fingerprint: string;
+    };
+
 export type Tab = {
   id: string;
   name: string;
+  origin: TabOrigin;
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
   selectedNodeId: string | null;
@@ -39,6 +61,7 @@ export type StoreState = {
   tabs: Array<Tab>;
   activeTabId: string;
   addTab: () => void;
+  openExample: (example: ExampleCircuit) => void;
   switchTab: (id: string) => void;
   closeTab: (id: string) => void;
   renameTab: (id: string, name: string) => void;
