@@ -28,6 +28,7 @@ import {
   useTabBarState,
   useViewportState,
 } from '../store/hooks';
+import { SolderLogo } from './SolderLogo';
 
 function FlyoutButton({
   label,
@@ -485,6 +486,7 @@ const TRANSISTOR_GROUPS: Array<TransistorGroup> = [
 
 type ToolbarProps = {
   onSimulate: () => void;
+  onOpenWelcome: () => void;
   onToggleExamples: () => void;
   showExamples: boolean;
   onPlayOriginal: () => void;
@@ -498,6 +500,7 @@ type ToolbarProps = {
 
 export function Toolbar({
   onSimulate,
+  onOpenWelcome,
   onToggleExamples,
   showExamples,
   onPlayOriginal,
@@ -619,40 +622,14 @@ export function Toolbar({
       {/* Logo row: logo + tab strip */}
       <div className="flex h-8 items-stretch overflow-hidden overflow-x-auto border-gray-800 border-b">
         {/* Logo */}
-        <div className="flex flex-shrink-0 items-center gap-1.5 border-gray-800 border-r px-3">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="-1 -1 34 34"
-            className="flex-shrink-0"
-          >
-            <defs>
-              <linearGradient id="bolt-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#60a5fa" />
-                <stop offset="100%" stopColor="#2563eb" />
-              </linearGradient>
-            </defs>
-            <rect
-              width="32"
-              height="32"
-              rx="7"
-              fill="#030712"
-              stroke="#374151"
-              strokeWidth="1.5"
-            />
-            <g transform="rotate(45 16 16)">
-              <path
-                d="M18 5.5L11 17h4.5L13 26.5 21 15h-5L18 5.5z"
-                fill="url(#bolt-grad)"
-                stroke="#93c5fd"
-                strokeWidth="0.5"
-                strokeLinejoin="round"
-              />
-            </g>
-          </svg>
-          <span className="font-bold text-blue-400 text-sm">solder</span>
-        </div>
+        <button
+          type="button"
+          onClick={onOpenWelcome}
+          className="flex flex-shrink-0 items-center gap-1.5 border-gray-800 border-r px-3 transition-colors hover:bg-gray-800"
+          aria-label="Open Solder welcome guide"
+        >
+          <SolderLogo />
+        </button>
 
         {/* Tab strip */}
         <div className="flex min-w-0 flex-1 items-stretch overflow-x-auto overflow-y-hidden">

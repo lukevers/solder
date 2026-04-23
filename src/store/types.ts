@@ -73,6 +73,8 @@ export type StoreState = {
   viewResetKey: number;
   viewport: { x: number; y: number; zoom: number };
   setViewport: (vp: { x: number; y: number; zoom: number }) => void;
+  hasSeenWelcome: boolean;
+  setHasSeenWelcome: (seen: boolean) => void;
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
   selectedNodeId: string | null;
@@ -149,6 +151,7 @@ export type PersistedStoreState = {
   activeTabId: string;
   examplesActiveCategory: ExampleCategory;
   audioSource: AudioSource;
+  hasSeenWelcome: boolean;
 };
 
 export type StoreSlice<T> = StateCreator<StoreState, [], [], T>;

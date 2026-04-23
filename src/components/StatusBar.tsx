@@ -1,3 +1,4 @@
+import { APP_VERSION } from '../lib/app-version';
 import { SAMPLE_RATE } from '../lib/constants';
 import { SIMULATION_STATUS } from '../store/constants';
 import { useCircuitState, useSimulationState } from '../store/hooks';
@@ -28,8 +29,9 @@ export function StatusBar() {
       <span className={statusColor}>{statusLabel}</span>
       <span className="hidden sm:inline">components: {nodes.length}</span>
       <span className="hidden sm:inline">ngspice · WASM</span>
-      <div className="flex-1" />
       <span className="hidden sm:inline">{SAMPLE_RATE} Hz</span>
+      <div className="flex-1" />
+      <span>version: {APP_VERSION}</span>
     </div>
   );
 }

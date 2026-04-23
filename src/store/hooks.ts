@@ -51,6 +51,17 @@ const selectViewportState = (state: StoreState) => ({
 });
 
 /**
+ * Selector for persisted onboarding state.
+ *
+ * The welcome modal only needs a single persisted flag plus its setter, so
+ * this hook keeps that concern isolated from the broader tab-shell state.
+ */
+const selectWelcomeState = (state: StoreState) => ({
+  hasSeenWelcome: state.hasSeenWelcome,
+  setHasSeenWelcome: state.setHasSeenWelcome,
+});
+
+/**
  * Selector for tab and workspace-shell actions.
  *
  * These actions coordinate tab lifecycle and viewport bookkeeping,
@@ -241,6 +252,16 @@ export function useExamplesState() {
  */
 export function useViewportState() {
   return useStore(useShallow(selectViewportState));
+}
+
+/**
+ * Read the persisted welcome-modal state.
+ *
+ * This keeps onboarding UI wired to a single narrow subscription instead of
+ * mixing the flag into larger shell hooks.
+ */
+export function useWelcomeState() {
+  return useStore(useShallow(selectWelcomeState));
 }
 
 /**

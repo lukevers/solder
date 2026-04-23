@@ -120,11 +120,11 @@ export function defaultTab(
   const origin =
     originKind === TAB_ORIGIN_KIND.starter
       ? {
-          kind: TAB_ORIGIN_KIND.starter as const,
+          kind: TAB_ORIGIN_KIND.starter,
           defaultName: name,
           fingerprint: fingerprintCircuit(nodes, edges),
         }
-      : { kind: TAB_ORIGIN_KIND.custom as const };
+      : { kind: TAB_ORIGIN_KIND.custom };
 
   return {
     id,
@@ -176,9 +176,10 @@ export const firstTab = defaultTab(FIRST_CIRCUIT_NAME, TAB_ORIGIN_KIND.starter);
 export const initialState = {
   tabs: [firstTab],
   activeTabId: firstTab.id,
-  examplesActiveCategory: EXAMPLE_CATEGORY.pedals as const,
+  examplesActiveCategory: EXAMPLE_CATEGORY.pedals,
   viewResetKey: 0,
   viewport: { x: 0, y: 0, zoom: 1 },
+  hasSeenWelcome: false,
   nodes: firstTab.nodes,
   edges: firstTab.edges,
   selectedNodeId: null as StoreState['selectedNodeId'],

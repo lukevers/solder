@@ -15,6 +15,7 @@ import {
   type WaveformSelection,
 } from './components/WaveformDisplay';
 import { WaveformModal } from './components/WaveformModal';
+import { WelcomeModal } from './components/WelcomeModal';
 import {
   deleteLocalSample as deletePersistedLocalSample,
   getLocalSampleBuffer,
@@ -41,6 +42,7 @@ import {
   useSweepActions,
   useSweepState,
   useViewportState,
+  useWelcomeState,
 } from './store/hooks';
 
 export default function App() {
@@ -69,6 +71,7 @@ export default function App() {
   } = useAudioActions();
   const { undo, redo } = useHistoryActions();
   const { sweepResults, sweepStatus, sweepPlayingIndex } = useSweepState();
+  const { hasSeenWelcome, setHasSeenWelcome } = useWelcomeState();
   const {
     requestSweep,
     addSweepResult,
@@ -82,6 +85,7 @@ export default function App() {
   const [showExamples, setShowExamples] = useState(false);
   const [showWaveformModal, setShowWaveformModal] = useState(false);
   const [showAnalyzer, setShowAnalyzer] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [sourceBuffer, setSourceBuffer] = useState<Float32Array | null>(null);
   const [playingOriginal, setPlayingOriginal] = useState(false);
   const [audioReady, setAudioReady] = useState(false);
@@ -181,6 +185,19 @@ export default function App() {
   useEffect(() => {
     selectionRef.current = selection;
   }, [selection]);
+
+  /**
+   * Show the onboarding modal automatically for first-time visitors.
+   *
+   * The persisted store flag survives refreshes, while the actual open/close
+   * UI state remains local to the app shell so the toolbar can reopen it
+   * without affecting persistence.
+   */
+  useEffect(() => {
+    if (!hasSeenWelcome) {
+      setShowWelcomeModal(true);
+    }
+  }, [hasSeenWelcome]);
 
   /**
    * Clear the current waveform selection from
@@ -493,6 +510,18 @@ export default function App() {
   }, [setPlaying, clearOutputBuffer, clearSelection, setSimulatedInput]);
 
   /**
+   * Dismiss the onboarding modal and persist that the user has already seen
+   * the first-run guide.
+   */
+  const handleCloseWelcomeModal = useCallback(() => {
+    setShowWelcomeModal(false);
+
+    if (!hasSeenWelcome) {
+      setHasSeenWelcome(true);
+    }
+  }, [hasSeenWelcome, setHasSeenWelcome]);
+
+  /**
    * Extract the input audio buffer from the
    * current audio source and waveform selection.
    *
@@ -798,6 +827,7 @@ export default function App() {
     <div className="flex h-screen flex-col overflow-hidden">
       <Toolbar
         onSimulate={handleSimulate}
+        onOpenWelcome={() => setShowWelcomeModal(true)}
         onToggleExamples={() => setShowExamples((v) => !v)}
         showExamples={showExamples}
         onPlayOriginal={handlePlayOriginal}
@@ -991,6 +1021,7 @@ export default function App() {
           onClose={() => setShowWaveformModal(false)}
         />
       )}
+      <WelcomeModal open={showWelcomeModal} onClose={handleCloseWelcomeModal} />
     </div>
   );
 }

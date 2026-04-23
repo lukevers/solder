@@ -24,6 +24,7 @@ type TabsSlice = Pick<
   | 'renameTab'
   | 'setExamplesActiveCategory'
   | 'setViewport'
+  | 'setHasSeenWelcome'
 >;
 
 /**
@@ -226,4 +227,6 @@ export const createTabsSlice: StoreSlice<TabsSlice> = (set) => ({
     set({ examplesActiveCategory }),
 
   setViewport: (viewport) => set({ viewport }),
+
+  setHasSeenWelcome: (hasSeenWelcome) => set({ hasSeenWelcome }),
 });

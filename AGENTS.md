@@ -375,6 +375,12 @@ All passive components (resistor, capacitor, cap_polar, diode, pot) plus ground,
   constants for state/status/category values. Do not keep retyping the same
   status, kind, direction, label, or category string inline across the repo.
 
+- **UI typography:** Default to `font-mono` for circuit-facing UI and
+  interaction chrome such as buttons, labels, tabs, inspectors, numeric
+  controls, and anything that should feel like part of the schematic tool.
+  Default to `font-sans` for general reading text such as modal body copy,
+  explanatory paragraphs, help text, and longer descriptive content.
+
 ## Writing example circuits
 
 Example circuits live in `src/examples/` as JSON and are registered in

@@ -31,6 +31,7 @@ const persistOptions: PersistOptions<StoreState, PersistedStoreState> = {
     activeTabId: state.activeTabId,
     examplesActiveCategory: state.examplesActiveCategory,
     audioSource: state.audioSource,
+    hasSeenWelcome: state.hasSeenWelcome,
   }),
   onRehydrateStorage: () => (state) => {
     if (!state) {
@@ -69,10 +70,10 @@ export const useStore = create<StoreState>()(
   ),
 );
 
+export type { SimulationStatus } from './constants';
 export type {
   PersistedStoreState,
   PersistedTab,
-  SimulationStatus,
   Snapshot,
   StoreState,
   Tab,

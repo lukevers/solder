@@ -1,25 +1,34 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { ExampleCircuit } from '../examples';
+import { EXAMPLE_CATEGORY } from '../examples';
+import { BUNDLED_SAMPLE_NAME, CIRCUIT_LABEL } from '../lib/constants';
+import { JACK_DIRECTION } from '../lib/models/jack/types';
+import { AUDIO_SOURCE_TYPE } from '../lib/simulation-types';
 import type { Tab } from '../store';
 import { useStore } from '../store';
+import {
+  SIMULATION_STATUS,
+  SWEEP_STATUS,
+  TAB_ORIGIN_KIND,
+} from '../store/constants';
 import { fingerprintCircuit } from '../store/helpers';
 
 const RESET_TAB: Tab = {
   id: 'test-tab-1',
   name: 'Circuit 1',
-  origin: { kind: 'custom' },
+  origin: { kind: TAB_ORIGIN_KIND.custom },
   nodes: [],
   edges: [],
   selectedNodeId: null,
   past: [],
   future: [],
   outputBuffer: null,
-  simulationStatus: 'idle',
+  simulationStatus: SIMULATION_STATUS.idle,
   simulationError: null,
   simulationElapsed: null,
   simulatedInput: null,
   sweepNodeId: null,
-  sweepStatus: 'idle',
+  sweepStatus: SWEEP_STATUS.idle,
   sweepResults: [],
   sweepError: null,
   sweepPlayingIndex: null,
@@ -36,7 +45,7 @@ const EXAMPLE_A: ExampleCircuit = {
   name: 'Example A',
   description: 'Test example A',
   tags: ['test'],
-  category: 'circuits',
+  category: EXAMPLE_CATEGORY.circuits,
   nodes: [
     {
       id: 'r1',
@@ -56,7 +65,7 @@ const EXAMPLE_B: ExampleCircuit = {
   name: 'Example B',
   description: 'Test example B',
   tags: ['test'],
-  category: 'circuits',
+  category: EXAMPLE_CATEGORY.circuits,
   nodes: [
     {
       id: 'c1',
@@ -79,25 +88,25 @@ const STARTER_TAB_NODES: Tab['nodes'] = [
     id: 'starter-in',
     type: 'jack',
     position: { x: 100, y: 200 },
-    data: { label: 'INPUT', direction: 'in' },
+    data: { label: CIRCUIT_LABEL.input, direction: JACK_DIRECTION.in },
   },
   {
     id: 'starter-gnd-in',
     type: 'ground',
     position: { x: 140, y: 320 },
-    data: { label: 'GND' },
+    data: { label: CIRCUIT_LABEL.ground },
   },
   {
     id: 'starter-out',
     type: 'jack',
     position: { x: 400, y: 200 },
-    data: { label: 'OUTPUT', direction: 'out' },
+    data: { label: CIRCUIT_LABEL.output, direction: JACK_DIRECTION.out },
   },
   {
     id: 'starter-gnd-out',
     type: 'ground',
     position: { x: 340, y: 320 },
-    data: { label: 'GND' },
+    data: { label: CIRCUIT_LABEL.ground },
   },
 ];
 
@@ -129,7 +138,7 @@ const STARTER_TAB: Tab = {
   id: 'starter-tab-1',
   name: 'Circuit 1',
   origin: {
-    kind: 'starter',
+    kind: TAB_ORIGIN_KIND.starter,
     defaultName: 'Circuit 1',
     fingerprint: fingerprintCircuit(STARTER_TAB_NODES, STARTER_TAB_EDGES),
   },
@@ -139,12 +148,12 @@ const STARTER_TAB: Tab = {
   past: [],
   future: [],
   outputBuffer: null,
-  simulationStatus: 'idle',
+  simulationStatus: SIMULATION_STATUS.idle,
   simulationError: null,
   simulationElapsed: null,
   simulatedInput: null,
   sweepNodeId: null,
-  sweepStatus: 'idle',
+  sweepStatus: SWEEP_STATUS.idle,
   sweepResults: [],
   sweepError: null,
   sweepPlayingIndex: null,
@@ -154,18 +163,22 @@ beforeEach(() => {
   useStore.setState({
     tabs: [RESET_TAB],
     activeTabId: 'test-tab-1',
-    examplesActiveCategory: 'pedals',
+    examplesActiveCategory: EXAMPLE_CATEGORY.pedals,
+    hasSeenWelcome: false,
     nodes: [],
     edges: [],
     selectedNodeId: null,
     selectedEdgeId: null,
     past: [],
     future: [],
-    simulationStatus: 'idle',
+    simulationStatus: SIMULATION_STATUS.idle,
     simulationElapsed: null,
     outputBuffer: null,
     simulationError: null,
-    audioSource: { type: 'sample', name: 'guitar' },
+    audioSource: {
+      type: AUDIO_SOURCE_TYPE.sample,
+      name: BUNDLED_SAMPLE_NAME.guitar,
+    },
     localSamples: [],
     volume: 0.7,
     playing: false,
@@ -211,13 +224,15 @@ describe('circuitSlice', () => {
 describe('simulationSlice', () => {
   it('starts idle with no output', () => {
     const { simulationStatus, outputBuffer } = useStore.getState();
-    expect(simulationStatus).toBe('idle');
+    expect(simulationStatus).toBe(SIMULATION_STATUS.idle);
     expect(outputBuffer).toBeNull();
   });
 
   it('setSimulationStatus updates status', () => {
-    useStore.getState().setSimulationStatus('running');
-    expect(useStore.getState().simulationStatus).toBe('running');
+    useStore.getState().setSimulationStatus(SIMULATION_STATUS.running);
+    expect(useStore.getState().simulationStatus).toBe(
+      SIMULATION_STATUS.running,
+    );
   });
 
   it('setOutputBuffer stores buffer', () => {
@@ -230,17 +245,23 @@ describe('simulationSlice', () => {
 describe('audioSlice', () => {
   it('starts with guitar sample, not playing', () => {
     const { audioSource, localSamples, volume, playing } = useStore.getState();
-    expect(audioSource).toEqual({ type: 'sample', name: 'guitar' });
+    expect(audioSource).toEqual({
+      type: AUDIO_SOURCE_TYPE.sample,
+      name: BUNDLED_SAMPLE_NAME.guitar,
+    });
     expect(localSamples).toEqual([]);
     expect(volume).toBe(0.7);
     expect(playing).toBe(false);
   });
 
   it('setAudioSource updates source', () => {
-    useStore.getState().setAudioSource({ type: 'sample', name: 'bass' });
+    useStore.getState().setAudioSource({
+      type: AUDIO_SOURCE_TYPE.sample,
+      name: BUNDLED_SAMPLE_NAME.bass,
+    });
     expect(useStore.getState().audioSource).toEqual({
-      type: 'sample',
-      name: 'bass',
+      type: AUDIO_SOURCE_TYPE.sample,
+      name: BUNDLED_SAMPLE_NAME.bass,
     });
   });
 
@@ -254,7 +275,7 @@ describe('audioSlice', () => {
   it('removeLocalSample deletes the sample and falls back when selected', () => {
     useStore.getState().addLocalSample({ id: 'local-1', name: 'snare-hit' });
     useStore.getState().setAudioSource({
-      type: 'local-sample',
+      type: AUDIO_SOURCE_TYPE.localSample,
       id: 'local-1',
       name: 'snare-hit',
     });
@@ -266,6 +287,16 @@ describe('audioSlice', () => {
       type: 'sample',
       name: 'guitar',
     });
+  });
+});
+
+describe('welcome state', () => {
+  it('starts unseen and can be marked as seen', () => {
+    expect(useStore.getState().hasSeenWelcome).toBe(false);
+
+    useStore.getState().setHasSeenWelcome(true);
+
+    expect(useStore.getState().hasSeenWelcome).toBe(true);
   });
 });
 
