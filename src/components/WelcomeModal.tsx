@@ -63,14 +63,13 @@ export function WelcomeModal({ open, onClose }: WelcomeModalProps) {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <div className="grid border-gray-800 border-b md:grid-cols-[1.4fr_0.9fr]">
+          <div className="border-gray-800 border-b">
             <div className="px-4 py-4">
               <h2 className="font-medium text-gray-100 text-lg">
-                Build and simulate audio circuits.
+                Simulate audio circuits in your browser.
               </h2>
-              <p className="mt-2 max-w-xl text-gray-400 text-sm leading-6">
-                Solder is a schematic editor for pedals and small analog
-                circuits. Place parts, connect the nets, run{' '}
+              <p className="mt-2 text-gray-400 text-sm leading-6">
+                Solder is a schematic editor and simulator built on{' '}
                 <a
                   href="https://ngspice.sourceforge.io/"
                   target="_blank"
@@ -78,73 +77,64 @@ export function WelcomeModal({ open, onClose }: WelcomeModalProps) {
                   className="text-blue-400 underline underline-offset-2 transition-colors hover:text-blue-300"
                 >
                   ngspice
-                </a>
-                , and compare the input signal against the output.
+                </a>{' '}
+                targeting small analog circuits like guitar pedals. It runs
+                completely in your browser using{' '}
+                <a
+                  href="https://en.wikipedia.org/wiki/SPICE"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-400 underline underline-offset-2 transition-colors hover:text-blue-300"
+                >
+                  SPICE
+                </a>{' '}
+                simulation. It's goal is to be as realistic as possible while
+                still being easy to use.
               </p>
-            </div>
-
-            <div className="border-gray-800 border-t bg-gray-950/50 px-4 py-4 md:border-t-0 md:border-l">
-              <div className="font-sans text-[11px] text-gray-500 uppercase tracking-wider">
-                Signal path
-              </div>
-              <div className="mt-3 rounded border border-gray-800 bg-gray-950 px-3 py-3 font-mono text-xs">
-                <div className="flex items-center gap-2 text-gray-300">
-                  <span className="text-blue-400">INPUT</span>
-                  <span className="text-gray-600">-&gt;</span>
-                  <span className="text-gray-400">circuit</span>
-                  <span className="text-gray-600">-&gt;</span>
-                  <span className="text-green-400">OUTPUT</span>
-                </div>
-                <div className="mt-2 text-gray-500">
-                  wire grounds, then click Simulate
-                </div>
-              </div>
             </div>
           </div>
 
-          <div>
-            <div className="flex items-start gap-3 border-gray-800 border-b px-4 py-4">
-              <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded border border-gray-700 bg-gray-950 text-blue-300">
-                <MousePointer2 size={14} />
-              </div>
-              <div>
-                <div className="text-gray-200 text-sm">Draw the circuit</div>
-                <p className="mt-1 text-gray-400 text-sm leading-6">
-                  Use the top toolbar to place jacks, resistors, caps, op-amps,
-                  transistors, power, and labels. Drag between handles to create
-                  connections.
-                </p>
-              </div>
+          <div className="flex items-start gap-3 border-gray-800 border-b px-4 py-4">
+            <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded border border-gray-700 bg-gray-950 text-blue-300">
+              <MousePointer2 size={14} />
             </div>
-
-            <div className="flex items-start gap-3 border-gray-800 border-b px-4 py-4">
-              <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded border border-gray-700 bg-gray-950 text-green-300">
-                <Play size={14} />
-              </div>
-              <div>
-                <div className="text-gray-200 text-sm">Simulate</div>
-                <p className="mt-1 text-gray-400 text-sm leading-6">
-                  Choose a sample on the right, click Simulate, then listen to
-                  the result or inspect it in the oscilloscope waveform view
-                  below the inspector.
-                </p>
-              </div>
+            <div>
+              <div className="text-gray-200 text-sm">Draw the circuit</div>
+              <p className="mt-1 text-gray-400 text-sm leading-6">
+                Use the top toolbar to place jacks, resistors, caps, op-amps,
+                transistors, power, and labels. Drag between handles to create
+                connections.
+              </p>
             </div>
+          </div>
 
-            <div className="flex items-start gap-3 px-4 py-4">
-              <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded border border-gray-700 bg-gray-950 text-amber-300">
-                <FolderOpen size={14} />
+          <div className="flex items-start gap-3 border-gray-800 border-b px-4 py-4">
+            <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded border border-gray-700 bg-gray-950 text-green-300">
+              <Play size={14} />
+            </div>
+            <div>
+              <div className="text-gray-200 text-sm">Simulate</div>
+              <p className="mt-1 text-gray-400 text-sm leading-6">
+                Choose a sample on the right, click Simulate, then listen to the
+                result or inspect it in the oscilloscope waveform view below the
+                inspector.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 px-4 py-4">
+            <div className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded border border-gray-700 bg-gray-950 text-amber-300">
+              <FolderOpen size={14} />
+            </div>
+            <div>
+              <div className="text-gray-200 text-sm">
+                Use examples when needed
               </div>
-              <div>
-                <div className="text-gray-200 text-sm">
-                  Use examples when needed
-                </div>
-                <p className="mt-1 text-gray-400 text-sm leading-6">
-                  The Examples panel loads starter pedals and reference
-                  circuits. Click the Solder logo in the top-left corner any
-                  time to reopen this guide.
-                </p>
-              </div>
+              <p className="mt-1 text-gray-400 text-sm leading-6">
+                The Examples panel loads starter pedals and reference circuits.
+                Click the Solder logo in the top-left corner any time to reopen
+                this guide.
+              </p>
             </div>
           </div>
         </div>
