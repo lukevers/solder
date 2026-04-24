@@ -38,6 +38,13 @@ export function LabelNode({ id, data, selected }: LabelNodeProps) {
         isConnectableEnd={true}
         style={{ background: '#a78bfa' }}
       />
+      <RotatedHandle
+        type="target"
+        position={Position.Left}
+        id="net"
+        isConnectableEnd={true}
+        style={{ background: '#a78bfa', opacity: 0 }}
+      />
     </NodeShell>
   );
 }

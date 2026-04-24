@@ -25,6 +25,12 @@ export function MOSFETNode({ id, data, selected }: MOSFETNodeProps) {
         id="g"
         style={HANDLE_STYLE}
       />
+      <RotatedHandle
+        type="source"
+        position={Position.Left}
+        id="g"
+        style={{ ...HANDLE_STYLE, opacity: 0 }}
+      />
       {/* Drain — right top */}
       <RotatedHandle
         type="source"
@@ -32,12 +38,24 @@ export function MOSFETNode({ id, data, selected }: MOSFETNodeProps) {
         id="d"
         style={{ top: 10, background: '#4b5563' }}
       />
+      <RotatedHandle
+        type="target"
+        position={Position.Right}
+        id="d"
+        style={{ top: 10, background: '#4b5563', opacity: 0 }}
+      />
       {/* Source — right bottom */}
       <RotatedHandle
         type="source"
         position={Position.Right}
         id="s"
         style={{ top: 50, background: '#4b5563' }}
+      />
+      <RotatedHandle
+        type="target"
+        position={Position.Right}
+        id="s"
+        style={{ top: 50, background: '#4b5563', opacity: 0 }}
       />
 
       <NodeSvg width={60} height={60}>

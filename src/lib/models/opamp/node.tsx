@@ -13,7 +13,14 @@
  */
 
 import { type NodeProps, Position } from '@xyflow/react';
-import { NodeShell, NodeSvg, NodeText, RotatedHandle } from '../node-shell';
+import { Fragment } from 'react';
+import {
+  HANDLE_STYLE,
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from '../node-shell';
 import { resolveOpAmpSymbol } from '../symbol-registry';
 import type { SymbolDef, SymbolPin } from '../types';
 import type { OpAmpData } from './types';
@@ -67,15 +74,27 @@ function PinHandles({ sym }: { sym: SymbolDef }) {
     <>
       {sym.pins
         .filter((p) => p.connectable)
-        .map((p) => (
-          <RotatedHandle
-            key={p.id}
-            type={p.source ? 'source' : 'target'}
-            position={pinPosition(p)}
-            id={p.id}
-            style={handleStyle(p)}
-          />
-        ))}
+        .map((p) => {
+          const primaryType = p.source ? 'source' : 'target';
+          const secondaryType = p.source ? 'target' : 'source';
+
+          return (
+            <Fragment key={p.id}>
+              <RotatedHandle
+                type={primaryType}
+                position={pinPosition(p)}
+                id={p.id}
+                style={handleStyle(p)}
+              />
+              <RotatedHandle
+                type={secondaryType}
+                position={pinPosition(p)}
+                id={p.id}
+                style={{ ...HANDLE_STYLE, ...handleStyle(p), opacity: 0 }}
+              />
+            </Fragment>
+          );
+        })}
     </>
   );
 }
