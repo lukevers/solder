@@ -1004,13 +1004,13 @@ export function Inspector({ onSweep }: { onSweep?: (nodeId: string) => void }) {
         <Trash2 size={11} />
         Delete
       </button>
-      <div className="mt-2 flex flex-col items-center font-mono text-[10px] text-gray-600">
+      <div className="mt-2 flex flex-col items-center rounded border border-gray-700 bg-black/5 p-1 font-mono text-[10px] text-gray-600">
         <span>
           X: {Math.round(selected.position.x)}, Y:{' '}
           {Math.round(selected.position.y)}
         </span>
         <span
-          className="cursor-pointer transition-colors hover:text-gray-400"
+          className="w-full cursor-pointer break-all text-center transition-colors hover:text-gray-400"
           title="Click to copy"
           onClick={() => navigator.clipboard.writeText(selected.id)}
         >
