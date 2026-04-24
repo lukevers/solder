@@ -9,123 +9,232 @@
     {
       "id": "gs-in",
       "type": "jack",
-      "position": { "x": 160, "y": 400 },
-      "data": { "label": "INPUT", "direction": "in" }
+      "position": {
+        "x": 160,
+        "y": 400
+      },
+      "data": {
+        "label": "INPUT",
+        "direction": "in"
+      }
     },
     {
       "id": "gs-gnd-in",
       "type": "ground",
-      "position": { "x": 260, "y": 480 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 260,
+        "y": 480
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
       "id": "gs-c1",
       "type": "capacitor",
-      "position": { "x": 310, "y": 400 },
-      "data": { "label": "C1", "farads": 1e-7 }
+      "position": {
+        "x": 310,
+        "y": 400
+      },
+      "data": {
+        "label": "C1",
+        "farads": 1e-7
+      }
     },
     {
       "id": "gs-r1",
       "type": "resistor",
-      "position": { "x": 410, "y": 400 },
-      "data": { "label": "R1", "ohms": 10000 }
+      "position": {
+        "x": 410,
+        "y": 400
+      },
+      "data": {
+        "label": "R1",
+        "ohms": 10000
+      }
     },
     {
       "id": "gs-jct-inv",
       "type": "junction",
-      "position": { "x": 560, "y": 410 },
-      "data": { "label": "J1" }
+      "position": {
+        "x": 560,
+        "y": 410
+      },
+      "data": {
+        "label": "J1"
+      }
     },
     {
       "id": "gs-u1",
       "type": "opamp",
-      "position": { "x": 660, "y": 360 },
-      "data": { "label": "U1", "model": "TL072" }
+      "position": {
+        "x": 660,
+        "y": 360
+      },
+      "data": {
+        "label": "U1",
+        "model": "TL072"
+      }
     },
     {
       "id": "gs-vcc-u",
       "type": "power",
-      "position": { "x": 680, "y": 260 },
-      "data": { "label": "VCC", "volts": 9 }
+      "position": {
+        "x": 680,
+        "y": 260
+      },
+      "data": {
+        "label": "VCC",
+        "volts": 9
+      }
     },
     {
       "id": "gs-gnd-u",
       "type": "ground",
-      "position": { "x": 680, "y": 470 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 680,
+        "y": 470
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
       "id": "gs-jct-out",
       "type": "junction",
-      "position": { "x": 790, "y": 390 },
-      "data": { "label": "J2" }
+      "position": {
+        "x": 790,
+        "y": 390
+      },
+      "data": {
+        "label": "J2"
+      }
     },
     {
       "id": "gs-c2",
       "type": "cap_polar",
-      "position": { "x": 870, "y": 380 },
-      "data": { "label": "C2", "farads": 0.000001 }
+      "position": {
+        "x": 870,
+        "y": 380
+      },
+      "data": {
+        "label": "C2",
+        "farads": 0.000001
+      }
     },
     {
       "id": "gs-out",
       "type": "jack",
-      "position": { "x": 1000, "y": 380 },
-      "data": { "label": "OUTPUT", "direction": "out" }
+      "position": {
+        "x": 1000,
+        "y": 380
+      },
+      "data": {
+        "label": "OUTPUT",
+        "direction": "out"
+      }
     },
     {
       "id": "gs-gnd-out",
       "type": "ground",
-      "position": { "x": 930, "y": 480 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 930,
+        "y": 480
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
       "id": "gs-vcc",
       "type": "power",
-      "position": { "x": 610, "y": 0 },
-      "data": { "label": "VCC", "volts": 9 }
+      "position": {
+        "x": 610,
+        "y": 0
+      },
+      "data": {
+        "label": "VCC",
+        "volts": 9
+      }
     },
     {
       "id": "gs-rb1",
       "type": "resistor",
-      "position": { "x": 610, "y": 100 },
-      "rotation": 90,
-      "data": { "label": "R4", "ohms": 100000 }
+      "position": {
+        "x": 610,
+        "y": 100
+      },
+      "data": {
+        "label": "R4",
+        "ohms": 100000
+      },
+      "rotation": 90
     },
     {
       "id": "gs-jct-bias",
       "type": "junction",
-      "position": { "x": 620, "y": 220 },
-      "data": { "label": "J3" }
+      "position": {
+        "x": 620,
+        "y": 220
+      },
+      "data": {
+        "label": "J3"
+      }
     },
     {
       "id": "gs-rb2",
       "type": "resistor",
-      "position": { "x": 690, "y": 210 },
-      "data": { "label": "R5", "ohms": 100000 }
+      "position": {
+        "x": 690,
+        "y": 210
+      },
+      "data": {
+        "label": "R5",
+        "ohms": 100000
+      }
     },
     {
       "id": "gs-gnd-bias",
       "type": "ground",
-      "position": { "x": 780, "y": 340 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 780,
+        "y": 340
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
       "id": "gs-cb",
       "type": "cap_polar",
-      "position": { "x": 550, "y": 250 },
-      "rotation": 90,
-      "data": { "label": "C3", "farads": 0.00001 }
+      "position": {
+        "x": 550,
+        "y": 260
+      },
+      "data": {
+        "label": "C3",
+        "farads": 0.00001
+      },
+      "rotation": 90
     },
     {
       "id": "gs-gnd-cb",
       "type": "ground",
-      "position": { "x": 550, "y": 340 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 550,
+        "y": 370
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
       "id": "gs-pot-gain",
       "type": "pot",
-      "position": { "x": 650, "y": 530 },
+      "position": {
+        "x": 650,
+        "y": 530
+      },
       "data": {
         "label": "GAIN",
         "ohms": 100000,
@@ -136,22 +245,27 @@
     {
       "id": "gs-box-fb",
       "type": "box",
-      "position": { "x": 530, "y": -20 },
+      "position": {
+        "x": 530,
+        "y": -20
+      },
       "data": {
         "label": "Feedback Network",
         "color": "blue",
         "variant": "filled"
       },
-      "zIndex": -1,
-      "dragHandle": ".box-drag-handle",
-      "className": "box-node-wrapper",
-      "width": 310,
-      "height": 640
+      "style": {
+        "width": 310,
+        "height": 660
+      }
     },
     {
       "id": "gs-note-1",
       "type": "stickynote",
-      "position": { "x": 980, "y": 170 },
+      "position": {
+        "x": 920,
+        "y": 170
+      },
       "data": {
         "label": "What does this do?",
         "text": "An inverting gain stage amplifies your signal. The GAIN pot controls how much louder the output is — from unity (1×) up to 10× amplification.",
@@ -163,7 +277,10 @@
     {
       "id": "gs-note-gain",
       "type": "stickynote",
-      "position": { "x": 860, "y": 530 },
+      "position": {
+        "x": 860,
+        "y": 530
+      },
       "data": {
         "label": "Gain control (GAIN pot)",
         "text": "The GAIN pot is the feedback resistor. Gain = pot / R1. At max, that's 100k / 10k = 10×. Replace with a fixed resistor for a set gain.",
@@ -175,7 +292,10 @@
     {
       "id": "gs-note-bias",
       "type": "stickynote",
-      "position": { "x": 660, "y": 110 },
+      "position": {
+        "x": 660,
+        "y": 110
+      },
       "data": {
         "label": "Bias divider (R4 + R5)",
         "text": "Equal resistors split VCC in half (4.5V), centering the signal in the op-amp's linear range. Unequal values would shift the bias point — clipping one half of the waveform harder than the other.",
@@ -187,7 +307,10 @@
     {
       "id": "gs-note-bypass",
       "type": "stickynote",
-      "position": { "x": 340, "y": 230 },
+      "position": {
+        "x": 340,
+        "y": 230
+      },
       "data": {
         "label": "Bypass cap (C3)",
         "text": "Holds the bias voltage steady at audio frequencies. Without it, signal leaks into the bias node and causes oscillation. Larger values keep the bias stable at lower frequencies.",
@@ -199,13 +322,27 @@
     {
       "id": "gs-note-caps",
       "type": "stickynote",
-      "position": { "x": 980, "y": 280 },
+      "position": {
+        "x": 920,
+        "y": 270
+      },
       "data": {
         "label": "Coupling caps (C1 + C2)",
         "text": "C1 and C2 block DC, passing only the audio signal. Without them the 4.5V bias would leak to the input and output. Smaller values cut more bass — a tone control trick.",
         "color": "yellow",
         "size": "sm",
         "width": "normal"
+      }
+    },
+    {
+      "id": "61c1835c-3eca-4473-ba96-a32d888aa26c",
+      "type": "junction",
+      "position": {
+        "x": 610,
+        "y": 610
+      },
+      "data": {
+        "label": ""
       }
     }
   ],
@@ -337,13 +474,6 @@
       "targetHandle": "neg"
     },
     {
-      "id": "gs-e19",
-      "source": "gs-pot-gain",
-      "sourceHandle": "ccw",
-      "target": "gs-pot-gain",
-      "targetHandle": "wiper"
-    },
-    {
       "id": "gs-e20",
       "source": "gs-pot-gain",
       "sourceHandle": "cw",
@@ -351,9 +481,30 @@
       "targetHandle": "tb"
     },
     {
-      "id": "gs-e21",
+      "id": "xy-edge__gs-pot-gainccw-61c1835c-3eca-4473-ba96-a32d888aa26ctt",
+      "source": "gs-pot-gain",
+      "sourceHandle": "ccw",
+      "target": "61c1835c-3eca-4473-ba96-a32d888aa26c",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "xy-edge__61c1835c-3eca-4473-ba96-a32d888aa26ctr-gs-pot-gainwiper",
+      "source": "61c1835c-3eca-4473-ba96-a32d888aa26c",
+      "sourceHandle": "tr",
+      "target": "gs-pot-gain",
+      "targetHandle": "wiper"
+    },
+    {
+      "id": "xy-edge__gs-pot-gainwiper-61c1835c-3eca-4473-ba96-a32d888aa26ctr",
       "source": "gs-pot-gain",
       "sourceHandle": "wiper",
+      "target": "61c1835c-3eca-4473-ba96-a32d888aa26c",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "xy-edge__61c1835c-3eca-4473-ba96-a32d888aa26csl-gs-jct-invtb",
+      "source": "61c1835c-3eca-4473-ba96-a32d888aa26c",
+      "sourceHandle": "sl",
       "target": "gs-jct-inv",
       "targetHandle": "tb"
     }

@@ -9,19 +9,33 @@
     {
       "id": "vp-in",
       "type": "jack",
-      "position": { "x": 60, "y": 190 },
-      "data": { "label": "INPUT", "direction": "in" }
+      "position": {
+        "x": 60,
+        "y": 190
+      },
+      "data": {
+        "label": "INPUT",
+        "direction": "in"
+      }
     },
     {
       "id": "vp-gnd-in",
       "type": "ground",
-      "position": { "x": 160, "y": 390 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 160,
+        "y": 390
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
       "id": "vp-pot",
       "type": "pot",
-      "position": { "x": 250, "y": 190 },
+      "position": {
+        "x": 250,
+        "y": 190
+      },
       "data": {
         "label": "VOLUME",
         "ohms": 100000,
@@ -32,25 +46,44 @@
     {
       "id": "vp-gnd-pot",
       "type": "ground",
-      "position": { "x": 380, "y": 230 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 380,
+        "y": 240
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
       "id": "vp-out",
       "type": "jack",
-      "position": { "x": 450, "y": 270 },
-      "data": { "label": "OUTPUT", "direction": "out" }
+      "position": {
+        "x": 450,
+        "y": 270
+      },
+      "data": {
+        "label": "OUTPUT",
+        "direction": "out"
+      }
     },
     {
       "id": "vp-gnd-out",
       "type": "ground",
-      "position": { "x": 380, "y": 390 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 380,
+        "y": 390
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
       "id": "vp-note-1",
       "type": "stickynote",
-      "position": { "x": 60, "y": 100 },
+      "position": {
+        "x": 60,
+        "y": 100
+      },
       "data": {
         "label": "What does this do?",
         "text": "A volume pot is a voltage divider — it splits the signal between the output and ground. Turn it down and more signal goes to ground instead.",
@@ -62,7 +95,10 @@
     {
       "id": "vp-note-2",
       "type": "stickynote",
-      "position": { "x": 260, "y": 100 },
+      "position": {
+        "x": 260,
+        "y": 100
+      },
       "data": {
         "label": "Log taper",
         "text": "This pot uses a logarithmic taper, which matches how our ears perceive loudness. A linear pot would feel like most of the change happens at one end.",

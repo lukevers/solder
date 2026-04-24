@@ -16,13 +16,7 @@
       "data": {
         "label": "INPUT",
         "direction": "in"
-      },
-      "measured": {
-        "width": 80,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-gnd-in",
@@ -33,13 +27,7 @@
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-c1",
@@ -51,13 +39,7 @@
       "data": {
         "label": "C1",
         "farads": 1e-7
-      },
-      "measured": {
-        "width": 60,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-rin",
@@ -69,13 +51,7 @@
       "data": {
         "label": "R1",
         "ohms": 10000
-      },
-      "measured": {
-        "width": 80,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-jct-inv",
@@ -86,12 +62,7 @@
       },
       "data": {
         "label": "J1"
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false
+      }
     },
     {
       "id": "hc-u1",
@@ -103,10 +74,6 @@
       "data": {
         "label": "U1",
         "model": "TL072"
-      },
-      "measured": {
-        "width": 80,
-        "height": 80
       }
     },
     {
@@ -118,13 +85,7 @@
       },
       "data": {
         "label": "J2"
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-c2",
@@ -136,13 +97,7 @@
       "data": {
         "label": "C2",
         "farads": 1e-7
-      },
-      "measured": {
-        "width": 60,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-rclip",
@@ -154,13 +109,7 @@
       "data": {
         "label": "R3",
         "ohms": 10000
-      },
-      "measured": {
-        "width": 80,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-jct-clip",
@@ -171,13 +120,7 @@
       },
       "data": {
         "label": "J6"
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-d1",
@@ -186,17 +129,11 @@
         "x": 1100,
         "y": 480
       },
-      "rotation": 90,
       "data": {
         "label": "D1",
         "model": "1N914"
       },
-      "measured": {
-        "width": 40,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      "rotation": 90
     },
     {
       "id": "hc-d2",
@@ -205,17 +142,11 @@
         "x": 1180,
         "y": 480
       },
-      "rotation": 270,
       "data": {
         "label": "D2",
         "model": "1N914"
       },
-      "measured": {
-        "width": 40,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      "rotation": 270
     },
     {
       "id": "hc-gnd-clip",
@@ -226,13 +157,7 @@
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-out",
@@ -244,13 +169,7 @@
       "data": {
         "label": "OUTPUT",
         "direction": "out"
-      },
-      "measured": {
-        "width": 80,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-gnd-out",
@@ -261,13 +180,7 @@
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-vcc-u",
@@ -279,10 +192,6 @@
       "data": {
         "label": "VCC",
         "volts": 9
-      },
-      "measured": {
-        "width": 40,
-        "height": 40
       }
     },
     {
@@ -294,13 +203,7 @@
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-vcc",
@@ -312,13 +215,7 @@
       "data": {
         "label": "VCC",
         "volts": 9
-      },
-      "measured": {
-        "width": 40,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-rb1",
@@ -327,17 +224,11 @@
         "x": 610,
         "y": 100
       },
-      "rotation": 90,
       "data": {
         "label": "R4",
         "ohms": 100000
       },
-      "measured": {
-        "width": 40,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      "rotation": 90
     },
     {
       "id": "hc-jct-bias",
@@ -348,13 +239,7 @@
       },
       "data": {
         "label": "J3"
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-rb2",
@@ -366,13 +251,7 @@
       "data": {
         "label": "R5",
         "ohms": 100000
-      },
-      "measured": {
-        "width": 80,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-gnd-bias",
@@ -383,49 +262,31 @@
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-cb",
       "type": "cap_polar",
       "position": {
         "x": 550,
-        "y": 250
+        "y": 260
       },
-      "rotation": 90,
       "data": {
         "label": "C3",
         "farads": 0.00001
       },
-      "measured": {
-        "width": 40,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      "rotation": 90
     },
     {
       "id": "hc-gnd-cb",
       "type": "ground",
       "position": {
         "x": 550,
-        "y": 340
+        "y": 360
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-rfb",
@@ -437,13 +298,7 @@
       "data": {
         "label": "R2",
         "ohms": 100000
-      },
-      "measured": {
-        "width": 80,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-note-1",
@@ -458,13 +313,7 @@
         "color": "yellow",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-note-2",
@@ -479,13 +328,7 @@
         "color": "purple",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 84
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-note-3",
@@ -500,13 +343,7 @@
         "color": "purple",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 84
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "6d6bcd76-8972-4d42-b80f-a1ac76e3aa94",
@@ -520,18 +357,10 @@
         "color": "blue",
         "variant": "filled"
       },
-      "zIndex": -1,
-      "dragHandle": ".box-drag-handle",
-      "className": "box-node-wrapper",
-      "measured": {
+      "style": {
         "width": 310,
         "height": 680
-      },
-      "selected": false,
-      "dragging": false,
-      "width": 310,
-      "height": 680,
-      "resizing": false
+      }
     },
     {
       "id": "hc-note-gain",
@@ -546,13 +375,7 @@
         "color": "blue",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-note-bias",
@@ -567,13 +390,7 @@
         "color": "blue",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "hc-note-bypass",
@@ -588,13 +405,7 @@
         "color": "blue",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "95f4df3f-8556-4d7f-b3f3-9e1376db5815",
@@ -608,18 +419,10 @@
         "color": "purple",
         "variant": "filled"
       },
-      "zIndex": -1,
-      "dragHandle": ".box-drag-handle",
-      "className": "box-node-wrapper",
-      "measured": {
+      "style": {
         "width": 160,
         "height": 250
-      },
-      "selected": false,
-      "dragging": false,
-      "width": 160,
-      "height": 250,
-      "resizing": false
+      }
     }
   ],
   "edges": [
@@ -792,18 +595,18 @@
       "targetHandle": "neg"
     },
     {
+      "id": "xy-edge__hc-rfba-hc-jct-invtb",
       "source": "hc-rfb",
       "sourceHandle": "a",
       "target": "hc-jct-inv",
-      "targetHandle": "tb",
-      "id": "xy-edge__hc-rfba-hc-jct-invtb"
+      "targetHandle": "tb"
     },
     {
+      "id": "xy-edge__hc-jct-outsb-hc-rfbb",
       "source": "hc-jct-out",
       "sourceHandle": "sb",
       "target": "hc-rfb",
-      "targetHandle": "b",
-      "id": "xy-edge__hc-jct-outsb-hc-rfbb"
+      "targetHandle": "b"
     }
   ]
 }
