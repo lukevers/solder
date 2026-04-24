@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#root {
+	height: 100%;
+}
+
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
 	-webkit-appearance: none;
@@ -16,6 +22,26 @@ body {
 	@apply bg-gray-950 text-gray-200 font-mono;
 	margin: 0;
 	overflow: hidden;
+}
+
+/**
+ * Use the live visual viewport on mobile browsers so the app shell shrinks
+ * when Safari's bottom toolbar is visible instead of extending underneath it.
+ *
+ * `100dvh` tracks the visible viewport on modern iOS Safari. The `100vh`
+ * declaration remains as a fallback for older browsers.
+ */
+.app-shell {
+	height: 100vh;
+	height: 100dvh;
+}
+
+/**
+ * Preserve a little breathing room above the iPhone home indicator / bottom
+ * safe area while keeping the existing 0.25rem status bar padding elsewhere.
+ */
+.app-safe-bottom {
+	padding-bottom: calc(0.25rem + env(safe-area-inset-bottom, 0px));
 }
 
 @keyframes edge-flow {

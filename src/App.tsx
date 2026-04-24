@@ -868,7 +868,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="app-shell flex flex-col overflow-hidden">
       <Toolbar
         onSimulate={handleSimulate}
         onOpenWelcome={() => setShowWelcomeModal(true)}
