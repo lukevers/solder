@@ -63,7 +63,7 @@
       "id": "ff-jct-q1b",
       "type": "junction",
       "position": {
-        "x": 310,
+        "x": 300,
         "y": 280
       },
       "data": {
@@ -72,7 +72,9 @@
       "measured": {
         "width": 20,
         "height": 20
-      }
+      },
+      "selected": false,
+      "dragging": false
     },
     {
       "id": "ff-q1",
@@ -132,7 +134,7 @@
       "type": "resistor",
       "position": {
         "x": 460,
-        "y": 140
+        "y": 130
       },
       "rotation": 90,
       "data": {
@@ -142,24 +144,6 @@
       "measured": {
         "width": 40,
         "height": 80
-      },
-      "selected": false,
-      "dragging": false
-    },
-    {
-      "id": "ff-vcc",
-      "type": "power",
-      "position": {
-        "x": 460,
-        "y": 50
-      },
-      "data": {
-        "label": "VCC",
-        "volts": -9
-      },
-      "measured": {
-        "width": 40,
-        "height": 40
       },
       "selected": false,
       "dragging": false
@@ -184,47 +168,11 @@
       "dragging": false
     },
     {
-      "id": "ff-jct-q2c",
-      "type": "junction",
-      "position": {
-        "x": 670,
-        "y": 240
-      },
-      "data": {
-        "label": "J2"
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
-    },
-    {
       "id": "ff-r2",
       "type": "resistor",
       "position": {
-        "x": 660,
-        "y": 110
-      },
-      "rotation": 90,
-      "data": {
-        "label": "R2",
-        "ohms": 470
-      },
-      "measured": {
-        "width": 40,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
-    },
-    {
-      "id": "ff-r3",
-      "type": "resistor",
-      "position": {
-        "x": 660,
-        "y": -10
+        "x": 670,
+        "y": 150
       },
       "rotation": 90,
       "data": {
@@ -239,11 +187,30 @@
       "dragging": false
     },
     {
+      "id": "ff-r3",
+      "type": "resistor",
+      "position": {
+        "x": 670,
+        "y": -10
+      },
+      "rotation": 90,
+      "data": {
+        "label": "R2",
+        "ohms": 470
+      },
+      "measured": {
+        "width": 40,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
       "id": "ff-vcc2",
       "type": "power",
       "position": {
-        "x": 660,
-        "y": -90
+        "x": 570,
+        "y": -140
       },
       "data": {
         "label": "VCC",
@@ -261,7 +228,7 @@
       "type": "resistor",
       "position": {
         "x": 390,
-        "y": 420
+        "y": 470
       },
       "data": {
         "label": "R4",
@@ -279,7 +246,7 @@
       "type": "pot",
       "position": {
         "x": 630,
-        "y": 480
+        "y": 530
       },
       "data": {
         "label": "FUZZ",
@@ -300,7 +267,7 @@
       "type": "ground",
       "position": {
         "x": 630,
-        "y": 680
+        "y": 730
       },
       "data": {
         "label": "GND"
@@ -317,7 +284,7 @@
       "type": "cap_polar",
       "position": {
         "x": 720,
-        "y": 540
+        "y": 590
       },
       "rotation": 270,
       "data": {
@@ -335,8 +302,8 @@
       "id": "ff-c3",
       "type": "capacitor",
       "position": {
-        "x": 790,
-        "y": 230
+        "x": 750,
+        "y": 90
       },
       "data": {
         "label": "C3",
@@ -407,8 +374,8 @@
       "id": "ff-gnd_out",
       "type": "ground",
       "position": {
-        "x": 1040,
-        "y": 380
+        "x": 1030,
+        "y": 400
       },
       "data": {
         "label": "GND"
@@ -425,7 +392,7 @@
       "type": "junction",
       "position": {
         "x": 640,
-        "y": 620
+        "y": 670
       },
       "data": {
         "label": ""
@@ -442,7 +409,7 @@
       "type": "junction",
       "position": {
         "x": 640,
-        "y": 430
+        "y": 480
       },
       "data": {
         "label": ""
@@ -459,7 +426,7 @@
       "type": "box",
       "position": {
         "x": 280,
-        "y": 400
+        "y": 450
       },
       "data": {
         "label": "Feedback Network",
@@ -480,7 +447,306 @@
       "selected": false,
       "width": 500,
       "height": 330,
+      "resizing": false,
+      "dragging": false
+    },
+    {
+      "id": "ce2a0175-e1f9-4828-b577-7a6f1f30c0e8",
+      "type": "box",
+      "position": {
+        "x": 20,
+        "y": 40
+      },
+      "data": {
+        "label": "Input Stage",
+        "color": "blue",
+        "variant": "filled"
+      },
+      "zIndex": -1,
+      "style": {
+        "width": 200,
+        "height": 150
+      },
+      "dragHandle": ".box-drag-handle",
+      "className": "box-node-wrapper",
+      "measured": {
+        "width": 510,
+        "height": 400
+      },
+      "selected": false,
+      "dragging": false,
+      "width": 510,
+      "height": 400,
       "resizing": false
+    },
+    {
+      "id": "0468a734-3243-4795-bd2d-ebc4552f2e2b",
+      "type": "box",
+      "position": {
+        "x": 540,
+        "y": -160
+      },
+      "data": {
+        "label": "Output Stage",
+        "color": "pink",
+        "variant": "filled"
+      },
+      "zIndex": -1,
+      "style": {
+        "width": 200,
+        "height": 150
+      },
+      "dragHandle": ".box-drag-handle",
+      "className": "box-node-wrapper",
+      "measured": {
+        "width": 680,
+        "height": 600
+      },
+      "selected": false,
+      "dragging": false,
+      "width": 680,
+      "height": 600,
+      "resizing": false
+    },
+    {
+      "id": "83225f7b-e757-4be4-aba2-a64a30390e81",
+      "type": "stickynote",
+      "position": {
+        "x": 370,
+        "y": -50
+      },
+      "data": {
+        "label": "Attribution Source",
+        "text": "https://www.electrosmash.com/fuzz-face",
+        "color": "yellow",
+        "size": "xs",
+        "width": "normal"
+      },
+      "measured": {
+        "width": 160,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "bb61ed9d-d82d-4323-99f1-ad6b5f6612a9",
+      "type": "stickynote",
+      "position": {
+        "x": 140,
+        "y": 150
+      },
+      "data": {
+        "label": "Q1 - PNP Transistor/Amplifier",
+        "text": "The input stage is a Common Emitter (Collector Follower) PNP amplifier, it provides a high voltage gain with low input impedance and high output impedance. It is not the ideal input stage for signal integrity but the best for simplicity and fast high gain.",
+        "color": "blue",
+        "size": "sm",
+        "width": "normal"
+      },
+      "measured": {
+        "width": 160,
+        "height": 94
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "81dd95ac-b144-4e1f-8a27-eefee80d7aaf",
+      "type": "stickynote",
+      "position": {
+        "x": 190,
+        "y": 320
+      },
+      "data": {
+        "label": "C1",
+        "text": "The 2.2uF input capacitor C1 blocks any DC level, removing hum and protecting the pedal/guitar against dangerous DC levels.",
+        "color": "blue",
+        "size": "xs",
+        "width": "slim"
+      },
+      "measured": {
+        "width": 80,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "c82433fa-0b75-489c-ad15-a6dade82830f",
+      "type": "stickynote",
+      "position": {
+        "x": 360,
+        "y": 130
+      },
+      "data": {
+        "label": "R1",
+        "text": "The 33KΩ R1 resistor sets the main input stage parameters like the voltage gain, bias points, and maximum collector current.",
+        "color": "blue",
+        "size": "xs",
+        "width": "slim"
+      },
+      "measured": {
+        "width": 80,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "c6030637-018a-4cab-96a1-0967c653fa79",
+      "type": "stickynote",
+      "position": {
+        "x": 360,
+        "y": 520
+      },
+      "data": {
+        "label": "R4 - Feedback Strength",
+        "text": "R4 sets the amount of available feedback path, and the FUZZ pot controls how much of that feedback actually stays in circuit",
+        "color": "green",
+        "size": "sm",
+        "width": "normal"
+      },
+      "measured": {
+        "width": 160,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "50dc4e94-bd2f-4d3c-ba82-7e7681315bed",
+      "type": "stickynote",
+      "position": {
+        "x": 900,
+        "y": 130
+      },
+      "data": {
+        "label": "VOLUME",
+        "text": "The final part of the circuit defines how loud the circuit is. Depending on the position of the pot, the signal is split between going to ground and going to the output jack.",
+        "color": "pink",
+        "size": "sm",
+        "width": "normal"
+      },
+      "measured": {
+        "width": 160,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "c1a32d3c-bd02-464e-ad62-5549ed78cb96",
+      "type": "stickynote",
+      "position": {
+        "x": 900,
+        "y": 30
+      },
+      "data": {
+        "label": "C3",
+        "text": "C3 is an output coupling cap. It blocks DC from the transistor and, with the volume control, forms a high-pass filter that sets how much low end gets out",
+        "color": "pink",
+        "size": "sm",
+        "width": "normal"
+      },
+      "measured": {
+        "width": 160,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "605e03ac-d63f-49b7-b109-81652416a441",
+      "type": "junction",
+      "position": {
+        "x": 680,
+        "y": 100
+      },
+      "data": {
+        "label": ""
+      },
+      "measured": {
+        "width": 20,
+        "height": 20
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "bfcbd325-f590-4469-8bca-bab6b4a02f77",
+      "type": "junction",
+      "position": {
+        "x": 580,
+        "y": -50
+      },
+      "data": {
+        "label": ""
+      },
+      "measured": {
+        "width": 20,
+        "height": 20
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "bda530cb-73d3-42aa-8af4-9c5bc99c5882",
+      "type": "stickynote",
+      "position": {
+        "x": 570,
+        "y": 140
+      },
+      "data": {
+        "label": "Q2",
+        "text": "Q2 is the output gain stage",
+        "color": "pink",
+        "size": "sm",
+        "width": "slim"
+      },
+      "measured": {
+        "width": 80,
+        "height": 80
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "da795f31-3e76-4ffd-94ed-0b8712eedf60",
+      "type": "stickynote",
+      "position": {
+        "x": 720,
+        "y": -30
+      },
+      "data": {
+        "label": "Voltage Divider - Not Always Equal",
+        "text": "R2 + R3 in series like this creates a voltage divider. A voltage divider does not require equal values. It only requires two resistors in series with the output taken from the point between them. Equal values just give a 50/50 split.",
+        "color": "pink",
+        "size": "sm",
+        "width": "normal"
+      },
+      "measured": {
+        "width": 160,
+        "height": 94
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "4c31eac7-9503-4c02-898e-8884e039bdf6",
+      "type": "junction",
+      "position": {
+        "x": 580,
+        "y": 50
+      },
+      "data": {
+        "label": ""
+      },
+      "measured": {
+        "width": 20,
+        "height": 20
+      },
+      "selected": false,
+      "dragging": false
     }
   ],
   "edges": [
@@ -527,13 +793,6 @@
       "targetHandle": "b"
     },
     {
-      "id": "ff-e5b",
-      "source": "ff-r1",
-      "sourceHandle": "a",
-      "target": "ff-vcc",
-      "targetHandle": "pos"
-    },
-    {
       "id": "ff-e6",
       "source": "ff-q1",
       "sourceHandle": "e",
@@ -548,46 +807,12 @@
       "targetHandle": "b"
     },
     {
-      "id": "ff-e8",
-      "source": "ff-q2",
-      "sourceHandle": "c",
-      "target": "ff-jct-q2c",
-      "targetHandle": "tl"
-    },
-    {
-      "id": "ff-e9",
-      "source": "ff-jct-q2c",
-      "sourceHandle": "st",
-      "target": "ff-r2",
-      "targetHandle": "b"
-    },
-    {
-      "id": "ff-e10",
-      "source": "ff-r2",
-      "sourceHandle": "a",
-      "target": "ff-r3",
-      "targetHandle": "b"
-    },
-    {
-      "id": "ff-e10b",
-      "source": "ff-r3",
-      "sourceHandle": "a",
-      "target": "ff-vcc2",
-      "targetHandle": "pos"
-    },
-    {
       "id": "ff-e17",
       "source": "ff-r4",
       "sourceHandle": "a",
       "target": "ff-jct-q1b",
-      "targetHandle": "tb"
-    },
-    {
-      "id": "ff-e18",
-      "source": "ff-jct-q2c",
-      "sourceHandle": "sr",
-      "target": "ff-c3",
-      "targetHandle": "a"
+      "targetHandle": "tb",
+      "selected": false
     },
     {
       "id": "ff-e19",
@@ -664,7 +889,64 @@
       "sourceHandle": "sl",
       "target": "ff-r4",
       "targetHandle": "b",
-      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sl-ff-r4b"
+      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sl-ff-r4b",
+      "selected": false
+    },
+    {
+      "source": "ff-r2",
+      "sourceHandle": "a",
+      "target": "605e03ac-d63f-49b7-b109-81652416a441",
+      "targetHandle": "tb",
+      "id": "xy-edge__ff-r2a-605e03ac-d63f-49b7-b109-81652416a441tb"
+    },
+    {
+      "source": "605e03ac-d63f-49b7-b109-81652416a441",
+      "sourceHandle": "st",
+      "target": "ff-r3",
+      "targetHandle": "b",
+      "id": "xy-edge__605e03ac-d63f-49b7-b109-81652416a441st-ff-r3b"
+    },
+    {
+      "source": "ff-c3",
+      "sourceHandle": "a",
+      "target": "605e03ac-d63f-49b7-b109-81652416a441",
+      "targetHandle": "tr",
+      "id": "xy-edge__ff-c3a-605e03ac-d63f-49b7-b109-81652416a441tr"
+    },
+    {
+      "source": "ff-q2",
+      "sourceHandle": "c",
+      "target": "ff-r2",
+      "targetHandle": "b",
+      "id": "xy-edge__ff-q2c-ff-r2b"
+    },
+    {
+      "source": "bfcbd325-f590-4469-8bca-bab6b4a02f77",
+      "sourceHandle": "st",
+      "target": "ff-vcc2",
+      "targetHandle": "pos",
+      "id": "xy-edge__bfcbd325-f590-4469-8bca-bab6b4a02f77st-ff-vcc2pos"
+    },
+    {
+      "source": "ff-r3",
+      "sourceHandle": "a",
+      "target": "bfcbd325-f590-4469-8bca-bab6b4a02f77",
+      "targetHandle": "tr",
+      "id": "xy-edge__ff-r3a-bfcbd325-f590-4469-8bca-bab6b4a02f77tr"
+    },
+    {
+      "source": "ff-r1",
+      "sourceHandle": "a",
+      "target": "4c31eac7-9503-4c02-898e-8884e039bdf6",
+      "targetHandle": "tl",
+      "id": "xy-edge__ff-r1a-4c31eac7-9503-4c02-898e-8884e039bdf6tl"
+    },
+    {
+      "source": "bfcbd325-f590-4469-8bca-bab6b4a02f77",
+      "sourceHandle": "sb",
+      "target": "4c31eac7-9503-4c02-898e-8884e039bdf6",
+      "targetHandle": "tt",
+      "id": "xy-edge__bfcbd325-f590-4469-8bca-bab6b4a02f77sb-4c31eac7-9503-4c02-898e-8884e039bdf6tt"
     }
   ]
 }
