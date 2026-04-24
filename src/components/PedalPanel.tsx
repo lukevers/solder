@@ -1,9 +1,12 @@
-import { Activity } from 'lucide-react';
+import { Activity, Pencil } from 'lucide-react';
 import { useCallback, useId, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import type { CircuitMetadata } from '../lib/circuit-metadata';
 import type { PotData } from '../lib/types';
 import { useStore } from '../store';
 import { SIMULATION_STATUS, SWEEP_STATUS } from '../store/constants';
+import { useTabActions, useTabBarState } from '../store/hooks';
+import { CircuitMetadataModal } from './CircuitMetadataModal';
 
 // ─── Arc helpers ─────────────────────────────────────────────────────────────
 
@@ -248,70 +251,109 @@ export function PedalPanel({
 }: {
   onSweep?: (nodeId: string) => void;
 }) {
+  const { tabs, activeTabId } = useTabBarState();
+  const { updateTabMetadata } = useTabActions();
   const nodes = useStore(useShallow((s) => s.nodes));
   const pots = nodes.filter((n) => n.type === 'pot') as Array<
     Extract<(typeof nodes)[number], { type: 'pot' }>
   >;
 
   const [open, setOpen] = useState(true);
+  const [metadataOpen, setMetadataOpen] = useState(false);
+  const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? null;
 
-  if (pots.length === 0) {
+  if (!activeTab) {
     return null;
+  }
+
+  function handleMetadataSave(metadata: CircuitMetadata) {
+    if (!activeTabId) {
+      return;
+    }
+
+    updateTabMetadata(activeTabId, metadata);
+    setMetadataOpen(false);
   }
 
   return (
     <div className="border-gray-800 border-b">
-      {/* Collapse toggle */}
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center gap-1.5 px-3 py-2 font-bold font-mono text-[10px] text-gray-500 uppercase tracking-widest transition-colors hover:text-gray-300"
-      >
-        <svg
-          width="10"
-          height="10"
-          viewBox="0 0 10 10"
-          className={`transition-transform duration-150 ${open ? '' : '-rotate-90'}`}
-        >
-          <path
-            d="M1 3 L5 7 L9 3"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        Controls
-      </button>
+      <CircuitMetadataModal
+        open={metadataOpen}
+        metadata={activeTab}
+        onClose={() => setMetadataOpen(false)}
+        onSave={handleMetadataSave}
+      />
 
-      {open && (
-        /* Pedal enclosure */
-        <div className="mx-3 mb-3 rounded-lg border border-gray-700 bg-gray-950 p-3 shadow-inner">
-          {/* Decorative screws top */}
-          <div className="mb-3 flex justify-between">
-            <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
-            <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
-          </div>
-
-          {/* Knob grid */}
-          <div className="flex flex-wrap justify-around gap-x-2 gap-y-4">
-            {pots.map((n) => (
-              <PotKnob
-                key={n.id}
-                nodeId={n.id}
-                data={n.data}
-                onSweep={onSweep}
-              />
-            ))}
-          </div>
-
-          {/* Bottom screws */}
-          <div className="mt-3 flex justify-between">
-            <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
-            <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
-          </div>
+      <div className="flex items-center justify-between gap-2 border-gray-800 border-b px-3 py-1 font-semibold">
+        <div className="min-w-0 pr-2 font-sans text-gray-400 text-xs">
+          <span className="block truncate">{activeTab.name}</span>
         </div>
+        <button
+          type="button"
+          onClick={() => setMetadataOpen(true)}
+          className="flex h-7 w-7 flex-shrink-0 items-center justify-center text-gray-500 transition-colors hover:text-gray-200"
+          aria-label={`Edit metadata for ${activeTab.name}`}
+          title="Edit metadata"
+        >
+          <Pencil size={12} />
+        </button>
+      </div>
+
+      {pots.length > 0 && (
+        <>
+          {/* Collapse toggle */}
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            className="flex w-full items-center gap-1.5 px-3 py-2 font-bold font-mono text-[10px] text-gray-500 uppercase tracking-widest transition-colors hover:text-gray-300"
+          >
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              className={`transition-transform duration-150 ${open ? '' : '-rotate-90'}`}
+            >
+              <path
+                d="M1 3 L5 7 L9 3"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Controls
+          </button>
+
+          {open && (
+            /* Pedal enclosure */
+            <div className="mx-3 mb-3 rounded-lg border border-gray-700 bg-gray-950 p-3 shadow-inner">
+              {/* Decorative screws top */}
+              <div className="mb-3 flex justify-between">
+                <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
+                <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
+              </div>
+
+              {/* Knob grid */}
+              <div className="flex flex-wrap justify-around gap-x-2 gap-y-4">
+                {pots.map((n) => (
+                  <PotKnob
+                    key={n.id}
+                    nodeId={n.id}
+                    data={n.data}
+                    onSweep={onSweep}
+                  />
+                ))}
+              </div>
+
+              {/* Bottom screws */}
+              <div className="mt-3 flex justify-between">
+                <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
+                <div className="h-2 w-2 rounded-full border border-gray-600 bg-gray-700" />
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

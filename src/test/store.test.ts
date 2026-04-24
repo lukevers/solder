@@ -234,7 +234,7 @@ describe('circuitSlice', () => {
   it('keeps simulation output when adding a box', () => {
     const buf = new Float32Array([0.1, 0.2]);
 
-    useStore.getState().setSimulationStatus(SIMULATION_STATUS.done);
+    useStore.getState().setSimulationStatus(SIMULATION_STATUS.running);
     useStore.getState().setOutputBuffer(buf);
     useStore.getState().addNode({
       id: 'box-1',
@@ -245,7 +245,7 @@ describe('circuitSlice', () => {
 
     const { outputBuffer, simulationStatus } = useStore.getState();
     expect(outputBuffer).toBe(buf);
-    expect(simulationStatus).toBe(SIMULATION_STATUS.done);
+    expect(simulationStatus).toBe(SIMULATION_STATUS.running);
   });
 
   it('keeps simulation output when editing a sticky note', () => {
@@ -257,7 +257,7 @@ describe('circuitSlice', () => {
       position: { x: 20, y: 20 },
       data: { label: 'bias', text: 'Q2 at 4.5V' },
     });
-    useStore.getState().setSimulationStatus(SIMULATION_STATUS.done);
+    useStore.getState().setSimulationStatus(SIMULATION_STATUS.running);
     useStore.getState().setOutputBuffer(buf);
     useStore.getState().updateNodeData('note-1', {
       label: 'bias target',
@@ -266,7 +266,7 @@ describe('circuitSlice', () => {
 
     const { outputBuffer, simulationStatus } = useStore.getState();
     expect(outputBuffer).toBe(buf);
-    expect(simulationStatus).toBe(SIMULATION_STATUS.done);
+    expect(simulationStatus).toBe(SIMULATION_STATUS.running);
   });
 
   it('keeps simulation output when deleting a box', () => {
@@ -278,13 +278,13 @@ describe('circuitSlice', () => {
       position: { x: 40, y: 40 },
       data: { label: 'feedback loop' },
     });
-    useStore.getState().setSimulationStatus(SIMULATION_STATUS.done);
+    useStore.getState().setSimulationStatus(SIMULATION_STATUS.running);
     useStore.getState().setOutputBuffer(buf);
     useStore.getState().deleteNode('box-1');
 
     const { outputBuffer, simulationStatus } = useStore.getState();
     expect(outputBuffer).toBe(buf);
-    expect(simulationStatus).toBe(SIMULATION_STATUS.done);
+    expect(simulationStatus).toBe(SIMULATION_STATUS.running);
   });
 
   it('still invalidates simulation output when editing a resistor', () => {
@@ -296,7 +296,7 @@ describe('circuitSlice', () => {
       position: { x: 0, y: 0 },
       data: { label: 'R1', ohms: 10000 },
     });
-    useStore.getState().setSimulationStatus(SIMULATION_STATUS.done);
+    useStore.getState().setSimulationStatus(SIMULATION_STATUS.running);
     useStore.getState().setOutputBuffer(buf);
     useStore.getState().updateNodeData('r1', { label: 'R1', ohms: 47000 });
 

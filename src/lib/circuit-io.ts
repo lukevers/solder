@@ -54,8 +54,14 @@ function serializeNode(node: ComponentNode): SerializedNode {
     }
   }
 
-  const runtimeWidth = 'width' in node ? node.width : undefined;
-  const runtimeHeight = 'height' in node ? node.height : undefined;
+  const runtimeWidth =
+    typeof (node as { width?: unknown }).width === 'number'
+      ? (node as { width?: number }).width
+      : undefined;
+  const runtimeHeight =
+    typeof (node as { height?: unknown }).height === 'number'
+      ? (node as { height?: number }).height
+      : undefined;
   const styleWidth = node.type === 'box' ? node.style?.width : undefined;
   const styleHeight = node.type === 'box' ? node.style?.height : undefined;
 

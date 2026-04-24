@@ -57,6 +57,7 @@ type NodeBase = {
   position: XYPosition;
   rotation?: number;
   measured?: { width?: number; height?: number };
+  selected?: boolean;
 };
 
 /**
@@ -91,6 +92,7 @@ export type ComponentNode =
       type: 'box';
       data: BoxData;
       style?: { width?: number; height?: number };
+      zIndex?: number;
       dragHandle?: string;
       className?: string;
     });

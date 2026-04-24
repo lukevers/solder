@@ -287,47 +287,59 @@ export function normalizePersistedTab(tab: PersistedTab): PersistedTab {
     category: 'category' in tab ? tab.category : undefined,
   });
 
-  const origin =
-    tab.origin.kind === TAB_ORIGIN_KIND.custom
-      ? tab.origin
-      : tab.origin.kind === TAB_ORIGIN_KIND.starter
-        ? {
-            kind: TAB_ORIGIN_KIND.starter as const,
-            seed:
-              'seed' in tab.origin
-                ? normalizeCircuitMetadata(tab.origin.seed)
-                : normalizeCircuitMetadata({
-                    name:
-                      'defaultName' in tab.origin
-                        ? tab.origin.defaultName
-                        : metadata.name,
-                    description: metadata.description,
-                    tags: metadata.tags,
-                    category: metadata.category,
-                  }),
-            fingerprint: tab.origin.fingerprint,
-          }
-        : {
-            kind: TAB_ORIGIN_KIND.example as const,
-            exampleId: tab.origin.exampleId,
-            seed:
-              'seed' in tab.origin
-                ? normalizeCircuitMetadata(tab.origin.seed)
-                : normalizeCircuitMetadata({
-                    name:
-                      'exampleName' in tab.origin
-                        ? tab.origin.exampleName
-                        : metadata.name,
-                    description: metadata.description,
-                    tags: metadata.tags,
-                    category: metadata.category,
-                  }),
-            fingerprint: tab.origin.fingerprint,
-          };
+  const compatOrigin = tab.origin as typeof tab.origin & {
+    defaultName?: string;
+    exampleName?: string;
+  };
+
+  if (compatOrigin.kind === TAB_ORIGIN_KIND.custom) {
+    return {
+      ...tab,
+      ...metadata,
+      origin: compatOrigin,
+    };
+  }
+
+  if (compatOrigin.kind === TAB_ORIGIN_KIND.starter) {
+    const defaultName = (tab.origin as { defaultName?: string }).defaultName;
+
+    return {
+      ...tab,
+      ...metadata,
+      origin: {
+        kind: TAB_ORIGIN_KIND.starter,
+        seed:
+          'seed' in compatOrigin
+            ? normalizeCircuitMetadata(compatOrigin.seed)
+            : normalizeCircuitMetadata({
+                name: defaultName ?? metadata.name,
+                description: metadata.description,
+                tags: metadata.tags,
+                category: metadata.category,
+              }),
+        fingerprint: compatOrigin.fingerprint,
+      },
+    };
+  }
+
+  const exampleName = (tab.origin as { exampleName?: string }).exampleName;
 
   return {
     ...tab,
     ...metadata,
-    origin,
+    origin: {
+      kind: TAB_ORIGIN_KIND.example,
+      exampleId: compatOrigin.exampleId,
+      seed:
+        'seed' in compatOrigin
+          ? normalizeCircuitMetadata(compatOrigin.seed)
+          : normalizeCircuitMetadata({
+              name: exampleName ?? metadata.name,
+              description: metadata.description,
+              tags: metadata.tags,
+              category: metadata.category,
+            }),
+      fingerprint: compatOrigin.fingerprint,
+    },
   };
 }
