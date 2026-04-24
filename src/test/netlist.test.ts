@@ -931,12 +931,14 @@ describe('compileNetlist potentiometer edge cases', () => {
       },
     ];
     const netlist = compileNetlist(nodes, []);
-    // position=0: rHigh = ohms * 0 → clamped to 1, rLow = ohms * 1 = 100000
     const lines = netlist.split('\n').filter((l) => l.startsWith('RVR1'));
     expect(lines).toHaveLength(2);
-    // One should be 100k, the other should be 1 (clamped)
-    expect(lines.some((l) => l.includes('100k'))).toBe(true);
-    expect(lines.some((l) => l.endsWith(' 1'))).toBe(true);
+    expect(lines.find((l) => l.startsWith('RVR1a '))?.endsWith(' 1')).toBe(
+      true,
+    );
+    expect(lines.find((l) => l.startsWith('RVR1b '))?.endsWith(' 100k')).toBe(
+      true,
+    );
   });
 
   it('position=1 clamps upper resistor to 1 ohm', () => {
@@ -963,8 +965,12 @@ describe('compileNetlist potentiometer edge cases', () => {
     const netlist = compileNetlist(nodes, []);
     const lines = netlist.split('\n').filter((l) => l.startsWith('RVR1'));
     expect(lines).toHaveLength(2);
-    expect(lines.some((l) => l.includes('100k'))).toBe(true);
-    expect(lines.some((l) => l.endsWith(' 1'))).toBe(true);
+    expect(lines.find((l) => l.startsWith('RVR1a '))?.endsWith(' 100k')).toBe(
+      true,
+    );
+    expect(lines.find((l) => l.startsWith('RVR1b '))?.endsWith(' 1')).toBe(
+      true,
+    );
   });
 });
 

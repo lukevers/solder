@@ -10,9 +10,16 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import {
+  Fragment,
+  type MouseEvent as ReactMouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { exportCircuit, importCircuit } from '../lib/circuit-io';
+import type { CircuitMetadata } from '../lib/circuit-metadata';
 import { DEFAULT_NODE_COLOR } from '../lib/colors';
 import { CIRCUIT_LABEL } from '../lib/constants';
 import { DEFAULT_BOX_VARIANT } from '../lib/models/box/constants';
@@ -30,6 +37,7 @@ import {
   useTabBarState,
   useViewportState,
 } from '../store/hooks';
+import { CircuitMetadataModal } from './CircuitMetadataModal';
 import { SolderLogo } from './SolderLogo';
 
 function FlyoutButton({
@@ -525,7 +533,7 @@ export function Toolbar({
 }: ToolbarProps) {
   const { tabs, activeTabId } = useTabBarState();
   const { viewport } = useViewportState();
-  const { addTab, closeTab, switchTab, renameTab } = useTabActions();
+  const { addTab, closeTab, switchTab, updateTabMetadata } = useTabActions();
   const { nodes, edges } = useCircuitState();
   const { addNode, loadCircuit } = useCircuitActions();
   const { simulationStatus, outputBuffer } = useSimulationState();
@@ -533,15 +541,7 @@ export function Toolbar({
   const { sweepStatus } = useSweepState();
   const { playing } = useAudioState();
 
-  const [editingTabId, setEditingTabId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState('');
-  const renameInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (editingTabId) {
-      renameInputRef.current?.focus();
-    }
-  }, [editingTabId]);
+  const [metadataTabId, setMetadataTabId] = useState<string | null>(null);
 
   function handleAdd(
     item: (typeof PALETTE)[number] | (typeof JACK_ITEMS)[number],
@@ -572,23 +572,25 @@ export function Toolbar({
     } as ComponentNode);
   }
 
-  function startRename(id: string, currentName: string, e: React.MouseEvent) {
+  function openMetadataModal(id: string, e: ReactMouseEvent) {
     e.stopPropagation();
-    setEditingTabId(id);
-    setEditingName(currentName);
-  }
-
-  function commitRename(id: string) {
-    if (editingName.trim()) {
-      renameTab(id, editingName.trim());
-    }
-    setEditingTabId(null);
+    setMetadataTabId(id);
   }
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? null;
+  const metadataTab = tabs.find((tab) => tab.id === metadataTabId) ?? null;
+
+  function handleMetadataSave(metadata: CircuitMetadata) {
+    if (!metadataTabId) {
+      return;
+    }
+
+    updateTabMetadata(metadataTabId, metadata);
+    setMetadataTabId(null);
+  }
 
   function handleExport() {
-    const activeTab = tabs.find((t) => t.id === activeTabId);
     if (!activeTab) {
       return;
     }
@@ -618,12 +620,12 @@ export function Toolbar({
     try {
       const text = await file.text();
       const {
-        name,
+        metadata,
         nodes: importedNodes,
         edges: importedEdges,
       } = importCircuit(text);
       loadCircuit(importedNodes, importedEdges);
-      renameTab(activeTabId, name);
+      updateTabMetadata(activeTabId, metadata);
     } catch (err) {
       setSimulationError(err instanceof Error ? err.message : String(err));
     }
@@ -657,28 +659,9 @@ export function Toolbar({
                     : '-mb-px border-transparent border-b-2 text-gray-400 hover:bg-gray-800 hover:text-gray-200'
                 }`}
               >
-                {editingTabId === tab.id ? (
-                  <input
-                    ref={renameInputRef}
-                    value={editingName}
-                    onChange={(e) => setEditingName(e.target.value)}
-                    onBlur={() => commitRename(tab.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        commitRename(tab.id);
-                      } else if (e.key === 'Escape') {
-                        setEditingTabId(null);
-                      }
-                      e.stopPropagation();
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-24 rounded border border-blue-500 bg-gray-700 px-1 text-gray-100 text-xs outline-none"
-                  />
-                ) : (
-                  <span onDoubleClick={(e) => startRename(tab.id, tab.name, e)}>
-                    {tab.name}
-                  </span>
-                )}
+                <span onDoubleClick={(e) => openMetadataModal(tab.id, e)}>
+                  {tab.name}
+                </span>
                 {
                   <button
                     type="button"
@@ -746,6 +729,12 @@ export function Toolbar({
         accept=".json"
         onChange={handleImport}
         style={{ display: 'none' }}
+      />
+      <CircuitMetadataModal
+        open={metadataTabId !== null}
+        metadata={metadataTab}
+        onClose={() => setMetadataTabId(null)}
+        onSave={handleMetadataSave}
       />
 
       {/* On mobile: two rows (actions middle, palette bottom). On sm+: one row. */}

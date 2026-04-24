@@ -16,6 +16,9 @@ import { fingerprintCircuit } from '../store/helpers';
 const RESET_TAB: Tab = {
   id: 'test-tab-1',
   name: 'Circuit 1',
+  description: '',
+  tags: [],
+  category: EXAMPLE_CATEGORY.circuits,
   origin: { kind: TAB_ORIGIN_KIND.custom },
   nodes: [],
   edges: [],
@@ -137,9 +140,17 @@ const STARTER_TAB_EDGES: Tab['edges'] = [
 const STARTER_TAB: Tab = {
   id: 'starter-tab-1',
   name: 'Circuit 1',
+  description: '',
+  tags: [],
+  category: EXAMPLE_CATEGORY.circuits,
   origin: {
     kind: TAB_ORIGIN_KIND.starter,
-    defaultName: 'Circuit 1',
+    seed: {
+      name: 'Circuit 1',
+      description: '',
+      tags: [],
+      category: EXAMPLE_CATEGORY.circuits,
+    },
     fingerprint: fingerprintCircuit(STARTER_TAB_NODES, STARTER_TAB_EDGES),
   },
   nodes: STARTER_TAB_NODES,
@@ -475,10 +486,20 @@ describe('tabsSlice', () => {
     expect(tabs[0].name).toBe('Circuit 1');
   });
 
-  it('renameTab updates the tab name', () => {
+  it('updateTabMetadata updates the tab metadata', () => {
     const { tabs } = useStore.getState();
-    useStore.getState().renameTab(tabs[0].id, 'My Fuzz');
-    expect(useStore.getState().tabs[0].name).toBe('My Fuzz');
+    useStore.getState().updateTabMetadata(tabs[0].id, {
+      name: 'My Fuzz',
+      description: 'Vintage two-transistor fuzz',
+      tags: ['fuzz', 'germanium'],
+      category: EXAMPLE_CATEGORY.pedals,
+    });
+    expect(useStore.getState().tabs[0]).toMatchObject({
+      name: 'My Fuzz',
+      description: 'Vintage two-transistor fuzz',
+      tags: ['fuzz', 'germanium'],
+      category: EXAMPLE_CATEGORY.pedals,
+    });
   });
 
   it('switchTab with current active id is a no-op', () => {
@@ -511,7 +532,12 @@ describe('tabsSlice', () => {
     expect(activeTab.origin).toMatchObject({
       kind: 'example',
       exampleId: 'example-a',
-      exampleName: 'Example A',
+      seed: {
+        name: 'Example A',
+        description: 'Test example A',
+        tags: ['test'],
+        category: EXAMPLE_CATEGORY.circuits,
+      },
     });
     expect(nodes[0].id).toBe('r1');
   });
@@ -558,7 +584,12 @@ describe('tabsSlice', () => {
     expect(activeTab.origin).toMatchObject({
       kind: 'example',
       exampleId: 'example-b',
-      exampleName: 'Example B',
+      seed: {
+        name: 'Example B',
+        description: 'Test example B',
+        tags: ['test'],
+        category: EXAMPLE_CATEGORY.circuits,
+      },
     });
     expect(nodes[0].id).toBe('c1');
   });
@@ -585,6 +616,29 @@ describe('tabsSlice', () => {
       tabs.find((tab) => tab.id === firstExampleTabId)?.nodes,
     ).toHaveLength(2);
     expect(tabs.find((tab) => tab.id === activeTabId)?.name).toBe('Example B');
+  });
+
+  it('openExample creates a new tab when the active example metadata has changed', () => {
+    useStore.getState().openExample(EXAMPLE_A);
+
+    const firstExampleTabId = useStore.getState().activeTabId;
+
+    useStore.getState().updateTabMetadata(firstExampleTabId, {
+      name: 'Example A',
+      description: 'Custom description',
+      tags: ['test'],
+      category: EXAMPLE_CATEGORY.circuits,
+    });
+
+    useStore.getState().openExample(EXAMPLE_B);
+
+    const { tabs, activeTabId } = useStore.getState();
+
+    expect(tabs).toHaveLength(3);
+    expect(activeTabId).not.toBe(firstExampleTabId);
+    expect(tabs.find((tab) => tab.id === firstExampleTabId)?.description).toBe(
+      'Custom description',
+    );
   });
 
   it('openExample creates a new tab when the starter tab has changed', () => {

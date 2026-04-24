@@ -54,6 +54,23 @@ describe('EXAMPLES', () => {
           expect(edge.targetHandle!.length).toBeGreaterThan(0);
         }
       });
+
+      it('junction edges use source and target handles in the correct direction', () => {
+        const nodesById = new Map(ex.nodes.map((node) => [node.id, node]));
+
+        for (const edge of ex.edges) {
+          const sourceNode = nodesById.get(edge.source);
+          const targetNode = nodesById.get(edge.target);
+
+          if (sourceNode?.type === 'junction') {
+            expect(edge.sourceHandle?.startsWith('s')).toBe(true);
+          }
+
+          if (targetNode?.type === 'junction') {
+            expect(edge.targetHandle?.startsWith('t')).toBe(true);
+          }
+        }
+      });
     });
   }
 });

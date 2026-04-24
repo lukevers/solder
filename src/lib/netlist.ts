@@ -607,14 +607,14 @@ function buildCircuitBody(
       const nWiper = getNode(node.id, 'wiper');
       const nCw = getNode(node.id, 'cw');
       const effective = applyTaper(node.data.position, node.data.taper);
-      const rLow = Math.max(node.data.ohms * (1 - effective), 1);
-      const rHigh = Math.max(node.data.ohms * effective, 1);
+      const rCcwToWiper = Math.max(node.data.ohms * effective, 1);
+      const rWiperToCw = Math.max(node.data.ohms * (1 - effective), 1);
       // Prefix R to guarantee resistor element regardless of label (e.g. "DIST" → "RDISTa")
       lines.push(
-        `R${node.data.label}a ${nCcw} ${nWiper} ${formatResistance(rLow)}`,
+        `R${node.data.label}a ${nCcw} ${nWiper} ${formatResistance(rCcwToWiper)}`,
       );
       lines.push(
-        `R${node.data.label}b ${nWiper} ${nCw} ${formatResistance(rHigh)}`,
+        `R${node.data.label}b ${nWiper} ${nCw} ${formatResistance(rWiperToCw)}`,
       );
     } else if (node.type === 'bjt') {
       const nc = getNode(node.id, 'c');

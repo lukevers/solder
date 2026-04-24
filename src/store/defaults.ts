@@ -1,4 +1,5 @@
 import { EXAMPLE_CATEGORY } from '../examples';
+import { normalizeCircuitMetadata } from '../lib/circuit-metadata';
 import { CIRCUIT_LABEL, DEFAULT_BUNDLED_SAMPLE_NAME } from '../lib/constants';
 import { JACK_DIRECTION } from '../lib/models/jack/types';
 import { AUDIO_SOURCE_TYPE, type AudioSource } from '../lib/simulation-types';
@@ -68,6 +69,10 @@ export function defaultTab(
     | typeof TAB_ORIGIN_KIND.starter = TAB_ORIGIN_KIND.custom,
 ): Tab {
   const id = crypto.randomUUID();
+  const metadata = normalizeCircuitMetadata({
+    name,
+    category: EXAMPLE_CATEGORY.circuits,
+  });
   const nodes = [
     {
       id: `${id}-in`,
@@ -121,14 +126,14 @@ export function defaultTab(
     originKind === TAB_ORIGIN_KIND.starter
       ? {
           kind: TAB_ORIGIN_KIND.starter,
-          defaultName: name,
+          seed: metadata,
           fingerprint: fingerprintCircuit(nodes, edges),
         }
       : { kind: TAB_ORIGIN_KIND.custom };
 
   return {
     id,
-    name,
+    ...metadata,
     origin,
     nodes,
     edges,

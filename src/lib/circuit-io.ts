@@ -1,4 +1,8 @@
 import type { Edge } from '@xyflow/react';
+import {
+  type CircuitMetadata,
+  normalizeCircuitMetadata,
+} from '../lib/circuit-metadata';
 import type { Tab } from '../store';
 import type { ComponentNode } from './types';
 
@@ -87,10 +91,17 @@ function serializeEdge(edge: Edge): SerializedEdge {
  * Exports a circuit as a JSON string.
  */
 export function exportCircuit(tab: Tab): string {
+  const metadata = normalizeCircuitMetadata({
+    name: tab.name,
+    description: tab.description,
+    tags: tab.tags,
+    category: tab.category,
+  });
+
   return JSON.stringify(
     {
       version: 1,
-      name: tab.name,
+      ...metadata,
       nodes: tab.nodes.map(serializeNode),
       edges: tab.edges.map(serializeEdge),
     },
@@ -104,7 +115,7 @@ export function exportCircuit(tab: Tab): string {
  * input.
  */
 export function importCircuit(json: string): {
-  name: string;
+  metadata: CircuitMetadata;
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
 } {
@@ -133,7 +144,12 @@ export function importCircuit(json: string): {
   }
 
   return {
-    name: obj.name,
+    metadata: normalizeCircuitMetadata({
+      name: obj.name,
+      description: obj.description,
+      tags: obj.tags,
+      category: obj.category,
+    }),
     nodes: obj.nodes as Array<ComponentNode>,
     edges: obj.edges as Array<Edge>,
   };

@@ -73,7 +73,7 @@ const selectTabActions = (state: StoreState) => ({
   openExample: state.openExample,
   switchTab: state.switchTab,
   closeTab: state.closeTab,
-  renameTab: state.renameTab,
+  updateTabMetadata: state.updateTabMetadata,
   setExamplesActiveCategory: state.setExamplesActiveCategory,
   setViewport: state.setViewport,
 });

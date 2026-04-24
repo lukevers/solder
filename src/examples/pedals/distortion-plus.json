@@ -437,7 +437,7 @@
     {
       "id": "mxr-e_dist_ccw_gnd",
       "source": "mxr-dist",
-      "sourceHandle": "ccw",
+      "sourceHandle": "cw",
       "target": "mxr-gnd_dist_ccw",
       "targetHandle": "gnd"
     },

@@ -3,7 +3,11 @@ import { type PersistOptions, persist } from 'zustand/middleware';
 import { createAudioSlice } from './audio-slice';
 import { createCircuitSlice } from './circuit-slice';
 import { defaultSimState, initialState } from './defaults';
-import { flushActive, stripTabRuntimeState } from './helpers';
+import {
+  flushActive,
+  normalizePersistedTab,
+  stripTabRuntimeState,
+} from './helpers';
 import { createHistorySlice } from './history-slice';
 import { createSimulationSlice } from './simulation-slice';
 import { createTabsSlice } from './tabs-slice';
@@ -40,7 +44,7 @@ const persistOptions: PersistOptions<StoreState, PersistedStoreState> = {
 
     state.tabs = state.tabs.map((tab) => ({
       ...defaultSimState,
-      ...tab,
+      ...normalizePersistedTab(tab),
     }));
 
     const activeTab = state.tabs.find((tab) => tab.id === state.activeTabId);

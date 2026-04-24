@@ -89,6 +89,26 @@ describe('potentiometer position', () => {
     expect(peakV).toBeLessThan(0.6);
   });
 
+  it('position 0 keeps the wiper at the CCW/input side', async () => {
+    const { nodes, edges } = potCircuit(0);
+    const output = await engine.run(
+      compileNetlist(nodes, edges, 0.01, 1000, 1),
+    );
+    const peakV = peak(output.voltageValues, 0.1);
+
+    expect(peakV).toBeGreaterThan(0.9);
+  });
+
+  it('position 1 moves the wiper to the CW/ground side', async () => {
+    const { nodes, edges } = potCircuit(1);
+    const output = await engine.run(
+      compileNetlist(nodes, edges, 0.01, 1000, 1),
+    );
+    const peakV = peak(output.voltageValues, 0.1);
+
+    expect(peakV).toBeLessThan(0.05);
+  });
+
   it('different positions produce different output levels', async () => {
     const { nodes: n1, edges: e1 } = potCircuit(0.2);
     const out1 = await engine.run(compileNetlist(n1, e1, 0.01, 1000, 1.0));

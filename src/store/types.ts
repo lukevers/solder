@@ -1,6 +1,7 @@
 import type { Edge } from '@xyflow/react';
 import type { StateCreator } from 'zustand';
 import type { ExampleCategory, ExampleCircuit } from '../examples';
+import type { CircuitMetadata } from '../lib/circuit-metadata';
 import type {
   AudioSource,
   LocalSample,
@@ -29,19 +30,18 @@ export type TabOrigin =
   | { kind: typeof TAB_ORIGIN_KIND.custom }
   | {
       kind: typeof TAB_ORIGIN_KIND.starter;
-      defaultName: string;
+      seed: CircuitMetadata;
       fingerprint: string;
     }
   | {
       kind: typeof TAB_ORIGIN_KIND.example;
       exampleId: string;
-      exampleName: string;
+      seed: CircuitMetadata;
       fingerprint: string;
     };
 
-export type Tab = {
+export type Tab = CircuitMetadata & {
   id: string;
-  name: string;
   origin: TabOrigin;
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
@@ -67,7 +67,7 @@ export type StoreState = {
   openExample: (example: ExampleCircuit) => void;
   switchTab: (id: string) => void;
   closeTab: (id: string) => void;
-  renameTab: (id: string, name: string) => void;
+  updateTabMetadata: (id: string, metadata: CircuitMetadata) => void;
   examplesActiveCategory: ExampleCategory;
   setExamplesActiveCategory: (category: ExampleCategory) => void;
   viewResetKey: number;

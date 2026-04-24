@@ -9,7 +9,21 @@ interface BoxNodeProps extends NodeProps {
   data: BoxData;
 }
 
-export function BoxNode({ id, data }: BoxNodeProps) {
+/**
+ * Decorative grouping box renderer.
+ *
+ * XYFlow sizes these nodes via inline width and height styles rather than a
+ * fixed symbol registry entry. The SVG border therefore needs real numeric
+ * dimensions, not CSS expressions in SVG attributes, otherwise the browser
+ * logs parsing warnings such as:
+ *
+ *   "Unexpected value calc(100% - 1.5px) parsing width attribute."
+ *
+ * We prefer the live XYFlow width and height when available so resized boxes
+ * render crisply, and fall back to the persisted box style during the first
+ * paint before runtime dimensions are attached.
+ */
+export function BoxNode({ id, data, width, height }: BoxNodeProps) {
   const selectNode = useStore((s) => s.selectNode);
   const isSelected = useStore((s) => s.selectedNodeId === id);
 
@@ -17,6 +31,10 @@ export function BoxNode({ id, data }: BoxNodeProps) {
   const variant = data.variant ?? DEFAULT_BOX_VARIANT;
   const { border: borderColor, fill } = COLOR_MAP[color];
   const strokeWidth = isSelected ? 2 : 1.5;
+  const boxWidth = width ?? 80;
+  const boxHeight = height ?? 60;
+  const borderWidth = Math.max(boxWidth - strokeWidth, 0);
+  const borderHeight = Math.max(boxHeight - strokeWidth, 0);
 
   /**
    * Border hit-strip thickness in pixels. These strips sit just inside the
@@ -89,8 +107,8 @@ export function BoxNode({ id, data }: BoxNodeProps) {
           <rect
             x={strokeWidth / 2}
             y={strokeWidth / 2}
-            width={`calc(100% - ${strokeWidth}px)`}
-            height={`calc(100% - ${strokeWidth}px)`}
+            width={borderWidth}
+            height={borderHeight}
             fill="none"
             stroke={borderColor}
             strokeWidth={strokeWidth}

@@ -1,9 +1,11 @@
+import { normalizeCircuitMetadata } from '../lib/circuit-metadata';
 import {
   DEFAULT_SYMBOL,
   resolveOpAmpSymbol,
   SYMBOLS,
 } from '../lib/models/symbol-registry';
 import type { ComponentNode } from '../lib/types';
+import { TAB_ORIGIN_KIND } from './constants';
 import type { PersistedTab, Snapshot, StoreState, Tab } from './types';
 
 /**
@@ -268,4 +270,64 @@ export function stripTabRuntimeState(tab: Tab): PersistedTab {
   } = tab;
 
   return persistedTab;
+}
+
+/**
+ * Normalize tab metadata and origin payloads loaded from persisted storage.
+ *
+ * Older saved workspaces may predate the richer metadata model or use the
+ * previous origin shape with `defaultName` / `exampleName`. Hydrating through
+ * one compatibility path keeps the runtime tab shape uniform.
+ */
+export function normalizePersistedTab(tab: PersistedTab): PersistedTab {
+  const metadata = normalizeCircuitMetadata({
+    name: tab.name,
+    description: 'description' in tab ? tab.description : undefined,
+    tags: 'tags' in tab ? tab.tags : undefined,
+    category: 'category' in tab ? tab.category : undefined,
+  });
+
+  const origin =
+    tab.origin.kind === TAB_ORIGIN_KIND.custom
+      ? tab.origin
+      : tab.origin.kind === TAB_ORIGIN_KIND.starter
+        ? {
+            kind: TAB_ORIGIN_KIND.starter as const,
+            seed:
+              'seed' in tab.origin
+                ? normalizeCircuitMetadata(tab.origin.seed)
+                : normalizeCircuitMetadata({
+                    name:
+                      'defaultName' in tab.origin
+                        ? tab.origin.defaultName
+                        : metadata.name,
+                    description: metadata.description,
+                    tags: metadata.tags,
+                    category: metadata.category,
+                  }),
+            fingerprint: tab.origin.fingerprint,
+          }
+        : {
+            kind: TAB_ORIGIN_KIND.example as const,
+            exampleId: tab.origin.exampleId,
+            seed:
+              'seed' in tab.origin
+                ? normalizeCircuitMetadata(tab.origin.seed)
+                : normalizeCircuitMetadata({
+                    name:
+                      'exampleName' in tab.origin
+                        ? tab.origin.exampleName
+                        : metadata.name,
+                    description: metadata.description,
+                    tags: metadata.tags,
+                    category: metadata.category,
+                  }),
+            fingerprint: tab.origin.fingerprint,
+          };
+
+  return {
+    ...tab,
+    ...metadata,
+    origin,
+  };
 }

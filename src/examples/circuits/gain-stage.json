@@ -488,13 +488,6 @@
       "targetHandle": "tt"
     },
     {
-      "id": "xy-edge__61c1835c-3eca-4473-ba96-a32d888aa26ctr-gs-pot-gainwiper",
-      "source": "61c1835c-3eca-4473-ba96-a32d888aa26c",
-      "sourceHandle": "tr",
-      "target": "gs-pot-gain",
-      "targetHandle": "wiper"
-    },
-    {
       "id": "xy-edge__gs-pot-gainwiper-61c1835c-3eca-4473-ba96-a32d888aa26ctr",
       "source": "gs-pot-gain",
       "sourceHandle": "wiper",

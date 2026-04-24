@@ -1,11 +1,15 @@
 import type { Edge } from '@xyflow/react';
 import { describe, expect, it } from 'vitest';
+import { EXAMPLE_CATEGORY } from '../examples';
 import { exportCircuit, importCircuit } from '../lib/circuit-io';
 import type { Tab } from '../store';
 
 const SAMPLE_TAB: Tab = {
   id: 'tab-1',
   name: 'My Circuit',
+  description: 'Simple test circuit',
+  tags: ['test', 'export'],
+  category: EXAMPLE_CATEGORY.circuits,
   origin: { kind: 'custom' },
   nodes: [
     {
@@ -52,6 +56,15 @@ describe('exportCircuit', () => {
   it('includes name from tab', () => {
     const parsed = JSON.parse(exportCircuit(SAMPLE_TAB));
     expect(parsed.name).toBe('My Circuit');
+  });
+
+  it('includes editable metadata from tab', () => {
+    const parsed = JSON.parse(exportCircuit(SAMPLE_TAB));
+    expect(parsed).toMatchObject({
+      description: 'Simple test circuit',
+      tags: ['test', 'export'],
+      category: EXAMPLE_CATEGORY.circuits,
+    });
   });
 
   it('includes nodes and edges', () => {
@@ -145,7 +158,12 @@ describe('importCircuit', () => {
   it('round-trips a tab', () => {
     const json = exportCircuit(SAMPLE_TAB);
     const result = importCircuit(json);
-    expect(result.name).toBe('My Circuit');
+    expect(result.metadata).toEqual({
+      name: 'My Circuit',
+      description: 'Simple test circuit',
+      tags: ['test', 'export'],
+      category: EXAMPLE_CATEGORY.circuits,
+    });
     expect(result.nodes).toHaveLength(1);
     expect(result.nodes[0].id).toBe('n1');
     expect(result.edges).toHaveLength(1);
@@ -178,10 +196,19 @@ describe('importCircuit', () => {
     ).toThrow('"name" string');
   });
 
-  it('returns name, nodes, edges on valid input', () => {
+  it('defaults missing metadata fields on valid input', () => {
     const result = importCircuit(
       JSON.stringify({ version: 1, name: 'Test', nodes: [], edges: [] }),
     );
-    expect(result).toEqual({ name: 'Test', nodes: [], edges: [] });
+    expect(result).toEqual({
+      metadata: {
+        name: 'Test',
+        description: '',
+        tags: [],
+        category: EXAMPLE_CATEGORY.circuits,
+      },
+      nodes: [],
+      edges: [],
+    });
   });
 });

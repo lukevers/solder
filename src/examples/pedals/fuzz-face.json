@@ -696,13 +696,6 @@
       "targetHandle": "tt"
     },
     {
-      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8tb-ff-fuzzcw",
-      "source": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
-      "sourceHandle": "tb",
-      "target": "ff-fuzz",
-      "targetHandle": "cw"
-    },
-    {
       "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sb-ff-fuzzcw",
       "source": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
       "sourceHandle": "sb",

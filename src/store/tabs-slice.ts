@@ -1,4 +1,5 @@
 import type { ExampleCircuit } from '../examples';
+import { normalizeCircuitMetadata } from '../lib/circuit-metadata';
 import { TAB_ORIGIN_KIND } from './constants';
 import {
   clearSim,
@@ -21,7 +22,7 @@ type TabsSlice = Pick<
   | 'openExample'
   | 'switchTab'
   | 'closeTab'
-  | 'renameTab'
+  | 'updateTabMetadata'
   | 'setExamplesActiveCategory'
   | 'setViewport'
   | 'setHasSeenWelcome'
@@ -34,16 +35,22 @@ type TabsSlice = Pick<
  * store can later decide whether another example click should reuse this tab.
  */
 function createExampleTab(example: ExampleCircuit): Tab {
+  const metadata = normalizeCircuitMetadata({
+    name: example.name,
+    description: example.description,
+    tags: example.tags,
+    category: example.category,
+  });
   const nodes = ensureMeasured(example.nodes);
   const fingerprint = fingerprintCircuit(nodes, example.edges);
 
   return {
     id: crypto.randomUUID(),
-    name: example.name,
+    ...metadata,
     origin: {
       kind: TAB_ORIGIN_KIND.example,
       exampleId: example.id,
-      exampleName: example.name,
+      seed: metadata,
       fingerprint,
     },
     nodes,
@@ -60,8 +67,8 @@ function createExampleTab(example: ExampleCircuit): Tab {
  * replaceable seeded circuit.
  *
  * Seeded tabs currently include examples and the very first starter circuit.
- * Renaming either one counts as a change so a later example click opens a new
- * tab instead of silently discarding that custom title.
+ * Editing any seeded metadata counts as a change so a later example click
+ * opens a new tab instead of silently discarding the user's custom metadata.
  */
 function isPristineReplaceableActiveTab(
   state: StoreState,
@@ -71,11 +78,14 @@ function isPristineReplaceableActiveTab(
     return false;
   }
 
-  if (activeTab.origin.kind === TAB_ORIGIN_KIND.example) {
-    if (activeTab.name !== activeTab.origin.exampleName) {
-      return false;
-    }
-  } else if (activeTab.name !== activeTab.origin.defaultName) {
+  const metadata = normalizeCircuitMetadata({
+    name: activeTab.name,
+    description: activeTab.description,
+    tags: activeTab.tags,
+    category: activeTab.category,
+  });
+
+  if (JSON.stringify(metadata) !== JSON.stringify(activeTab.origin.seed)) {
     return false;
   }
 
@@ -218,9 +228,11 @@ export const createTabsSlice: StoreSlice<TabsSlice> = (set) => ({
       return { tabs: remainingTabs };
     }),
 
-  renameTab: (id, name) =>
+  updateTabMetadata: (id, metadata) =>
     set((state) => ({
-      tabs: state.tabs.map((tab) => (tab.id === id ? { ...tab, name } : tab)),
+      tabs: state.tabs.map((tab) =>
+        tab.id === id ? { ...tab, ...metadata } : tab,
+      ),
     })),
 
   setExamplesActiveCategory: (examplesActiveCategory) =>
