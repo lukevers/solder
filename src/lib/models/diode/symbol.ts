@@ -88,3 +88,18 @@ export const SYM_DIODE_1N270: SymbolDef = {
   style: 'diode',
   pins: _diodePins,
 };
+
+/**
+ * 1N34A — germanium point-contact diode.
+ * Classic crystal-radio / detector diode with
+ * low junction capacitance and low forward drop.
+ */
+export const SYM_DIODE_1N34A: SymbolDef = {
+  id: 'diode/1n34a',
+  name: '1N34A',
+  description: 'Germanium point-contact detector diode',
+  width: 60,
+  height: 40,
+  style: 'diode',
+  pins: _diodePins,
+};

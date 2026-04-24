@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   BJT_2N3904,
+  DIODE_1N34A,
   DIODE_1N914,
   JFET_J201,
   LM741_SUBCKT,
@@ -16,6 +17,9 @@ describe('SPICE model builders', () => {
   it('serializes diode models to .model lines', () => {
     expect(DIODE_1N914.toString()).toBe(
       '.model 1N914 D(IS=2.52n RS=.568 N=1.752 CJO=4p M=.4 TT=20n)',
+    );
+    expect(DIODE_1N34A.toString()).toBe(
+      '.model 1N34A D(IS=500n RS=1.5 N=1.08 CJO=1p M=.5 TT=50n BV=65)',
     );
   });
 

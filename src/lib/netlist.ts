@@ -8,6 +8,7 @@ import {
   BJT_BC108,
   BJT_BC549,
   BJT_MPSA18,
+  DIODE_1N34A,
   DIODE_1N270,
   DIODE_1N914,
   DIODE_1N4001,
@@ -441,6 +442,10 @@ function buildCircuitBody(
 
   if (usedDiodeModels.has('1N270')) {
     lines.push(renderSpiceDefinition(DIODE_1N270));
+  }
+
+  if (usedDiodeModels.has('1N34A')) {
+    lines.push(renderSpiceDefinition(DIODE_1N34A));
   }
 
   // BJT model statements

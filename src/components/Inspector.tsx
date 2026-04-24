@@ -290,6 +290,7 @@ function DiodeInspector({
           <option value="1N4001">1N4001</option>
           <option value="1N4002">1N4002</option>
           <option value="1N270">1N270 (Ge)</option>
+          <option value="1N34A">1N34A (Ge)</option>
         </select>
       </Field>
     </>

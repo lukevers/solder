@@ -4,6 +4,6 @@
  */
 export type DiodeData = {
   label: string;
-  model: '1N914' | '1N4001' | '1N4002' | '1N270';
+  model: '1N914' | '1N4001' | '1N4002' | '1N270' | '1N34A';
   symbol?: string;
 };

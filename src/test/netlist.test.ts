@@ -1060,6 +1060,34 @@ describe('compileNetlist 1N4001 diode model', () => {
     expect(netlist).toContain('.model 1N4001 D(');
     expect(netlist).not.toContain('.model 1N914');
   });
+
+  it('emits 1N34A model line', () => {
+    const nodes: Array<ComponentNode> = [
+      {
+        id: 'in1',
+        type: 'jack',
+        position: { x: 0, y: 0 },
+        data: { label: 'INPUT', direction: 'in' },
+      },
+      {
+        id: 'd1',
+        type: 'diode',
+        position: { x: 100, y: 0 },
+        data: { label: 'D1', model: '1N34A' },
+      },
+      {
+        id: 'out1',
+        type: 'jack',
+        position: { x: 200, y: 0 },
+        data: { label: 'OUTPUT', direction: 'out' },
+      },
+    ];
+
+    const netlist = compileNetlist(nodes, []);
+
+    expect(netlist).toContain('.model 1N34A D(');
+    expect(netlist).not.toContain('.model 1N270');
+  });
 });
 
 describe('buildPortGroups edge cases', () => {

@@ -152,3 +152,21 @@ export const DIODE_1N270 = new DiodeModel('1N270', {
   [TT_TRANSIT_TIME]: '50n',
   [BV_BREAKDOWN_VOLTAGE]: 100,
 });
+
+/**
+ * 1N34A germanium point-contact diode.
+ *
+ * We only have datasheet-level characteristics in this repo, not a vendor
+ * SPICE card. This approximation stays close to the existing 1N270 model while
+ * matching the 1N34A's low-capacitance germanium use case and 65 V reverse
+ * rating.
+ */
+export const DIODE_1N34A = new DiodeModel('1N34A', {
+  [IS_SATURATION_CURRENT]: '500n',
+  [RS_SERIES_RESISTANCE]: '1.5',
+  [N_EMISSION_COEFFICIENT]: '1.08',
+  [CJO_ZERO_BIAS_JUNCTION_CAPACITANCE]: '1p',
+  [M_JUNCTION_GRADING_COEFFICIENT]: '.5',
+  [TT_TRANSIT_TIME]: '50n',
+  [BV_BREAKDOWN_VOLTAGE]: 65,
+});

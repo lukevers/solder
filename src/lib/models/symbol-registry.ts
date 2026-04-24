@@ -12,6 +12,7 @@ import { SYM_BJT_NPN, SYM_BJT_PNP } from './bjt/symbol';
 import { SYM_CAP_POLAR } from './cap-polar/symbol';
 import { SYM_CAPACITOR } from './capacitor/symbol';
 import {
+  SYM_DIODE_1N34A,
   SYM_DIODE_1N270,
   SYM_DIODE_1N914,
   SYM_DIODE_1N4001,
@@ -50,6 +51,7 @@ export const SYMBOLS: Record<string, SymbolDef> = {
   [SYM_DIODE_1N4001.id]: SYM_DIODE_1N4001,
   [SYM_DIODE_1N4002.id]: SYM_DIODE_1N4002,
   [SYM_DIODE_1N270.id]: SYM_DIODE_1N270,
+  [SYM_DIODE_1N34A.id]: SYM_DIODE_1N34A,
   [SYM_BJT_NPN.id]: SYM_BJT_NPN,
   [SYM_BJT_PNP.id]: SYM_BJT_PNP,
   [SYM_JFET_N.id]: SYM_JFET_N,
@@ -81,6 +83,7 @@ export const DEFAULT_SYMBOL = {
     '1N4001': SYM_DIODE_1N4001.id,
     '1N4002': SYM_DIODE_1N4002.id,
     '1N270': SYM_DIODE_1N270.id,
+    '1N34A': SYM_DIODE_1N34A.id,
   } as Record<string, string>,
 
   bjt: {

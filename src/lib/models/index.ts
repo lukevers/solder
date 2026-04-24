@@ -35,12 +35,14 @@ export { SYM_CAP_POLAR } from './cap-polar/symbol';
 export { SYM_CAPACITOR } from './capacitor/symbol';
 export type { CapacitorData } from './capacitor/types';
 export {
+  DIODE_1N34A,
   DIODE_1N270,
   DIODE_1N914,
   DIODE_1N4001,
   DIODE_1N4002,
 } from './diode/model';
 export {
+  SYM_DIODE_1N34A,
   SYM_DIODE_1N270,
   SYM_DIODE_1N914,
   SYM_DIODE_1N4001,
