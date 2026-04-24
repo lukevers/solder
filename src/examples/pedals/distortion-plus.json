@@ -7,537 +7,887 @@
   "category": "pedals",
   "nodes": [
     {
-      "id": "mxr-in",
+      "id": "b18b6c40-b12f-4b67-967a-30c5b2996ca4-in",
       "type": "jack",
-      "position": { "x": 40, "y": 340 },
-      "data": { "label": "INPUT", "direction": "in" }
+      "position": {
+        "x": 20,
+        "y": 200
+      },
+      "data": {
+        "label": "INPUT",
+        "direction": "in"
+      }
     },
     {
-      "id": "mxr-gnd_in",
+      "id": "b18b6c40-b12f-4b67-967a-30c5b2996ca4-gnd-in",
       "type": "ground",
-      "position": { "x": 100, "y": 460 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 130,
+        "y": 390
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
-      "id": "mxr-jct-in",
-      "type": "junction",
-      "position": { "x": 170, "y": 350 },
-      "data": { "label": "J1" }
-    },
-    {
-      "id": "mxr-c1",
+      "id": "ef84cd8a-149c-4e94-a71e-0ca84e568705",
       "type": "capacitor",
-      "position": { "x": 150, "y": 440 },
-      "rotation": 90,
-      "data": { "label": "C1", "farads": 1e-9 }
+      "position": {
+        "x": 180,
+        "y": 270
+      },
+      "data": {
+        "label": "C1",
+        "farads": 1e-9
+      },
+      "rotation": 90
     },
     {
-      "id": "mxr-gnd_c1",
+      "id": "9f6c6689-b2de-4d83-ab3e-1c787f8f7629",
       "type": "ground",
-      "position": { "x": 150, "y": 540 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 180,
+        "y": 390
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
-      "id": "mxr-r1",
-      "type": "resistor",
-      "position": { "x": 250, "y": 340 },
-      "data": { "label": "R1", "ohms": 10000 }
-    },
-    {
-      "id": "mxr-c2",
+      "id": "7b8924eb-5141-49dc-bcd3-fc985244afd2",
       "type": "capacitor",
-      "position": { "x": 400, "y": 340 },
-      "data": { "label": "C2", "farads": 1e-8 }
+      "position": {
+        "x": 250,
+        "y": 200
+      },
+      "data": {
+        "label": "C2",
+        "farads": 1e-8
+      }
     },
     {
-      "id": "mxr-jct-inpos",
+      "id": "e20cb149-2dbb-4e4a-b14f-7c164f3f5a9f",
       "type": "junction",
-      "position": { "x": 520, "y": 320 },
-      "data": { "label": "J_inp" }
+      "position": {
+        "x": 190,
+        "y": 210
+      },
+      "data": {
+        "label": ""
+      }
     },
     {
-      "id": "mxr-vcc",
-      "type": "power",
-      "position": { "x": 520, "y": 0 },
-      "data": { "label": "VCC", "volts": 9 }
-    },
-    {
-      "id": "mxr-r6",
+      "id": "a91f99ef-cdf4-421c-9a1e-3529a4688e5f",
       "type": "resistor",
-      "position": { "x": 500, "y": 60 },
-      "rotation": 90,
-      "data": { "label": "R6", "ohms": 1000000 }
+      "position": {
+        "x": 360,
+        "y": 200
+      },
+      "data": {
+        "label": "R1",
+        "ohms": 10000
+      }
     },
     {
-      "id": "mxr-jct-bias",
-      "type": "junction",
-      "position": { "x": 510, "y": 160 },
-      "data": { "label": "J_bias" }
-    },
-    {
-      "id": "mxr-r7",
+      "id": "337b6299-751c-4dd0-a2b8-662aafb5ec75",
       "type": "resistor",
-      "position": { "x": 580, "y": 160 },
-      "data": { "label": "R7", "ohms": 1000000 }
+      "position": {
+        "x": 470,
+        "y": 90
+      },
+      "data": {
+        "label": "R2",
+        "ohms": 1000000
+      },
+      "rotation": 90
     },
     {
-      "id": "mxr-gnd_bias",
-      "type": "ground",
-      "position": { "x": 660, "y": 220 },
-      "data": { "label": "GND" }
-    },
-    {
-      "id": "mxr-c6",
-      "type": "cap_polar",
-      "position": { "x": 440, "y": 200 },
-      "rotation": 90,
-      "data": { "label": "C6", "farads": 1e-6 }
-    },
-    {
-      "id": "mxr-gnd_c6",
-      "type": "ground",
-      "position": { "x": 440, "y": 320 },
-      "data": { "label": "GND" }
-    },
-    {
-      "id": "mxr-r2",
-      "type": "resistor",
-      "position": { "x": 500, "y": 240 },
-      "rotation": 90,
-      "data": { "label": "R2", "ohms": 1000000 }
-    },
-    {
-      "id": "mxr-u1",
+      "id": "94a18147-bb04-4752-8d4a-bdac10ea30f2",
       "type": "opamp",
-      "position": { "x": 660, "y": 300 },
-      "data": { "label": "U1", "model": "LM741" }
+      "position": {
+        "x": 560,
+        "y": 170
+      },
+      "data": {
+        "label": "U1",
+        "model": "LM741"
+      }
     },
     {
-      "id": "mxr-vcc2",
-      "type": "power",
-      "position": { "x": 680, "y": 220 },
-      "data": { "label": "VCC", "volts": 9 }
-    },
-    {
-      "id": "mxr-gnd_u",
-      "type": "ground",
-      "position": { "x": 680, "y": 440 },
-      "data": { "label": "GND" }
-    },
-    {
-      "id": "mxr-jct-neg",
+      "id": "abddef18-87b3-49aa-a8d7-0583e418dfc1",
       "type": "junction",
-      "position": { "x": 610, "y": 350 },
-      "data": { "label": "J_neg" }
+      "position": {
+        "x": 480,
+        "y": 210
+      },
+      "data": {
+        "label": ""
+      }
     },
     {
-      "id": "mxr-r4",
+      "id": "ca2dbfc5-9c7b-4d76-b18e-cb4d6a54f9b6",
+      "type": "label",
+      "position": {
+        "x": 480,
+        "y": -40
+      },
+      "data": {
+        "label": "VREF"
+      },
+      "rotation": 270
+    },
+    {
+      "id": "9cef02a7-fe9d-4d16-9fe0-968c4e0abd35",
+      "type": "ground",
+      "position": {
+        "x": 470,
+        "y": 290
+      },
+      "data": {
+        "label": "GND"
+      }
+    },
+    {
+      "id": "1935e268-6dd2-4cbf-aa51-3e9086118e67",
       "type": "resistor",
-      "position": { "x": 760, "y": 180 },
-      "data": { "label": "R4", "ohms": 1000000 }
+      "position": {
+        "x": 280,
+        "y": -120
+      },
+      "data": {
+        "label": "R3",
+        "ohms": 4700
+      }
     },
     {
-      "id": "mxr-c3",
+      "id": "aaa38270-1ae6-4581-b3ed-5b4cd0886b0b",
       "type": "capacitor",
-      "position": { "x": 660, "y": 120 },
-      "data": { "label": "C3", "farads": 4.7e-8 }
+      "position": {
+        "x": 410,
+        "y": -120
+      },
+      "data": {
+        "label": "C3",
+        "farads": 4.7e-8
+      }
     },
     {
-      "id": "mxr-r3",
+      "id": "be707303-794e-4e45-a7b5-b1dc24a9ffac",
+      "type": "capacitor",
+      "position": {
+        "x": 800,
+        "y": 200
+      },
+      "data": {
+        "label": "C4",
+        "farads": 0.000001
+      }
+    },
+    {
+      "id": "e46bc679-821c-4b43-8dca-286cea465630",
       "type": "resistor",
-      "position": { "x": 540, "y": 120 },
-      "data": { "label": "R3", "ohms": 4700 }
+      "position": {
+        "x": 600,
+        "y": -120
+      },
+      "data": {
+        "label": "R4",
+        "ohms": 1000000
+      }
     },
     {
-      "id": "mxr-dist",
+      "id": "280df849-0ba2-49fa-8fbe-c0191a24a5d5",
+      "type": "junction",
+      "position": {
+        "x": 730,
+        "y": 210
+      },
+      "data": {
+        "label": ""
+      }
+    },
+    {
+      "id": "b6b6d398-703a-4def-9498-6ec832c4225d",
+      "type": "junction",
+      "position": {
+        "x": 520,
+        "y": -110
+      },
+      "data": {
+        "label": ""
+      }
+    },
+    {
+      "id": "78e582d5-8369-4112-b730-8da2a0a923b5",
       "type": "pot",
-      "position": { "x": 400, "y": 100 },
+      "position": {
+        "x": 160,
+        "y": -140
+      },
       "data": {
         "label": "DIST",
         "ohms": 1000000,
-        "position": 0.8,
+        "position": 1,
         "taper": "linear"
+      },
+      "rotation": 180
+    },
+    {
+      "id": "b5125f51-eb9b-4f2c-a16d-1cb7ebc6523e",
+      "type": "ground",
+      "position": {
+        "x": 90,
+        "y": -40
+      },
+      "data": {
+        "label": "GND"
       }
     },
     {
-      "id": "mxr-gnd_dist_ccw",
-      "type": "ground",
-      "position": { "x": 360, "y": 220 },
-      "data": { "label": "GND" }
-    },
-    {
-      "id": "mxr-jct-out",
+      "id": "91fde77a-932a-45c4-a591-ea33ee22d85c",
       "type": "junction",
-      "position": { "x": 810, "y": 330 },
-      "data": { "label": "J_out" }
+      "position": {
+        "x": 100,
+        "y": -110
+      },
+      "data": {
+        "label": ""
+      }
     },
     {
-      "id": "mxr-c4",
-      "type": "cap_polar",
-      "position": { "x": 890, "y": 340 },
-      "data": { "label": "C4", "farads": 1e-6 }
+      "id": "8e7539ed-b305-4da3-be88-9a170fae0b0e",
+      "type": "box",
+      "position": {
+        "x": 10,
+        "y": -180
+      },
+      "data": {
+        "label": "Op-Amp Stage",
+        "color": "green",
+        "variant": "filled"
+      },
+      "style": {
+        "width": 890,
+        "height": 610
+      }
     },
     {
-      "id": "mxr-r5",
+      "id": "be2760b7-c89e-405b-9e95-33701739da06",
       "type": "resistor",
-      "position": { "x": 1020, "y": 340 },
-      "data": { "label": "R5", "ohms": 10000 }
+      "position": {
+        "x": 960,
+        "y": 130
+      },
+      "data": {
+        "label": "R5",
+        "ohms": 10000
+      }
     },
     {
-      "id": "mxr-jct-clip",
-      "type": "junction",
-      "position": { "x": 1160, "y": 350 },
-      "data": { "label": "J_clip" }
-    },
-    {
-      "id": "mxr-jct-clip-lo",
-      "type": "junction",
-      "position": { "x": 1160, "y": 440 },
-      "data": { "label": "J_clip_lo" }
-    },
-    {
-      "id": "mxr-d1",
-      "type": "diode",
-      "position": { "x": 1100, "y": 490 },
-      "rotation": 90,
-      "data": { "label": "D1", "model": "1N270" }
-    },
-    {
-      "id": "mxr-d2",
-      "type": "diode",
-      "position": { "x": 1180, "y": 490 },
-      "rotation": 270,
-      "data": { "label": "D2", "model": "1N270" }
-    },
-    {
-      "id": "mxr-gnd_d",
-      "type": "ground",
-      "position": { "x": 1140, "y": 600 },
-      "data": { "label": "GND" }
-    },
-    {
-      "id": "mxr-c5",
-      "type": "capacitor",
-      "position": { "x": 1240, "y": 460 },
-      "rotation": 90,
-      "data": { "label": "C5", "farads": 1e-9 }
-    },
-    {
-      "id": "mxr-gnd_c5",
-      "type": "ground",
-      "position": { "x": 1240, "y": 560 },
-      "data": { "label": "GND" }
-    },
-    {
-      "id": "mxr-vol",
+      "id": "83ea445d-eba8-44d3-827b-7c3df32d3919",
       "type": "pot",
-      "position": { "x": 1320, "y": 340 },
+      "position": {
+        "x": 1280,
+        "y": 180
+      },
       "data": {
         "label": "OUTPUT",
-        "ohms": 10000,
-        "position": 0.8,
-        "taper": "log"
+        "ohms": 100000,
+        "position": 0.5,
+        "taper": "linear"
+      },
+      "rotation": 270
+    },
+    {
+      "id": "188207de-6944-4873-bdb6-187a34cd1140",
+      "type": "ground",
+      "position": {
+        "x": 1280,
+        "y": 380
+      },
+      "data": {
+        "label": "GND"
       }
     },
     {
-      "id": "mxr-gnd_vol",
+      "id": "4163ebc4-d2f2-4d3c-b73e-9e35f8a53137",
       "type": "ground",
-      "position": { "x": 1380, "y": 440 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 1360,
+        "y": 380
+      },
+      "data": {
+        "label": "GND"
+      }
     },
     {
-      "id": "mxr-out",
+      "id": "3342bd56-78ff-47b0-9735-491e34177e39",
       "type": "jack",
-      "position": { "x": 1500, "y": 340 },
-      "data": { "label": "OUTPUT", "direction": "out" }
+      "position": {
+        "x": 1440,
+        "y": 200
+      },
+      "data": {
+        "label": "OUTPUT",
+        "direction": "out"
+      }
     },
     {
-      "id": "mxr-gnd_out",
+      "id": "5fa1b973-df40-46c9-bc0b-72b8fe70ecd9",
+      "type": "power",
+      "position": {
+        "x": 680,
+        "y": 90
+      },
+      "data": {
+        "label": "VCC",
+        "volts": 9
+      }
+    },
+    {
+      "id": "7c8307f3-50e6-430d-984c-0807828233cc",
+      "type": "junction",
+      "position": {
+        "x": 1130,
+        "y": 140
+      },
+      "data": {
+        "label": ""
+      }
+    },
+    {
+      "id": "8bf171d1-c5e2-4f60-ae61-2baa0fe19b93",
+      "type": "diode",
+      "position": {
+        "x": 1050,
+        "y": 230
+      },
+      "data": {
+        "label": "D1",
+        "model": "1N34A"
+      },
+      "rotation": 270
+    },
+    {
+      "id": "82155c80-0f5f-4c69-ae46-aec2abbdf932",
+      "type": "diode",
+      "position": {
+        "x": 1120,
+        "y": 230
+      },
+      "data": {
+        "label": "D2",
+        "model": "1N34A"
+      },
+      "rotation": 90
+    },
+    {
+      "id": "361c0f83-ed1f-496a-b22b-adf9e501966d",
+      "type": "capacitor",
+      "position": {
+        "x": 1190,
+        "y": 230
+      },
+      "data": {
+        "label": "C5",
+        "farads": 1e-9
+      },
+      "rotation": 90
+    },
+    {
+      "id": "c15ae526-bacf-4666-aa32-cb5e0d5fcd65",
+      "type": "junction",
+      "position": {
+        "x": 1130,
+        "y": 180
+      },
+      "data": {
+        "label": ""
+      }
+    },
+    {
+      "id": "cd36e1bb-7968-4fbf-9e7c-41ad7455d21c",
+      "type": "junction",
+      "position": {
+        "x": 1130,
+        "y": 320
+      },
+      "data": {
+        "label": ""
+      }
+    },
+    {
+      "id": "29327de8-0d7f-418e-b9c7-9f75dea350b4",
       "type": "ground",
-      "position": { "x": 1480, "y": 440 },
-      "data": { "label": "GND" }
+      "position": {
+        "x": 1120,
+        "y": 380
+      },
+      "data": {
+        "label": "GND"
+      }
+    },
+    {
+      "id": "68872f28-95a6-40fe-9a2f-7955dd3840de",
+      "type": "box",
+      "position": {
+        "x": 920,
+        "y": -50
+      },
+      "data": {
+        "label": "Clipping Stage",
+        "color": "orange",
+        "variant": "filled"
+      },
+      "style": {
+        "width": 620,
+        "height": 480
+      }
+    },
+    {
+      "id": "caaf3372-c590-460d-afaa-43960aa901bc",
+      "type": "power",
+      "position": {
+        "x": -170,
+        "y": -150
+      },
+      "data": {
+        "label": "VCC",
+        "volts": 9
+      }
+    },
+    {
+      "id": "a62c2093-7a8e-49cd-bb7a-7b4d6e5eb842",
+      "type": "resistor",
+      "position": {
+        "x": -170,
+        "y": -50
+      },
+      "data": {
+        "label": "R6",
+        "ohms": 1000000
+      },
+      "rotation": 90
+    },
+    {
+      "id": "612f5ae5-46f4-4dee-8117-8fc87396e0ff",
+      "type": "resistor",
+      "position": {
+        "x": -170,
+        "y": 130
+      },
+      "data": {
+        "label": "R7",
+        "ohms": 1000000
+      },
+      "rotation": 90
+    },
+    {
+      "id": "14bc5300-eb44-4604-8811-31c77c1c05fa",
+      "type": "label",
+      "position": {
+        "x": -80,
+        "y": -150
+      },
+      "data": {
+        "label": "VREF"
+      },
+      "rotation": 270
+    },
+    {
+      "id": "ea36b12c-9ef1-4198-8382-bd1837737b19",
+      "type": "junction",
+      "position": {
+        "x": -160,
+        "y": 70
+      },
+      "data": {
+        "label": ""
+      }
+    },
+    {
+      "id": "c723d9a7-705a-45b6-a6ec-6c966e037dc7",
+      "type": "ground",
+      "position": {
+        "x": -220,
+        "y": 290
+      },
+      "data": {
+        "label": "GND"
+      }
+    },
+    {
+      "id": "e8642f73-c3ff-4066-afa6-9812e75ddd1a",
+      "type": "capacitor",
+      "position": {
+        "x": -260,
+        "y": 140
+      },
+      "data": {
+        "label": "C6",
+        "farads": 0.000001
+      },
+      "rotation": 90
+    },
+    {
+      "id": "440193f0-e104-4d4d-8cb4-1d0812cf5bef",
+      "type": "junction",
+      "position": {
+        "x": -210,
+        "y": 230
+      },
+      "data": {
+        "label": ""
+      }
+    },
+    {
+      "id": "1dad531e-7fe6-48dd-8fb6-1bbeba333886",
+      "type": "box",
+      "position": {
+        "x": -290,
+        "y": -180
+      },
+      "data": {
+        "label": "Power Supply Stage",
+        "color": "blue",
+        "variant": "filled"
+      },
+      "style": {
+        "width": 280,
+        "height": 610
+      }
+    },
+    {
+      "id": "0ef67303-e564-430b-96a5-a8ca603d6816",
+      "type": "stickynote",
+      "position": {
+        "x": 920,
+        "y": -160
+      },
+      "data": {
+        "label": "Attribution Source",
+        "text": "https://www.electrosmash.com/mxr-distortion-plus-analysis",
+        "color": "yellow",
+        "size": "md",
+        "width": "normal"
+      }
     }
   ],
   "edges": [
     {
-      "id": "mxr-e_in_pos",
-      "source": "mxr-in",
-      "sourceHandle": "pos",
-      "target": "mxr-jct-in",
-      "targetHandle": "tl"
-    },
-    {
-      "id": "mxr-e_in_neg",
-      "source": "mxr-in",
+      "id": "b18b6c40-b12f-4b67-967a-30c5b2996ca4-edge-in-gnd",
+      "source": "b18b6c40-b12f-4b67-967a-30c5b2996ca4-in",
       "sourceHandle": "neg",
-      "target": "mxr-gnd_in",
+      "target": "b18b6c40-b12f-4b67-967a-30c5b2996ca4-gnd-in",
       "targetHandle": "gnd"
     },
     {
-      "id": "mxr-e_jct_r1",
-      "source": "mxr-jct-in",
-      "sourceHandle": "sr",
-      "target": "mxr-r1",
-      "targetHandle": "a"
-    },
-    {
-      "id": "mxr-e_jct_c1",
-      "source": "mxr-jct-in",
-      "sourceHandle": "sb",
-      "target": "mxr-c1",
-      "targetHandle": "a"
-    },
-    {
-      "id": "mxr-e_c1_gnd",
-      "source": "mxr-c1",
-      "sourceHandle": "b",
-      "target": "mxr-gnd_c1",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "mxr-e_r1_c2",
-      "source": "mxr-r1",
-      "sourceHandle": "b",
-      "target": "mxr-c2",
-      "targetHandle": "a"
-    },
-    {
-      "id": "mxr-e_c2_inpos",
-      "source": "mxr-c2",
-      "sourceHandle": "b",
-      "target": "mxr-jct-inpos",
-      "targetHandle": "tl"
-    },
-    {
-      "id": "mxr-e_vcc_r6",
-      "source": "mxr-vcc",
-      "sourceHandle": "pos",
-      "target": "mxr-r6",
-      "targetHandle": "a"
-    },
-    {
-      "id": "mxr-e_r6_jct",
-      "source": "mxr-r6",
-      "sourceHandle": "b",
-      "target": "mxr-jct-bias",
-      "targetHandle": "tt"
-    },
-    {
-      "id": "mxr-e_jct_r7",
-      "source": "mxr-jct-bias",
-      "sourceHandle": "sr",
-      "target": "mxr-r7",
-      "targetHandle": "a"
-    },
-    {
-      "id": "mxr-e_r7_gnd",
-      "source": "mxr-r7",
-      "sourceHandle": "b",
-      "target": "mxr-gnd_bias",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "mxr-e_jct_c6",
-      "source": "mxr-jct-bias",
-      "sourceHandle": "sl",
-      "target": "mxr-c6",
-      "targetHandle": "pos"
-    },
-    {
-      "id": "mxr-e_c6_gnd",
-      "source": "mxr-c6",
-      "sourceHandle": "neg",
-      "target": "mxr-gnd_c6",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "mxr-e_jct_r2",
-      "source": "mxr-jct-bias",
-      "sourceHandle": "sb",
-      "target": "mxr-r2",
-      "targetHandle": "a"
-    },
-    {
-      "id": "mxr-e_r2_inpos",
-      "source": "mxr-r2",
-      "sourceHandle": "b",
-      "target": "mxr-jct-inpos",
-      "targetHandle": "tt"
-    },
-    {
-      "id": "mxr-e_inpos_u1",
-      "source": "mxr-jct-inpos",
-      "sourceHandle": "sr",
-      "target": "mxr-u1",
-      "targetHandle": "in_pos"
-    },
-    {
-      "id": "mxr-e_vcc_u1",
-      "source": "mxr-vcc2",
-      "sourceHandle": "pos",
-      "target": "mxr-u1",
-      "targetHandle": "vcc"
-    },
-    {
-      "id": "mxr-e_gnd_u1",
-      "source": "mxr-gnd_u",
+      "id": "xy-edge__9f6c6689-b2de-4d83-ab3e-1c787f8f7629gnd-ef84cd8a-149c-4e94-a71e-0ca84e568705b",
+      "source": "9f6c6689-b2de-4d83-ab3e-1c787f8f7629",
       "sourceHandle": "gnd",
-      "target": "mxr-u1",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "mxr-e_neg_u1",
-      "source": "mxr-jct-neg",
-      "sourceHandle": "sr",
-      "target": "mxr-u1",
-      "targetHandle": "in_neg"
-    },
-    {
-      "id": "mxr-e_u1_out",
-      "source": "mxr-u1",
-      "sourceHandle": "out",
-      "target": "mxr-jct-out",
-      "targetHandle": "tl"
-    },
-    {
-      "id": "mxr-e_out_r4",
-      "source": "mxr-jct-out",
-      "sourceHandle": "st",
-      "target": "mxr-r4",
+      "target": "ef84cd8a-149c-4e94-a71e-0ca84e568705",
       "targetHandle": "b"
     },
     {
-      "id": "mxr-e_r4_neg",
-      "source": "mxr-r4",
+      "id": "xy-edge__7b8924eb-5141-49dc-bcd3-fc985244afd2a-e20cb149-2dbb-4e4a-b14f-7c164f3f5a9ftr",
+      "source": "7b8924eb-5141-49dc-bcd3-fc985244afd2",
       "sourceHandle": "a",
-      "target": "mxr-jct-neg",
+      "target": "e20cb149-2dbb-4e4a-b14f-7c164f3f5a9f",
       "targetHandle": "tr"
     },
     {
-      "id": "mxr-e_neg_c3",
-      "source": "mxr-jct-neg",
-      "sourceHandle": "st",
-      "target": "mxr-c3",
-      "targetHandle": "b"
-    },
-    {
-      "id": "mxr-e_c3_r3",
-      "source": "mxr-c3",
-      "sourceHandle": "a",
-      "target": "mxr-r3",
-      "targetHandle": "b"
-    },
-    {
-      "id": "mxr-e_r3_dist",
-      "source": "mxr-r3",
-      "sourceHandle": "a",
-      "target": "mxr-dist",
-      "targetHandle": "wiper"
-    },
-    {
-      "id": "mxr-e_dist_ccw_gnd",
-      "source": "mxr-dist",
-      "sourceHandle": "cw",
-      "target": "mxr-gnd_dist_ccw",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "mxr-e_out_c4",
-      "source": "mxr-jct-out",
-      "sourceHandle": "sr",
-      "target": "mxr-c4",
+      "id": "xy-edge__e20cb149-2dbb-4e4a-b14f-7c164f3f5a9fsl-b18b6c40-b12f-4b67-967a-30c5b2996ca4-inpos",
+      "source": "e20cb149-2dbb-4e4a-b14f-7c164f3f5a9f",
+      "sourceHandle": "sl",
+      "target": "b18b6c40-b12f-4b67-967a-30c5b2996ca4-in",
       "targetHandle": "pos"
     },
     {
-      "id": "mxr-e_c4_r5",
-      "source": "mxr-c4",
-      "sourceHandle": "neg",
-      "target": "mxr-r5",
-      "targetHandle": "a"
-    },
-    {
-      "id": "mxr-e_r5_clip",
-      "source": "mxr-r5",
-      "sourceHandle": "b",
-      "target": "mxr-jct-clip",
-      "targetHandle": "tl"
-    },
-    {
-      "id": "mxr-e_clip_lo",
-      "source": "mxr-jct-clip",
-      "sourceHandle": "sb",
-      "target": "mxr-jct-clip-lo",
-      "targetHandle": "tt"
-    },
-    {
-      "id": "mxr-e_lo_d1",
-      "source": "mxr-jct-clip-lo",
-      "sourceHandle": "sb",
-      "target": "mxr-d1",
-      "targetHandle": "a"
-    },
-    {
-      "id": "mxr-e_d1_gnd",
-      "source": "mxr-d1",
-      "sourceHandle": "k",
-      "target": "mxr-gnd_d",
-      "targetHandle": "gnd"
-    },
-    {
-      "id": "mxr-e_gnd_d2",
-      "source": "mxr-gnd_d",
-      "sourceHandle": "gnd",
-      "target": "mxr-d2",
-      "targetHandle": "a"
-    },
-    {
-      "id": "mxr-e_d2_lo",
-      "source": "mxr-d2",
-      "sourceHandle": "k",
-      "target": "mxr-jct-clip-lo",
+      "id": "xy-edge__ef84cd8a-149c-4e94-a71e-0ca84e568705a-e20cb149-2dbb-4e4a-b14f-7c164f3f5a9ftb",
+      "source": "ef84cd8a-149c-4e94-a71e-0ca84e568705",
+      "sourceHandle": "a",
+      "target": "e20cb149-2dbb-4e4a-b14f-7c164f3f5a9f",
       "targetHandle": "tb"
     },
     {
-      "id": "mxr-e_lo_c5",
-      "source": "mxr-jct-clip-lo",
-      "sourceHandle": "sr",
-      "target": "mxr-c5",
+      "id": "xy-edge__a91f99ef-cdf4-421c-9a1e-3529a4688e5fa-7b8924eb-5141-49dc-bcd3-fc985244afd2b",
+      "source": "a91f99ef-cdf4-421c-9a1e-3529a4688e5f",
+      "sourceHandle": "a",
+      "target": "7b8924eb-5141-49dc-bcd3-fc985244afd2",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__abddef18-87b3-49aa-a8d7-0583e418dfc1sl-a91f99ef-cdf4-421c-9a1e-3529a4688e5fb",
+      "source": "abddef18-87b3-49aa-a8d7-0583e418dfc1",
+      "sourceHandle": "sl",
+      "target": "a91f99ef-cdf4-421c-9a1e-3529a4688e5f",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__94a18147-bb04-4752-8d4a-bdac10ea30f2in_pos-abddef18-87b3-49aa-a8d7-0583e418dfc1tr",
+      "source": "94a18147-bb04-4752-8d4a-bdac10ea30f2",
+      "sourceHandle": "in_pos",
+      "target": "abddef18-87b3-49aa-a8d7-0583e418dfc1",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "xy-edge__337b6299-751c-4dd0-a2b8-662aafb5ec75b-abddef18-87b3-49aa-a8d7-0583e418dfc1tt",
+      "source": "337b6299-751c-4dd0-a2b8-662aafb5ec75",
+      "sourceHandle": "b",
+      "target": "abddef18-87b3-49aa-a8d7-0583e418dfc1",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "xy-edge__ca2dbfc5-9c7b-4d76-b18e-cb4d6a54f9b6net-337b6299-751c-4dd0-a2b8-662aafb5ec75a",
+      "source": "ca2dbfc5-9c7b-4d76-b18e-cb4d6a54f9b6",
+      "sourceHandle": "net",
+      "target": "337b6299-751c-4dd0-a2b8-662aafb5ec75",
       "targetHandle": "a"
     },
     {
-      "id": "mxr-e_c5_gnd",
-      "source": "mxr-c5",
-      "sourceHandle": "b",
-      "target": "mxr-gnd_c5",
+      "id": "xy-edge__94a18147-bb04-4752-8d4a-bdac10ea30f2gnd-9cef02a7-fe9d-4d16-9fe0-968c4e0abd35gnd",
+      "source": "94a18147-bb04-4752-8d4a-bdac10ea30f2",
+      "sourceHandle": "gnd",
+      "target": "9cef02a7-fe9d-4d16-9fe0-968c4e0abd35",
       "targetHandle": "gnd"
     },
     {
-      "id": "mxr-e_clip_vol",
-      "source": "mxr-jct-clip",
-      "sourceHandle": "sr",
-      "target": "mxr-vol",
+      "id": "xy-edge__be707303-794e-4e45-a7b5-b1dc24a9ffaca-280df849-0ba2-49fa-8fbe-c0191a24a5d5tr",
+      "source": "be707303-794e-4e45-a7b5-b1dc24a9ffac",
+      "sourceHandle": "a",
+      "target": "280df849-0ba2-49fa-8fbe-c0191a24a5d5",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "xy-edge__280df849-0ba2-49fa-8fbe-c0191a24a5d5sl-94a18147-bb04-4752-8d4a-bdac10ea30f2out",
+      "source": "280df849-0ba2-49fa-8fbe-c0191a24a5d5",
+      "sourceHandle": "sl",
+      "target": "94a18147-bb04-4752-8d4a-bdac10ea30f2",
+      "targetHandle": "out"
+    },
+    {
+      "id": "xy-edge__280df849-0ba2-49fa-8fbe-c0191a24a5d5st-e46bc679-821c-4b43-8dca-286cea465630b",
+      "source": "280df849-0ba2-49fa-8fbe-c0191a24a5d5",
+      "sourceHandle": "st",
+      "target": "e46bc679-821c-4b43-8dca-286cea465630",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__e46bc679-821c-4b43-8dca-286cea465630a-b6b6d398-703a-4def-9498-6ec832c4225dtr",
+      "source": "e46bc679-821c-4b43-8dca-286cea465630",
+      "sourceHandle": "a",
+      "target": "b6b6d398-703a-4def-9498-6ec832c4225d",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "xy-edge__b6b6d398-703a-4def-9498-6ec832c4225dsl-aaa38270-1ae6-4581-b3ed-5b4cd0886b0bb",
+      "source": "b6b6d398-703a-4def-9498-6ec832c4225d",
+      "sourceHandle": "sl",
+      "target": "aaa38270-1ae6-4581-b3ed-5b4cd0886b0b",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__94a18147-bb04-4752-8d4a-bdac10ea30f2in_neg-b6b6d398-703a-4def-9498-6ec832c4225dtb",
+      "source": "94a18147-bb04-4752-8d4a-bdac10ea30f2",
+      "sourceHandle": "in_neg",
+      "target": "b6b6d398-703a-4def-9498-6ec832c4225d",
+      "targetHandle": "tb"
+    },
+    {
+      "id": "xy-edge__aaa38270-1ae6-4581-b3ed-5b4cd0886b0ba-1935e268-6dd2-4cbf-aa51-3e9086118e67b",
+      "source": "aaa38270-1ae6-4581-b3ed-5b4cd0886b0b",
+      "sourceHandle": "a",
+      "target": "1935e268-6dd2-4cbf-aa51-3e9086118e67",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__1935e268-6dd2-4cbf-aa51-3e9086118e67a-78e582d5-8369-4112-b730-8da2a0a923b5ccw",
+      "source": "1935e268-6dd2-4cbf-aa51-3e9086118e67",
+      "sourceHandle": "a",
+      "target": "78e582d5-8369-4112-b730-8da2a0a923b5",
       "targetHandle": "ccw"
     },
     {
-      "id": "mxr-e_vol_gnd",
-      "source": "mxr-vol",
+      "id": "xy-edge__b5125f51-eb9b-4f2c-a16d-1cb7ebc6523egnd-91fde77a-932a-45c4-a591-ea33ee22d85ctb",
+      "source": "b5125f51-eb9b-4f2c-a16d-1cb7ebc6523e",
+      "sourceHandle": "gnd",
+      "target": "91fde77a-932a-45c4-a591-ea33ee22d85c",
+      "targetHandle": "tb"
+    },
+    {
+      "id": "xy-edge__78e582d5-8369-4112-b730-8da2a0a923b5cw-91fde77a-932a-45c4-a591-ea33ee22d85ctr",
+      "source": "78e582d5-8369-4112-b730-8da2a0a923b5",
       "sourceHandle": "cw",
-      "target": "mxr-gnd_vol",
+      "target": "91fde77a-932a-45c4-a591-ea33ee22d85c",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "xy-edge__91fde77a-932a-45c4-a591-ea33ee22d85cst-78e582d5-8369-4112-b730-8da2a0a923b5wiper",
+      "source": "91fde77a-932a-45c4-a591-ea33ee22d85c",
+      "sourceHandle": "st",
+      "target": "78e582d5-8369-4112-b730-8da2a0a923b5",
+      "targetHandle": "wiper"
+    },
+    {
+      "id": "xy-edge__be2760b7-c89e-405b-9e95-33701739da06a-be707303-794e-4e45-a7b5-b1dc24a9ffacb",
+      "source": "be2760b7-c89e-405b-9e95-33701739da06",
+      "sourceHandle": "a",
+      "target": "be707303-794e-4e45-a7b5-b1dc24a9ffac",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__83ea445d-eba8-44d3-827b-7c3df32d3919ccw-188207de-6944-4873-bdb6-187a34cd1140gnd",
+      "source": "83ea445d-eba8-44d3-827b-7c3df32d3919",
+      "sourceHandle": "ccw",
+      "target": "188207de-6944-4873-bdb6-187a34cd1140",
       "targetHandle": "gnd"
     },
     {
-      "id": "mxr-e_vol_out",
-      "source": "mxr-vol",
-      "sourceHandle": "wiper",
-      "target": "mxr-out",
+      "id": "xy-edge__3342bd56-78ff-47b0-9735-491e34177e39pos-83ea445d-eba8-44d3-827b-7c3df32d3919wiper",
+      "source": "3342bd56-78ff-47b0-9735-491e34177e39",
+      "sourceHandle": "pos",
+      "target": "83ea445d-eba8-44d3-827b-7c3df32d3919",
+      "targetHandle": "wiper"
+    },
+    {
+      "id": "xy-edge__3342bd56-78ff-47b0-9735-491e34177e39neg-4163ebc4-d2f2-4d3c-b73e-9e35f8a53137gnd",
+      "source": "3342bd56-78ff-47b0-9735-491e34177e39",
+      "sourceHandle": "neg",
+      "target": "4163ebc4-d2f2-4d3c-b73e-9e35f8a53137",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "xy-edge__94a18147-bb04-4752-8d4a-bdac10ea30f2vcc-5fa1b973-df40-46c9-bc0b-72b8fe70ecd9pos",
+      "source": "94a18147-bb04-4752-8d4a-bdac10ea30f2",
+      "sourceHandle": "vcc",
+      "target": "5fa1b973-df40-46c9-bc0b-72b8fe70ecd9",
       "targetHandle": "pos"
     },
     {
-      "id": "mxr-e_out_gnd",
-      "source": "mxr-gnd_out",
-      "sourceHandle": "gnd",
-      "target": "mxr-out",
-      "targetHandle": "neg"
+      "id": "xy-edge__7c8307f3-50e6-430d-984c-0807828233ccsl-be2760b7-c89e-405b-9e95-33701739da06b",
+      "source": "7c8307f3-50e6-430d-984c-0807828233cc",
+      "sourceHandle": "sl",
+      "target": "be2760b7-c89e-405b-9e95-33701739da06",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__83ea445d-eba8-44d3-827b-7c3df32d3919cw-7c8307f3-50e6-430d-984c-0807828233cctr",
+      "source": "83ea445d-eba8-44d3-827b-7c3df32d3919",
+      "sourceHandle": "cw",
+      "target": "7c8307f3-50e6-430d-984c-0807828233cc",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "xy-edge__82155c80-0f5f-4c69-ae46-aec2abbdf932a-c15ae526-bacf-4666-aa32-cb5e0d5fcd65tb",
+      "source": "82155c80-0f5f-4c69-ae46-aec2abbdf932",
+      "sourceHandle": "a",
+      "target": "c15ae526-bacf-4666-aa32-cb5e0d5fcd65",
+      "targetHandle": "tb"
+    },
+    {
+      "id": "xy-edge__c15ae526-bacf-4666-aa32-cb5e0d5fcd65st-7c8307f3-50e6-430d-984c-0807828233cctb",
+      "source": "c15ae526-bacf-4666-aa32-cb5e0d5fcd65",
+      "sourceHandle": "st",
+      "target": "7c8307f3-50e6-430d-984c-0807828233cc",
+      "targetHandle": "tb"
+    },
+    {
+      "id": "xy-edge__c15ae526-bacf-4666-aa32-cb5e0d5fcd65sl-8bf171d1-c5e2-4f60-ae61-2baa0fe19b93k",
+      "source": "c15ae526-bacf-4666-aa32-cb5e0d5fcd65",
+      "sourceHandle": "sl",
+      "target": "8bf171d1-c5e2-4f60-ae61-2baa0fe19b93",
+      "targetHandle": "k"
+    },
+    {
+      "id": "xy-edge__361c0f83-ed1f-496a-b22b-adf9e501966da-c15ae526-bacf-4666-aa32-cb5e0d5fcd65tr",
+      "source": "361c0f83-ed1f-496a-b22b-adf9e501966d",
+      "sourceHandle": "a",
+      "target": "c15ae526-bacf-4666-aa32-cb5e0d5fcd65",
+      "targetHandle": "tr"
+    },
+    {
+      "id": "xy-edge__cd36e1bb-7968-4fbf-9e7c-41ad7455d21cst-82155c80-0f5f-4c69-ae46-aec2abbdf932k",
+      "source": "cd36e1bb-7968-4fbf-9e7c-41ad7455d21c",
+      "sourceHandle": "st",
+      "target": "82155c80-0f5f-4c69-ae46-aec2abbdf932",
+      "targetHandle": "k"
+    },
+    {
+      "id": "xy-edge__8bf171d1-c5e2-4f60-ae61-2baa0fe19b93a-cd36e1bb-7968-4fbf-9e7c-41ad7455d21ctl",
+      "source": "8bf171d1-c5e2-4f60-ae61-2baa0fe19b93",
+      "sourceHandle": "a",
+      "target": "cd36e1bb-7968-4fbf-9e7c-41ad7455d21c",
+      "targetHandle": "tl"
+    },
+    {
+      "id": "xy-edge__cd36e1bb-7968-4fbf-9e7c-41ad7455d21ctr-361c0f83-ed1f-496a-b22b-adf9e501966db",
+      "source": "cd36e1bb-7968-4fbf-9e7c-41ad7455d21c",
+      "sourceHandle": "tr",
+      "target": "361c0f83-ed1f-496a-b22b-adf9e501966d",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__cd36e1bb-7968-4fbf-9e7c-41ad7455d21ctb-29327de8-0d7f-418e-b9c7-9f75dea350b4gnd",
+      "source": "cd36e1bb-7968-4fbf-9e7c-41ad7455d21c",
+      "sourceHandle": "tb",
+      "target": "29327de8-0d7f-418e-b9c7-9f75dea350b4",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "xy-edge__a62c2093-7a8e-49cd-bb7a-7b4d6e5eb842a-caaf3372-c590-460d-afaa-43960aa901bcpos",
+      "source": "a62c2093-7a8e-49cd-bb7a-7b4d6e5eb842",
+      "sourceHandle": "a",
+      "target": "caaf3372-c590-460d-afaa-43960aa901bc",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "xy-edge__612f5ae5-46f4-4dee-8117-8fc87396e0ffa-ea36b12c-9ef1-4198-8382-bd1837737b19tb",
+      "source": "612f5ae5-46f4-4dee-8117-8fc87396e0ff",
+      "sourceHandle": "a",
+      "target": "ea36b12c-9ef1-4198-8382-bd1837737b19",
+      "targetHandle": "tb"
+    },
+    {
+      "id": "xy-edge__ea36b12c-9ef1-4198-8382-bd1837737b19st-a62c2093-7a8e-49cd-bb7a-7b4d6e5eb842b",
+      "source": "ea36b12c-9ef1-4198-8382-bd1837737b19",
+      "sourceHandle": "st",
+      "target": "a62c2093-7a8e-49cd-bb7a-7b4d6e5eb842",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__ea36b12c-9ef1-4198-8382-bd1837737b19tr-14bc5300-eb44-4604-8811-31c77c1c05fanet",
+      "source": "ea36b12c-9ef1-4198-8382-bd1837737b19",
+      "sourceHandle": "tr",
+      "target": "14bc5300-eb44-4604-8811-31c77c1c05fa",
+      "targetHandle": "net"
+    },
+    {
+      "id": "xy-edge__440193f0-e104-4d4d-8cb4-1d0812cf5beftb-c723d9a7-705a-45b6-a6ec-6c966e037dc7gnd",
+      "source": "440193f0-e104-4d4d-8cb4-1d0812cf5bef",
+      "sourceHandle": "tb",
+      "target": "c723d9a7-705a-45b6-a6ec-6c966e037dc7",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "xy-edge__440193f0-e104-4d4d-8cb4-1d0812cf5beftr-612f5ae5-46f4-4dee-8117-8fc87396e0ffb",
+      "source": "440193f0-e104-4d4d-8cb4-1d0812cf5bef",
+      "sourceHandle": "tr",
+      "target": "612f5ae5-46f4-4dee-8117-8fc87396e0ff",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__440193f0-e104-4d4d-8cb4-1d0812cf5beftl-e8642f73-c3ff-4066-afa6-9812e75ddd1ab",
+      "source": "440193f0-e104-4d4d-8cb4-1d0812cf5bef",
+      "sourceHandle": "tl",
+      "target": "e8642f73-c3ff-4066-afa6-9812e75ddd1a",
+      "targetHandle": "b"
+    },
+    {
+      "id": "xy-edge__e8642f73-c3ff-4066-afa6-9812e75ddd1aa-ea36b12c-9ef1-4198-8382-bd1837737b19sl",
+      "source": "e8642f73-c3ff-4066-afa6-9812e75ddd1a",
+      "sourceHandle": "a",
+      "target": "ea36b12c-9ef1-4198-8382-bd1837737b19",
+      "targetHandle": "sl"
     }
   ]
 }
