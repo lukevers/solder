@@ -29,7 +29,6 @@ export default defineConfig(({ command }) => ({
     __APP_VERSION__: JSON.stringify(resolveAppVersion(command)),
   },
   plugins: [react()],
-  worker: { format: 'es' },
   server: {
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',

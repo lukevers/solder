@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getNodeLabels } from '../lib/netlist';
+import { recordRuntimeLog } from '../lib/runtime-log';
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
@@ -24,6 +25,7 @@ import {
   useSimulationState,
   useSweepState,
 } from '../store/hooks';
+import AnalysisWorker from '../workers/analysis.worker?worker';
 import { ScopeCanvas, type ScopeTrace } from './ScopeCanvas';
 
 const TIME_DIVS = [0.5, 1, 2, 5, 10, 20, 50, 100];
@@ -163,10 +165,8 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
 
   const createWorker = useCallback(() => {
     workerRef.current?.terminate();
-    workerRef.current = new Worker(
-      new URL('../workers/analysis.worker.ts', import.meta.url),
-      { type: 'module' },
-    );
+    recordRuntimeLog('info', 'analysis-worker', 'creating worker');
+    workerRef.current = new AnalysisWorker();
   }, []);
 
   useEffect(() => {
@@ -239,12 +239,18 @@ export function CircuitAnalyzer({ outputBuffer, simulatedInput }: Props) {
         );
         setAnalyzeTraces(newTraces);
       } else {
+        recordRuntimeLog('error', 'analysis-worker', msg.message);
         setStatus(SIMULATION_STATUS.error);
         setError(msg.message);
       }
     };
 
     worker.onerror = (e: ErrorEvent) => {
+      recordRuntimeLog(
+        'error',
+        'analysis-worker',
+        e.message ?? 'Analysis worker crashed',
+      );
       if (gen !== analysisGenRef.current) {
         return;
       }

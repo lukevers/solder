@@ -23,6 +23,7 @@ import {
   saveLocalSample,
 } from './lib/audio/local-sample-store';
 import { AudioPipeline } from './lib/audio/pipeline';
+import { recordRuntimeLog } from './lib/runtime-log';
 import {
   AUDIO_SOURCE_TYPE,
   type SimulateRequest,
@@ -44,6 +45,7 @@ import {
   useViewportState,
   useWelcomeState,
 } from './store/hooks';
+import SimulationWorker from './workers/simulation.worker?worker';
 
 export default function App() {
   const { nodes, edges } = useCircuitState();
@@ -228,9 +230,23 @@ export default function App() {
       return null;
     }
 
-    await pipeline.init(volume);
-    setAudioReady(true);
-    return pipeline;
+    try {
+      await pipeline.init(volume);
+      setAudioReady(true);
+      recordRuntimeLog(
+        'info',
+        'audio',
+        `initialized sampleRate=${pipeline.getSampleRate()}`,
+      );
+      return pipeline;
+    } catch (error) {
+      recordRuntimeLog(
+        'error',
+        'audio',
+        error instanceof Error ? (error.stack ?? error.message) : String(error),
+      );
+      throw error;
+    }
   }, [volume]);
 
   /**
@@ -271,10 +287,8 @@ export default function App() {
 
   // Initialize worker
   useEffect(() => {
-    workerRef.current = new Worker(
-      new URL('./workers/simulation.worker.ts', import.meta.url),
-      { type: 'module' },
-    );
+    recordRuntimeLog('info', 'simulation-worker', 'creating worker');
+    workerRef.current = new SimulationWorker();
     workerRef.current.onmessage = (e: MessageEvent<SimulateResponse>) => {
       const msg = e.data;
       if (msg.type === WORKER_MESSAGE_TYPE.result) {
@@ -289,15 +303,22 @@ export default function App() {
         clearSelection();
         pendingInputRef.current = null;
       } else {
+        recordRuntimeLog('error', 'simulation-worker', msg.message);
         setSimulationStatus(SIMULATION_STATUS.error);
         setSimulationError(msg.message);
       }
     };
     workerRef.current.onerror = (e: ErrorEvent) => {
+      recordRuntimeLog(
+        'error',
+        'simulation-worker',
+        e.message ?? 'Worker crashed',
+      );
       setSimulationStatus(SIMULATION_STATUS.error);
       setSimulationError(e.message ?? 'Worker crashed');
     };
     return () => {
+      recordRuntimeLog('info', 'simulation-worker', 'terminating worker');
       workerRef.current?.terminate();
     };
   }, [
@@ -338,6 +359,11 @@ export default function App() {
       })
       .catch(() => {
         if (!cancelled) {
+          recordRuntimeLog(
+            'warn',
+            'local-samples',
+            'failed to restore persisted local sample metadata',
+          );
           setLocalSamples([]);
         }
       });
@@ -420,6 +446,11 @@ export default function App() {
       })
       .catch((err) => {
         if (!cancelled) {
+          recordRuntimeLog(
+            'error',
+            'audio-source',
+            err instanceof Error ? (err.stack ?? err.message) : String(err),
+          );
           setSimulationError(err instanceof Error ? err.message : String(err));
         }
       });
@@ -609,6 +640,11 @@ export default function App() {
         : null;
       workerRef.current.postMessage(request);
     } catch (err) {
+      recordRuntimeLog(
+        'error',
+        'simulate',
+        err instanceof Error ? (err.stack ?? err.message) : String(err),
+      );
       setSimulationStatus(SIMULATION_STATUS.error);
       setSimulationError(err instanceof Error ? err.message : String(err));
     }
@@ -647,10 +683,7 @@ export default function App() {
       const total = SWEEP_POSITIONS.length;
 
       for (const position of SWEEP_POSITIONS) {
-        const worker = new Worker(
-          new URL('./workers/simulation.worker.ts', import.meta.url),
-          { type: 'module' },
-        );
+        const worker = new SimulationWorker();
         sweepWorkersRef.current.push(worker);
 
         // Clone nodes with the target pot's position overridden
@@ -676,6 +709,7 @@ export default function App() {
               sweepWorkersRef.current = [];
             }
           } else {
+            recordRuntimeLog('error', 'sweep-worker', msg.message);
             failed = true;
             failSweep(msg.message);
             for (const w of sweepWorkersRef.current) {
@@ -689,6 +723,11 @@ export default function App() {
           if (failed) {
             return;
           }
+          recordRuntimeLog(
+            'error',
+            'sweep-worker',
+            e.message ?? 'Sweep worker crashed',
+          );
           failed = true;
           failSweep(e.message ?? 'Sweep worker crashed');
           for (const w of sweepWorkersRef.current) {
@@ -779,6 +818,11 @@ export default function App() {
         setSourceBuffer(pipeline.getSampleData(sample.id));
         clearSelection();
       } catch (err) {
+        recordRuntimeLog(
+          'error',
+          'local-sample-upload',
+          err instanceof Error ? (err.stack ?? err.message) : String(err),
+        );
         setSimulationError(
           err instanceof Error
             ? `Failed to load WAV file: ${err.message}`

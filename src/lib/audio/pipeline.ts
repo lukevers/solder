@@ -44,7 +44,12 @@ export class AudioPipeline {
   }
 
   private async _init(volume: number): Promise<void> {
-    this.ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
+    try {
+      this.ctx = new AudioContext({ sampleRate: SAMPLE_RATE });
+    } catch {
+      this.ctx = new AudioContext();
+    }
+
     this.gainNode = this.ctx.createGain();
     this.gainNode.gain.value = volume;
     this.gainNode.connect(this.ctx.destination);
