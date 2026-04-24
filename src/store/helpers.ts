@@ -4,7 +4,7 @@ import {
   SYMBOLS,
 } from '../lib/models/symbol-registry';
 import type { ComponentNode } from '../lib/types';
-import type { PersistedTab, StoreState, Tab } from './types';
+import type { PersistedTab, Snapshot, StoreState, Tab } from './types';
 
 /**
  * Edge fields that reflect live canvas interaction rather than saved circuit
@@ -151,6 +151,41 @@ export function fingerprintCircuit(
     nodes: normalizedNodes,
     edges: normalizedEdges,
   });
+}
+
+/**
+ * Append the current workspace snapshot to the undo stack unless the latest
+ * entry already points at the same node and edge arrays.
+ *
+ * Several editor flows push history proactively before a gesture starts, while
+ * other store actions record snapshots inline. Deduplicating the common
+ * "current state" case lets both layers cooperate without creating duplicate
+ * undo steps for a single user action.
+ */
+export function appendHistorySnapshot(state: StoreState): {
+  past: Array<Snapshot>;
+  future: Array<Snapshot>;
+} {
+  const lastSnapshot = state.past[state.past.length - 1];
+
+  if (
+    lastSnapshot &&
+    lastSnapshot.nodes === state.nodes &&
+    lastSnapshot.edges === state.edges
+  ) {
+    return {
+      past: state.past,
+      future: [],
+    };
+  }
+
+  return {
+    past: [
+      ...state.past.slice(-49),
+      { nodes: state.nodes, edges: state.edges },
+    ],
+    future: [],
+  };
 }
 
 /**

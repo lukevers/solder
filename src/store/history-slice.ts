@@ -1,4 +1,5 @@
-import { clearSim, MAX_HISTORY } from './defaults';
+import { clearSim } from './defaults';
+import { appendHistorySnapshot } from './helpers';
 import type { StoreSlice, StoreState } from './types';
 
 type HistorySlice = Pick<StoreState, 'pushHistory' | 'undo' | 'redo'>;
@@ -11,14 +12,7 @@ type HistorySlice = Pick<StoreState, 'pushHistory' | 'undo' | 'redo'>;
  * restored topology may no longer match the old analysis results.
  */
 export const createHistorySlice: StoreSlice<HistorySlice> = (set, get) => ({
-  pushHistory: () =>
-    set((state) => ({
-      past: [
-        ...state.past.slice(-MAX_HISTORY),
-        { nodes: state.nodes, edges: state.edges },
-      ],
-      future: [],
-    })),
+  pushHistory: () => set((state) => appendHistorySnapshot(state)),
 
   undo: () => {
     const { past, nodes, edges, future } = get();

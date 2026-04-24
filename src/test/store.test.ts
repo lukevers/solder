@@ -219,6 +219,80 @@ describe('circuitSlice', () => {
     const node = useStore.getState().nodes.find((n) => n.id === 'r1')!;
     expect(node.data).toEqual({ label: 'R1', ohms: 47000 });
   });
+
+  it('keeps simulation output when adding a box', () => {
+    const buf = new Float32Array([0.1, 0.2]);
+
+    useStore.getState().setSimulationStatus(SIMULATION_STATUS.done);
+    useStore.getState().setOutputBuffer(buf);
+    useStore.getState().addNode({
+      id: 'box-1',
+      type: 'box',
+      position: { x: 40, y: 40 },
+      data: { label: 'feedback loop' },
+    });
+
+    const { outputBuffer, simulationStatus } = useStore.getState();
+    expect(outputBuffer).toBe(buf);
+    expect(simulationStatus).toBe(SIMULATION_STATUS.done);
+  });
+
+  it('keeps simulation output when editing a sticky note', () => {
+    const buf = new Float32Array([0.1, 0.2]);
+
+    useStore.getState().addNode({
+      id: 'note-1',
+      type: 'stickynote',
+      position: { x: 20, y: 20 },
+      data: { label: 'bias', text: 'Q2 at 4.5V' },
+    });
+    useStore.getState().setSimulationStatus(SIMULATION_STATUS.done);
+    useStore.getState().setOutputBuffer(buf);
+    useStore.getState().updateNodeData('note-1', {
+      label: 'bias target',
+      text: 'Q2 at 4.5V',
+    });
+
+    const { outputBuffer, simulationStatus } = useStore.getState();
+    expect(outputBuffer).toBe(buf);
+    expect(simulationStatus).toBe(SIMULATION_STATUS.done);
+  });
+
+  it('keeps simulation output when deleting a box', () => {
+    const buf = new Float32Array([0.1, 0.2]);
+
+    useStore.getState().addNode({
+      id: 'box-1',
+      type: 'box',
+      position: { x: 40, y: 40 },
+      data: { label: 'feedback loop' },
+    });
+    useStore.getState().setSimulationStatus(SIMULATION_STATUS.done);
+    useStore.getState().setOutputBuffer(buf);
+    useStore.getState().deleteNode('box-1');
+
+    const { outputBuffer, simulationStatus } = useStore.getState();
+    expect(outputBuffer).toBe(buf);
+    expect(simulationStatus).toBe(SIMULATION_STATUS.done);
+  });
+
+  it('still invalidates simulation output when editing a resistor', () => {
+    const buf = new Float32Array([0.1, 0.2]);
+
+    useStore.getState().addNode({
+      id: 'r1',
+      type: 'resistor',
+      position: { x: 0, y: 0 },
+      data: { label: 'R1', ohms: 10000 },
+    });
+    useStore.getState().setSimulationStatus(SIMULATION_STATUS.done);
+    useStore.getState().setOutputBuffer(buf);
+    useStore.getState().updateNodeData('r1', { label: 'R1', ohms: 47000 });
+
+    const { outputBuffer, simulationStatus } = useStore.getState();
+    expect(outputBuffer).toBeNull();
+    expect(simulationStatus).toBe(SIMULATION_STATUS.idle);
+  });
 });
 
 describe('simulationSlice', () => {
@@ -571,6 +645,43 @@ describe('undo / redo', () => {
     const nodesBefore = useStore.getState().nodes;
     useStore.getState().redo();
     expect(useStore.getState().nodes).toEqual(nodesBefore);
+  });
+
+  it('topology-changing setNodes writes an undo snapshot', () => {
+    const nodesBefore = useStore.getState().nodes;
+
+    useStore.getState().setNodes([
+      ...nodesBefore,
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 80, y: 80 },
+        data: { label: 'R1', ohms: 1000 },
+      },
+    ]);
+
+    expect(useStore.getState().nodes).toHaveLength(nodesBefore.length + 1);
+
+    useStore.getState().undo();
+
+    expect(useStore.getState().nodes).toEqual(nodesBefore);
+  });
+
+  it('deduplicates pushHistory before a topology-changing setNodes', () => {
+    const nodesBefore = useStore.getState().nodes;
+
+    useStore.getState().pushHistory();
+    useStore.getState().setNodes([
+      ...nodesBefore,
+      {
+        id: 'r1',
+        type: 'resistor',
+        position: { x: 80, y: 80 },
+        data: { label: 'R1', ohms: 1000 },
+      },
+    ]);
+
+    expect(useStore.getState().past).toHaveLength(1);
   });
 });
 

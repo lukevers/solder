@@ -1,7 +1,7 @@
 import type { ComponentNode } from '../lib/types';
 import { TAB_ORIGIN_KIND } from './constants';
-import { clearSim, MAX_HISTORY } from './defaults';
-import { ensureMeasured } from './helpers';
+import { clearSim } from './defaults';
+import { appendHistorySnapshot, ensureMeasured } from './helpers';
 import type { StoreSlice, StoreState } from './types';
 
 type CircuitSlice = Pick<
@@ -19,6 +19,30 @@ type CircuitSlice = Pick<
 >;
 
 /**
+ * Node types that are purely visual and never participate in the compiled
+ * netlist.
+ *
+ * These nodes should behave like layout metadata: users can add, delete, move,
+ * and edit them without invalidating the last simulation result because they
+ * do not change circuit connectivity or component values.
+ */
+const NON_SIMULATION_NODE_TYPES = new Set<ComponentNode['type']>([
+  'box',
+  'stickynote',
+]);
+
+/**
+ * Returns whether a node contributes to the simulated circuit.
+ *
+ * The store uses this gate to decide whether an edit should clear derived
+ * simulation output. Decorative annotations are excluded so cosmetic changes do
+ * not force a re-run.
+ */
+function affectsSimulation(node: ComponentNode): boolean {
+  return !NON_SIMULATION_NODE_TYPES.has(node.type);
+}
+
+/**
  * Circuit editing actions for the active workspace.
  *
  * These mutations own the rule that topology or component changes
@@ -28,37 +52,30 @@ type CircuitSlice = Pick<
 export const createCircuitSlice: StoreSlice<CircuitSlice> = (set) => ({
   addNode: (node) =>
     set((state) => ({
-      past: [
-        ...state.past.slice(-MAX_HISTORY),
-        { nodes: state.nodes, edges: state.edges },
-      ],
-      future: [],
+      ...appendHistorySnapshot(state),
       nodes: [...state.nodes, node],
-      ...clearSim,
+      ...(affectsSimulation(node) ? clearSim : {}),
     })),
 
   deleteNode: (id) =>
-    set((state) => ({
-      past: [
-        ...state.past.slice(-MAX_HISTORY),
-        { nodes: state.nodes, edges: state.edges },
-      ],
-      future: [],
-      nodes: state.nodes.filter((node) => node.id !== id),
-      edges: state.edges.filter(
-        (edge) => edge.source !== id && edge.target !== id,
-      ),
-      selectedNodeId: state.selectedNodeId === id ? null : state.selectedNodeId,
-      ...clearSim,
-    })),
+    set((state) => {
+      const deletedNode = state.nodes.find((node) => node.id === id);
+
+      return {
+        ...appendHistorySnapshot(state),
+        nodes: state.nodes.filter((node) => node.id !== id),
+        edges: state.edges.filter(
+          (edge) => edge.source !== id && edge.target !== id,
+        ),
+        selectedNodeId:
+          state.selectedNodeId === id ? null : state.selectedNodeId,
+        ...(deletedNode && affectsSimulation(deletedNode) ? clearSim : {}),
+      };
+    }),
 
   deleteEdge: (id) =>
     set((state) => ({
-      past: [
-        ...state.past.slice(-MAX_HISTORY),
-        { nodes: state.nodes, edges: state.edges },
-      ],
-      future: [],
+      ...appendHistorySnapshot(state),
       edges: state.edges.filter((edge) => edge.id !== id),
       selectedEdgeId: null,
       ...clearSim,
@@ -66,12 +83,20 @@ export const createCircuitSlice: StoreSlice<CircuitSlice> = (set) => ({
 
   setNodes: (nodes) =>
     set((state) => {
-      const oldIds = new Set(state.nodes.map((node) => node.id));
+      const previousIds = new Set(
+        state.nodes
+          .filter((node) => affectsSimulation(node))
+          .map((node) => node.id),
+      );
+      const nextIds = new Set(
+        nodes.filter((node) => affectsSimulation(node)).map((node) => node.id),
+      );
       const topologyChanged =
-        nodes.some((node) => !oldIds.has(node.id)) ||
-        nodes.length !== state.nodes.length;
+        previousIds.size !== nextIds.size ||
+        [...nextIds].some((id) => !previousIds.has(id));
 
       return {
+        ...(topologyChanged ? appendHistorySnapshot(state) : {}),
         nodes,
         ...(topologyChanged ? clearSim : {}),
       };
@@ -107,25 +132,21 @@ export const createCircuitSlice: StoreSlice<CircuitSlice> = (set) => ({
   selectEdge: (selectedEdgeId) => set({ selectedEdgeId, selectedNodeId: null }),
 
   updateNodeData: (id, data) =>
-    set((state) => ({
-      past: [
-        ...state.past.slice(-MAX_HISTORY),
-        { nodes: state.nodes, edges: state.edges },
-      ],
-      future: [],
-      nodes: state.nodes.map((node) =>
-        node.id === id ? ({ ...node, data } as ComponentNode) : node,
-      ),
-      ...clearSim,
-    })),
+    set((state) => {
+      const previousNode = state.nodes.find((node) => node.id === id);
+
+      return {
+        ...appendHistorySnapshot(state),
+        nodes: state.nodes.map((node) =>
+          node.id === id ? ({ ...node, data } as ComponentNode) : node,
+        ),
+        ...(previousNode && affectsSimulation(previousNode) ? clearSim : {}),
+      };
+    }),
 
   rotateNode: (id, rotation) =>
     set((state) => ({
-      past: [
-        ...state.past.slice(-MAX_HISTORY),
-        { nodes: state.nodes, edges: state.edges },
-      ],
-      future: [],
+      ...appendHistorySnapshot(state),
       nodes: state.nodes.map((node) =>
         node.id === id ? ({ ...node, rotation } as ComponentNode) : node,
       ),

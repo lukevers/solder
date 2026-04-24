@@ -303,6 +303,12 @@ const PALETTE: Array<{
     defaultData: { label: 'NET1' },
   },
   {
+    label: 'JUNC',
+    tooltip: 'Junction',
+    type: 'junction',
+    defaultData: { label: '' },
+  },
+  {
     label: 'BOX',
     tooltip: 'Schematic Box',
     type: 'box',
