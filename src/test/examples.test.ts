@@ -2,6 +2,25 @@ import { describe, expect, it } from 'vitest';
 import { EXAMPLES } from '../examples';
 import { compileNetlist } from '../lib/netlist';
 
+/**
+ * Junction nodes expose these handle ids on every side.
+ *
+ * The renderer now mounts both `source` and `target` handles for each id so
+ * saved example circuits no longer need to obey the older `s*`/`t*` direction
+ * split. This set keeps the fixture test focused on valid junction handle ids
+ * instead of an outdated direction convention.
+ */
+const JUNCTION_HANDLES = new Set([
+  'st',
+  'sr',
+  'sb',
+  'sl',
+  'tt',
+  'tr',
+  'tb',
+  'tl',
+]);
+
 describe('EXAMPLES', () => {
   it('is non-empty', () => {
     expect(EXAMPLES.length).toBeGreaterThan(0);
@@ -55,7 +74,7 @@ describe('EXAMPLES', () => {
         }
       });
 
-      it('junction edges use source and target handles in the correct direction', () => {
+      it('junction edges reference valid junction handles', () => {
         const nodesById = new Map(ex.nodes.map((node) => [node.id, node]));
 
         for (const edge of ex.edges) {
@@ -63,11 +82,11 @@ describe('EXAMPLES', () => {
           const targetNode = nodesById.get(edge.target);
 
           if (sourceNode?.type === 'junction') {
-            expect(edge.sourceHandle?.startsWith('s')).toBe(true);
+            expect(JUNCTION_HANDLES.has(edge.sourceHandle ?? '')).toBe(true);
           }
 
           if (targetNode?.type === 'junction') {
-            expect(edge.targetHandle?.startsWith('t')).toBe(true);
+            expect(JUNCTION_HANDLES.has(edge.targetHandle ?? '')).toBe(true);
           }
         }
       });
