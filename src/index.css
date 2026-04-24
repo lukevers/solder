@@ -71,6 +71,28 @@ body {
 	box-shadow: none;
 }
 
+/* Schematic connection handles use a larger invisible target so touch input
+   reliably enters connect mode instead of dragging the node body. The visible
+   dot stays small via a pseudo-element centered inside the expanded hit area. */
+.solder-node-handle {
+	width: 26px;
+	height: 26px;
+	border: none !important;
+	border-radius: 9999px;
+	background: radial-gradient(
+		circle,
+		#4b5563 0 2px,
+		#ffffff 2px 4px,
+		transparent 4.5px
+	) !important;
+	touch-action: none;
+}
+
+.solder-junction-handle {
+	width: 14px;
+	height: 14px;
+}
+
 /* Box annotation nodes: the XYFlow wrapper is transparent to pointer events
    so the interior feels like empty canvas. The border strips inside the node
    (which have pointer-events: auto) still receive events and bubble up to

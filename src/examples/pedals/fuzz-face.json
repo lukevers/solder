@@ -16,13 +16,7 @@
       "data": {
         "label": "INPUT",
         "direction": "in"
-      },
-      "measured": {
-        "width": 80,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-gnd_in",
@@ -33,13 +27,7 @@
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-c1",
@@ -51,13 +39,7 @@
       "data": {
         "label": "C1",
         "farads": 0.0000022
-      },
-      "measured": {
-        "width": 60,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-jct-q1b",
@@ -68,13 +50,7 @@
       },
       "data": {
         "label": "J0"
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-q1",
@@ -87,30 +63,18 @@
         "label": "Q1",
         "polarity": "PNP",
         "model": "AC128"
-      },
-      "measured": {
-        "width": 60,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-gnd_q1",
       "type": "ground",
       "position": {
-        "x": 420,
-        "y": 360
+        "x": 460,
+        "y": 400
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-jct-q1c",
@@ -121,13 +85,7 @@
       },
       "data": {
         "label": "J1"
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-r1",
@@ -136,17 +94,11 @@
         "x": 460,
         "y": 130
       },
-      "rotation": 90,
       "data": {
         "label": "R1",
         "ohms": 33000
       },
-      "measured": {
-        "width": 40,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      "rotation": 90
     },
     {
       "id": "ff-q2",
@@ -159,69 +111,45 @@
         "label": "Q2",
         "polarity": "PNP",
         "model": "AC128"
-      },
-      "measured": {
-        "width": 60,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-r2",
       "type": "resistor",
       "position": {
         "x": 670,
-        "y": 150
+        "y": 140
       },
-      "rotation": 90,
       "data": {
         "label": "R3",
         "ohms": 8200
       },
-      "measured": {
-        "width": 40,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      "rotation": 90
     },
     {
       "id": "ff-r3",
       "type": "resistor",
       "position": {
         "x": 670,
-        "y": -10
+        "y": -40
       },
-      "rotation": 90,
       "data": {
         "label": "R2",
         "ohms": 470
       },
-      "measured": {
-        "width": 40,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      "rotation": 90
     },
     {
       "id": "ff-vcc2",
       "type": "power",
       "position": {
         "x": 570,
-        "y": -140
+        "y": -180
       },
       "data": {
         "label": "VCC",
         "volts": -9
-      },
-      "measured": {
-        "width": 40,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-r4",
@@ -233,20 +161,14 @@
       "data": {
         "label": "R4",
         "ohms": 100000
-      },
-      "measured": {
-        "width": 80,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-fuzz",
       "type": "pot",
       "position": {
-        "x": 630,
-        "y": 530
+        "x": 640,
+        "y": 540
       },
       "data": {
         "label": "FUZZ",
@@ -254,67 +176,43 @@
         "position": 0.5,
         "taper": "linear"
       },
-      "measured": {
-        "width": 60,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false,
       "rotation": 270
     },
     {
       "id": "ff-gnd_fuzz_cw",
       "type": "ground",
       "position": {
-        "x": 630,
-        "y": 730
+        "x": 640,
+        "y": 750
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-c2",
       "type": "cap_polar",
       "position": {
         "x": 720,
-        "y": 590
+        "y": 610
       },
-      "rotation": 270,
       "data": {
         "label": "C2",
         "farads": 0.00002
       },
-      "measured": {
-        "width": 40,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false
+      "rotation": 270
     },
     {
       "id": "ff-c3",
       "type": "capacitor",
       "position": {
         "x": 750,
-        "y": 90
+        "y": 70
       },
       "data": {
         "label": "C3",
         "farads": 1e-8
-      },
-      "measured": {
-        "width": 60,
-        "height": 40
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-vol",
@@ -329,12 +227,6 @@
         "position": 0.8,
         "taper": "log"
       },
-      "measured": {
-        "width": 80,
-        "height": 60
-      },
-      "selected": false,
-      "dragging": false,
       "rotation": 0
     },
     {
@@ -342,17 +234,11 @@
       "type": "ground",
       "position": {
         "x": 1030,
-        "y": 270
+        "y": 280
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "ff-out",
@@ -364,10 +250,6 @@
       "data": {
         "label": "OUTPUT",
         "direction": "out"
-      },
-      "measured": {
-        "width": 80,
-        "height": 60
       }
     },
     {
@@ -379,47 +261,29 @@
       },
       "data": {
         "label": "GND"
-      },
-      "measured": {
-        "width": 40,
-        "height": 36
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
       "type": "junction",
       "position": {
-        "x": 640,
-        "y": 670
+        "x": 650,
+        "y": 690
       },
       "data": {
         "label": ""
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
       "type": "junction",
       "position": {
-        "x": 640,
+        "x": 650,
         "y": 480
       },
       "data": {
         "label": ""
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "76a06ded-fa6d-4f89-8cba-272555a543b9",
@@ -433,22 +297,10 @@
         "color": "green",
         "variant": "filled"
       },
-      "zIndex": -1,
       "style": {
-        "width": 200,
-        "height": 150
-      },
-      "dragHandle": ".box-drag-handle",
-      "className": "box-node-wrapper",
-      "measured": {
         "width": 500,
-        "height": 330
-      },
-      "selected": false,
-      "width": 500,
-      "height": 330,
-      "resizing": false,
-      "dragging": false
+        "height": 340
+      }
     },
     {
       "id": "ce2a0175-e1f9-4828-b577-7a6f1f30c0e8",
@@ -462,51 +314,27 @@
         "color": "blue",
         "variant": "filled"
       },
-      "zIndex": -1,
       "style": {
-        "width": 200,
-        "height": 150
-      },
-      "dragHandle": ".box-drag-handle",
-      "className": "box-node-wrapper",
-      "measured": {
-        "width": 510,
+        "width": 530,
         "height": 400
-      },
-      "selected": false,
-      "dragging": false,
-      "width": 510,
-      "height": 400,
-      "resizing": false
+      }
     },
     {
       "id": "0468a734-3243-4795-bd2d-ebc4552f2e2b",
       "type": "box",
       "position": {
-        "x": 540,
-        "y": -160
+        "x": 560,
+        "y": -190
       },
       "data": {
         "label": "Output Stage",
         "color": "pink",
         "variant": "filled"
       },
-      "zIndex": -1,
       "style": {
-        "width": 200,
-        "height": 150
-      },
-      "dragHandle": ".box-drag-handle",
-      "className": "box-node-wrapper",
-      "measured": {
-        "width": 680,
-        "height": 600
-      },
-      "selected": false,
-      "dragging": false,
-      "width": 680,
-      "height": 600,
-      "resizing": false
+        "width": 660,
+        "height": 630
+      }
     },
     {
       "id": "83225f7b-e757-4be4-aba2-a64a30390e81",
@@ -521,13 +349,7 @@
         "color": "yellow",
         "size": "xs",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "bb61ed9d-d82d-4323-99f1-ad6b5f6612a9",
@@ -542,13 +364,7 @@
         "color": "blue",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 94
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "81dd95ac-b144-4e1f-8a27-eefee80d7aaf",
@@ -563,13 +379,7 @@
         "color": "blue",
         "size": "xs",
         "width": "slim"
-      },
-      "measured": {
-        "width": 80,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "c82433fa-0b75-489c-ad15-a6dade82830f",
@@ -584,13 +394,7 @@
         "color": "blue",
         "size": "xs",
         "width": "slim"
-      },
-      "measured": {
-        "width": 80,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "c6030637-018a-4cab-96a1-0967c653fa79",
@@ -605,13 +409,7 @@
         "color": "green",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "50dc4e94-bd2f-4d3c-ba82-7e7681315bed",
@@ -626,13 +424,7 @@
         "color": "pink",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "c1a32d3c-bd02-464e-ad62-5549ed78cb96",
@@ -647,47 +439,29 @@
         "color": "pink",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "605e03ac-d63f-49b7-b109-81652416a441",
       "type": "junction",
       "position": {
         "x": 680,
-        "y": 100
+        "y": 80
       },
       "data": {
         "label": ""
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "bfcbd325-f590-4469-8bca-bab6b4a02f77",
       "type": "junction",
       "position": {
         "x": 580,
-        "y": -50
+        "y": -80
       },
       "data": {
         "label": ""
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "bda530cb-73d3-42aa-8af4-9c5bc99c5882",
@@ -702,13 +476,7 @@
         "color": "pink",
         "size": "sm",
         "width": "slim"
-      },
-      "measured": {
-        "width": 80,
-        "height": 80
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "da795f31-3e76-4ffd-94ed-0b8712eedf60",
@@ -723,13 +491,7 @@
         "color": "pink",
         "size": "sm",
         "width": "normal"
-      },
-      "measured": {
-        "width": 160,
-        "height": 94
-      },
-      "selected": false,
-      "dragging": false
+      }
     },
     {
       "id": "4c31eac7-9503-4c02-898e-8884e039bdf6",
@@ -740,13 +502,7 @@
       },
       "data": {
         "label": ""
-      },
-      "measured": {
-        "width": 20,
-        "height": 20
-      },
-      "selected": false,
-      "dragging": false
+      }
     }
   ],
   "edges": [
@@ -811,8 +567,7 @@
       "source": "ff-r4",
       "sourceHandle": "a",
       "target": "ff-jct-q1b",
-      "targetHandle": "tb",
-      "selected": false
+      "targetHandle": "tb"
     },
     {
       "id": "ff-e19",
@@ -843,110 +598,116 @@
       "targetHandle": "neg"
     },
     {
-      "source": "ff-c2",
-      "sourceHandle": "neg",
-      "target": "ff-fuzz",
-      "targetHandle": "wiper",
-      "id": "xy-edge__ff-c2neg-ff-fuzzwiper"
-    },
-    {
-      "source": "ff-fuzz",
-      "sourceHandle": "cw",
-      "target": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
-      "targetHandle": "tt",
-      "id": "xy-edge__ff-fuzzccw-33b9bcdb-7b8a-473d-867a-6437f01e6550tt"
-    },
-    {
+      "id": "xy-edge__33b9bcdb-7b8a-473d-867a-6437f01e6550sb-ff-gnd_fuzz_cwgnd",
       "source": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
       "sourceHandle": "sb",
       "target": "ff-gnd_fuzz_cw",
-      "targetHandle": "gnd",
-      "id": "xy-edge__33b9bcdb-7b8a-473d-867a-6437f01e6550sb-ff-gnd_fuzz_cwgnd"
+      "targetHandle": "gnd"
     },
     {
+      "id": "xy-edge__ff-c2pos-33b9bcdb-7b8a-473d-867a-6437f01e6550tr",
       "source": "ff-c2",
       "sourceHandle": "pos",
       "target": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
-      "targetHandle": "tr",
-      "id": "xy-edge__ff-c2pos-33b9bcdb-7b8a-473d-867a-6437f01e6550tr"
+      "targetHandle": "tr"
     },
     {
+      "id": "xy-edge__ff-q2e-3579d6bd-78ad-409b-bd91-2ccf06e7e4a8tt",
       "source": "ff-q2",
       "sourceHandle": "e",
       "target": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
-      "targetHandle": "tt",
-      "id": "xy-edge__ff-q2e-3579d6bd-78ad-409b-bd91-2ccf06e7e4a8tt"
+      "targetHandle": "tt"
     },
     {
-      "source": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
-      "sourceHandle": "sb",
-      "target": "ff-fuzz",
-      "targetHandle": "ccw",
-      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sb-ff-fuzzcw"
-    },
-    {
+      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sl-ff-r4b",
       "source": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
       "sourceHandle": "sl",
       "target": "ff-r4",
-      "targetHandle": "b",
-      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sl-ff-r4b",
-      "selected": false
+      "targetHandle": "b"
     },
     {
+      "id": "xy-edge__ff-r2a-605e03ac-d63f-49b7-b109-81652416a441tb",
       "source": "ff-r2",
       "sourceHandle": "a",
       "target": "605e03ac-d63f-49b7-b109-81652416a441",
-      "targetHandle": "tb",
-      "id": "xy-edge__ff-r2a-605e03ac-d63f-49b7-b109-81652416a441tb"
+      "targetHandle": "tb"
     },
     {
+      "id": "xy-edge__605e03ac-d63f-49b7-b109-81652416a441st-ff-r3b",
       "source": "605e03ac-d63f-49b7-b109-81652416a441",
       "sourceHandle": "st",
       "target": "ff-r3",
-      "targetHandle": "b",
-      "id": "xy-edge__605e03ac-d63f-49b7-b109-81652416a441st-ff-r3b"
+      "targetHandle": "b"
     },
     {
+      "id": "xy-edge__ff-c3a-605e03ac-d63f-49b7-b109-81652416a441tr",
       "source": "ff-c3",
       "sourceHandle": "a",
       "target": "605e03ac-d63f-49b7-b109-81652416a441",
-      "targetHandle": "tr",
-      "id": "xy-edge__ff-c3a-605e03ac-d63f-49b7-b109-81652416a441tr"
+      "targetHandle": "tr"
     },
     {
+      "id": "xy-edge__ff-q2c-ff-r2b",
       "source": "ff-q2",
       "sourceHandle": "c",
       "target": "ff-r2",
-      "targetHandle": "b",
-      "id": "xy-edge__ff-q2c-ff-r2b"
+      "targetHandle": "b"
     },
     {
+      "id": "xy-edge__bfcbd325-f590-4469-8bca-bab6b4a02f77st-ff-vcc2pos",
       "source": "bfcbd325-f590-4469-8bca-bab6b4a02f77",
       "sourceHandle": "st",
       "target": "ff-vcc2",
-      "targetHandle": "pos",
-      "id": "xy-edge__bfcbd325-f590-4469-8bca-bab6b4a02f77st-ff-vcc2pos"
+      "targetHandle": "pos"
     },
     {
+      "id": "xy-edge__ff-r3a-bfcbd325-f590-4469-8bca-bab6b4a02f77tr",
       "source": "ff-r3",
       "sourceHandle": "a",
       "target": "bfcbd325-f590-4469-8bca-bab6b4a02f77",
-      "targetHandle": "tr",
-      "id": "xy-edge__ff-r3a-bfcbd325-f590-4469-8bca-bab6b4a02f77tr"
+      "targetHandle": "tr"
     },
     {
+      "id": "xy-edge__ff-r1a-4c31eac7-9503-4c02-898e-8884e039bdf6tl",
       "source": "ff-r1",
       "sourceHandle": "a",
       "target": "4c31eac7-9503-4c02-898e-8884e039bdf6",
-      "targetHandle": "tl",
-      "id": "xy-edge__ff-r1a-4c31eac7-9503-4c02-898e-8884e039bdf6tl"
+      "targetHandle": "tl"
     },
     {
+      "id": "xy-edge__bfcbd325-f590-4469-8bca-bab6b4a02f77sb-4c31eac7-9503-4c02-898e-8884e039bdf6tt",
       "source": "bfcbd325-f590-4469-8bca-bab6b4a02f77",
       "sourceHandle": "sb",
       "target": "4c31eac7-9503-4c02-898e-8884e039bdf6",
-      "targetHandle": "tt",
-      "id": "xy-edge__bfcbd325-f590-4469-8bca-bab6b4a02f77sb-4c31eac7-9503-4c02-898e-8884e039bdf6tt"
+      "targetHandle": "tt"
+    },
+    {
+      "id": "xy-edge__ff-fuzzwiper-ff-c2neg",
+      "source": "ff-fuzz",
+      "sourceHandle": "wiper",
+      "target": "ff-c2",
+      "targetHandle": "neg"
+    },
+    {
+      "id": "xy-edge__ff-fuzzccw-33b9bcdb-7b8a-473d-867a-6437f01e6550tt",
+      "source": "ff-fuzz",
+      "sourceHandle": "ccw",
+      "target": "33b9bcdb-7b8a-473d-867a-6437f01e6550",
+      "targetHandle": "tt"
+    },
+    {
+      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8tb-ff-fuzzcw",
+      "source": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
+      "sourceHandle": "tb",
+      "target": "ff-fuzz",
+      "targetHandle": "cw"
+    },
+    {
+      "id": "xy-edge__3579d6bd-78ad-409b-bd91-2ccf06e7e4a8sb-ff-fuzzcw",
+      "source": "3579d6bd-78ad-409b-bd91-2ccf06e7e4a8",
+      "sourceHandle": "sb",
+      "target": "ff-fuzz",
+      "targetHandle": "cw"
     }
   ]
 }

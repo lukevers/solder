@@ -1,8 +1,7 @@
 // Simulation and worker message types.
 //
-// These types define the IPC contract between the
-// main thread and the Web Worker threads that run
-// SPICE simulations and circuit analysis.
+// These types define the IPC contract between the main thread and the Web
+// Worker threads that run SPICE simulations and circuit analysis.
 
 import type { Edge } from '@xyflow/react';
 
@@ -35,13 +34,9 @@ export const AUDIO_SOURCE_TYPE = {
 // ── Simulation ───────────────────────────────────────────
 
 /**
- * Message sent from the main thread to the
- * simulation Web Worker to kick off a SPICE
- * transient analysis.
- *
- * The worker compiles a netlist from the nodes
- * and edges, runs it through the eecircuit
- * engine, and returns a SimulateResponse.
+ * Message sent from the main thread to the simulation Web Worker to kick off a
+ * SPICE transient analysis. The worker compiles a netlist from the nodes and
+ * edges, runs it through the eecircuit engine, and returns a SimulateResponse.
  */
 export type SimulateRequest = {
   type: typeof WORKER_MESSAGE_TYPE.simulate;
@@ -52,9 +47,8 @@ export type SimulateRequest = {
   amplitude: number;
 
   /**
-   * Raw audio samples to use as a PWL voltage
-   * source. When absent, the worker generates a
-   * SIN test tone instead.
+   * Raw audio samples to use as a PWL voltage source. When absent, the worker
+   * generates a SIN test tone instead.
    */
   inputBuffer?: Float32Array;
 
@@ -67,9 +61,8 @@ export type SimulateRequest = {
 /**
  * Response from the simulation Web Worker.
  *
- * Either a successful result containing the
- * output audio buffer, or an error with a
- * human-readable message.
+ * Either a successful result containing the output audio buffer, or an error
+ * with a human-readable message.
  */
 export type SimulateResponse =
   | { type: typeof WORKER_MESSAGE_TYPE.result; outputBuffer: Float32Array }
@@ -78,18 +71,14 @@ export type SimulateResponse =
 // ── Pot sweep ────────────────────────────────────────────
 
 /**
- * Fixed potentiometer positions used for sweep
- * analysis.
- *
- * The sweep runs one simulation per position
- * (0%, 25%, 50%, 75%, 100%) so the user can
- * hear how the pot affects the output.
+ * Fixed potentiometer positions used for sweep analysis. The sweep runs one
+ * simulation per position (0%, 25%, 50%, 75%, 100%) so the user can hear how
+ * the pot affects the output.
  */
 export const SWEEP_POSITIONS = [0, 0.25, 0.5, 0.75, 1.0] as const;
 
 /**
- * Result of a single pot-sweep simulation at
- * one position value.
+ * Result of a single pot-sweep simulation at one position value.
  */
 export type SweepResult = {
   position: number;
@@ -101,8 +90,7 @@ export type SweepResult = {
 /**
  * Describes where the input audio comes from.
  *
- * Simulation currently uses pre-loaded sample
- * files only.
+ * Simulation currently uses pre-loaded sample files only.
  */
 export type LocalSample = {
   id: string;
@@ -116,16 +104,14 @@ export type AudioSource =
 // ── Circuit analysis ─────────────────────────────────────
 
 /**
- * Waveform shape for the test signal used in
- * circuit analysis mode.
+ * Waveform shape for the test signal used in circuit analysis mode.
  */
 export type WaveformType = 'sine' | 'square' | 'triangle' | 'sawtooth';
 
 /**
- * Message sent from the main thread to the
- * analysis Web Worker. Similar to SimulateRequest
- * but uses a generated waveform (not audio input)
- * and captures multiple node voltages.
+ * Message sent from the main thread to the analysis Web Worker. Similar to
+ * SimulateRequest but uses a generated waveform (not audio input) and captures
+ * multiple node voltages.
  */
 export type AnalyzeRequest = {
   type: typeof WORKER_MESSAGE_TYPE.analyze;
@@ -138,8 +124,7 @@ export type AnalyzeRequest = {
 };
 
 /**
- * Voltage trace data for a single node in the
- * circuit, as returned by analysis.
+ * Voltage trace data for a single node in the circuit, as returned by analysis.
  */
 export type AnalyzeTraceData = {
   node: string;
@@ -149,9 +134,8 @@ export type AnalyzeTraceData = {
 /**
  * Response from the analysis Web Worker.
  *
- * Either a successful result with per-node
- * voltage traces and the output sample rate,
- * or an error with a human-readable message.
+ * Either a successful result with per-node voltage traces and the output sample
+ * rate, or an error with a human-readable message.
  */
 export type AnalyzeResponse =
   | {

@@ -59,6 +59,86 @@ describe('exportCircuit', () => {
     expect(parsed.nodes).toHaveLength(1);
     expect(parsed.edges).toHaveLength(1);
   });
+
+  it('strips runtime-only node fields from exported JSON', () => {
+    const boxTab: Tab = {
+      ...SAMPLE_TAB,
+      nodes: [
+        {
+          id: 'box-1',
+          type: 'box',
+          position: { x: 80, y: 120 },
+          data: { label: 'gain stage', color: 'yellow', variant: 'outline' },
+          style: { width: 240, height: 160 },
+          measured: { width: 240, height: 160 },
+          className: 'box-node-wrapper',
+          dragHandle: '.box-drag-handle',
+          zIndex: -1,
+          selected: true,
+        },
+      ],
+    };
+
+    const parsed = JSON.parse(exportCircuit(boxTab));
+
+    expect(parsed.nodes[0]).toEqual({
+      id: 'box-1',
+      type: 'box',
+      position: { x: 80, y: 120 },
+      data: { label: 'gain stage', color: 'yellow', variant: 'outline' },
+      style: { width: 240, height: 160 },
+    });
+  });
+
+  it('prefers live resized box dimensions over stale style defaults', () => {
+    const resizedBoxTab: Tab = {
+      ...SAMPLE_TAB,
+      nodes: [
+        {
+          id: 'box-1',
+          type: 'box',
+          position: { x: 80, y: 120 },
+          data: { label: 'gain stage', color: 'yellow', variant: 'outline' },
+          style: { width: 200, height: 150 },
+          measured: { width: 240, height: 160 },
+          width: 240,
+          height: 160,
+        } as Tab['nodes'][number],
+      ],
+    };
+
+    const parsed = JSON.parse(exportCircuit(resizedBoxTab));
+
+    expect(parsed.nodes[0].style).toEqual({ width: 240, height: 160 });
+  });
+
+  it('strips transient edge fields from exported JSON', () => {
+    const tabWithTransientEdge: Tab = {
+      ...SAMPLE_TAB,
+      edges: [
+        {
+          id: 'e1',
+          source: 'n1',
+          sourceHandle: 'a',
+          target: 'n2',
+          targetHandle: 'b',
+          selected: true,
+          zIndex: 2,
+          reconnectable: true,
+        } as Edge,
+      ],
+    };
+
+    const parsed = JSON.parse(exportCircuit(tabWithTransientEdge));
+
+    expect(parsed.edges[0]).toEqual({
+      id: 'e1',
+      source: 'n1',
+      sourceHandle: 'a',
+      target: 'n2',
+      targetHandle: 'b',
+    });
+  });
 });
 
 describe('importCircuit', () => {

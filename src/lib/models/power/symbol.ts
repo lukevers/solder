@@ -16,7 +16,7 @@ export const SYM_POWER: SymbolDef = {
   id: 'power/vcc',
   name: 'Power (VCC)',
   width: 40,
-  height: 40,
+  height: 48,
   style: 'power-flag',
   pins: [
     {

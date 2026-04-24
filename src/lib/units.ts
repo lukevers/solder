@@ -1,9 +1,3 @@
-// Unit formatting and detection for component values.
-//
-// Converts raw numeric values (ohms, farads) into
-// human-readable strings with SI unit suffixes for
-// display in the UI (inspector, node labels, etc.).
-
 /**
  * SI unit suffix for capacitance display.
  */
@@ -15,8 +9,7 @@ export type CapUnit = 'pF' | 'nF' | 'µF' | 'mF';
 export type ResUnit = 'Ω' | 'kΩ' | 'MΩ';
 
 /**
- * Multipliers to convert farads into each
- * capacitance display unit.
+ * Multipliers to convert farads into each capacitance display unit.
  *
  *   farads × multiplier = display value
  *   e.g. 47e-9 × 1e9 = 47 (nF)
@@ -29,8 +22,7 @@ export const CAP_MULTIPLIERS: Record<CapUnit, number> = {
 };
 
 /**
- * Multipliers to convert ohms into each
- * resistance display unit.
+ * Multipliers to convert ohms into each resistance display unit.
  *
  *   ohms × multiplier = display value
  *   e.g. 10000 × 1e-3 = 10 (kΩ)
@@ -42,8 +34,7 @@ export const RES_MULTIPLIERS: Record<ResUnit, number> = {
 };
 
 /**
- * Pick the best capacitance display unit for
- * a given farad value.
+ * Pick the best capacitance display unit for a given farad value.
  *
  *   < 1 nF  → pF
  *   < 1 µF  → nF
@@ -67,8 +58,7 @@ export function detectCapUnit(farads: number): CapUnit {
 }
 
 /**
- * Pick the best resistance display unit for
- * a given ohm value.
+ * Pick the best resistance display unit for a given ohm value.
  *
  *   < 1 kΩ  → Ω
  *   < 1 MΩ  → kΩ

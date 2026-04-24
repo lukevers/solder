@@ -14,13 +14,21 @@ interface PowerNodeProps extends NodeProps {
 
 export function PowerNode({ id, data, selected }: PowerNodeProps) {
   return (
-    <NodeShell id={id} width={40} height={40}>
-      <NodeSvg width={40} height={40}>
+    <NodeShell id={id} width={40} height={48}>
+      <NodeSvg width={40} height={48}>
         <circle
           cx="20"
           cy="20"
           r="14"
           fill="#1f2937"
+          stroke={selected ? '#60a5fa' : '#facc15'}
+          strokeWidth="1.5"
+        />
+        <line
+          x1="20"
+          y1="34"
+          x2="20"
+          y2="48"
           stroke={selected ? '#60a5fa' : '#facc15'}
           strokeWidth="1.5"
         />

@@ -19,15 +19,63 @@ export function JunctionNode({ id }: NodeProps) {
       }}
     >
       {/* Source handles — one per side */}
-      <Handle type="source" position={Position.Top} id="st" style={HIDDEN} />
-      <Handle type="source" position={Position.Right} id="sr" style={HIDDEN} />
-      <Handle type="source" position={Position.Bottom} id="sb" style={HIDDEN} />
-      <Handle type="source" position={Position.Left} id="sl" style={HIDDEN} />
+      <Handle
+        className="solder-node-handle solder-junction-handle"
+        type="source"
+        position={Position.Top}
+        id="st"
+        style={HIDDEN}
+      />
+      <Handle
+        className="solder-node-handle solder-junction-handle"
+        type="source"
+        position={Position.Right}
+        id="sr"
+        style={HIDDEN}
+      />
+      <Handle
+        className="solder-node-handle solder-junction-handle"
+        type="source"
+        position={Position.Bottom}
+        id="sb"
+        style={HIDDEN}
+      />
+      <Handle
+        className="solder-node-handle solder-junction-handle"
+        type="source"
+        position={Position.Left}
+        id="sl"
+        style={HIDDEN}
+      />
       {/* Target handles — one per side */}
-      <Handle type="target" position={Position.Top} id="tt" style={HIDDEN} />
-      <Handle type="target" position={Position.Right} id="tr" style={HIDDEN} />
-      <Handle type="target" position={Position.Bottom} id="tb" style={HIDDEN} />
-      <Handle type="target" position={Position.Left} id="tl" style={HIDDEN} />
+      <Handle
+        className="solder-node-handle solder-junction-handle"
+        type="target"
+        position={Position.Top}
+        id="tt"
+        style={HIDDEN}
+      />
+      <Handle
+        className="solder-node-handle solder-junction-handle"
+        type="target"
+        position={Position.Right}
+        id="tr"
+        style={HIDDEN}
+      />
+      <Handle
+        className="solder-node-handle solder-junction-handle"
+        type="target"
+        position={Position.Bottom}
+        id="tb"
+        style={HIDDEN}
+      />
+      <Handle
+        className="solder-node-handle solder-junction-handle"
+        type="target"
+        position={Position.Left}
+        id="tl"
+        style={HIDDEN}
+      />
 
       <svg
         width={NODE_SIZE}

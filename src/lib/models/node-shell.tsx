@@ -12,7 +12,7 @@ import { useStore } from '../../store';
  * Default visual style for node handles across
  * the symbol library.
  */
-export const HANDLE_STYLE = { background: '#4b5563' };
+export const HANDLE_STYLE = { background: 'transparent', border: 'none' };
 
 const POSITION_ORDER: Array<Position> = [
   Position.Top,
@@ -124,8 +124,12 @@ const NodeRotationContext = createContext<RotationCtx>({
  */
 export function RotatedHandle(props: HandleProps) {
   const { rotation, origWidth, origHeight } = useContext(NodeRotationContext);
+  const className = props.className
+    ? `solder-node-handle ${props.className}`
+    : 'solder-node-handle';
+
   if (!rotation) {
-    return <Handle {...props} />;
+    return <Handle {...props} className={className} />;
   }
 
   const newPosition = rotatePosition(props.position, rotation);
@@ -137,7 +141,14 @@ export function RotatedHandle(props: HandleProps) {
     origHeight,
   );
 
-  return <Handle {...props} position={newPosition} style={newStyle} />;
+  return (
+    <Handle
+      {...props}
+      className={className}
+      position={newPosition}
+      style={newStyle}
+    />
+  );
 }
 
 /**
