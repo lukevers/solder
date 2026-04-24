@@ -1,9 +1,9 @@
-// Circuit graph types — component data, node union,
-// and circuit state.
+// Circuit graph types — component data, node union, and circuit state.
 //
-// Data types are defined per-domain under
-// src/lib/models/<component>/types.ts and
-// re-exported here for backward compatibility.
+// Component-specific data types live under
+// src/lib/models/<component>/types.ts. This module acts as the shared public
+// entry point for circuit graph types and re-exports commonly used component
+// data types alongside the ComponentNode union.
 
 import type { Edge, XYPosition } from '@xyflow/react';
 
@@ -50,8 +50,7 @@ import type { StickyNoteData } from './models/stickynote/types';
 // ── Node union ──────────────────────────────────────────
 
 /**
- * Shared fields present on every circuit node,
- * regardless of component type.
+ * Shared fields present on every circuit node, regardless of component type.
  */
 type NodeBase = {
   id: string;
@@ -63,17 +62,14 @@ type NodeBase = {
 /**
  * Discriminated union of all circuit node types.
  *
- * Each variant pairs a `type` string tag with
- * the corresponding data payload. XYFlow uses
- * the `type` field to select the correct React
- * node renderer.
+ * Each variant pairs a `type` string tag with the corresponding data payload.
+ * XYFlow uses the `type` field to select the correct React node renderer.
  *
  * Adding a new component type requires:
  *   1. A new data type in its domain directory
  *   2. A new variant here
  *   3. A new node renderer in its domain directory
- *   4. A new entry in COMPONENT_HANDLES
- *      (netlist.ts)
+ *   4. A new entry in COMPONENT_HANDLES (netlist.ts)
  */
 export type ComponentNode =
   | (NodeBase & { type: 'resistor'; data: ResistorData })
@@ -102,8 +98,7 @@ export type ComponentNode =
 // ── Circuit state ───────────────────────────────────────
 
 /**
- * The complete state of a circuit: all nodes
- * and all edges (wires) between them.
+ * The complete state of a circuit: all nodes and all edges (wires) betweenthem.
  */
 export type CircuitState = {
   nodes: Array<ComponentNode>;
@@ -113,11 +108,10 @@ export type CircuitState = {
 // ── Utility functions ───────────────────────────────────
 
 /**
- * Returns true if an edge connects to a power
- * or ground node.
+ * Returns true if an edge connects to a power or ground node.
  *
- * Used by SchematicCanvas to apply DC-specific
- * edge styling (dashed lines for power rails).
+ * Used by SchematicCanvas to apply DC-specific edge styling (dashed lines for
+ * power rails).
  */
 export function isEdgeDC(
   srcType?: ComponentNode['type'],
