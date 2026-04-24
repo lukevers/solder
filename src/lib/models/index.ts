@@ -13,6 +13,9 @@
  * into the worker bundle.
  */
 
+export type { NodeColor, NodeColorOption } from '../colors';
+export type { NodeSize, NodeWidth } from '../sizes';
+
 export {
   BJT_2N3904,
   BJT_2N3906,
@@ -94,12 +97,7 @@ export {
   SpiceSubcircuit,
 } from './spice';
 
-export type {
-  StickyNoteColor,
-  StickyNoteData,
-  StickyNoteSize,
-  StickyNoteWidth,
-} from './stickynote/types';
+export type { StickyNoteData } from './stickynote/types';
 
 export type {
   PinKind,

@@ -1,5 +1,7 @@
 import { type NodeProps, NodeResizer } from '@xyflow/react';
 import { useStore } from '../../../store';
+import { DEFAULT_NODE_COLOR } from '../../colors';
+import { DEFAULT_BOX_VARIANT } from './constants';
 import type { BoxData } from './types';
 import { COLOR_MAP, dashArray } from './utils';
 
@@ -11,8 +13,8 @@ export function BoxNode({ id, data }: BoxNodeProps) {
   const selectNode = useStore((s) => s.selectNode);
   const isSelected = useStore((s) => s.selectedNodeId === id);
 
-  const color = data.color ?? 'blue';
-  const variant = data.variant ?? 'outline';
+  const color = data.color ?? DEFAULT_NODE_COLOR;
+  const variant = data.variant ?? DEFAULT_BOX_VARIANT;
   const { border: borderColor, fill } = COLOR_MAP[color];
   const strokeWidth = isSelected ? 2 : 1.5;
 

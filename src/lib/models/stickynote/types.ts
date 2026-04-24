@@ -1,24 +1,5 @@
-/**
- * Available colours for sticky notes and boxes.
- */
-export type StickyNoteColor =
-  | 'yellow'
-  | 'blue'
-  | 'green'
-  | 'pink'
-  | 'purple'
-  | 'orange'
-  | 'gray';
-
-/**
- * Font size preset for sticky notes.
- */
-export type StickyNoteSize = 'xs' | 'sm' | 'md';
-
-/**
- * Width preset for sticky notes.
- */
-export type StickyNoteWidth = 'slim' | 'normal';
+import type { NodeColor } from '../../colors';
+import type { NodeSize, NodeWidth } from '../../sizes';
 
 /**
  * Data payload for a sticky note node.
@@ -27,7 +8,7 @@ export type StickyNoteWidth = 'slim' | 'normal';
 export type StickyNoteData = {
   label: string;
   text: string;
-  color?: StickyNoteColor;
-  size?: StickyNoteSize;
-  width?: StickyNoteWidth;
+  color?: NodeColor;
+  size?: NodeSize;
+  width?: NodeWidth;
 };

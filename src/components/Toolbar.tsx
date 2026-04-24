@@ -13,7 +13,9 @@ import {
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { exportCircuit, importCircuit } from '../lib/circuit-io';
+import { DEFAULT_NODE_COLOR } from '../lib/colors';
 import { CIRCUIT_LABEL } from '../lib/constants';
+import { DEFAULT_BOX_VARIANT } from '../lib/models/box/constants';
 import { JACK_DIRECTION } from '../lib/models/jack/types';
 import type { ComponentNode } from '../lib/types';
 import { SIMULATION_STATUS, SWEEP_STATUS } from '../store/constants';
@@ -312,7 +314,11 @@ const PALETTE: Array<{
     label: 'BOX',
     tooltip: 'Schematic Box',
     type: 'box',
-    defaultData: { label: '', color: 'blue', variant: 'outline' },
+    defaultData: {
+      label: '',
+      color: DEFAULT_NODE_COLOR,
+      variant: DEFAULT_BOX_VARIANT,
+    },
   },
 ];
 

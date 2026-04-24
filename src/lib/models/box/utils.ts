@@ -1,40 +1,50 @@
-import type { StickyNoteColor } from '../stickynote/types';
+import type { NodeColor } from '../../colors';
+import { NODE_COLOR_TOKENS } from '../../colors';
 import type { BoxVariant } from './types';
 
-export const COLOR_MAP: Record<
-  StickyNoteColor,
-  { border: string; fill: string }
-> = {
+/**
+ * Box border and fill colours derived from the shared annotation palette.
+ *
+ * Boxes reuse the sticky-note colour set so both decorative node types present
+ * the same named colours throughout the editor.
+ */
+export const COLOR_MAP: Record<NodeColor, { border: string; fill: string }> = {
   yellow: {
-    border: '#eab308',
-    fill: 'rgba(234,179,8,0.07)',
+    border: NODE_COLOR_TOKENS.yellow.borderSelected,
+    fill: NODE_COLOR_TOKENS.yellow.boxFill,
   },
   blue: {
-    border: '#3b82f6',
-    fill: 'rgba(59,130,246,0.07)',
+    border: NODE_COLOR_TOKENS.blue.borderSelected,
+    fill: NODE_COLOR_TOKENS.blue.boxFill,
   },
   green: {
-    border: '#22c55e',
-    fill: 'rgba(34,197,94,0.07)',
+    border: NODE_COLOR_TOKENS.green.borderSelected,
+    fill: NODE_COLOR_TOKENS.green.boxFill,
   },
   pink: {
-    border: '#ec4899',
-    fill: 'rgba(236,72,153,0.07)',
+    border: NODE_COLOR_TOKENS.pink.borderSelected,
+    fill: NODE_COLOR_TOKENS.pink.boxFill,
   },
   purple: {
-    border: '#8b5cf6',
-    fill: 'rgba(139,92,246,0.07)',
+    border: NODE_COLOR_TOKENS.purple.borderSelected,
+    fill: NODE_COLOR_TOKENS.purple.boxFill,
   },
   orange: {
-    border: '#f97316',
-    fill: 'rgba(249,115,22,0.07)',
+    border: NODE_COLOR_TOKENS.orange.borderSelected,
+    fill: NODE_COLOR_TOKENS.orange.boxFill,
   },
   gray: {
-    border: '#6b7280',
-    fill: 'rgba(107,114,128,0.07)',
+    border: NODE_COLOR_TOKENS.gray.borderSelected,
+    fill: NODE_COLOR_TOKENS.gray.boxFill,
   },
 };
 
+/**
+ * Return the SVG dash pattern for the requested box outline style.
+ *
+ * Only the dashed variant needs an explicit stroke pattern; the other variants
+ * render as solid outlines.
+ */
 export function dashArray(variant: BoxVariant): string | undefined {
   return variant === 'dashed' ? '8 4' : undefined;
 }

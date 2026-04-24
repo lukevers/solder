@@ -7,6 +7,8 @@
 
 import type { Edge, XYPosition } from '@xyflow/react';
 
+export type { NodeColor, NodeColorOption } from './colors';
+export type { NodeSize, NodeWidth } from './sizes';
 export type { XYPosition };
 
 // ── Re-exported component data types ────────────────────
@@ -25,12 +27,7 @@ export type { OpAmpData } from './models/opamp/types';
 export type { PotData, PotTaper } from './models/pot/types';
 export type { PowerData } from './models/power/types';
 export type { ResistorData } from './models/resistor/types';
-export type {
-  StickyNoteColor,
-  StickyNoteData,
-  StickyNoteSize,
-  StickyNoteWidth,
-} from './models/stickynote/types';
+export type { StickyNoteData } from './models/stickynote/types';
 
 // ── Imports for the discriminated union ─────────────────
 

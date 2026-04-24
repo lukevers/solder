@@ -2,11 +2,18 @@ import type { Edge } from '@xyflow/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { DEFAULT_NODE_COLOR, NODE_COLOR_OPTIONS } from '../lib/colors';
+import { BOX_VARIANTS, DEFAULT_BOX_VARIANT } from '../lib/models/box/constants';
 import { JACK_DIRECTION } from '../lib/models/jack/types';
+import {
+  DEFAULT_NODE_SIZE,
+  DEFAULT_NODE_WIDTH,
+  NODE_SIZES,
+  NODE_WIDTHS,
+} from '../lib/sizes';
 import {
   type BJTData,
   type BJTModel,
-  type BoxVariant,
   type ComponentNode,
   type DiodeData,
   isEdgeDC,
@@ -16,9 +23,6 @@ import {
   type MOSFETData,
   type MOSFETModel,
   type PotData,
-  type StickyNoteColor,
-  type StickyNoteSize,
-  type StickyNoteWidth,
 } from '../lib/types';
 import {
   CAP_MULTIPLIERS,
@@ -643,16 +647,6 @@ function LabelInspector({
   );
 }
 
-const STICKY_COLOR_OPTIONS: Array<{ id: StickyNoteColor; swatch: string }> = [
-  { id: 'yellow', swatch: '#fde047' },
-  { id: 'blue', swatch: '#93c5fd' },
-  { id: 'green', swatch: '#86efac' },
-  { id: 'pink', swatch: '#f9a8d4' },
-  { id: 'purple', swatch: '#c4b5fd' },
-  { id: 'orange', swatch: '#fdba74' },
-  { id: 'gray', swatch: '#9ca3af' },
-];
-
 function StickyNoteInspector({
   node,
 }: {
@@ -660,9 +654,9 @@ function StickyNoteInspector({
 }) {
   const updateNodeData = useStore((s) => s.updateNodeData);
   const { label, text, color, size, width } = node.data;
-  const current = color ?? 'yellow';
-  const currentSize = size ?? 'sm';
-  const currentWidth = width ?? 'normal';
+  const current = color ?? DEFAULT_NODE_COLOR;
+  const currentSize = size ?? DEFAULT_NODE_SIZE;
+  const currentWidth = width ?? DEFAULT_NODE_WIDTH;
 
   return (
     <>
@@ -699,7 +693,7 @@ function StickyNoteInspector({
       </Field>
       <Field label="Size">
         <div className="flex gap-1">
-          {(['xs', 'sm', 'md'] as Array<StickyNoteSize>).map((s) => (
+          {NODE_SIZES.map((s) => (
             <button
               key={s}
               type="button"
@@ -725,7 +719,7 @@ function StickyNoteInspector({
       </Field>
       <Field label="Width">
         <div className="flex gap-1">
-          {(['slim', 'normal'] as Array<StickyNoteWidth>).map((w) => (
+          {NODE_WIDTHS.map((w) => (
             <button
               key={w}
               type="button"
@@ -751,7 +745,7 @@ function StickyNoteInspector({
       </Field>
       <Field label="Color">
         <div className="flex gap-1.5">
-          {STICKY_COLOR_OPTIONS.map((opt) => (
+          {NODE_COLOR_OPTIONS.map((opt) => (
             <button
               key={opt.id}
               type="button"
@@ -785,7 +779,11 @@ function BoxInspector({
   node: Extract<ComponentNode, { type: 'box' }>;
 }) {
   const updateNodeData = useStore((s) => s.updateNodeData);
-  const { label, color = 'blue', variant = 'outline' } = node.data;
+  const {
+    label,
+    color = DEFAULT_NODE_COLOR,
+    variant = DEFAULT_BOX_VARIANT,
+  } = node.data;
 
   const update = (patch: Partial<typeof node.data>) =>
     updateNodeData(node.id, { label, color, variant, ...patch });
@@ -802,7 +800,7 @@ function BoxInspector({
       </Field>
       <Field label="Variant">
         <div className="flex overflow-hidden rounded border border-gray-700">
-          {(['outline', 'filled', 'dashed'] as Array<BoxVariant>).map((s) => (
+          {BOX_VARIANTS.map((s) => (
             <button
               key={s}
               type="button"
@@ -821,7 +819,7 @@ function BoxInspector({
       </Field>
       <Field label="Color">
         <div className="flex gap-1.5">
-          {STICKY_COLOR_OPTIONS.map((opt) => (
+          {NODE_COLOR_OPTIONS.map((opt) => (
             <button
               key={opt.id}
               type="button"

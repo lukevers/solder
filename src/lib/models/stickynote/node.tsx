@@ -1,77 +1,14 @@
 import type { NodeProps } from '@xyflow/react';
 import { useStore } from '../../../store';
-import type { StickyNoteColor, StickyNoteData, StickyNoteSize } from './types';
+import { DEFAULT_NODE_COLOR, NODE_COLOR_TOKENS } from '../../colors';
+import {
+  DEFAULT_NODE_SIZE,
+  DEFAULT_NODE_WIDTH,
+  type NodeSize,
+} from '../../sizes';
+import type { StickyNoteData } from './types';
 
-export const STICKY_COLORS: Record<
-  StickyNoteColor,
-  {
-    bg: string;
-    bgSelected: string;
-    header: string;
-    border: string;
-    borderSelected: string;
-    text: string;
-  }
-> = {
-  yellow: {
-    bg: '#fef08a',
-    bgSelected: '#fde047',
-    header: '#fde047',
-    border: '#fde047',
-    borderSelected: '#eab308',
-    text: '#713f12',
-  },
-  blue: {
-    bg: '#bfdbfe',
-    bgSelected: '#93c5fd',
-    header: '#93c5fd',
-    border: '#93c5fd',
-    borderSelected: '#3b82f6',
-    text: '#1e3a5f',
-  },
-  green: {
-    bg: '#bbf7d0',
-    bgSelected: '#86efac',
-    header: '#86efac',
-    border: '#86efac',
-    borderSelected: '#22c55e',
-    text: '#14532d',
-  },
-  pink: {
-    bg: '#fbcfe8',
-    bgSelected: '#f9a8d4',
-    header: '#f9a8d4',
-    border: '#f9a8d4',
-    borderSelected: '#ec4899',
-    text: '#701a3e',
-  },
-  purple: {
-    bg: '#ddd6fe',
-    bgSelected: '#c4b5fd',
-    header: '#c4b5fd',
-    border: '#c4b5fd',
-    borderSelected: '#8b5cf6',
-    text: '#3b1f6e',
-  },
-  orange: {
-    bg: '#fed7aa',
-    bgSelected: '#fdba74',
-    header: '#fdba74',
-    border: '#fdba74',
-    borderSelected: '#f97316',
-    text: '#6b2f0a',
-  },
-  gray: {
-    bg: '#e5e7eb',
-    bgSelected: '#d1d5db',
-    header: '#d1d5db',
-    border: '#d1d5db',
-    borderSelected: '#6b7280',
-    text: '#1f2937',
-  },
-};
-
-const SIZE_CLASSES: Record<StickyNoteSize, string> = {
+const SIZE_CLASSES: Record<NodeSize, string> = {
   xs: 'text-[5px] leading-tight',
   sm: 'text-[7px] leading-snug',
   md: 'text-[10px] leading-snug',
@@ -83,9 +20,10 @@ interface StickyNoteNodeProps extends NodeProps {
 
 export function StickyNoteNode({ id, data, selected }: StickyNoteNodeProps) {
   const selectNode = useStore((s) => s.selectNode);
-  const c = STICKY_COLORS[data.color ?? 'yellow'];
-  const sizeClass = SIZE_CLASSES[data.size ?? 'sm'];
-  const w = data.width === 'slim' ? 80 : 160;
+  const c = NODE_COLOR_TOKENS[data.color ?? DEFAULT_NODE_COLOR];
+  const sizeClass = SIZE_CLASSES[data.size ?? DEFAULT_NODE_SIZE];
+  const width = data.width ?? DEFAULT_NODE_WIDTH;
+  const w = width === 'slim' ? 80 : 160;
 
   return (
     <div
