@@ -117,23 +117,3 @@ export type CircuitState = {
   nodes: Array<ComponentNode>;
   edges: Array<Edge>;
 };
-
-// ── Utility functions ───────────────────────────────────
-
-/**
- * Returns true if an edge connects to a power or ground node.
- *
- * Used by SchematicCanvas to apply DC-specific edge styling (dashed lines for
- * power rails).
- */
-export function isEdgeDC(
-  srcType?: ComponentNode['type'],
-  tgtType?: ComponentNode['type'],
-): boolean {
-  return (
-    srcType === 'power' ||
-    srcType === 'ground' ||
-    tgtType === 'power' ||
-    tgtType === 'ground'
-  );
-}

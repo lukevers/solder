@@ -53,11 +53,15 @@ body {
 	}
 }
 
-.edge-anim-ac {
+.edge-anim-signal {
 	animation: edge-flow 0.4s linear infinite;
 }
 
-.edge-anim-dc {
+.edge-anim-biased {
+	animation: edge-flow 0.8s linear infinite;
+}
+
+.edge-anim-rail {
 	animation: edge-flow 1.2s linear infinite;
 }
 

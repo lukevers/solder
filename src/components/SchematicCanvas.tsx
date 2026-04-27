@@ -16,9 +16,12 @@ import {
   useUpdateNodeInternals,
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  buildNetVisualState,
+  getEdgeNetVisualRole,
+} from '../lib/net-visual';
 import { nodeTypes } from '../lib/models/ui/registry';
 import type { ComponentNode } from '../lib/types';
-import { isEdgeDC } from '../lib/types';
 import { useStore } from '../store';
 import {
   useCircuitActions,
@@ -336,19 +339,23 @@ function SchematicCanvasInner() {
 
   const [isInteractive, setIsInteractive] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
+  const netVisualState = useMemo(
+    () => buildNetVisualState(nodes, edges),
+    [nodes, edges],
+  );
 
   const signalEdges = useMemo(
     () =>
       edges.map((edge) => {
         const src = nodes.find((n) => n.id === edge.source);
         const tgt = nodes.find((n) => n.id === edge.target);
-        const isDC = isEdgeDC(src?.type, tgt?.type);
+        const netRole = getEdgeNetVisualRole(edge, netVisualState);
         return {
           ...edge,
           type: 'signal',
           data: {
             ...edge.data,
-            signalType: isDC ? 'dc' : 'ac',
+            netRole,
             sourceLabel: src?.data.label ?? src?.type ?? '?',
             sourceHandle: edge.sourceHandle ?? '',
             targetLabel: tgt?.data.label ?? tgt?.type ?? '?',
@@ -357,7 +364,7 @@ function SchematicCanvasInner() {
           },
         };
       }),
-    [edges, nodes, isConnecting],
+    [edges, nodes, isConnecting, netVisualState],
   );
 
   return (

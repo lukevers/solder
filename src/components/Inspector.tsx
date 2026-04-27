@@ -3,6 +3,11 @@ import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { DEFAULT_NODE_COLOR, NODE_COLOR_OPTIONS } from '../lib/colors';
+import {
+  buildNetVisualState,
+  formatNetVisualRole,
+  getEdgeNetVisualRole,
+} from '../lib/net-visual';
 import { BOX_VARIANTS, DEFAULT_BOX_VARIANT } from '../lib/models/ui/box/constants';
 import { JACK_DIRECTION } from '../lib/models/components/jack/types';
 import {
@@ -16,7 +21,6 @@ import {
   type BJTModel,
   type ComponentNode,
   type DiodeData,
-  isEdgeDC,
   type JackData,
   type JFETData,
   type JFETModel,
@@ -856,7 +860,7 @@ function EdgeInspector({
 
   const src = allNodes.find((n) => n.id === edge.source);
   const tgt = allNodes.find((n) => n.id === edge.target);
-  const isDC = isEdgeDC(src?.type, tgt?.type);
+  const netRole = getEdgeNetVisualRole(edge, buildNetVisualState(allNodes, edges));
 
   return (
     <>
@@ -872,9 +876,9 @@ function EdgeInspector({
           <span className="text-gray-500">.{edge.targetHandle}</span>
         </div>
       </Field>
-      <Field label="Signal">
+      <Field label="Net">
         <div className="font-mono text-gray-200 text-xs">
-          {isDC ? 'DC' : 'AC'}
+          {formatNetVisualRole(netRole)}
         </div>
       </Field>
     </>

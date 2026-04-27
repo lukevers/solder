@@ -4,10 +4,14 @@ import {
   getSmoothStepPath,
 } from '@xyflow/react';
 import { Trash2 } from 'lucide-react';
+import { NET_VISUAL_ROLE, type NetVisualRole } from '../../lib/net-visual';
 import { useStore } from '../../store';
 
+/**
+ * Edge metadata used only by the renderer.
+ */
 type SignalEdgeData = {
-  signalType?: string;
+  netRole?: NetVisualRole;
   sourceLabel?: string;
   sourceHandle?: string;
   targetLabel?: string;
@@ -16,6 +20,27 @@ type SignalEdgeData = {
 };
 
 export type { SignalEdgeData };
+
+/**
+ * Visual palette for each net role.
+ */
+const EDGE_STYLE = {
+  [NET_VISUAL_ROLE.rail]: {
+    base: '#f59e0b',
+    selected: '#fbbf24',
+    animationClass: 'edge-anim-rail',
+  },
+  [NET_VISUAL_ROLE.biased]: {
+    base: '#10b981',
+    selected: '#34d399',
+    animationClass: 'edge-anim-biased',
+  },
+  [NET_VISUAL_ROLE.signal]: {
+    base: '#3b82f6',
+    selected: '#60a5fa',
+    animationClass: 'edge-anim-signal',
+  },
+} as const;
 
 export function SignalEdge({
   id,
@@ -41,14 +66,9 @@ export function SignalEdge({
 
   const deleteEdge = useStore((s) => s.deleteEdge);
   const d = data as SignalEdgeData | undefined;
-  const isDC = d?.signalType === 'dc';
-  const color = selected
-    ? isDC
-      ? '#fbbf24'
-      : '#60a5fa'
-    : isDC
-      ? '#f59e0b'
-      : '#3b82f6';
+  const netRole = d?.netRole ?? NET_VISUAL_ROLE.signal;
+  const style = EDGE_STYLE[netRole];
+  const color = selected ? style.selected : style.base;
 
   return (
     <>
@@ -68,7 +88,7 @@ export function SignalEdge({
         stroke={color}
         strokeWidth={1.5}
         strokeDasharray="6 5"
-        className={isDC ? 'edge-anim-dc' : 'edge-anim-ac'}
+        className={style.animationClass}
       />
       {selected && (
         <EdgeLabelRenderer>
