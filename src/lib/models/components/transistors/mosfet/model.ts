@@ -139,6 +139,8 @@ export class MOSFETModel extends SpiceCompactModel<MOSFETModelParams> {
  *
  * `CGS` and `CGD` looked plausible here, but ngspice in eecircuit-engine rejected
  * them as invalid model defaults for the MOS model we use.
+ *
+ * @see ./datasheets/BS170_MMBF170.pdf
  */
 export const MOSFET_BS170 = new MOSFETModel('BS170', 'NMOS', {
   [VTO_THRESHOLD_VOLTAGE]: '1.83',
@@ -150,6 +152,11 @@ export const MOSFET_BS170 = new MOSFETModel('BS170', 'NMOS', {
   [IS_BODY_DIODE_SATURATION_CURRENT]: '1f',
 });
 
+/**
+ * IRF510 N-channel power MOSFET.
+ *
+ * @see ./datasheets/IRF510.pdf
+ */
 export const MOSFET_IRF510 = new MOSFETModel('IRF510', 'NMOS', {
   [VTO_THRESHOLD_VOLTAGE]: '3.697',
   [KP_TRANSCONDUCTANCE_PARAMETER]: '3.592',
@@ -162,6 +169,11 @@ export const MOSFET_IRF510 = new MOSFETModel('IRF510', 'NMOS', {
   [IS_BODY_DIODE_SATURATION_CURRENT]: '1f',
 });
 
+/**
+ * IRF9510 P-channel power MOSFET.
+ *
+ * @see ./datasheets/IRF9510.pdf
+ */
 export const MOSFET_IRF9510 = new MOSFETModel('IRF9510', 'PMOS', {
   [VTO_THRESHOLD_VOLTAGE]: '-3.7',
   [KP_TRANSCONDUCTANCE_PARAMETER]: '2.5',
@@ -174,6 +186,11 @@ export const MOSFET_IRF9510 = new MOSFETModel('IRF9510', 'PMOS', {
   [IS_BODY_DIODE_SATURATION_CURRENT]: '1f',
 });
 
+/**
+ * 2N7000 N-channel power MOSFET.
+ *
+ * @see ./datasheets/2N7000.pdf
+ */
 export const MOSFET_2N7000 = new MOSFETModel('2N7000', 'NMOS', {
   [VTO_THRESHOLD_VOLTAGE]: '2.1',
   [KP_TRANSCONDUCTANCE_PARAMETER]: '190m',

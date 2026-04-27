@@ -308,6 +308,11 @@ export class BJTModel extends SpiceCompactModel<BJTModelParams> {
   }
 }
 
+/**
+ * 2N5088 NPN bipolar transistor.
+ *
+ * @see ./datasheets/2N5088_2N5089.pdf
+ */
 export const BJT_2N5088 = new BJTModel('2N5088', 'NPN', {
   [IS_SATURATION_CURRENT]: '5.911f',
   [ISE_BASE_EMITTER_LEAKAGE_CURRENT]: '5.911f',
@@ -333,6 +338,11 @@ export const BJT_2N5088 = new BJTModel('2N5088', 'NPN', {
   [FC_FORWARD_BIAS_DEPLETION_COEFFICIENT]: '0.5',
 });
 
+/**
+ * 2N5089 NPN bipolar transistor.
+ *
+ * @see ./datasheets/2N5088_2N5089.pdf
+ */
 export const BJT_2N5089 = new BJTModel('2N5089', 'NPN', {
   [IS_SATURATION_CURRENT]: '5.911f',
   [ISE_BASE_EMITTER_LEAKAGE_CURRENT]: '5.911f',
@@ -358,6 +368,11 @@ export const BJT_2N5089 = new BJTModel('2N5089', 'NPN', {
   [FC_FORWARD_BIAS_DEPLETION_COEFFICIENT]: '0.5',
 });
 
+/**
+ * BC108 NPN bipolar transistor.
+ *
+ * @see ./datasheets/BC107_BC108.pdf
+ */
 export const BJT_BC108 = new BJTModel('BC108', 'NPN', {
   [IS_SATURATION_CURRENT]: '1.8f',
   [ISE_BASE_EMITTER_LEAKAGE_CURRENT]: '50f',
@@ -384,6 +399,11 @@ export const BJT_BC108 = new BJTModel('BC108', 'NPN', {
   [FC_FORWARD_BIAS_DEPLETION_COEFFICIENT]: '0.5',
 });
 
+/**
+ * BC549 NPN bipolar transistor.
+ *
+ * @see ./datasheets/BC546_BC547_BC548_BC549_BC550.pdf
+ */
 export const BJT_BC549 = new BJTModel('BC549', 'NPN', {
   [IS_SATURATION_CURRENT]: '10f',
   [ISE_BASE_EMITTER_LEAKAGE_CURRENT]: '36f',
@@ -408,6 +428,11 @@ export const BJT_BC549 = new BJTModel('BC549', 'NPN', {
   [FC_FORWARD_BIAS_DEPLETION_COEFFICIENT]: '0.5',
 });
 
+/**
+ * MPSA18 NPN bipolar transistor.
+ *
+ * @see ./datasheets/MPSA18.pdf
+ */
 export const BJT_MPSA18 = new BJTModel('MPSA18', 'NPN', {
   [IS_SATURATION_CURRENT]: '20.3f',
   [ISE_BASE_EMITTER_LEAKAGE_CURRENT]: '1.41p',
@@ -434,6 +459,11 @@ export const BJT_MPSA18 = new BJTModel('MPSA18', 'NPN', {
   [FC_FORWARD_BIAS_DEPLETION_COEFFICIENT]: '0.5',
 });
 
+/**
+ * 2N3904 NPN bipolar transistor.
+ *
+ * @see ./datasheets/2N3903_2N3904.pdf
+ */
 export const BJT_2N3904 = new BJTModel('2N3904', 'NPN', {
   [IS_SATURATION_CURRENT]: '6.734f',
   [ISE_BASE_EMITTER_LEAKAGE_CURRENT]: '6.734f',
@@ -466,6 +496,11 @@ export const BJT_2N3904 = new BJTModel('2N3904', 'NPN', {
   [XCJC_BASE_COLLECTOR_CAPACITANCE_PARTITION]: 1,
 });
 
+/**
+ * 2N3906 PNP bipolar transistor.
+ *
+ * @see ./datasheets/2N3906.pdf
+ */
 export const BJT_2N3906 = new BJTModel('2N3906', 'PNP', {
   [IS_SATURATION_CURRENT]: '1.41f',
   [ISE_BASE_EMITTER_LEAKAGE_CURRENT]: 0,
@@ -498,6 +533,11 @@ export const BJT_2N3906 = new BJTModel('2N3906', 'PNP', {
   [XCJC_BASE_COLLECTOR_CAPACITANCE_PARTITION]: '.5',
 });
 
+/**
+ * AC128 PNP germanium transistor.
+ *
+ * @see ./datasheets/AC128.pdf
+ */
 export const BJT_AC128 = new BJTModel('AC128', 'PNP', {
   [IS_SATURATION_CURRENT]: '100n',
   [ISE_BASE_EMITTER_LEAKAGE_CURRENT]: '0.44n',

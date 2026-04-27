@@ -3,6 +3,7 @@ import {
   BJT_2N3904,
   DIODE_1N34A,
   DIODE_1N914,
+  JFET_2N5457,
   JFET_J201,
   LM741_SUBCKT,
   MOSFET_BS170,
@@ -16,10 +17,10 @@ import {
 describe('SPICE model builders', () => {
   it('serializes diode models to .model lines', () => {
     expect(DIODE_1N914.toString()).toBe(
-      '.model 1N914 D(IS=2.52n RS=.568 N=1.752 CJO=4p M=.4 TT=20n)',
+      '.model 1N914 D(IS=2.52n RS=.568 N=1.752 CJO=4p M=.4 TT=20n BV=100)',
     );
     expect(DIODE_1N34A.toString()).toBe(
-      '.model 1N34A D(IS=500n RS=1.5 N=1.08 CJO=1p M=.5 TT=50n BV=65)',
+      '.model 1N34A D(IS=500n RS=1.5 N=1.08 CJO=0.8p M=.5 TT=50n BV=65)',
     );
   });
 
@@ -30,8 +31,11 @@ describe('SPICE model builders', () => {
   });
 
   it('serializes JFET models to .model lines', () => {
+    expect(JFET_2N5457.toString()).toBe(
+      '.model 2N5457 NJF(VTO=-2 BETA=750u LAMBDA=5.548m RD=1 RS=1 CGS=3p CGD=1.5p IS=205.8f)',
+    );
     expect(JFET_J201.toString()).toBe(
-      '.model J201 NJF(VTO=-0.7 BETA=1.4m LAMBDA=2.25m RD=1 RS=1 CGS=2.5p CGD=2.5p IS=100f)',
+      '.model J201 NJF(VTO=-0.7 BETA=1.4m LAMBDA=2.25m RD=1 RS=1 CGS=3p CGD=1p IS=100f)',
     );
   });
 

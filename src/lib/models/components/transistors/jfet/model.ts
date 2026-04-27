@@ -119,39 +119,68 @@ export class JFETModel extends SpiceCompactModel<JFETModelParams> {
   }
 }
 
+/**
+ * 2N5457 N-channel JFET.
+ *
+ * `VTO` and `BETA` are fit to the datasheet's typical `IDSS = 3 mA` and
+ * `|Yfs| = 3 mS`. `CGD` uses the typical `Crss`, and `CGS` is `Ciss - Crss`.
+ *
+ * @see ./datasheets/2N5457_2N5458.pdf
+ */
 export const JFET_2N5457 = new JFETModel('2N5457', 'NJF', {
-  [VTO_PINCH_OFF_VOLTAGE]: '-1.8',
-  [BETA_TRANSCONDUCTANCE_SCALE_FACTOR]: '1.813m',
+  [VTO_PINCH_OFF_VOLTAGE]: '-2',
+  [BETA_TRANSCONDUCTANCE_SCALE_FACTOR]: '750u',
   [LAMBDA_CHANNEL_LENGTH_MODULATION]: '5.548m',
   [RD_DRAIN_SERIES_RESISTANCE]: 1,
   [RS_SOURCE_SERIES_RESISTANCE]: 1,
-  [CGS_GATE_SOURCE_CAPACITANCE]: '4.208p',
-  [CGD_GATE_DRAIN_CAPACITANCE]: '4.208p',
+  [CGS_GATE_SOURCE_CAPACITANCE]: '3p',
+  [CGD_GATE_DRAIN_CAPACITANCE]: '1.5p',
   [IS_GATE_JUNCTION_SATURATION_CURRENT]: '205.8f',
 });
 
+/**
+ * 2N5458 N-channel JFET.
+ *
+ * `VTO` and `BETA` are fit to the datasheet's typical `IDSS = 6 mA` and
+ * `|Yfs| = 4 mS`. `CGD` uses the typical `Crss`, and `CGS` is `Ciss - Crss`.
+ *
+ * @see ./datasheets/2N5457_2N5458.pdf
+ */
 export const JFET_2N5458 = new JFETModel('2N5458', 'NJF', {
-  [VTO_PINCH_OFF_VOLTAGE]: '-3.5',
-  [BETA_TRANSCONDUCTANCE_SCALE_FACTOR]: '2.235m',
+  [VTO_PINCH_OFF_VOLTAGE]: '-3',
+  [BETA_TRANSCONDUCTANCE_SCALE_FACTOR]: '667u',
   [LAMBDA_CHANNEL_LENGTH_MODULATION]: '5.548m',
   [RD_DRAIN_SERIES_RESISTANCE]: 1,
   [RS_SOURCE_SERIES_RESISTANCE]: 1,
-  [CGS_GATE_SOURCE_CAPACITANCE]: '4.5p',
-  [CGD_GATE_DRAIN_CAPACITANCE]: '4.5p',
+  [CGS_GATE_SOURCE_CAPACITANCE]: '3p',
+  [CGD_GATE_DRAIN_CAPACITANCE]: '1.5p',
   [IS_GATE_JUNCTION_SATURATION_CURRENT]: '205.8f',
 });
 
+/**
+ * J201 N-channel JFET.
+ *
+ * The datasheet only gives minimum `IDSS` and `GFS`, so the DC fit stays as-is.
+ * `CGD` uses the typical `Crss`, and `CGS` is `Ciss - Crss`.
+ *
+ * @see ./datasheets/J201_J202.pdf
+ */
 export const JFET_J201 = new JFETModel('J201', 'NJF', {
   [VTO_PINCH_OFF_VOLTAGE]: '-0.7',
   [BETA_TRANSCONDUCTANCE_SCALE_FACTOR]: '1.4m',
   [LAMBDA_CHANNEL_LENGTH_MODULATION]: '2.25m',
   [RD_DRAIN_SERIES_RESISTANCE]: 1,
   [RS_SOURCE_SERIES_RESISTANCE]: 1,
-  [CGS_GATE_SOURCE_CAPACITANCE]: '2.5p',
-  [CGD_GATE_DRAIN_CAPACITANCE]: '2.5p',
+  [CGS_GATE_SOURCE_CAPACITANCE]: '3p',
+  [CGD_GATE_DRAIN_CAPACITANCE]: '1p',
   [IS_GATE_JUNCTION_SATURATION_CURRENT]: '100f',
 });
 
+/**
+ * J113 N-channel JFET.
+ *
+ * @see ./datasheets/J111_J112_J113.pdf
+ */
 export const JFET_J113 = new JFETModel('J113', 'NJF', {
   [VTO_PINCH_OFF_VOLTAGE]: '-1.29',
   [BETA_TRANSCONDUCTANCE_SCALE_FACTOR]: '9.26m',
@@ -163,6 +192,11 @@ export const JFET_J113 = new JFETModel('J113', 'NJF', {
   [IS_GATE_JUNCTION_SATURATION_CURRENT]: '987f',
 });
 
+/**
+ * MPF102 N-channel JFET.
+ *
+ * @see ./datasheets/MPF102.pdf
+ */
 export const JFET_MPF102 = new JFETModel('MPF102', 'NJF', {
   [VTO_PINCH_OFF_VOLTAGE]: '-3.5',
   [BETA_TRANSCONDUCTANCE_SCALE_FACTOR]: '4m',
@@ -174,13 +208,20 @@ export const JFET_MPF102 = new JFETModel('MPF102', 'NJF', {
   [IS_GATE_JUNCTION_SATURATION_CURRENT]: '100f',
 });
 
+/**
+ * 2N5460 P-channel JFET.
+ *
+ * `CGD` uses the typical `Crss`, and `CGS` is `Ciss - Crss`.
+ *
+ * @see ./datasheets/2N5460_2N5461_2N5462.pdf
+ */
 export const JFET_2N5460 = new JFETModel('2N5460', 'PJF', {
   [VTO_PINCH_OFF_VOLTAGE]: '1.5',
   [BETA_TRANSCONDUCTANCE_SCALE_FACTOR]: '1.25m',
   [LAMBDA_CHANNEL_LENGTH_MODULATION]: '6m',
   [RD_DRAIN_SERIES_RESISTANCE]: 1,
   [RS_SOURCE_SERIES_RESISTANCE]: 1,
-  [CGS_GATE_SOURCE_CAPACITANCE]: '5p',
-  [CGD_GATE_DRAIN_CAPACITANCE]: '5p',
+  [CGS_GATE_SOURCE_CAPACITANCE]: '4p',
+  [CGD_GATE_DRAIN_CAPACITANCE]: '1p',
   [IS_GATE_JUNCTION_SATURATION_CURRENT]: '50f',
 });

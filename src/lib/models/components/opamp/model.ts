@@ -78,6 +78,8 @@ import { SpiceSubcircuit } from '../../spice';
  * TL072 operational amplifier macromodel.
  *
  * Pin order: IN+, IN-, V+, V-, OUT.
+ *
+ * @see ./datasheets/tl072.pdf
  */
 export const TL072_SUBCKT = new SpiceSubcircuit(
   `* TL072 OPERATIONAL AMPLIFIER "MACROMODEL" SUBCIRCUIT
@@ -129,6 +131,8 @@ export const TL072_SUBCKT = new SpiceSubcircuit(
  * LM741 operational amplifier macromodel.
  *
  * Pin order: IN+, IN-, V+, V-, OUT.
+ *
+ * @see ./datasheets/lm741.pdf
  */
 export const LM741_SUBCKT = new SpiceSubcircuit(
   `* LM741 OPERATIONAL AMPLIFIER MACRO-MODEL
@@ -192,6 +196,8 @@ RL3 22 28 100K
  *
  * Exposes pins 1 and 8 so the external compensation capacitor used in
  * RAT-style circuits can be simulated.
+ *
+ * @see ./datasheets/LM108.pdf
  */
 export const LM308_SUBCKT = new SpiceSubcircuit(
   `* LM308 OPERATIONAL AMPLIFIER MACRO-MODEL
