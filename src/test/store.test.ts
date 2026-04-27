@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { ExampleCircuit } from '../examples';
 import { EXAMPLE_CATEGORY } from '../examples';
 import { BUNDLED_SAMPLE_NAME, CIRCUIT_LABEL } from '../lib/constants';
-import { JACK_DIRECTION } from '../lib/models/jack/types';
+import { JACK_DIRECTION } from '../lib/models/components/jack/types';
 import { AUDIO_SOURCE_TYPE } from '../lib/simulation-types';
 import type { Tab } from '../store';
 import { useStore } from '../store';

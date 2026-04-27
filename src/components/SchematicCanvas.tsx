@@ -16,7 +16,7 @@ import {
   useUpdateNodeInternals,
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { nodeTypes } from '../lib/models/registry';
+import { nodeTypes } from '../lib/models/ui/registry';
 import type { ComponentNode } from '../lib/types';
 import { isEdgeDC } from '../lib/types';
 import { useStore } from '../store';

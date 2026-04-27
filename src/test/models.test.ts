@@ -11,7 +11,7 @@ import {
   DiodeModel,
   IS_SATURATION_CURRENT,
   RS_SERIES_RESISTANCE,
-} from '../lib/models/diode/model';
+} from '../lib/models/components/diode/model';
 
 describe('SPICE model builders', () => {
   it('serializes diode models to .model lines', () => {

@@ -1,7 +1,7 @@
 import { EXAMPLE_CATEGORY } from '../examples';
 import { normalizeCircuitMetadata } from '../lib/circuit-metadata';
 import { CIRCUIT_LABEL, DEFAULT_BUNDLED_SAMPLE_NAME } from '../lib/constants';
-import { JACK_DIRECTION } from '../lib/models/jack/types';
+import { JACK_DIRECTION } from '../lib/models/components/jack/types';
 import { AUDIO_SOURCE_TYPE, type AudioSource } from '../lib/simulation-types';
 import { SIMULATION_STATUS, SWEEP_STATUS, TAB_ORIGIN_KIND } from './constants';
 import { fingerprintCircuit } from './helpers';

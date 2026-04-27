@@ -27,13 +27,14 @@ import {
   MOSFET_IRF9510,
   TL072_SUBCKT,
 } from './models';
-import { JACK_DIRECTION } from './models/jack/types';
+import { JACK_DIRECTION } from './models/components/jack/types';
 import type { WaveformType } from './simulation-types';
 import type { ComponentNode, PotTaper } from './types';
 
 /**
  * Time-step rate used for SPICE transient analysis.
- * audio-convert.ts interpolates SPICE output back up to SAMPLE_RATE.
+ *
+ * `audio-convert.ts` interpolates SPICE output back up to `SAMPLE_RATE`.
  * Nyquist of SPICE_SAMPLE_RATE/2 = 5 kHz — sufficient for most guitar effects.
  */
 export const SPICE_SAMPLE_RATE = 10000;
@@ -41,36 +42,33 @@ export const SPICE_SAMPLE_RATE = 10000;
 /**
  * Maximum PWL points in a single source.
  *
- * At SPICE_SAMPLE_RATE (10 kHz) this allows
- * roughly 10 seconds of input audio.
+ * At SPICE_SAMPLE_RATE (10 kHz) this allows roughly 10 seconds of input audio.
  */
 const MAX_PWL_POINTS = 100_001;
 
 /**
- * Maximum number of time/value pairs we emit on a
- * single SPICE continuation line for PWL sources.
+ * Maximum number of time/value pairs we emit on a single SPICE continuation
+ * line for PWL sources.
  *
- * Multi-second audio sources expand into tens of
- * thousands of PWL breakpoints. Emitting all of
- * them on one line can exceed the parser's line
- * length limit and silently truncate the source
- * after a few tenths of a second. We keep each
- * line short and rely on SPICE `+` continuations
- * so the entire sample survives parsing.
+ * Multi-second audio sources expand into tens of thousands of PWL breakpoints.
+ * Emitting all of them on one line can exceed the parser's line length limit
+ * and silently truncate the source after a few tenths of a second. We keep
+ * each line short and rely on SPICE `+` continuations so the entire sample
+ * survives parsing.
  */
 const MAX_PWL_PAIRS_PER_LINE = 128;
 
 /**
  * Maximum SPICE nodes to save in analysis mode.
  *
- * Limits memory usage when the circuit has many
- * internal nodes. Only the first 64 are captured.
+ * Limits memory usage when the circuit has many internal nodes. Only the first
+ * 64 are captured.
  */
 const MAX_ANALYSIS_NODES = 64;
 
 /**
- * Convert a model or subcircuit object into the
- * exact SPICE text to inline into the netlist.
+ * Convert a model or subcircuit object into the exact SPICE text to inline into
+ * the netlist.
  */
 function renderSpiceDefinition(definition: { toString(): string }): string {
   return definition.toString();
@@ -78,7 +76,7 @@ function renderSpiceDefinition(definition: { toString(): string }): string {
 
 /**
  * Builds a PWL (piecewise-linear) voltage source line by downsampling
- * inputBuffer from inputSampleRate to SPICE_SAMPLE_RATE.
+ * `inputBuffer` from `inputSampleRate` to `SPICE_SAMPLE_RATE`.
  */
 function buildPwlSource(
   nodePos: string,
@@ -118,13 +116,11 @@ function buildPwlSource(
 }
 
 /**
- * Maps each component type to its list of port
- * handle IDs.
+ * Maps each component type to its list of port handle IDs.
  *
- * The netlist compiler uses this to enumerate
- * every connectable pin on every node. Handle
- * IDs must match the ones in the symbol library
- * and the React node renderers.
+ * The netlist compiler uses this to enumerate every connectable pin on every
+ * node. Handle IDs must match the ones in the symbol library and the React
+ * node renderers.
  */
 const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
   resistor: ['a', 'b'],
@@ -149,17 +145,17 @@ const COMPONENT_HANDLES: Record<ComponentNode['type'], Array<string>> = {
  * Port identifier string.
  *
  * Format: "${nodeId}|${handleId}"
- * Used as the key in adjacency maps to uniquely
- * identify each connectable pin in the circuit.
+ *
+ * Used as the key in adjacency maps to uniquely identify each connectable pin
+ * in the circuit.
  */
 type Port = string;
 
 /**
  * Returns every port on every node in the circuit.
  *
- * Enumerates all handle IDs for each node using
- * the COMPONENT_HANDLES lookup, producing a flat
- * array of Port strings.
+ * Enumerates all handle IDs for each node using the COMPONENT_HANDLES lookup,
+ * producing a flat array of Port strings.
  */
 function allPorts(nodes: Array<ComponentNode>): Array<Port> {
   return nodes.flatMap((n) =>
@@ -170,10 +166,9 @@ function allPorts(nodes: Array<ComponentNode>): Array<Port> {
 /**
  * Builds an undirected adjacency map from edges.
  *
- * Each port that appears as a source or target in
- * an edge gets a set of its directly-connected
- * neighbours. This is the first step in merging
- * connected ports into shared SPICE net names.
+ * Each port that appears as a source or target in an edge gets a set of its
+ * directly-connected neighbors. This is the first step in merging connected
+ * ports into shared SPICE net names.
  */
 function buildAdjacency(edges: Array<Edge>): Map<Port, Set<Port>> {
   const adj = new Map<Port, Set<Port>>();
@@ -197,12 +192,11 @@ function buildAdjacency(edges: Array<Edge>): Map<Port, Set<Port>> {
 }
 
 /**
- * Breadth-first search that assigns a SPICE node
- * name to every port reachable from `start`.
+ * Breadth-first search that assigns a SPICE node name to every port reachable
+ * from `start`.
  *
- * All ports in the same connected component end up
- * with the same `nodeId` in `portToNode`, which
- * means they share one SPICE net.
+ * All ports in the same connected component end up with the same `nodeId` in
+ * `portToNode`, which means they share one SPICE net.
  */
 function bfs(
   start: Port,
@@ -228,6 +222,7 @@ function bfs(
 
 /**
  * Assigns each port a SPICE node ID string.
+ *
  * Ground ports → "0". Others → "n1", "n2", ...
  */
 export function buildPortGroups(
@@ -245,8 +240,10 @@ export function buildPortGroups(
   }
 
   // Merge power and label nodes with the same label into the same net
-  // (KiCad-style global net labels / power flags). Users can place multiple
-  // symbols and they share one net automatically without explicit wires.
+  // (KiCad-style global net labels / power flags).
+  //
+  // Users can place multiple symbols and they share one net automatically
+  // without explicit wires.
   const globalByLabel = new Map<string, Array<Port>>();
   for (const n of nodes) {
     if (n.type === 'power') {
@@ -279,6 +276,7 @@ export function buildPortGroups(
   }
 
   // Junction nodes: all handles on the same junction share one net
+  // (KiCad-style).
   for (const n of nodes) {
     if (n.type === 'junction') {
       const handles = COMPONENT_HANDLES.junction;
@@ -653,19 +651,15 @@ function buildCircuitBody(
 }
 
 /**
- * Compile a circuit graph into a SPICE netlist for
- * audio simulation.
+ * Compile a circuit graph into a SPICE netlist for audio simulation.
  *
  * High-level flow:
- *   1. Build shared circuit body (models +
- *      component lines + probe)
- *   2. Add input source (PWL from audio buffer,
- *      or SIN test tone if no buffer)
+ *   1. Build shared circuit body (models + component lines + probe)
+ *   2. Add input source (PWL from audio buffer, or SIN test tone if no buffer)
  *   3. Add .save for output node only
  *   4. Add .tran transient analysis command
  *
- * The resulting netlist string is ready to be
- * passed to EECircuitEngine.run().
+ * The resulting netlist string is ready to be passed to EECircuitEngine.run().
  */
 export function compileNetlist(
   nodes: Array<ComponentNode>,
@@ -710,11 +704,9 @@ export function compileNetlist(
 }
 
 /**
- * Build a SPICE voltage source line for a given
- * waveform type.
+ * Build a SPICE voltage source line for a given waveform type.
  *
- * Maps each waveform shape to the appropriate
- * ngspice source directive:
+ * Maps each waveform shape to the appropriate ngspice source directive:
  *
  *   sine     → SIN()
  *   square   → PULSE() with fast rise/fall

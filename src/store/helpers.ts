@@ -3,7 +3,7 @@ import {
   DEFAULT_SYMBOL,
   resolveOpAmpSymbol,
   SYMBOLS,
-} from '../lib/models/symbol-registry';
+} from '../lib/models/components/symbol-registry';
 import type { ComponentNode } from '../lib/types';
 import { TAB_ORIGIN_KIND } from './constants';
 import type { PersistedTab, Snapshot, StoreState, Tab } from './types';

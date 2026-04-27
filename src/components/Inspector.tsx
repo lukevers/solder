@@ -3,8 +3,8 @@ import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { DEFAULT_NODE_COLOR, NODE_COLOR_OPTIONS } from '../lib/colors';
-import { BOX_VARIANTS, DEFAULT_BOX_VARIANT } from '../lib/models/box/constants';
-import { JACK_DIRECTION } from '../lib/models/jack/types';
+import { BOX_VARIANTS, DEFAULT_BOX_VARIANT } from '../lib/models/ui/box/constants';
+import { JACK_DIRECTION } from '../lib/models/components/jack/types';
 import {
   DEFAULT_NODE_SIZE,
   DEFAULT_NODE_WIDTH,

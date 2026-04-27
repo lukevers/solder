@@ -1,16 +1,13 @@
 /**
  * Worker-safe component-model public API.
  *
- * This barrel intentionally exports only data
- * definitions, symbol metadata, and SPICE model
- * builders that are safe to import from the
- * simulation workers.
+ * This barrel intentionally exports only data definitions, symbol metadata,
+ * and SPICE model builders that are safe to import from the simulation
+ * workers.
  *
- * Do not export React node renderers or registry
- * wiring from this file. The netlist compiler is
- * shared with the worker runtime, and importing
- * UI modules here would drag the Zustand store
- * into the worker bundle.
+ * Do not export React node renderers or registry wiring from this file. The
+ * netlist compiler is shared with the worker runtime, and importing UI modules
+ * here would drag the Zustand store into the worker bundle.
  */
 
 export type { NodeColor, NodeColorOption } from '../colors';
@@ -25,34 +22,43 @@ export {
   BJT_BC108,
   BJT_BC549,
   BJT_MPSA18,
-} from './bjt/model';
-export { SYM_BJT_NPN, SYM_BJT_PNP } from './bjt/symbol';
-export type { BJTData, BJTModel as BJTModelName } from './bjt/types';
+} from './components/transistors/bjt/model';
+export {
+  SYM_BJT_NPN,
+  SYM_BJT_PNP,
+} from './components/transistors/bjt/symbol';
+export type {
+  BJTData,
+  BJTModel as BJTModelName,
+} from './components/transistors/bjt/types';
 
-export type { BoxData, BoxVariant } from './box/types';
+export type { BoxData, BoxVariant } from './ui/box/types';
 
-export { SYM_CAP_POLAR } from './cap-polar/symbol';
-export { SYM_CAPACITOR } from './capacitor/symbol';
-export type { CapacitorData } from './capacitor/types';
+export { SYM_CAP_POLAR } from './components/cap-polar/symbol';
+export { SYM_CAPACITOR } from './components/capacitor/symbol';
+export type { CapacitorData } from './components/capacitor/types';
 export {
   DIODE_1N34A,
   DIODE_1N270,
   DIODE_1N914,
   DIODE_1N4001,
   DIODE_1N4002,
-} from './diode/model';
+} from './components/diode/model';
 export {
   SYM_DIODE_1N34A,
   SYM_DIODE_1N270,
   SYM_DIODE_1N914,
   SYM_DIODE_1N4001,
   SYM_DIODE_1N4002,
-} from './diode/symbol';
-export type { DiodeData } from './diode/types';
-export { SYM_GROUND } from './ground/symbol';
-export type { GroundData } from './ground/types';
-export { SYM_JACK_IN, SYM_JACK_OUT } from './jack/symbol';
-export type { JackData } from './jack/types';
+} from './components/diode/symbol';
+export type { DiodeData } from './components/diode/types';
+export { SYM_GROUND } from './components/ground/symbol';
+export type { GroundData } from './components/ground/types';
+export {
+  SYM_JACK_IN,
+  SYM_JACK_OUT,
+} from './components/jack/symbol';
+export type { JackData } from './components/jack/types';
 export {
   JFET_2N5457,
   JFET_2N5458,
@@ -60,37 +66,50 @@ export {
   JFET_J113,
   JFET_J201,
   JFET_MPF102,
-} from './jfet/model';
-export { SYM_JFET_N, SYM_JFET_P } from './jfet/symbol';
-export type { JFETData, JFETModel as JFETModelName } from './jfet/types';
+} from './components/transistors/jfet/model';
+export {
+  SYM_JFET_N,
+  SYM_JFET_P,
+} from './components/transistors/jfet/symbol';
+export type {
+  JFETData,
+  JFETModel as JFETModelName,
+} from './components/transistors/jfet/types';
 
-export type { JunctionData } from './junction/types';
+export type { JunctionData } from './components/junction/types';
 
-export type { LabelData } from './label/types';
+export type { LabelData } from './components/label/types';
 export {
   MOSFET_2N7000,
   MOSFET_BS170,
   MOSFET_IRF510,
   MOSFET_IRF9510,
-} from './mosfet/model';
-export { SYM_MOSFET_N, SYM_MOSFET_P } from './mosfet/symbol';
+} from './components/transistors/mosfet/model';
+export {
+  SYM_MOSFET_N,
+  SYM_MOSFET_P,
+} from './components/transistors/mosfet/symbol';
 export type {
   MOSFETData,
   MOSFETModel as MOSFETModelName,
-} from './mosfet/types';
-export { LM308_SUBCKT, LM741_SUBCKT, TL072_SUBCKT } from './opamp/model';
+} from './components/transistors/mosfet/types';
+export {
+  LM308_SUBCKT,
+  LM741_SUBCKT,
+  TL072_SUBCKT,
+} from './components/opamp/model';
 export {
   SYM_LM308_DIP8,
   SYM_LM741_DIP8,
   SYM_OPAMP_TRIANGLE,
-} from './opamp/symbol';
-export type { OpAmpData } from './opamp/types';
-export { SYM_POT } from './pot/symbol';
-export type { PotData, PotTaper } from './pot/types';
-export { SYM_POWER } from './power/symbol';
-export type { PowerData } from './power/types';
-export { SYM_RESISTOR } from './resistor/symbol';
-export type { ResistorData } from './resistor/types';
+} from './components/opamp/symbol';
+export type { OpAmpData } from './components/opamp/types';
+export { SYM_POT } from './components/pot/symbol';
+export type { PotData, PotTaper } from './components/pot/types';
+export { SYM_POWER } from './components/power/symbol';
+export type { PowerData } from './components/power/types';
+export { SYM_RESISTOR } from './components/resistor/symbol';
+export type { ResistorData } from './components/resistor/types';
 
 export {
   SpiceCompactModel,
@@ -99,7 +118,7 @@ export {
   SpiceSubcircuit,
 } from './spice';
 
-export type { StickyNoteData } from './stickynote/types';
+export type { StickyNoteData } from './ui/stickynote/types';
 
 export type {
   PinKind,

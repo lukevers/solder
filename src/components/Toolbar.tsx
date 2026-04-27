@@ -22,8 +22,8 @@ import { exportCircuit, importCircuit } from '../lib/circuit-io';
 import type { CircuitMetadata } from '../lib/circuit-metadata';
 import { DEFAULT_NODE_COLOR } from '../lib/colors';
 import { CIRCUIT_LABEL } from '../lib/constants';
-import { DEFAULT_BOX_VARIANT } from '../lib/models/box/constants';
-import { JACK_DIRECTION } from '../lib/models/jack/types';
+import { DEFAULT_BOX_VARIANT } from '../lib/models/ui/box/constants';
+import { JACK_DIRECTION } from '../lib/models/components/jack/types';
 import type { ComponentNode } from '../lib/types';
 import { SIMULATION_STATUS, SWEEP_STATUS } from '../store/constants';
 import {
