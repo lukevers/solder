@@ -1,6 +1,5 @@
 import { type NodeProps, Position } from '@xyflow/react';
 import { formatFarads } from '../../../units';
-import type { CapacitorData } from '../capacitor/types';
 import {
   HANDLE_STYLE,
   NodeShell,
@@ -8,6 +7,7 @@ import {
   NodeText,
   RotatedHandle,
 } from '../../ui/node-shell';
+import type { CapacitorData } from '../capacitor/types';
 
 interface CapPolarNodeProps extends NodeProps {
   data: CapacitorData;

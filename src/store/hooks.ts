@@ -215,6 +215,18 @@ const selectAudioActions = (state: StoreState) => ({
 });
 
 /**
+ * Selector for the command bar's recently-used palette state.
+ *
+ * Bundling the list and the recorder together keeps the command bar
+ * subscribed to exactly the slice it renders without pulling unrelated
+ * audio or simulation fields.
+ */
+const selectPaletteState = (state: StoreState) => ({
+  recentPaletteIds: state.recentPaletteIds,
+  recordPaletteUse: state.recordPaletteUse,
+});
+
+/**
  * Read the full tab-domain state exposed by the store hook layer.
  *
  * This is useful for shell-level consumers that genuinely need the
@@ -362,4 +374,16 @@ export function useAudioState() {
  */
 export function useAudioActions() {
   return useStore(useShallow(selectAudioActions));
+}
+
+/**
+ * Read the recently-used palette ids plus the recorder used by the
+ * command bar.
+ *
+ * The list is small (capped at RECENTLY_USED_LIMIT), so subscribing
+ * to it from a single hook avoids re-renders when unrelated audio or
+ * simulation slices change.
+ */
+export function usePaletteState() {
+  return useStore(useShallow(selectPaletteState));
 }

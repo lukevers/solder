@@ -6,6 +6,7 @@
  * by workers, store helpers, and renderer code without creating cycles.
  */
 
+import type { SymbolDef } from '../types';
 import { SYM_CAP_POLAR } from './cap-polar/symbol';
 import { SYM_CAPACITOR } from './capacitor/symbol';
 import {
@@ -28,7 +29,6 @@ import { SYM_RESISTOR } from './resistor/symbol';
 import { SYM_BJT_NPN, SYM_BJT_PNP } from './transistors/bjt/symbol';
 import { SYM_JFET_N, SYM_JFET_P } from './transistors/jfet/symbol';
 import { SYM_MOSFET_N, SYM_MOSFET_P } from './transistors/mosfet/symbol';
-import type { SymbolDef } from '../types';
 
 /**
  * All known symbols, keyed by their library ID.

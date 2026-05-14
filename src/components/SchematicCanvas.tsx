@@ -16,11 +16,8 @@ import {
   useUpdateNodeInternals,
 } from '@xyflow/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  buildNetVisualState,
-  getEdgeNetVisualRole,
-} from '../lib/net-visual';
 import { nodeTypes } from '../lib/models/ui/registry';
+import { buildNetVisualState, getEdgeNetVisualRole } from '../lib/net-visual';
 import type { ComponentNode } from '../lib/types';
 import { useStore } from '../store';
 import {

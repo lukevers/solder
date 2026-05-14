@@ -134,3 +134,87 @@ body {
 .box-node-wrapper .react-flow__resize-control {
 	pointer-events: all !important;
 }
+
+/* react-cmdk ships its own Headless UI transitions with 200–300 ms
+   durations on the backdrop and panel. For a keyboard-driven picker
+   that's noticeable lag; collapse the timing so the modal appears
+   instantly when the user hits `a`. */
+.command-palette .duration-300,
+.command-palette .duration-200,
+.command-palette .transition {
+	transition-duration: 0ms !important;
+}
+
+/* Tighten the cmdk modal: shrink the panel, drop the font-size to
+   xs, and squeeze the padding so the recently-used + category list
+   fits more rows on screen and feels at home in the toolbar-driven
+   schematic editor. The package's defaults target a general-purpose
+   spotlight UI which is too generous for our compact dark theme. */
+.command-palette .max-w-xl {
+	max-width: 38rem !important;
+}
+
+.command-palette .h-\[450px\] {
+	height: 360px !important;
+}
+
+.command-palette .text-lg {
+	font-size: 0.8125rem !important;
+	line-height: 1.1rem !important;
+}
+
+.command-palette .text-sm {
+	font-size: 0.75rem !important;
+	line-height: 1rem !important;
+}
+
+.command-palette .p-4 {
+	padding: 0.5rem !important;
+}
+
+.command-palette .p-2 {
+	padding: 0.25rem !important;
+}
+
+.command-palette .px-3\.5 {
+	padding-left: 0.5rem !important;
+	padding-right: 0.5rem !important;
+}
+
+.command-palette .px-3 {
+	padding-left: 0.4rem !important;
+	padding-right: 0.4rem !important;
+}
+
+.command-palette .py-2\.5 {
+	padding-top: 0.25rem !important;
+	padding-bottom: 0.25rem !important;
+}
+
+.command-palette .py-2 {
+	padding-top: 0.2rem !important;
+	padding-bottom: 0.2rem !important;
+}
+
+.command-palette .py-4 {
+	padding-top: 0.4rem !important;
+	padding-bottom: 0.4rem !important;
+}
+
+.command-palette .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+	margin-top: 0.4rem !important;
+}
+
+.command-palette .space-y-1 > :not([hidden]) ~ :not([hidden]) {
+	margin-top: 0.1rem !important;
+}
+
+.command-palette .space-x-2\.5 > :not([hidden]) ~ :not([hidden]) {
+	margin-left: 0.35rem !important;
+}
+
+.command-palette .h-5,
+.command-palette .w-5 {
+	height: 0.875rem !important;
+	width: 0.875rem !important;
+}

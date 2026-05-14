@@ -1,5 +1,10 @@
 import { type NodeProps, Position } from '@xyflow/react';
-import { NodeShell, NodeSvg, NodeText, RotatedHandle } from '../../ui/node-shell';
+import {
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from '../../ui/node-shell';
 import { JACK_DIRECTION, type JackData } from './types';
 
 interface JackNodeProps extends NodeProps {

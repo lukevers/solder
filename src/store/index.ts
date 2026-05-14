@@ -9,6 +9,7 @@ import {
   stripTabRuntimeState,
 } from './helpers';
 import { createHistorySlice } from './history-slice';
+import { createPaletteSlice } from './palette-slice';
 import { createSimulationSlice } from './simulation-slice';
 import { createTabsSlice } from './tabs-slice';
 import type { PersistedStoreState, StoreState } from './types';
@@ -36,6 +37,7 @@ const persistOptions: PersistOptions<StoreState, PersistedStoreState> = {
     examplesActiveCategory: state.examplesActiveCategory,
     audioSource: state.audioSource,
     hasSeenWelcome: state.hasSeenWelcome,
+    recentPaletteIds: state.recentPaletteIds,
   }),
   onRehydrateStorage: () => (state) => {
     if (!state) {
@@ -69,6 +71,7 @@ export const useStore = create<StoreState>()(
       ...createHistorySlice(...args),
       ...createSimulationSlice(...args),
       ...createAudioSlice(...args),
+      ...createPaletteSlice(...args),
     }),
     persistOptions,
   ),

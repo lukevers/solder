@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AudioControls } from './components/AudioControls';
 import { CircuitAnalyzer } from './components/CircuitAnalyzer';
+import { CommandBar } from './components/CommandBar';
 import { ExamplesPanel } from './components/ExamplesPanel';
 import { Inspector } from './components/Inspector';
 import { PedalPanel } from './components/PedalPanel';
@@ -23,6 +24,7 @@ import {
   saveLocalSample,
 } from './lib/audio/local-sample-store';
 import { AudioPipeline } from './lib/audio/pipeline';
+import { buildPaletteNode, type PaletteItem } from './lib/palette';
 import { recordRuntimeLog } from './lib/runtime-log';
 import {
   AUDIO_SOURCE_TYPE,
@@ -36,8 +38,10 @@ import { SIMULATION_STATUS, SWEEP_STATUS } from './store/constants';
 import {
   useAudioActions,
   useAudioState,
+  useCircuitActions,
   useCircuitState,
   useHistoryActions,
+  usePaletteState,
   useSimulationActions,
   useSimulationState,
   useSweepActions,
@@ -72,6 +76,8 @@ export default function App() {
     setPlaying,
   } = useAudioActions();
   const { undo, redo } = useHistoryActions();
+  const { addNode } = useCircuitActions();
+  const { recentPaletteIds, recordPaletteUse } = usePaletteState();
   const { sweepResults, sweepStatus, sweepPlayingIndex } = useSweepState();
   const { hasSeenWelcome, setHasSeenWelcome } = useWelcomeState();
   const {
@@ -102,6 +108,19 @@ export default function App() {
   const pendingInputRef = useRef<Float32Array | null>(null);
 
   /**
+   * Tracks the most recent pointer position in screen coordinates so
+   * the command bar can drop a placed node where the cursor was when
+   * the user hit `a`.
+   *
+   * `placementScreenPosRef` captures that point at the moment the bar
+   * opens. Pointer motion after that is ignored so the chosen target
+   * does not drift while the user is reading the picker.
+   */
+  const cursorScreenPosRef = useRef<{ x: number; y: number } | null>(null);
+  const placementScreenPosRef = useRef<{ x: number; y: number } | null>(null);
+  const [commandBarOpen, setCommandBarOpen] = useState(false);
+
+  /**
    * Convert the selected audio source into the
    * cache key used by `AudioPipeline`.
    *
@@ -115,8 +134,12 @@ export default function App() {
     [audioSource],
   );
 
-  const { viewResetKey } = useViewportState();
+  const { viewResetKey, viewport } = useViewportState();
   const viewResetKeyRef = useRef(viewResetKey);
+  const viewportRef = useRef(viewport);
+  useEffect(() => {
+    viewportRef.current = viewport;
+  }, [viewport]);
   useEffect(() => {
     // Skip the initial render
     if (viewResetKeyRef.current === viewResetKey) {
@@ -132,7 +155,13 @@ export default function App() {
     function onKeyDown(e: KeyboardEvent) {
       // Skip when typing in an input/textarea
       const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+      const editable = (e.target as HTMLElement)?.isContentEditable;
+      if (
+        tag === 'INPUT' ||
+        tag === 'TEXTAREA' ||
+        tag === 'SELECT' ||
+        editable
+      ) {
         return;
       }
 
@@ -160,10 +189,29 @@ export default function App() {
         const cur = node.rotation ?? 0;
         const next = e.shiftKey ? (cur - 90 + 360) % 360 : (cur + 90) % 360;
         rotateNode(selectedNodeId, next);
+        return;
+      }
+
+      // KiCad-style "place symbol" picker
+      if (e.key === 'a' || e.key === 'A') {
+        e.preventDefault();
+        placementScreenPosRef.current = cursorScreenPosRef.current
+          ? { ...cursorScreenPosRef.current }
+          : null;
+        setCommandBarOpen(true);
       }
     }
+
+    function onMouseMove(e: MouseEvent) {
+      cursorScreenPosRef.current = { x: e.clientX, y: e.clientY };
+    }
+
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('mousemove', onMouseMove);
+    };
   }, [undo, redo]);
 
   const workerRef = useRef<Worker | null>(null);
@@ -531,6 +579,68 @@ export default function App() {
     setPlaying(false);
     setPlayingOriginal(false);
   }, [setPlaying]);
+
+  /**
+   * Convert a screen-space point to React Flow coordinates using the
+   * canvas element's bounding box and the current viewport transform.
+   *
+   * We measure the `.react-flow` container on demand rather than
+   * holding a ref because the canvas lives several layers deep inside
+   * `SchematicCanvas` and rebuilding the ref plumbing for one feature
+   * is more invasive than a single querySelector call.
+   */
+  const screenToFlowPos = useCallback(
+    (screen: { x: number; y: number }): { x: number; y: number } | null => {
+      const canvas = document.querySelector('.react-flow');
+      if (!canvas) {
+        return null;
+      }
+
+      const bounds = canvas.getBoundingClientRect();
+      const vp = viewportRef.current;
+
+      return {
+        x: (screen.x - bounds.left - vp.x) / vp.zoom,
+        y: (screen.y - bounds.top - vp.y) / vp.zoom,
+      };
+    },
+    [],
+  );
+
+  /**
+   * Place a palette item where the cursor was when the user opened the
+   * command bar, falling back to the canvas centre if no pointer
+   * position was captured (for example, when triggered from a
+   * keyboard-only workflow).
+   */
+  const handleCommandBarSelect = useCallback(
+    (item: PaletteItem) => {
+      const target = placementScreenPosRef.current;
+      placementScreenPosRef.current = null;
+
+      const fallback = (() => {
+        const canvas = document.querySelector('.react-flow');
+        if (!canvas) {
+          return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        }
+
+        const bounds = canvas.getBoundingClientRect();
+        return {
+          x: bounds.left + bounds.width / 2,
+          y: bounds.top + bounds.height / 2,
+        };
+      })();
+
+      const flowPos = screenToFlowPos(target ?? fallback);
+      if (!flowPos) {
+        return;
+      }
+
+      addNode(buildPaletteNode(item, flowPos, useStore.getState().nodes));
+      recordPaletteUse(item.id);
+    },
+    [addNode, recordPaletteUse, screenToFlowPos],
+  );
 
   const handleReset = useCallback(() => {
     setPlaying(false);
@@ -1066,6 +1176,12 @@ export default function App() {
         />
       )}
       <WelcomeModal open={showWelcomeModal} onClose={handleCloseWelcomeModal} />
+      <CommandBar
+        open={commandBarOpen}
+        onClose={() => setCommandBarOpen(false)}
+        onSelect={handleCommandBarSelect}
+        recentIds={recentPaletteIds}
+      />
     </div>
   );
 }

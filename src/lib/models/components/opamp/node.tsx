@@ -14,6 +14,7 @@
 
 import { type NodeProps, Position } from '@xyflow/react';
 import { Fragment } from 'react';
+import type { SymbolDef, SymbolPin } from '../../types';
 import {
   HANDLE_STYLE,
   NodeShell,
@@ -22,7 +23,6 @@ import {
   RotatedHandle,
 } from '../../ui/node-shell';
 import { resolveOpAmpSymbol } from '../symbol-registry';
-import type { SymbolDef, SymbolPin } from '../../types';
 import type { OpAmpData } from './types';
 
 /**

@@ -9,7 +9,6 @@
  * renderers and shared store hooks.
  */
 
-import { BoxNode } from './box/node';
 import { CapPolarNode } from '../components/cap-polar/node';
 import { CapacitorNode } from '../components/capacitor/node';
 import { DiodeNode } from '../components/diode/node';
@@ -24,6 +23,7 @@ import { ResistorNode } from '../components/resistor/node';
 import { BJTNode } from '../components/transistors/bjt/node';
 import { JFETNode } from '../components/transistors/jfet/node';
 import { MOSFETNode } from '../components/transistors/mosfet/node';
+import { BoxNode } from './box/node';
 import { StickyNoteNode } from './stickynote/node';
 
 export {

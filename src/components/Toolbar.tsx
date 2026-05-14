@@ -22,8 +22,9 @@ import { exportCircuit, importCircuit } from '../lib/circuit-io';
 import type { CircuitMetadata } from '../lib/circuit-metadata';
 import { DEFAULT_NODE_COLOR } from '../lib/colors';
 import { CIRCUIT_LABEL } from '../lib/constants';
-import { DEFAULT_BOX_VARIANT } from '../lib/models/ui/box/constants';
 import { JACK_DIRECTION } from '../lib/models/components/jack/types';
+import { DEFAULT_BOX_VARIANT } from '../lib/models/ui/box/constants';
+import { buildPaletteNode } from '../lib/palette';
 import type { ComponentNode } from '../lib/types';
 import { SIMULATION_STATUS, SWEEP_STATUS } from '../store/constants';
 import {
@@ -332,26 +333,6 @@ const PALETTE: Array<{
 
 type PaletteItem = (typeof PALETTE)[number];
 
-function nextLabel(defaultLabel: string, nodes: Array<ComponentNode>): string {
-  const match = defaultLabel.match(/^([A-Za-z]+)(\d+)$/);
-  if (!match) {
-    return defaultLabel;
-  }
-  const prefix = match[1];
-  const re = new RegExp(`^${prefix}(\\d+)$`, 'i');
-  let max = 0;
-  for (const node of nodes) {
-    const lbl = (node.data as { label?: string }).label;
-    if (typeof lbl === 'string') {
-      const m = lbl.match(re);
-      if (m) {
-        max = Math.max(max, parseInt(m[1], 10));
-      }
-    }
-  }
-  return `${prefix}${max + 1}`;
-}
-
 const JACK_ITEMS: Array<{
   label: string;
   tooltip: string;
@@ -546,30 +527,14 @@ export function Toolbar({
   function handleAdd(
     item: (typeof PALETTE)[number] | (typeof JACK_ITEMS)[number],
   ) {
+    // Use the canvas centre in flow coordinates as the placement
+    // target so the new node lands roughly in view; the centring
+    // and grid snap happen inside buildPaletteNode.
     const offset = (Math.random() - 0.5) * 40;
-    const defaultLabel = (item.defaultData as { label?: string }).label ?? '';
-    const label = nextLabel(defaultLabel, nodes);
-    const isBox = item.type === 'box';
-    // Convert screen center to flow coordinates using the stored viewport transform
     const cx = (window.innerWidth / 2 - viewport.x) / viewport.zoom + offset;
     const cy = (window.innerHeight / 2 - viewport.y) / viewport.zoom + offset;
-    // Snap to 10px grid
-    const x = Math.round(cx / 10) * 10;
-    const y = Math.round(cy / 10) * 10;
-    addNode({
-      id: crypto.randomUUID(),
-      type: item.type,
-      position: { x, y },
-      data: { ...item.defaultData, label },
-      ...(isBox
-        ? {
-            zIndex: -1,
-            style: { width: 200, height: 150 },
-            dragHandle: '.box-drag-handle',
-            className: 'box-node-wrapper',
-          }
-        : {}),
-    } as ComponentNode);
+
+    addNode(buildPaletteNode(item, { x: cx, y: cy }, nodes));
   }
 
   function openMetadataModal(id: string, e: ReactMouseEvent) {

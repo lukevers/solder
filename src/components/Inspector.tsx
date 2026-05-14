@@ -3,30 +3,33 @@ import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { DEFAULT_NODE_COLOR, NODE_COLOR_OPTIONS } from '../lib/colors';
+import { JACK_DIRECTION } from '../lib/models/components/jack/types';
+import {
+  BOX_VARIANTS,
+  DEFAULT_BOX_VARIANT,
+} from '../lib/models/ui/box/constants';
 import {
   buildNetVisualState,
   formatNetVisualRole,
   getEdgeNetVisualRole,
 } from '../lib/net-visual';
-import { BOX_VARIANTS, DEFAULT_BOX_VARIANT } from '../lib/models/ui/box/constants';
-import { JACK_DIRECTION } from '../lib/models/components/jack/types';
 import {
   DEFAULT_NODE_SIZE,
   DEFAULT_NODE_WIDTH,
   NODE_SIZES,
   NODE_WIDTHS,
 } from '../lib/sizes';
-import {
-  type BJTData,
-  type BJTModel,
-  type ComponentNode,
-  type DiodeData,
-  type JackData,
-  type JFETData,
-  type JFETModel,
-  type MOSFETData,
-  type MOSFETModel,
-  type PotData,
+import type {
+  BJTData,
+  BJTModel,
+  ComponentNode,
+  DiodeData,
+  JackData,
+  JFETData,
+  JFETModel,
+  MOSFETData,
+  MOSFETModel,
+  PotData,
 } from '../lib/types';
 import {
   CAP_MULTIPLIERS,
@@ -860,7 +863,10 @@ function EdgeInspector({
 
   const src = allNodes.find((n) => n.id === edge.source);
   const tgt = allNodes.find((n) => n.id === edge.target);
-  const netRole = getEdgeNetVisualRole(edge, buildNetVisualState(allNodes, edges));
+  const netRole = getEdgeNetVisualRole(
+    edge,
+    buildNetVisualState(allNodes, edges),
+  );
 
   return (
     <>

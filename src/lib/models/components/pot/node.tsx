@@ -1,6 +1,11 @@
 import { type NodeProps, Position } from '@xyflow/react';
 import { formatOhms } from '../../../units';
-import { NodeShell, NodeSvg, NodeText, RotatedHandle } from '../../ui/node-shell';
+import {
+  NodeShell,
+  NodeSvg,
+  NodeText,
+  RotatedHandle,
+} from '../../ui/node-shell';
 import type { PotData } from './types';
 
 interface PotNodeProps extends NodeProps {

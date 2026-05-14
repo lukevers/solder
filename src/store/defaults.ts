@@ -211,4 +211,5 @@ export const initialState = {
   localSamples: [] as StoreState['localSamples'],
   volume: 0.7,
   playing: false,
+  recentPaletteIds: [] as StoreState['recentPaletteIds'],
 } satisfies Partial<StoreState>;

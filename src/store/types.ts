@@ -128,6 +128,8 @@ export type StoreState = {
   removeLocalSample: (id: string) => void;
   setVolume: (v: number) => void;
   setPlaying: (playing: boolean) => void;
+  recentPaletteIds: Array<string>;
+  recordPaletteUse: (id: string) => void;
 };
 
 export type TabRuntimeState = Pick<
@@ -152,6 +154,7 @@ export type PersistedStoreState = {
   examplesActiveCategory: ExampleCategory;
   audioSource: AudioSource;
   hasSeenWelcome: boolean;
+  recentPaletteIds: Array<string>;
 };
 
 export type StoreSlice<T> = StateCreator<StoreState, [], [], T>;
