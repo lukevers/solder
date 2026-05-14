@@ -7,31 +7,74 @@ ngspice quirks that will silently break things if you ignore them.
 > MODEL.** The eecircuit-engine WASM is a trimmed ngspice build and
 > several constructs that work in standard ngspice fail here.
 
-## Pipeline
+## End-to-end pipeline
+
+The full path from a `.wav` file the user picked in the sidebar to the
+output buffer they hear:
 
 ```
-ComponentNode[] + Edge[]
-        │
-        ▼
-compileNetlist()          ── src/lib/netlist.ts
-        │
-        │  • downsamples input audio to SPICE_SAMPLE_RATE (10 kHz)
-        │  • builds PWL voltage source (or SIN test tone)
-        │  • inlines only the device models the circuit uses
-        │  • emits Rprobe so the output net always has a load
-        │
-        ▼
-EECircuitEngine.run()     ── src/lib/engines/eecircuit.ts
-        │
-        │  • ngspice WASM transient simulation
-        │  • returns variable-step (time[], voltage[]) trace
-        │
-        ▼
-voltageToAudioBuffer()    ── src/lib/audio/audio-convert.ts
-        │
-        │  • linear-interpolates back to 44 100 Hz
-        ▼
-Float32Array → outputBuffer in Zustand
++-----------------------------------------------------------+
+| 1. Sample source                                          |
+|    /public/samples/<name>.wav  (or uploaded local WAV)    |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 2. Browser audio decode                                   |
+|    AudioPipeline.fetch() + decodeAudioData()              |
+|    -> Float32Array input buffer @ 44.1 kHz                |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 3. Optional input trim                                    |
+|    Waveform selection keeps only the chosen region        |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 4. Main-thread request                                    |
+|    App.tsx posts SimulateRequest to simulation worker     |
+|    with: nodes, edges, inputBuffer, inputSampleRate       |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 5. Netlist compilation in worker                          |
+|    compileNetlist(...)   src/lib/netlist.ts               |
+|    - downsample input to SPICE_SAMPLE_RATE = 10 kHz       |
+|    - build PWL source: Vin pos neg PWL(t0 v0 t1 v1 ...)   |
+|    - inline only the device models the circuit uses       |
+|    - emit Rprobe so the output net always has a load      |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 6. SPICE simulation                                       |
+|    EECircuitEngine.run()  src/lib/engines/eecircuit.ts    |
+|    - ngspice WASM transient analysis                      |
+|    -> variable-step trace: time[] + outputVoltage[]       |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 7. Audio reconstruction                                   |
+|    voltageToAudioBuffer()  src/lib/audio/audio-convert.ts |
+|    - linear-interpolate SPICE output back to 44.1 kHz     |
++-----------------------------------------------------------+
+                             |
+                             v
++-----------------------------------------------------------+
+| 8. Output buffer                                          |
+|    Float32Array stored as outputBuffer in Zustand         |
++-----------------------------------------------------------+
+                   |                           |
+                   v                           v
++--------------------------------+   +--------------------------------+
+| 9a. Visual result              |   | 9b. Audible result             |
+|     Waveform display overlays  |   |     AudioPipeline.playBuffer() |
+|     input vs output            |   |     plays simulated output     |
++--------------------------------+   +--------------------------------+
 ```
 
 `SPICE_SAMPLE_RATE` is 10 kHz. The compiler builds a piecewise-linear

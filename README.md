@@ -1,48 +1,56 @@
 # Solder
 
-A visual circuit editor and audio effects simulator. Place and connect circuit components on a schematic canvas, then simulate audio signal processing via SPICE (ngspice compiled to WebAssembly).
+A visual circuit editor and audio effects simulator that runs entirely in your browser. Draw a schematic, drop in a guitar sample, and hear what it sounds like through the simulated circuit — no install, no server, no SPICE setup.
 
-## Features
+Solder compiles your schematic to a SPICE netlist and runs it through ngspice compiled to WebAssembly. It is intentionally small-scoped: analog audio circuits like guitar pedals, EQs, and clipping stages.
 
-**Circuit Editor**
-- Click-to-add component palette: resistors, capacitors, op-amps (TL072, LM741), diodes (1N914, 1N4001, 1N270), BJTs, JFETs, MOSFETs, potentiometers, power supplies, ground
-- KiCad-style "place symbol" command bar (`a`) with a recently-used section and fuzzy search across every component
-- Net labels for KiCad-style global connections (place multiple labels with the same name and they share a net automatically)
-- KiCad-style power pins (multiple GND/VCC symbols share the same net without explicit wires)
-- Drop connections onto existing wires to join a net
-- Undo/redo (`Cmd/Ctrl+Z`, `Cmd/Ctrl+Shift+Z`), multi-tab circuits, JSON import/export
-- Click traces or components to inspect and edit values in the sidebar
-- Potentiometers have visual knob controls with animated SVG wiper
-- Sticky notes with configurable color, text size, and width for annotating circuits
-- Circuit state persists across browser sessions via local storage
-
-**Simulation**
-- Compiles circuit to SPICE netlist and runs transient analysis via ngspice WASM ([eecircuit-engine](https://www.npmjs.com/package/eecircuit-engine))
-- Use bundled guitar/bass samples, upload local WAV files, or fall back to a SIN test tone
-- Select a region of the input waveform to simulate only a portion
-
-**Audio Playback & Waveform**
-- Play input and output audio with looping support
-- Waveform display with input/output overlay comparison
-- Expandable modal with seek (click), scrub (drag), and region selection
-- Animated playback cursor tied to audio position
-- Local WAV uploads persist across refreshes in the browser
-
-**Example Circuits**
-- Pedals: ProCo RAT, Fuzz Face, MXR Distortion+
-- Circuits: low-pass filter, high-pass filter, gain stage, soft clipping, hard clipping, volume pot
-- Circuit examples include beginner-friendly sticky notes explaining how each circuit works
-
-## Getting Started
+## Try it
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173). The dev server enables Cross-Origin Isolation headers required for SharedArrayBuffer (ngspice WASM).
+Open [http://localhost:5173](http://localhost:5173). A modern browser with WebAssembly and SharedArrayBuffer is required — the dev server
+sets the Cross-Origin Isolation headers ngspice needs to work.
 
-Requires a modern browser with WebAssembly and SharedArrayBuffer support.
+When the editor loads, click **Examples** in the toolbar to load a starter circuit, then **Simulate** to hear it.
+
+## What it does
+
+- **Schematic editor** — drop components, drag connections, multi-tab circuits, undo/redo, JSON import/export. KiCad-style power pins and global net labels keep wiring tidy.
+- **Place-symbol command bar** — press `a` to search the full component catalog (resistors, capacitors, op-amps, diodes, BJTs, JFETs, MOSFETs, potentiometers, etc.) with KiCad-style recent-items at the top.
+- **Simulate audio** — use one of the bundled samples, upload your own WAV, or fall back to a SIN test tone. Select a region of the input waveform to simulate only a portion. Hear input and output, or scrub the overlay to see how the circuit shapes the signal.
+- **Bundled examples** — filters, gain stages, clipping circuits, plus three complete pedals (ProCo RAT, MXR Distortion+, Fuzz Face). Each ships with inline notes explaining what every section does. See [`docs/examples.md`](docs/examples.md).
+
+## Quick keyboard reference
+
+| Shortcut          | Action                                             |
+| ----------------- | -------------------------------------------------- |
+| `a`               | Open the place-symbol command bar                  |
+| `r` / `Shift+R`   | Rotate selection 90° clockwise / counter-clockwise |
+| `⌘/Ctrl+Z`        | Undo                                               |
+| `⌘/Ctrl+Shift+Z`  | Redo                                               |
+| `?` or `/`        | Open the in-app keyboard reference                 |
+
+Full list: [`docs/keyboard-shortcuts.md`](docs/keyboard-shortcuts.md). Press `?` in the editor for the same reference as a modal.
+
+## Documentation
+
+User-facing:
+
+- [`docs/examples.md`](docs/examples.md) — tour of the bundled circuits and pedals, and what each one teaches.
+- [`docs/keyboard-shortcuts.md`](docs/keyboard-shortcuts.md) — full shortcut list.
+
+Contributor-facing:
+
+- [`AGENTS.md`](AGENTS.md) — entry point for anyone (or any agent) working on the codebase. Routes to everything below.
+- [`docs/architecture.md`](docs/architecture.md) — Zustand store layout, slices, hooks, data flow.
+- [`docs/component-library.md`](docs/component-library.md) — how `src/lib/models/` is organized; the three places you have to register a new component.
+- [`docs/simulation.md`](docs/simulation.md) — netlist compiler and the ngspice/eecircuit-engine quirks that will silently break things if you ignore them.
+- [`docs/audio.md`](docs/audio.md) — `AudioPipeline`, browser autoplay policy, IndexedDB sample persistence.
+- [`docs/ui-patterns.md`](docs/ui-patterns.md) — palette catalog, global hotkey gating, modal opt-in, example circuit conventions.
+- [`docs/code-style.md`](docs/code-style.md) — early returns, block comments, file organization, typography.
 
 ## Commands
 
@@ -55,113 +63,6 @@ pnpm test         # Run all tests (vitest)
 pnpm test:ui      # Run tests with interactive Vitest UI
 ```
 
-## Keyboard Shortcuts
+## Tech stack
 
-Press `?` or `/` inside the editor to open the full reference. The most-used
-shortcuts:
-
-| Shortcut | Action |
-|---|---|
-| `a` | Open the place-symbol command bar |
-| `r` / `Shift+R` | Rotate selected node 90° clockwise / counter-clockwise |
-| `Cmd/Ctrl+Z` | Undo |
-| `Cmd/Ctrl+Shift+Z`, `Cmd/Ctrl+Y` | Redo |
-| `Space` | Play / pause the waveform preview (waveform modal) |
-| `?` or `/` | Open keyboard shortcut reference |
-| `Esc` | Close the active modal |
-
-Shortcuts are disabled while typing in an input field or when any modal is
-open, so they never conflict with the surface you are currently using.
-
-## Tech Stack
-
-- **UI:** React 19 + TypeScript + Vite
-- **Canvas:** [XYFlow / React Flow](https://reactflow.dev) for the schematic editor
-- **State:** Zustand with undo/redo history
-- **Audio:** Web Audio API for sample loading and playback
-- **Simulation:** ngspice WASM via eecircuit-engine, running in a Web Worker
-- **Styling:** Tailwind CSS
-- **Icons:** [Lucide React](https://lucide.dev)
-- **Linting:** Biome (single quotes, 2-space indent)
-- **Testing:** Vitest + jsdom + Testing Library
-
-## Architecture Notes
-
-- `src/lib/models/` is the unified component-domain library. Each
-  component folder co-locates its symbol definition, React node renderer,
-  data types, and any SPICE `model.ts` definitions that domain needs.
-- `src/lib/netlist.ts` compiles the current circuit graph into a SPICE
-  netlist and inlines only the device models required by the active
-  circuit.
-- `src/lib/audio/pipeline.ts` loads decoded sample audio from
-  `/public/samples/` and provides playback helpers for the waveform and
-  simulator UI.
-- `src/lib/audio/local-sample-store.ts` persists uploaded WAV bytes in
-  IndexedDB so local samples survive page refreshes without bloating the
-  Zustand/localStorage payload.
-
-## WAV Simulation Flow
-
-```text
-+-----------------------------------------------------------+
-| 1. Sample source                                          |
-|    /public/samples/<name>.wav                             |
-+-----------------------------------------------------------+
-                             |
-                             v
-+-----------------------------------------------------------+
-| 2. Browser audio decode                                   |
-|    AudioPipeline.fetch() + decodeAudioData()              |
-|    -> Float32Array input buffer @ 44.1 kHz                |
-+-----------------------------------------------------------+
-                             |
-                             v
-+-----------------------------------------------------------+
-| 3. Optional input trim                                    |
-|    Waveform selection keeps only the chosen region        |
-+-----------------------------------------------------------+
-                             |
-                             v
-+-----------------------------------------------------------+
-| 4. Main-thread request                                    |
-|    App.tsx posts SimulateRequest to simulation worker     |
-|    with: nodes, edges, inputBuffer, inputSampleRate       |
-+-----------------------------------------------------------+
-                             |
-                             v
-+-----------------------------------------------------------+
-| 5. Netlist compilation in worker                          |
-|    compileNetlist(...)                                    |
-|    - downsample input to SPICE_SAMPLE_RATE = 10 kHz       |
-|    - build PWL source: Vin pos neg PWL(t0 v0 t1 v1 ...)   |
-|    - inline active device models                          |
-+-----------------------------------------------------------+
-                             |
-                             v
-+-----------------------------------------------------------+
-| 6. SPICE simulation                                       |
-|    EECircuitEngine / ngspice WASM runs transient analysis |
-|    -> variable-step trace: time[] + outputVoltage[]       |
-+-----------------------------------------------------------+
-                             |
-                             v
-+-----------------------------------------------------------+
-| 7. Audio reconstruction                                   |
-|    voltageToAudioBuffer(...)                              |
-|    -> resample SPICE output back to 44.1 kHz              |
-+-----------------------------------------------------------+
-                             |
-                             v
-+-----------------------------------------------------------+
-| 8. Output buffer                                          |
-|    Float32Array stored in Zustand                         |
-+-----------------------------------------------------------+
-                   |                           |
-                   |                           |
-                   v                           v
-+--------------------------------+   +--------------------------------+
-| 9a. Visual result              |   | 9b. Audible result             |
-|     Waveform display overlays  |   |     AudioPipeline.playBuffer() |
-|     input vs output            |   |     plays simulated output     |
-+--------------------------------+   +--------------------------------+
-```
+React 19, TypeScript, Vite, [XYFlow](https://reactflow.dev) for the canvas, Zustand for state, Tailwind CSS, Biome for lint + format, and ngspice via [eecircuit-engine](https://www.npmjs.com/package/eecircuit-engine) running in a Web Worker. See [`docs/architecture.md`](docs/architecture.md) for how everything fits together.

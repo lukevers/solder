@@ -40,7 +40,8 @@ remind you.
 | `src/store/` or Zustand hooks | [`docs/architecture.md`](docs/architecture.md) — slice layout, hook guidelines, data flow |
 | `src/lib/audio/`, `AudioPipeline`, sample uploads | [`docs/audio.md`](docs/audio.md) — autoplay policy, IndexedDB persistence rules |
 | `src/lib/palette.ts`, `App.tsx` keydown handler, `HelpModal`, new modal overlays | [`docs/ui-patterns.md`](docs/ui-patterns.md) — palette catalog, global hotkey gating, modal opt-in |
-| `src/examples/` (new example circuits) | [`docs/ui-patterns.md`](docs/ui-patterns.md) (Writing example circuits) |
+| Adding or renaming a keyboard shortcut | [`docs/keyboard-shortcuts.md`](docs/keyboard-shortcuts.md) — user-facing reference; also see [`docs/ui-patterns.md`](docs/ui-patterns.md) for the implementation pattern |
+| `src/examples/` (new example circuits) | [`docs/examples.md`](docs/examples.md) for the user-facing tour; [`docs/ui-patterns.md`](docs/ui-patterns.md) for the writing conventions |
 | Writing any code | [`docs/code-style.md`](docs/code-style.md) — early returns, block comments, file organization |
 
 ## Project layout (one-screen overview)
