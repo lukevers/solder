@@ -3,6 +3,13 @@ import { SAMPLE_RATE } from '../constants';
 /**
  * Web Audio API integration layer.
  *
+ * @docs docs/audio.md
+ *
+ * Read `docs/audio.md` before changing initialization or playback. Key
+ * rules: do not create AudioContext until the first user gesture, and
+ * keep raw WAV bytes out of Zustand — they belong in IndexedDB via
+ * `local-sample-store.ts`.
+ *
  * Handles output playback and sample loading for
  * the waveform/simulation UI.
  *

@@ -1,3 +1,10 @@
+/**
+ * @docs docs/simulation.md
+ *
+ * Thin wrapper around the `eecircuit-engine` npm package (trimmed ngspice
+ * WASM). The engine has several quirks that bite anyone writing a new
+ * netlist or SPICE model — read `docs/simulation.md` first.
+ */
 import type { ResultType, Simulation } from 'eecircuit-engine';
 import type {
   MultiNodeOutput,

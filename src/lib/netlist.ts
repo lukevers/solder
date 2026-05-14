@@ -1,3 +1,12 @@
+/**
+ * @docs docs/simulation.md
+ *
+ * Before editing this file: read `docs/simulation.md`. The eecircuit-engine
+ * WASM is a trimmed ngspice build that does NOT support `POLY()`, the `1G`
+ * suffix, or open circuits, and it requires `SharedArrayBuffer`. The doc
+ * lists every workaround and the audiin/audiout grounding rule that this
+ * compiler depends on.
+ */
 import type { Edge } from '@xyflow/react';
 import {
   BJT_2N3904,

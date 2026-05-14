@@ -1,3 +1,10 @@
+/**
+ * @docs docs/audio.md
+ *
+ * IndexedDB persistence for user-uploaded WAV bytes. Only lightweight
+ * metadata should be mirrored into Zustand — raw audio belongs here.
+ * See `docs/audio.md` for the boot-time restore + lazy-decode pattern.
+ */
 import type { LocalSample } from '../simulation-types';
 
 type PersistedLocalSample = LocalSample & {

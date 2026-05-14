@@ -1,3 +1,10 @@
+/**
+ * @docs docs/ui-patterns.md (Global hotkeys and modal overlays)
+ *
+ * This modal is the source of truth for shortcuts the user can
+ * discover. When you add a new global hotkey in `src/App.tsx`, also
+ * add it to `buildSections` below so the `?` reference stays accurate.
+ */
 import { Keyboard, X } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 

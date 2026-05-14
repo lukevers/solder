@@ -1,6 +1,8 @@
 /**
  * Worker-safe component-model public API.
  *
+ * @docs docs/component-library.md (Worker / import boundary rules)
+ *
  * This barrel intentionally exports only data definitions, symbol metadata,
  * and SPICE model builders that are safe to import from the simulation
  * workers.
@@ -8,6 +10,9 @@
  * Do not export React node renderers or registry wiring from this file. The
  * netlist compiler is shared with the worker runtime, and importing UI modules
  * here would drag the Zustand store into the worker bundle.
+ *
+ * If a worker fails in dev with `window is not defined` from `@react-refresh`,
+ * a `.tsx` module has leaked through this barrel — see the doc for diagnosis.
  */
 
 export type { NodeColor, NodeColorOption } from '../colors';

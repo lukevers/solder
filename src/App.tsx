@@ -156,12 +156,18 @@ export default function App() {
   /**
    * Tracks whether any blocking modal overlay is currently open.
    *
+   * @docs docs/ui-patterns.md (Global hotkeys and modal overlays)
+   *
    * Global hotkeys (undo, rotate, `a`, `?`/`/`) live on the window so they
    * fire even when the canvas is unfocused. That is great for fast editing
    * but means pressing `a` while the welcome / help / waveform modal is
    * visible would otherwise pop the command bar behind the modal. We mirror
    * the open flags into a ref so the keydown closure can read the latest
    * value without re-binding the listener on every modal toggle.
+   *
+   * When you add a new modal overlay, add its open state to this ref's
+   * dependency list. When you add a new shortcut, also update
+   * `buildSections` in `src/components/HelpModal.tsx`.
    */
   const anyModalOpenRef = useRef(false);
   useEffect(() => {

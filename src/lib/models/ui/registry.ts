@@ -1,12 +1,17 @@
 /**
  * UI registry for XYFlow node renderers and symbol metadata.
  *
+ * @docs docs/component-library.md
+ *
  * This file is intentionally separate from the worker-safe `models/index.ts`
  * barrel.
  *
  * Import this module only from the browser UI and store helpers. The
  * simulation workers should never depend on it because it pulls in React node
  * renderers and shared store hooks.
+ *
+ * Adding a new component touches THREE places: this registry, the symbol
+ * registry, and `src/lib/palette.ts`. See the doc for the full procedure.
  */
 
 import { CapPolarNode } from '../components/cap-polar/node';

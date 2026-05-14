@@ -1,3 +1,12 @@
+/**
+ * @docs docs/architecture.md
+ *
+ * Root composition of the single Zustand store. The store is split by
+ * domain into slices (tabs, circuit, history, audio, simulation,
+ * palette). Before adding a new field, hook, or slice, read
+ * `docs/architecture.md` — it covers the "one store, many slices" rule
+ * and the preferred hook patterns in `src/store/hooks.ts`.
+ */
 import { create } from 'zustand';
 import { type PersistOptions, persist } from 'zustand/middleware';
 import { createAudioSlice } from './audio-slice';

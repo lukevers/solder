@@ -1,3 +1,11 @@
+/**
+ * @docs docs/ui-patterns.md (Writing example circuits)
+ *
+ * Registry for bundled example circuits loaded into the Examples panel.
+ * When adding a new circuit JSON, follow the handle-direction and op-amp
+ * positioning rules in the doc — getting them wrong produces invisible
+ * edges (React Flow error #008) or visually misaligned schematics.
+ */
 import type { Edge } from '@xyflow/react';
 import type { ComponentNode } from '../lib/types';
 import gainStage from './circuits/gain-stage.json';

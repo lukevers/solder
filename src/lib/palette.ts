@@ -1,6 +1,8 @@
 /**
  * Unified palette catalog for all placeable circuit elements.
  *
+ * @docs docs/ui-patterns.md
+ *
  * Both the toolbar buttons and the command bar (triggered by the `a`
  * hotkey) consume this list so we never have to define the same
  * defaults in two places. Each entry has a stable `id` used to track
@@ -9,6 +11,12 @@
  *
  *   PALETTE_ITEMS  ──┬──▶  Toolbar (existing grouped buttons)
  *                    └──▶  CommandBar (alphabetical + recents)
+ *
+ * Adding a new component requires a palette entry here as well as a
+ * symbol + node registration in `src/lib/models/`. See
+ * `docs/component-library.md` for the full three-step process and
+ * `docs/ui-patterns.md` for catalog rules (stable ids, search tokens,
+ * category placement).
  */
 
 import { DEFAULT_NODE_COLOR } from './colors';
