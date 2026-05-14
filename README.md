@@ -1,5 +1,7 @@
 # Solder
 
+![Solder - In App Screenshot](./docs/assets/app.png)
+
 A visual circuit editor and audio effects simulator that runs entirely in your browser. Draw a schematic, drop in a guitar sample, and hear what it sounds like through the simulated circuit — no install, no server, no SPICE setup.
 
 Solder compiles your schematic to a SPICE netlist and runs it through ngspice compiled to WebAssembly. It is intentionally small-scoped: analog audio circuits like guitar pedals, EQs, and clipping stages.
