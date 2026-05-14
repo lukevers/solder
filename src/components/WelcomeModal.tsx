@@ -1,4 +1,4 @@
-import { FolderOpen, MousePointer2, Play, X } from 'lucide-react';
+import { FolderOpen, Keyboard, MousePointer2, Play, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { APP_VERSION } from '../lib/app-version';
 import { Button } from './Button';
@@ -7,6 +7,7 @@ import { SolderLogo } from './SolderLogo';
 type WelcomeModalProps = {
   open: boolean;
   onClose: () => void;
+  onOpenShortcuts: () => void;
 };
 
 /**
@@ -16,7 +17,11 @@ type WelcomeModalProps = {
  * loop, points users toward example circuits, and tells them how to reopen the
  * guide later from the app chrome.
  */
-export function WelcomeModal({ open, onClose }: WelcomeModalProps) {
+export function WelcomeModal({
+  open,
+  onClose,
+  onOpenShortcuts,
+}: WelcomeModalProps) {
   useEffect(() => {
     if (!open) {
       return;
@@ -143,9 +148,20 @@ export function WelcomeModal({ open, onClose }: WelcomeModalProps) {
           <div className="font-mono text-[11px] text-gray-500 uppercase tracking-wider">
             version: {APP_VERSION}
           </div>
-          <Button onClick={onClose} size="sm" tone="neutral">
-            Open Editor
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={onOpenShortcuts}
+              size="sm"
+              tone="muted"
+              className="inline-flex items-center gap-1.5"
+            >
+              <Keyboard size={12} />
+              Shortcuts
+            </Button>
+            <Button onClick={onClose} size="sm" tone="neutral">
+              Open Editor
+            </Button>
+          </div>
         </div>
       </div>
     </div>

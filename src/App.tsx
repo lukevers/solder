@@ -5,6 +5,7 @@ import { AudioControls } from './components/AudioControls';
 import { CircuitAnalyzer } from './components/CircuitAnalyzer';
 import { CommandBar } from './components/CommandBar';
 import { ExamplesPanel } from './components/ExamplesPanel';
+import { HelpModal } from './components/HelpModal';
 import { Inspector } from './components/Inspector';
 import { PedalPanel } from './components/PedalPanel';
 import { SchematicCanvas } from './components/SchematicCanvas';
@@ -94,6 +95,7 @@ export default function App() {
   const [showWaveformModal, setShowWaveformModal] = useState(false);
   const [showAnalyzer, setShowAnalyzer] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [sourceBuffer, setSourceBuffer] = useState<Float32Array | null>(null);
   const [playingOriginal, setPlayingOriginal] = useState(false);
   const [audioReady, setAudioReady] = useState(false);
@@ -199,6 +201,14 @@ export default function App() {
           ? { ...cursorScreenPosRef.current }
           : null;
         setCommandBarOpen(true);
+        return;
+      }
+
+      // Help modal — accept both `/` and `?` (Shift+/) so users can open
+      // it without holding Shift on layouts where the two share a key.
+      if (e.key === '?' || e.key === '/') {
+        e.preventDefault();
+        setShowHelpModal(true);
       }
     }
 
@@ -1175,7 +1185,15 @@ export default function App() {
           onClose={() => setShowWaveformModal(false)}
         />
       )}
-      <WelcomeModal open={showWelcomeModal} onClose={handleCloseWelcomeModal} />
+      <WelcomeModal
+        open={showWelcomeModal}
+        onClose={handleCloseWelcomeModal}
+        onOpenShortcuts={() => {
+          handleCloseWelcomeModal();
+          setShowHelpModal(true);
+        }}
+      />
+      <HelpModal open={showHelpModal} onClose={() => setShowHelpModal(false)} />
       <CommandBar
         open={commandBarOpen}
         onClose={() => setCommandBarOpen(false)}
