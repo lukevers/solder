@@ -1,4 +1,11 @@
-import { FolderOpen, Keyboard, MousePointer2, Play, X } from 'lucide-react';
+import {
+  Code,
+  FolderOpen,
+  Keyboard,
+  MousePointer2,
+  Play,
+  X,
+} from 'lucide-react';
 import { useEffect } from 'react';
 import { APP_VERSION } from '../lib/app-version';
 import { Button } from './Button';
@@ -149,6 +156,15 @@ export function WelcomeModal({
             version: {APP_VERSION}
           </div>
           <div className="flex items-center gap-2">
+            <a
+              href="https://github.com/lukevers/solder"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded border border-gray-700 bg-gray-800 px-3 py-1.5 font-mono text-[11px] text-gray-300 uppercase tracking-wider transition-colors hover:bg-gray-700"
+            >
+              <Code size={12} />
+              Open Source
+            </a>
             <Button
               onClick={onOpenShortcuts}
               size="sm"
