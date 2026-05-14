@@ -145,6 +145,18 @@ body {
 	transition-duration: 0ms !important;
 }
 
+/* Match the cmdk backdrop to the rest of the app's modal overlays.
+   The package's default Headless UI Dialog renders a backdrop with the
+   classes `bg-gray-900 bg-opacity-80`, which produces a slightly lighter
+   shade than WelcomeModal/HelpModal (`bg-gray-950/65 backdrop-blur-sm`).
+   Overriding the single element here keeps the rest of the cmdk panel
+   styling intact while consolidating on one overlay treatment app-wide. */
+.command-palette .bg-gray-900.bg-opacity-80 {
+	background-color: rgb(3 7 18 / 0.65) !important;
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+}
+
 /* Tighten the cmdk modal: shrink the panel, drop the font-size to
    xs, and squeeze the padding so the recently-used + category list
    fits more rows on screen and feels at home in the toolbar-driven

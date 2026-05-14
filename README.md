@@ -6,6 +6,7 @@ A visual circuit editor and audio effects simulator. Place and connect circuit c
 
 **Circuit Editor**
 - Click-to-add component palette: resistors, capacitors, op-amps (TL072, LM741), diodes (1N914, 1N4001, 1N270), BJTs, JFETs, MOSFETs, potentiometers, power supplies, ground
+- KiCad-style "place symbol" command bar (`a`) with a recently-used section and fuzzy search across every component
 - Net labels for KiCad-style global connections (place multiple labels with the same name and they share a net automatically)
 - KiCad-style power pins (multiple GND/VCC symbols share the same net without explicit wires)
 - Drop connections onto existing wires to join a net
@@ -53,6 +54,24 @@ pnpm lint         # Lint with Biome
 pnpm test         # Run all tests (vitest)
 pnpm test:ui      # Run tests with interactive Vitest UI
 ```
+
+## Keyboard Shortcuts
+
+Press `?` or `/` inside the editor to open the full reference. The most-used
+shortcuts:
+
+| Shortcut | Action |
+|---|---|
+| `a` | Open the place-symbol command bar |
+| `r` / `Shift+R` | Rotate selected node 90° clockwise / counter-clockwise |
+| `Cmd/Ctrl+Z` | Undo |
+| `Cmd/Ctrl+Shift+Z`, `Cmd/Ctrl+Y` | Redo |
+| `Space` | Play / pause the waveform preview (waveform modal) |
+| `?` or `/` | Open keyboard shortcut reference |
+| `Esc` | Close the active modal |
+
+Shortcuts are disabled while typing in an input field or when any modal is
+open, so they never conflict with the surface you are currently using.
 
 ## Tech Stack
 

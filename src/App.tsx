@@ -153,6 +153,22 @@ export default function App() {
     setSelection(null);
   }, [viewResetKey, setPlaying]);
 
+  /**
+   * Tracks whether any blocking modal overlay is currently open.
+   *
+   * Global hotkeys (undo, rotate, `a`, `?`/`/`) live on the window so they
+   * fire even when the canvas is unfocused. That is great for fast editing
+   * but means pressing `a` while the welcome / help / waveform modal is
+   * visible would otherwise pop the command bar behind the modal. We mirror
+   * the open flags into a ref so the keydown closure can read the latest
+   * value without re-binding the listener on every modal toggle.
+   */
+  const anyModalOpenRef = useRef(false);
+  useEffect(() => {
+    anyModalOpenRef.current =
+      showWelcomeModal || showHelpModal || showWaveformModal || commandBarOpen;
+  }, [showWelcomeModal, showHelpModal, showWaveformModal, commandBarOpen]);
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       // Skip when typing in an input/textarea
@@ -164,6 +180,13 @@ export default function App() {
         tag === 'SELECT' ||
         editable
       ) {
+        return;
+      }
+
+      // Skip global shortcuts while a modal overlay is open. Each modal
+      // owns its own keyboard handling (Esc to close, etc.) and the
+      // canvas underneath should not respond until the modal goes away.
+      if (anyModalOpenRef.current) {
         return;
       }
 

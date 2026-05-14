@@ -86,6 +86,9 @@ Guidelines:
 - `src/lib/types.ts` — discriminated union `ComponentNode` type for all circuit elements; re-exports per-domain data types
 - `src/lib/netlist.ts` — circuit → SPICE netlist compiler (`compileNetlist`, `buildPortGroups`, `SPICE_SAMPLE_RATE`)
 - `src/lib/models/` — unified component-domain library: symbols, node renderers, per-domain data types, and SPICE model definitions
+- `src/lib/palette.ts` — hand-maintained catalog (`PALETTE_ITEMS`,
+  `PALETTE_CATEGORIES`) feeding both the toolbar groupings and the `a`
+  command bar; see "Command bar / palette catalog" below
 - `src/lib/audio/audio-convert.ts` — `voltageToAudioBuffer`: interpolates SPICE output to fixed sample rate
 - `src/lib/audio/local-sample-store.ts` — IndexedDB persistence for uploaded
   local WAV samples
@@ -124,10 +127,15 @@ src/lib/models/
   box/               — node.tsx + types.ts + model.ts + index.ts (no symbol)
 ```
 
-Adding a new component: create a new subdirectory with `symbol.ts`,
-`node.tsx`, `types.ts`, `model.ts`, and `index.ts`. Register the symbol in
-`SYMBOLS` in `symbol-registry.ts` and the node renderer in `nodeTypes` in
-`registry.ts`.
+Adding a new component requires three registration points:
+1. Create a new subdirectory with `symbol.ts`, `node.tsx`, `types.ts`,
+   `model.ts`, and `index.ts`.
+2. Register the symbol in `SYMBOLS` (`symbol-registry.ts`) and the node
+   renderer in `nodeTypes` (`registry.ts`).
+3. Add an entry — or one per variant for components with multiple models
+   like diodes/BJTs — to `PALETTE_ITEMS` in `src/lib/palette.ts` so the
+   `a` command bar and the toolbar can place it. The palette catalog is
+   NOT auto-derived from the symbol/node registries.
 
 Worker/import boundary rules:
 - `src/lib/models/index.ts` is shared with the simulation and analysis
@@ -152,6 +160,49 @@ Connections can also be dropped directly onto existing wires (edges) to join tha
 
 ### Component nodes (`src/lib/models/<component>/node.tsx`)
 One renderer per circuit element type, co-located with its symbol definition. Each exports a single React component (e.g., `ResistorNode`, `OpAmpNode`, `BJTNode`). Shared rendering primitives (`NodeShell`, `RotatedHandle`, `NodeSvg`, `NodeText`) live in `src/lib/models/node-shell.tsx`.
+
+### Command bar / palette catalog (`src/lib/palette.ts`)
+`PALETTE_ITEMS` is the single source of truth for "things the user can
+place." Both the toolbar groupings and the `a` command bar consume it.
+The catalog is hand-maintained, not derived from the symbol or node
+registries, because:
+- One symbol can map to several palette entries (e.g. the diode symbol
+  backs `1N914`, `1N4001`, `1N270`, …, each with a different
+  `defaultData.model`).
+- Some palette entries (junction, label, stickynote, box) have no
+  schematic symbol but still need a placement entry.
+
+When adding to the catalog:
+- Pick a stable `id` — it is persisted in the recently-used list and must
+  not be reused once shipped.
+- Place the entry in an existing `PALETTE_CATEGORIES` bucket or extend
+  the array. Section order drives the on-screen order of the command bar.
+- Fill in `searchTokens` with the aliases users will actually type
+  ("op-amp", "fuzz", "fet"); the fuzzy filter matches against them.
+
+### Global hotkeys and modal overlays
+Editor-wide hotkeys live in `App.tsx`'s window-level `keydown` listener
+(`a` to place, `r`/`Shift+R` to rotate, `Cmd/Ctrl+Z` to undo, `?`/`/` for
+help, etc.). The handler gates on two things before doing anything:
+
+1. The focused element — `INPUT`, `TEXTAREA`, `SELECT`, or
+   `isContentEditable` short-circuits early so typing into a field never
+   hijacks a shortcut.
+2. `anyModalOpenRef` — a ref mirrored from every blocking modal flag
+   (`showWelcomeModal`, `showHelpModal`, `showWaveformModal`,
+   `commandBarOpen`). If any of those is true, the handler bails so the
+   canvas underneath does not respond.
+
+When introducing a new modal/overlay, add its open state to the
+`anyModalOpenRef` `useEffect` in `App.tsx`. A modal that does not opt in
+will leak shortcuts to the schematic underneath (e.g. pressing `a`
+opening the command bar behind a help dialog).
+
+When adding a new global shortcut, update **both** the keydown handler
+in `App.tsx` **and** `buildSections()` in `src/components/HelpModal.tsx`
+so the `?` reference stays accurate. The modal lists shortcuts grouped
+into Canvas / Edit / Waveform / General; pick the closest section or
+extend the list.
 
 ### Audio pipeline (`src/lib/audio/pipeline.ts`)
 Web Audio API integration for sample loading and playback. Loads `.wav`
